@@ -26,6 +26,6 @@ model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
   password        String              @unique(map: "password_1")
-  roles           String[]
+  roles           String[]            @default(["user"])
   username        String              @unique(map: "username_1")
 }

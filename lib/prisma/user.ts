@@ -9,16 +9,15 @@ type AdditionaInfo = {
 export const createUser = async (
   username: string,
   password: string,
-  roles: string[],
   { Dob, Phone_Number, email }: AdditionaInfo
 ) => {
   try {
-    let defaultRole = ["user"];
+    // let defaultRole = ["user"];
     const newUser = await prisma.users.create({
       data: {
         username: username,
         password: password,
-        roles: defaultRole,
+        // roles: defaultRole,
         additional_Info: {
           Dob: Dob,
           Phone_Number: Phone_Number,

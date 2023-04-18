@@ -9,8 +9,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       // check if the request body is not empty
-      const { username, password, roles, additional_Info } = req.body;
-      if (!username || !password || !roles || !additional_Info) {
+      const { username, password, additional_Info } = req.body;
+      if (!username || !password || !additional_Info) {
         return res.status(401).json({
           message: "Please Complete Credentials",
         });
@@ -49,7 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const { newUser, error } = await createUser(
           username,
           hashedPwd,
-          roles,
+          // roles,
           additional_Info
         );
 
