@@ -34,9 +34,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // check if user is existed in db
-      const { userExists } = await findUser(username);
+      const { user } = await findUser(username);
 
-      if (userExists) {
+      if (user) {
         res.status(409).json({
           message: "Account Already Exist",
         });

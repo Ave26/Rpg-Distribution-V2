@@ -9,19 +9,23 @@ datasource db {
 
 type UsersAdditionalInfo {
   Dob          String
-  Phone_Number Int    @map("Phone Number")
+  Phone_Number BigInt @map("Phone Number")
   email        String
+}
+
+model products {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  id_         Int    @map("id")
+  image       String
+  name        String
+  price       Float
 }
 
 model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
-  password        String              
+  password        String              @unique(map: "password_1")
   roles           String[]
   username        String              @unique(map: "username_1")
 }
-
-
-
-
-
