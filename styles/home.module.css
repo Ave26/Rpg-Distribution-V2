@@ -1,0 +1,282 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins, sans-serif");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans Extrabold", "Courier New", Courier, monospace;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200vh;
+  background: #fbeaeb;
+  background-size: cover;
+  background-position: center;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 99;
+  transition: background-color 0.3s ease-in-out;
+  background: linear-gradient(135deg, #ffe8f5, #234e70);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: 20px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  transform: skewY(-10deg);
+  z-index: 1;
+}
+
+header::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: 20px;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  transform: skewY(10deg);
+  z-index: 1;
+}
+
+/* header:hover { background: linear-gradient(135deg, #FF55A5, #8B75FF);}  */
+
+header h1 {
+  font-family: "Open Sans Extrabold", "Courier New", Courier, monospace;
+  font-size: 24px;
+  color: #2f3c7e;
+  text-transform: uppercase;
+}
+
+.logo {
+  height: 60px;
+  width: 200px;
+  margin-left: -20px;
+}
+
+header a {
+  font-family: "Open Sans Extrabold", "Courier New", Courier, monospace;
+  font-size: 16px;
+  color: #2f3c7e;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+header a:hover {
+  text-decoration: none;
+}
+
+header img {
+  width: 50px;
+  height: 50px;
+}
+
+.container .btnKnow-popup {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid #98c1d9;
+  outline: none;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 1.1em;
+  color: #98c1d9;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: 0.3s;
+}
+.container .btnKnow-popup:hover {
+  background: #eea47fff;
+  color: #fff;
+}
+.navigation a {
+  position: relative;
+  font-size: 1.1em;
+  color: #2f3c7e;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 40px;
+  /* text-shadow: 1px 1px 1px #77b2c4; */
+  letter-spacing: 1px;
+}
+
+.navigation a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 3px;
+  text-decoration: none;
+  background: #ffd700;
+  border-radius: 5px;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.navigation a:hover::after {
+  transform-origin: left;
+  transform: scaleX(1);
+  text-decoration: none;
+}
+
+.navigation .btnLogin-popup {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid #eea47fff;
+  outline: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  color: #eea47fff;
+  font-weight: bold;
+  margin-left: 40px;
+  /* text-shadow: 1px 1px 2px #FFF; */
+  letter-spacing: 1px;
+  transition: 0.3s;
+}
+
+.navigation .btnLogin-popup:hover {
+  background: #eea47fff;
+  color: #fff;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  text-align: center;
+  background-color: #2f3c7e;
+  color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  height: 400px;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%; /* make the container cover both ends of the website */
+}
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100%; /* set the height to 100% */
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+}
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* set the width to 100% */
+  height: 100%; /* keep the height at 100% */
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 100%; /* match the width to the parent*/
+  margin-top: 50px; /* add margin-top to create space between container and footer */
+  /* padding-bottom: 80px;  */
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background-color: #2f3c7e;
+  color: #fff;
+  text-align: center;
+  height: 50px !important;
+  text-align: center;
+}
+
+.fcontainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+p {
+  margin: 0;
+}
+
+.social-media a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.social-media a:hover {
+  color: #eea47fff;
+}
+
+.social-media i {
+  font-size: 20px;
+}
+#login-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 9999;
+}
+
+#login-popup.visible {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#login-popup iframe {
+  width: 80%;
+  height: 80%;
+  border: none;
+  z-index: 10000;
+}
+
+body.blur {
+  filter: blur(5px);
+}
+
+#header.blur,
+footer.blur {
+  backdrop-filter: blur(5px);
+}

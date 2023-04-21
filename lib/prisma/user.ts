@@ -12,12 +12,10 @@ export const createUser = async (
   { Dob, Phone_Number, email }: AdditionaInfo
 ) => {
   try {
-    // let defaultRole = ["user"];
     const newUser = await prisma.users.create({
       data: {
         username: username,
         password: password,
-        // roles: defaultRole,
         additional_Info: {
           Dob: Dob,
           Phone_Number: Phone_Number,
@@ -44,7 +42,7 @@ export const findUser = async (username: string) => {
         username,
       },
     });
-
+    console.log(user);
     return { user };
   } catch (error) {
     return { error };

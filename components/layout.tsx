@@ -12,7 +12,7 @@ interface LayoutProps {
 export default function Layout({ children, data }: LayoutProps) {
   return (
     <>
-      <Header data={data} />
+      <Header />
       <main>{children}</main>
       <Footer />
     </>

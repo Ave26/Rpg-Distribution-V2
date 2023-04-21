@@ -25,10 +25,12 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
     e.preventDefault();
     setIsLoading(true);
     console.log("click");
+
     const requestBody = JSON.stringify({
       username: auth.username,
       password: auth.password,
     });
+
     try {
       const response = await fetch("/api/login", {
         method: "POST",
@@ -49,6 +51,10 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
           setData(json.message);
           break;
         case 404:
+          console.log(json.message);
+          setData(json.message);
+          break;
+        case 505:
           console.log(json.message);
           setData(json.message);
           break;
