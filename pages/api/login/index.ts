@@ -71,6 +71,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         createCookie(token, res);
         console.log(user.password);
         return res.status(200).json({
+          authenticated: true,
           message: "login succesfully",
           user: user,
         });

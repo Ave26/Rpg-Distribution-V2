@@ -16,7 +16,7 @@ export const createJwt = (user: any) => {
 
 export const verifyJwt = async (req: NextApiRequest) => {
   const token: any = req.cookies.token;
-  console.log(token);
+  console.log(token + "this ois fom jwt");
   try {
     const verifiedToken: any = verify(token, String(process.env.JWT_SECRET));
     return { verifiedToken };

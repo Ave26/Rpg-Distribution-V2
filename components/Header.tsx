@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import RPG from "../public/assets/RPG.png";
 import Link from "next/link";
@@ -7,16 +7,46 @@ import { useRouter } from "next/router";
 // icons
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 
-export default function Header() {
+export default function Header({ data }: any) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
-  const navigateToLogin = () => {
-    router.push("/login");
+
+  const handleLogout = async () => {
+    console.log("click");
+    try {
+      const response = await fetch("/api/logout", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+      console.log(json.message);
+      if (response.status === 200) {
+        console.log(json);
+        const auth = localStorage.setItem("authenticated", "false");
+        if (!Boolean(auth)) {
+          setIsAuthenticated(false);
+          router.push("/login");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const toggleMenu = () => {
     setIsOpen((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    const isAuth = localStorage.getItem("authenticated") === "true";
+
+    setAuthenticated(isAuth);
+  }, [isAuthenticated]);
+
   return (
     <>
       <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]">
@@ -40,12 +70,18 @@ export default function Header() {
           <Link href={"/"}>Home</Link>
           <Link href={"/products"}>Product Catalog</Link>
           <Link href={"about"}>About Us</Link>
-          <button
-            onClick={navigateToLogin}
+          {/* <button
+            onClick={isAuthenticated ? handleLogout : handleLogin}
             className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
           >
-            Login
-          </button>
+            {isAuthenticated ? "Logout" : "Login"}
+          </button> */}
+
+          {authenticated ? (
+            <button onClick={handleLogout}>Logout</button>
+          ) : (
+            <Link href="/login">Login</Link>
+          )}
         </nav>
       </div>
       {/* <div className="font-sans font-semibold shadow-md">

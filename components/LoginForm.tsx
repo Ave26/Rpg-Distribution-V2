@@ -19,6 +19,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
     username: "",
     password: "",
   });
+
   const [btnStyle, setBtnStyle] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,8 +44,10 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       console.log(json);
       switch (response.status) {
         case 200:
-          setData(json.message);
+          setData(json.authenticated);
           router.push("/");
+          localStorage.setItem("authenticated", "true");
+
           break;
         case 401:
           console.log(json.message);

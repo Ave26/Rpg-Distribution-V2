@@ -7,4 +7,14 @@ export const createCookie = (token: string, response: NextApiResponse) => {
   );
 };
 
-export const deleteCooke = (res: NextApiResponse) => {};
+export const deleteCookie = (response: NextApiResponse) => {
+  return response.setHeader(
+    "Set-Cookie",
+    `token=; Max-Age=0; Path=/; HttpOnly; SameSite=strict`
+  );
+
+  // return response.setHeader(
+  //   "Set-Cookie",
+  //   `token=; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+  // );
+};
