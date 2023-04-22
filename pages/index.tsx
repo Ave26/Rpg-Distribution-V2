@@ -10,14 +10,13 @@ import AdminDashboard from "@/components/Admin/AdminDashBoard";
 import StaffDashboard from "@/components/Staff/StaffDashBoard";
 
 export default function Home({ data }: any) {
-  console.log(data);
   return (
     <>
       <Head>
         <title>Home | {data?.roles}</title>
       </Head>
       <Layout>
-        <div className="w-full h-screen dark:bg-slate-900">
+        <div className="w-full h-screen dark:bg-slate-900 font-extrabold text-md">
           {!data ? (
             "this is home"
           ) : data?.roles === "Admin" ? (

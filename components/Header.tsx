@@ -3,7 +3,7 @@ import Image from "next/image";
 import RPG from "../public/assets/RPG.png";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
+import style from "../styles/home.module.css";
 // icons
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 
@@ -49,8 +49,11 @@ export default function Header({ data }: any) {
 
   return (
     <>
-      <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]">
-        <div>
+      <div
+        className={`font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-white`}
+      >
+        {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
+        <div className="md:p-1 md:m-2 rounded-md">
           <Image
             priority
             src={RPG}
@@ -78,7 +81,12 @@ export default function Header({ data }: any) {
           </button> */}
 
           {authenticated ? (
-            <button onClick={handleLogout}>Logout</button>
+            <button
+              onClick={handleLogout}
+              className="border-[3px] border-[#EEA47FFF] py-2 px-4 rounded-lg hover:bg-[#EEA47FFF] hover:text-white transition-all"
+            >
+              Logout
+            </button>
           ) : (
             <Link href="/login">Login</Link>
           )}
