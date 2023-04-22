@@ -30,7 +30,7 @@ export default function AdminDashboard() {
         router.push("/dashboard/picking-and-packing");
         break;
       case "Account Management":
-        router.push("/dashboard/account-management");
+        router.push("/dashboard/acc-management");
         break;
 
       default:

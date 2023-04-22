@@ -2,16 +2,55 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import RPG from "../public/assets/RPG.png";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import style from "../styles/home.module.css";
+import { useRouter } from "next/router";
 // icons
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 
 export default function Header({ data }: any) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
-  const router = useRouter();
+  // const [navList, setNavList] = useState<string[]>([
+  //   "Home",
+  //   "Product Catalog",
+  //   "About Us",
+  // ]);
+
+  // const navigatePage = (list: string) => {
+  //   switch (list) {
+  //     case "Home":
+  //       router.push("/");
+  //       break;
+  //     case "Product Catalog":
+  //       router.push("/products");
+  //       break;
+  //     case "About Us":
+  //       router.push("/about");
+  //       break;
+  //     // case "Login":
+  //     //   router.push("/login");
+  //     //   // if (authenticated) {
+  //     //   //   setNavList((prevNavList) => {
+  //     //   //     const updatedNavList = [...prevNavList];
+  //     //   //     const loginIndex = updatedNavList.indexOf("Login");
+  //     //   //     if (loginIndex !== -1) {
+  //     //   //       updatedNavList[loginIndex] = "Logout";
+  //     //   //     }
+  //     //   //     return updatedNavList;
+  //     //   //   });
+  //     //   // }
+  //     //   break;
+
+  //     default:
+  //       break;
+  //   }
+  // };
+
+  const handleLogin = () => {
+    router.push("/login");
+  };
 
   const handleLogout = async () => {
     console.log("click");
@@ -42,15 +81,17 @@ export default function Header({ data }: any) {
   };
 
   useEffect(() => {
+    console.log("sideEffect");
     const isAuth = localStorage.getItem("authenticated") === "true";
-
     setAuthenticated(isAuth);
   }, [isAuthenticated]);
+
+  console.log(authenticated);
 
   return (
     <>
       <div
-        className={`font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-white`}
+        className={`bg-[#333333] text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
         <div className="md:p-1 md:m-2 rounded-md">
@@ -69,18 +110,31 @@ export default function Header({ data }: any) {
           )}
         </button>
 
-        <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only">
+        <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only ">
+          {/* {navList.map((list, index) => {
+            return (
+              <h1
+                onClick={(e) => {
+                  navigatePage(list);
+                }}
+                key={index}
+              >
+                {list}
+              </h1>
+            );
+          })} */}
+
           <Link href={"/"}>Home</Link>
           <Link href={"/products"}>Product Catalog</Link>
           <Link href={"about"}>About Us</Link>
-          {/* <button
-            onClick={isAuthenticated ? handleLogout : handleLogin}
+          <button
+            onClick={authenticated ? handleLogout : handleLogin}
             className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
           >
-            {isAuthenticated ? "Logout" : "Login"}
-          </button> */}
+            {authenticated ? "Logout" : "Login"}
+          </button>
 
-          {authenticated ? (
+          {/* {authenticated ? (
             <button
               onClick={handleLogout}
               className="border-[3px] border-[#EEA47FFF] py-2 px-4 rounded-lg hover:bg-[#EEA47FFF] hover:text-white transition-all"
@@ -89,7 +143,7 @@ export default function Header({ data }: any) {
             </button>
           ) : (
             <Link href="/login">Login</Link>
-          )}
+          )} */}
         </nav>
       </div>
       {/* <div className="font-sans font-semibold shadow-md">

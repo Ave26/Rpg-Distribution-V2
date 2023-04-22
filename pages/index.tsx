@@ -13,7 +13,7 @@ export default function Home({ data }: any) {
   return (
     <>
       <Head>
-        <title>Home | {data?.roles}</title>
+        <title>{"Home | " + data?.roles}</title>
       </Head>
       <Layout>
         <div className="w-full h-screen dark:bg-slate-900 font-extrabold text-md">
