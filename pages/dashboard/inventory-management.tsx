@@ -1,7 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "@/components/layout";
 
 export default function InventoryManageMent() {
+  const [data, setData] = useState<any>();
+
+  console.log(data);
+
+  const fetchProduct = async () => [
+    fetch("/api/products")
+      .then((response) => {
+        if (response.status === 200) {
+          setData(response.json());
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      }),
+  ];
+
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
   return (
     <Layout>
       <section className="h-screen w-full border">
@@ -32,7 +52,7 @@ export default function InventoryManageMent() {
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Apple MacBook Pro 17
+                  {data?.productName}
                 </th>
                 <td className="px-6 py-4">Silver</td>
                 <td className="px-6 py-4">Laptop</td>

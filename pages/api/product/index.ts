@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import recieveProduct from "@/lib/prisma/product";
+import { recieveProduct } from "@/lib/prisma/product";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     barcodeId,
@@ -12,6 +12,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     poId,
     image,
   } = req.body;
+
+  if (
+    !barcodeId ||
+    !productName ||
+    !quantity ||
+    !sku ||
+    !palletteLocation ||
+    !dateReceived ||
+    !expirationDate ||
+    !poId
+  ) {
+    return res.status(401).json({
+      message: "Please complete credentials",
+    });
+  }
 
   try {
     const { newProduct, error } = await recieveProduct(

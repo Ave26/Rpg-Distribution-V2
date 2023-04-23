@@ -1,5 +1,6 @@
 import prisma from ".";
-const recieveProduct = async (
+
+export const recieveProduct = async (
   barcodeId: string,
   productName: string,
   quantity: number,
@@ -16,12 +17,12 @@ const recieveProduct = async (
       data: {
         barcodeId: barcodeId,
         productName: productName,
-        quantity: 50,
-        sku: "SKU-002",
-        palletteLocation: "A-2",
-        dateReceived: "2022-04-21",
-        expirationDate: "2023-01-01",
-        poId: "PO-002",
+        quantity: quantity,
+        sku: sku,
+        palletteLocation: palletteLocation,
+        dateReceived: dateReceived,
+        expirationDate: expirationDate,
+        poId: poId,
         image: "",
       },
     });
@@ -32,4 +33,20 @@ const recieveProduct = async (
   }
 };
 
-export default recieveProduct;
+export const findAllProducts = async () => {
+  try {
+    const products = await prisma.products.findMany();
+    return { products };
+  } catch (error) {
+    return { error };
+  }
+};
+
+// export const findProduct = async () => {
+//   try {
+//     const products = await prisma.products.findMany();
+//     return { products };
+//   } catch (error) {
+//     return { error };
+//   }
+// };
