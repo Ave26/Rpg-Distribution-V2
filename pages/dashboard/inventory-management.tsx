@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from "react";
 import Layout from "@/components/layout";
 
+interface PROD {
+  id: string;
+  barcodeId: string;
+  productName: string;
+  quantity: number;
+  sku: string;
+  palletteLocation: string;
+  dateReceived: string;
+  expirationDate: string;
+  poId: string;
+  image: string;
+}
+
 export default function InventoryManageMent() {
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<any>([]);
 
   console.log(data);
 
-  const fetchProduct = async () => [
-    fetch("/api/products")
+  const fetchProduct = () => [
+    fetch("/api/products", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => {
         if (response.status === 200) {
-          setData(response.json());
+          setData(response);
+          // console.log(response.data);
         }
       })
       .catch((error) => {
@@ -48,25 +67,32 @@ export default function InventoryManageMent() {
             </thead>
             <tbody>
               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {data?.productName}
-                </th>
-                <td className="px-6 py-4">Silver</td>
-                <td className="px-6 py-4">Laptop</td>
-                <td className="px-6 py-4">$2999</td>
-                <td className="px-6 py-4">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                  >
-                    Edit
-                  </a>
-                </td>
+                {/* {data.map((product: any) => {
+                  return (
+                    <>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        {product?.productName}
+                      </th>
+
+                      <td className="px-6 py-4">Silver</td>
+                      <td className="px-6 py-4">Laptop</td>
+                      <td className="px-6 py-4">$2999</td>
+                      <td className="px-6 py-4">
+                        <a
+                          href="#"
+                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                        >
+                          Edit
+                        </a>
+                      </td>
+                    </>
+                  );
+                })} */}
               </tr>
-              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              {/* <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -84,8 +110,9 @@ export default function InventoryManageMent() {
                     Edit
                   </a>
                 </td>
-              </tr>
-              <tr className="bg-white dark:bg-gray-800">
+              </tr> */}
+
+              {/* <tr className="bg-white dark:bg-gray-800">
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -103,7 +130,7 @@ export default function InventoryManageMent() {
                     Edit
                   </a>
                 </td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
