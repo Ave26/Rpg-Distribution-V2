@@ -19,23 +19,18 @@ export default function InventoryManageMent() {
 
   console.log(data);
 
-  const fetchProduct = () => [
-    fetch("/api/products", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setData(response);
-          // console.log(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      }),
-  ];
+  const fetchProduct = async () => {
+    try {
+      const response = await fetch("/api/products");
+      const json = await response.json();
+      console.log(json);
+      if (response.status === 200) {
+        setData(json);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchProduct();
@@ -49,49 +44,71 @@ export default function InventoryManageMent() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
-                  Product name
+                  Id
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Color
+                  Barcode Id
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Category
+                  Product Name
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Price
+                  Quantity
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Action
+                  sku
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  pallette Location
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  date Received
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  expiration Date
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  poId
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  image
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                {/* {data.map((product: any) => {
-                  return (
-                    <>
-                      <th
-                        scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        {product?.productName}
-                      </th>
+              {data.map((product: any) => {
+                return (
+                  <tr
+                    key={product.id}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {product?.id}
+                    </th>
 
-                      <td className="px-6 py-4">Silver</td>
-                      <td className="px-6 py-4">Laptop</td>
-                      <td className="px-6 py-4">$2999</td>
-                      <td className="px-6 py-4">
-                        <a
-                          href="#"
-                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                        >
-                          Edit
-                        </a>
-                      </td>
-                    </>
-                  );
-                })} */}
-              </tr>
+                    <td className="px-6 py-4">{product?.barcodeId}</td>
+                    <td className="px-6 py-4">{product?.productName}</td>
+                    <td className="px-6 py-4">{product?.quantity}</td>
+                    <td className="px-6 py-4">{product?.sku}</td>
+                    <td className="px-6 py-4">{product?.palletteLocation}</td>
+                    <td className="px-6 py-4">{product?.dateReceived}</td>
+                    <td className="px-6 py-4">{product?.expirationDate}</td>
+                    <td className="px-6 py-4">{product?.poId}</td>
+
+                    <td className="px-6 py-4">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      >
+                        Edit
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
               {/* <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <th
                   scope="row"

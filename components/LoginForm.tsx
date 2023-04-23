@@ -66,7 +66,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       console.log(error);
     } finally {
       setAuth({
-        username: "",
+        username: "", 
         password: "",
       });
       setIsLoading(false);

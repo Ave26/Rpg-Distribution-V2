@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.send(error);
       }
 
-      return res.status(200).json(products);
+      return res.status(200).send(products);
     } catch (error) {
       res.send(error);
     }

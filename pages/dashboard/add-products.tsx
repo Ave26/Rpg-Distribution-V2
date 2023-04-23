@@ -74,6 +74,7 @@ export default function AddProducts() {
             type="text"
             value={barcodeId}
             className={inputStyle}
+            placeholder="barcode Id"
             onChange={(e) => setBarCodeId(e.target.value)}
           />
 
