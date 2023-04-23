@@ -16,7 +16,7 @@ export default function Home({ data }: any) {
         <title>{"Home | " + data?.roles}</title>
       </Head>
       <Layout>
-        <div className="w-full h-screen dark:bg-slate-900 font-extrabold text-md">
+        <div className="w-full h-screen font-extrabold text-md">
           {!data ? (
             "this is home"
           ) : data?.roles === "Admin" ? (

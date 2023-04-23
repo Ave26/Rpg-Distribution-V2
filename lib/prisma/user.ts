@@ -16,6 +16,7 @@ export const createUser = async (
       data: {
         username: username,
         password: password,
+        roles: "staff",
         additional_Info: {
           Dob: Dob,
           Phone_Number: Phone_Number,

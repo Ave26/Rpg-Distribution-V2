@@ -14,18 +14,24 @@ type UsersAdditionalInfo {
 }
 
 model products {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  description String
-  id_         Int    @map("id")
-  image       String
-  name        String
-  price       Float
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  barcodeId        String             @unique
+  productName      String
+  quantity         Int
+  sku              String
+  palletteLocation String
+  dateReceived     String
+  expirationDate   String
+  poId             String
+  image            String
 }
 
 model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
   password        String              @unique(map: "password_1")
-  roles           String            @default("staff")
+  roles           String              @default("staff")
   username        String              @unique(map: "username_1")
 }
+
+

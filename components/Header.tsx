@@ -12,41 +12,6 @@ export default function Header({ data }: any) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
-  // const [navList, setNavList] = useState<string[]>([
-  //   "Home",
-  //   "Product Catalog",
-  //   "About Us",
-  // ]);
-
-  // const navigatePage = (list: string) => {
-  //   switch (list) {
-  //     case "Home":
-  //       router.push("/");
-  //       break;
-  //     case "Product Catalog":
-  //       router.push("/products");
-  //       break;
-  //     case "About Us":
-  //       router.push("/about");
-  //       break;
-  //     // case "Login":
-  //     //   router.push("/login");
-  //     //   // if (authenticated) {
-  //     //   //   setNavList((prevNavList) => {
-  //     //   //     const updatedNavList = [...prevNavList];
-  //     //   //     const loginIndex = updatedNavList.indexOf("Login");
-  //     //   //     if (loginIndex !== -1) {
-  //     //   //       updatedNavList[loginIndex] = "Logout";
-  //     //   //     }
-  //     //   //     return updatedNavList;
-  //     //   //   });
-  //     //   // }
-  //     //   break;
-
-  //     default:
-  //       break;
-  //   }
-  // };
 
   const handleLogin = () => {
     router.push("/login");
@@ -81,20 +46,21 @@ export default function Header({ data }: any) {
   };
 
   useEffect(() => {
-    console.log("sideEffect");
     const isAuth = localStorage.getItem("authenticated") === "true";
     setAuthenticated(isAuth);
-  }, [isAuthenticated]);
 
-  console.log(authenticated);
+    if (!isAuth || isAuth === undefined) {
+      setAuthenticated(false);
+    }
+  }, [authenticated]);
 
   return (
     <>
       <div
-        className={`bg-[#333333] text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
+        className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
-        <div className="md:p-1 md:m-2 rounded-md">
+        <div className="rounded-md">
           <Image
             priority
             src={RPG}
@@ -126,7 +92,7 @@ export default function Header({ data }: any) {
 
           <Link href={"/"}>Home</Link>
           <Link href={"/products"}>Product Catalog</Link>
-          <Link href={"about"}>About Us</Link>
+          <Link href={"/about"}>About Us</Link>
           <button
             onClick={authenticated ? handleLogout : handleLogin}
             className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
