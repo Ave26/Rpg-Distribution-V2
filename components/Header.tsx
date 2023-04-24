@@ -57,7 +57,8 @@ export default function Header({ data }: any) {
   return (
     <>
       <div
-        className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
+        // className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
+        className={`font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
         <div className="rounded-md">

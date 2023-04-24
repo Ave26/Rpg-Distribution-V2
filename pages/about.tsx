@@ -9,7 +9,7 @@ export default function About({ data }: any) {
         <title>About</title>
       </Head>
       <Layout>
-        <section className="w-full h-screen">
+        <section className="h-screen w-full flex justify-center flex-col items-center">
           {` Welcome to our management system! We are a team of experienced
           professionals dedicated to providing efficient and effective
           management solutions for businesses of all sizes. Our mission is to
@@ -28,6 +28,7 @@ export default function About({ data }: any) {
           planning and analysis, we have the expertise you need to succeed.
           Thank you for considering our management system. We look forward to
           working with you and helping you achieve your goals.`}
+          <h1 className="text-7xl">This Page is Under Construction</h1>
         </section>
       </Layout>
     </>

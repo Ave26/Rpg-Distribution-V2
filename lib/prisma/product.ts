@@ -42,11 +42,17 @@ export const findAllProducts = async () => {
   }
 };
 
-// export const findProduct = async () => {
-//   try {
-//     const products = await prisma.products.findMany();
-//     return { products };
-//   } catch (error) {
-//     return { error };
-//   }
-// };
+export const findProducts = async () => {
+  try {
+    const products = await prisma.products.findMany({
+      select: {
+        productName: true,
+        expirationDate: true,
+        quantity: true,
+      },
+    });
+    return { products };
+  } catch (error) {
+    return { error };
+  }
+};

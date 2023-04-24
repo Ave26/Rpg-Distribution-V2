@@ -4,7 +4,7 @@ import Layout from "@/components/layout";
 export default function PalleteLocation() {
   return (
     <Layout>
-      <div>PalleteLocation</div>;
+      <section className="h-screen w-full">PalleteLocation</section>;
     </Layout>
   );
 }
