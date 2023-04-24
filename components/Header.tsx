@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import RPG from "../public/assets/RPG.png";
+import RPG from "../public/assets/Prostocklogo.png";
 import Link from "next/link";
 import style from "../styles/home.module.css";
 import { useRouter } from "next/router";
@@ -60,13 +60,15 @@ export default function Header({ data }: any) {
         className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
+        <div className="flex items-center">
         <div className="rounded-md">
           <Image
             priority
             src={RPG}
             alt="RPG Icon"
-            className="max-h-xs max-w-xs"
+            style={{ width: "80px", height: "80px" }}
           />
+        </div>
         </div>
         <button onClick={toggleMenu}>
           {isOpen ? (
