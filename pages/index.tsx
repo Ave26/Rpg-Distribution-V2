@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 import AdminDashboard from "@/components/Admin/AdminDashBoard";
 import StaffDashboard from "@/components/Staff/StaffDashBoard";
+import Link from "next/link";
 
 export default function Home({ data }: any) {
   return (
@@ -18,7 +19,36 @@ export default function Home({ data }: any) {
       <Layout>
         <div className="w-full h-screen font-extrabold text-md">
           {!data ? (
-            "this is home"
+            <section className="h-screen w-full">
+              <div
+                className="mt-10  text-center bg-blue-800 text-white flex items-center justify-center flex-col ml-0 mr-0 w-full
+"
+              >
+                <div className="text-center w-96 h-96 px-2 flex justify-center items-center flex-col">
+                  <h1 className="text-xl m-2">Welcome to RPG Prostock!</h1>
+                  <p className="text-xs">
+                    Take Control of Your Warehouse with Prostock: The Ultimate
+                    Solution for Streamlined Management and Effortless Shopping!
+                    To know more about our company click the button bellow!
+                  </p>
+                  <Link
+                    className="p-5 border rounded-lg mt-5 hover:bg-white hover:text-black"
+                    href={"https://rpg-ph.com"}
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+              <div>
+                <video autoPlay muted loop>
+                  <source
+                    src="../public/assets/homepage.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </section>
           ) : data?.roles === "Admin" ? (
             <AdminDashboard />
           ) : (

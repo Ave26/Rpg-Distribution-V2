@@ -2,14 +2,14 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <div>
-      <section>
+    <div className="h-[15em] bg-sky-600 text-white flex justify-center items-center ">
+      <section className="text-2xl">
         <p>&copy; 2023 Alright Reserve</p>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
       </section>
 
-      <section className="fcontainer">
+      {/* <section className="fcontainer">
         <p>&copy; 2023 RPG Prostock. All Rights Reserved.</p>
         <div className="social-media">
           <a
@@ -25,7 +25,7 @@ export default function Footer() {
             <i className="fab fa-instagram"></i>
           </a>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }
