@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import RPG from "../public/assets/RPG.png";
+import ProStock from "../public/assets/ProStock.png";
 import Link from "next/link";
 import style from "../styles/home.module.css";
 import { useRouter } from "next/router";
@@ -57,18 +58,16 @@ export default function Header({ data }: any) {
   return (
     <>
       <div
-        // className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
-        className={`font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
+        className={` bg-sky-300 font-extrabold text-lg w-full h-full border-slate-900 py-[1em] px-[75px] flex justify-between items-center z-50`}
       >
-        {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
-        <div className="rounded-md">
+          <Link href="/" className="rounded-md">
           <Image
             priority
-            src={RPG}
+            src={ProStock}
             alt="RPG Icon"
-            className="max-h-xs max-w-xs"
+            className="max-h-xs max-w-xs h-10 w-10"
           />
-        </div>
+        </Link>
         <button onClick={toggleMenu}>
           {isOpen ? (
             <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
@@ -91,7 +90,7 @@ export default function Header({ data }: any) {
             );
           })} */}
 
-          <Link href={"/"}>Home</Link>
+          {/* <Link href={"/"}>Home</Link> */}
           <Link href={"/products"}>Product Catalog</Link>
           <Link href={"/about"}>About Us</Link>
           <button
@@ -100,17 +99,6 @@ export default function Header({ data }: any) {
           >
             {authenticated ? "Logout" : "Login"}
           </button>
-
-          {/* {authenticated ? (
-            <button
-              onClick={handleLogout}
-              className="border-[3px] border-[#EEA47FFF] py-2 px-4 rounded-lg hover:bg-[#EEA47FFF] hover:text-white transition-all"
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/login">Login</Link>
-          )} */}
         </nav>
       </div>
       {/* <div className="font-sans font-semibold shadow-md">

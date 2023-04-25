@@ -17,11 +17,11 @@ export default function Home({ data }: any) {
         <title>{"Home | " + data?.roles}</title>
       </Head>
       <Layout>
-        <div className="w-full h-screen font-extrabold text-md">
+        <div className="w-full h-full font-extrabold text-md">
           {!data ? (
             <section className="h-screen w-full">
               <div
-                className="mt-10  text-center bg-blue-800 text-white flex items-center justify-center flex-col ml-0 mr-0 w-full
+                className="mt-10  text-center opacity-90 bg-blue-800 text-white flex items-center justify-center flex-col ml-0 mr-0 w-full
 "
               >
                 <div className="text-center w-96 h-96 px-2 flex justify-center items-center flex-col">
@@ -40,13 +40,16 @@ export default function Home({ data }: any) {
                 </div>
               </div>
               <div>
-                <video autoPlay muted loop>
-                  <source
-                    src="../public/assets/homepage.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
+                <div className="relative h-screen max-h-[400px] border w-full">
+                  <video
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                  >
+                    <source src="/assets/homepage.mp4" type="video/mp4" />
+                  </video>
+                </div>
               </div>
             </section>
           ) : data?.roles === "Admin" ? (

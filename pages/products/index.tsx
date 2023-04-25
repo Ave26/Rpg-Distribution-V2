@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Layout from "@/components/layout";
 import Image from "next/image";
+import bibiron from "../../public/assets/products/pexels-𝐕𝐞𝐧𝐮𝐬-𝐇𝐃-𝐌𝐚𝐤𝐞-𝐮𝐩-&-𝐏𝐞𝐫𝐟𝐮𝐦𝐞-2633986.jpg";
 
 // icons
 // import { HiMenu } from "react-icons";
@@ -17,7 +18,8 @@ interface DATA {
 export default function Products() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<DATA[]>([]);
-  const [error, setError] = useState<any | unknown>([]);
+  // const [error, setError] = useState<any | unknown>([]);
+  const [imgSrc, setImgSrc] = useState<any>(bibiron);
   useEffect(() => {
     setIsLoading(true);
     fetch("/api/public-products")
@@ -28,8 +30,8 @@ export default function Products() {
         }
       })
       .catch((error) => {
-        // console.log(error);
-        setError(error);
+        console.log(error);
+        // setError(error);
       })
       .finally(() => {
         setIsLoading(false);
@@ -42,7 +44,7 @@ export default function Products() {
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-screen w-full font-bold">
+        <section className="h-full w-full font-bold">
           <div className="w-full h-fit border p-2">
             <input
               className="px-5 py-5 ring-2 rounded-md focus:ring-slate-950 outline-none ring-slate-200"
@@ -59,7 +61,8 @@ export default function Products() {
                 loading...
               </div>
             ) : (
-              <div className=" border-red-700 h-fit w-full flex justify-start items-center p-4 gap-2 flex-wrap">
+              <div className="grid grid-cols-4 grid-flow-row p-3 gap-3">
+                {/* <div className=" border-red-700 h-fit w-full flex justify-center items-center p-4 gap-2 flex-wrap"> */}
                 {data.map((product) => {
                   return (
                     <div
@@ -67,7 +70,18 @@ export default function Products() {
                       className="text-lg border p-2 w-80 h-56 shadow-md cursor-pointer shadow-blue-200 flex justify-center items-center gap-1 flex-col"
                     >
                       <h1>Product Name: {product.productName}</h1>
-                      <h1>Expiration Date: {product.expirationDate}</h1>
+                      {/* <h1>Expiration Date: {product.expirationDate}</h1> */}
+
+                      {
+                        <Image
+                          priority
+                          src={imgSrc}
+                          alt="Erbolo"
+                          className=""
+                          width={10}
+                          height={10}
+                        />
+                      }
                       <h1>Quantity: {product.quantity}</h1>
                     </div>
                   );
