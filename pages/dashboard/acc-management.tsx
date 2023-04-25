@@ -20,7 +20,8 @@ export default function AccountManagement() {
     additional_Info: additional_Info,
   });
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const response = await fetch("/api/register", {
         method: "POST",
@@ -60,7 +61,7 @@ export default function AccountManagement() {
               <label htmlFor="confirm password">Confirm Password</label>
               <input
                 id="confirm password"
-                type="password"
+                type="confirm password"
                 className="p-5 border-2 rounded-xl "
               />
             </section>
@@ -80,7 +81,7 @@ export default function AccountManagement() {
               />
               <label htmlFor="email">Email</label>
               <input
-                id="confirm password"
+                id="email"
                 type="email"
                 className="p-3 border-2 rounded-xl "
               />

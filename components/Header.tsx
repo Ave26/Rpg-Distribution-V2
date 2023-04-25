@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+<<<<<<< HEAD
 import RPG from "../public/assets/Prostocklogo.png";
+=======
+import RPG from "../public/assets/RPG.png";
+import ProStock from "../public/assets/ProStock.png";
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
 import Link from "next/link";
 import style from "../styles/home.module.css";
 import { useRouter } from "next/router";
@@ -57,20 +62,29 @@ export default function Header({ data }: any) {
   return (
     <>
       <div
-        // className={`dark:bg-[#333333] dark:text-[#f2f2f2] font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
-        className={`font-extrabold text-lg w-full h-full border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50`}
+        className={` bg-sky-300 font-extrabold text-lg w-full h-full border-slate-900 py-[1em] px-[75px] flex justify-between items-center z-50`}
       >
+<<<<<<< HEAD
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
         <div className="flex items-center">
         <div className="rounded-md">
+=======
+          <Link href="/" className="rounded-md">
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
           <Image
             priority
-            src={RPG}
+            src={ProStock}
             alt="RPG Icon"
+<<<<<<< HEAD
             style={{ width: "80px", height: "80px" }}
           />
         </div>
         </div>
+=======
+            className="max-h-xs max-w-xs h-10 w-10"
+          />
+        </Link>
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
         <button onClick={toggleMenu}>
           {isOpen ? (
             <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
@@ -93,7 +107,7 @@ export default function Header({ data }: any) {
             );
           })} */}
 
-          <Link href={"/"}>Home</Link>
+          {/* <Link href={"/"}>Home</Link> */}
           <Link href={"/products"}>Product Catalog</Link>
           <Link href={"/about"}>About Us</Link>
           <button
@@ -102,17 +116,6 @@ export default function Header({ data }: any) {
           >
             {authenticated ? "Logout" : "Login"}
           </button>
-
-          {/* {authenticated ? (
-            <button
-              onClick={handleLogout}
-              className="border-[3px] border-[#EEA47FFF] py-2 px-4 rounded-lg hover:bg-[#EEA47FFF] hover:text-white transition-all"
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/login">Login</Link>
-          )} */}
         </nav>
       </div>
       {/* <div className="font-sans font-semibold shadow-md">
