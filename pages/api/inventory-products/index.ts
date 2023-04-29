@@ -11,7 +11,10 @@ const middleware =
       const { verifiedToken, error }: any = await verifyJwt(req);
 
       if (error) {
-        return res.status(403).send(error);
+        return res.status(403).json({
+          authenticated: false, 
+          message: error,
+        });
       }
       if (verifiedToken) {
         return handler(req, res);

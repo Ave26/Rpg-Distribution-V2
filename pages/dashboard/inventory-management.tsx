@@ -21,7 +21,7 @@ export default function InventoryManageMent() {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch("/api/products");
+      const response = await fetch("/api/inventory-products");
       const json = await response.json();
       console.log(json);
       if (response.status === 200) {

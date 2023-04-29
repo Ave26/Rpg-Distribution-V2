@@ -35,14 +35,7 @@ export const recieveProduct = async (
 
 export const findAllProducts = async () => {
   try {
-    const products = await prisma.products.findMany({
-      select: {
-        id: true,
-        productName: true,
-        image: true,
-        quantity: true,
-      },
-    });
+    const products = await prisma.products.findMany();
     return { products };
   } catch (error) {
     return { error };
@@ -82,7 +75,7 @@ export const findProductBaseOnName = async (productName: string) => {
   try {
     const product = await prisma.products.findFirstOrThrow({
       where: {
-        productName: ""
+        productName: "",
       },
       select: {
         id: true,
