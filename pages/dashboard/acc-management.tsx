@@ -4,20 +4,19 @@ import Layout from "@/components/layout";
 export default function AccountManagement() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [Dob, setDob] = useState<string>("");
-  const [Phone_Number] = useState<number>(0);
+  const [cPassword, setCPassword] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+  const [phoneNum, setPhoneNum] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-
-  const additional_Info = JSON.stringify({
-    Dob: Dob,
-    Phone_Number: Phone_Number,
-    email: email,
-  });
 
   const requestBody = JSON.stringify({
     username: username,
     password: password,
-    additional_Info: additional_Info,
+    additional_Info: {
+      Dob: dob,
+      Phone_Number: phoneNum,
+      email: email,
+    },
   });
 
   const handleRegister = async (e: React.MouseEvent<HTMLFormElement>) => {
@@ -25,13 +24,23 @@ export default function AccountManagement() {
     try {
       const response = await fetch("/api/register", {
         method: "POST",
-        body: JSON.stringify(requestBody),
+        body: requestBody,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const json = await response.json();
       console.log(json);
     } catch (error) {
       console.log(error);
+    } finally {
+      // setUsername("");
+      // setPassword("");
+      // setCPassword("");
+      // setDob("");
+      // setPhoneNum("");
+      // setEmail("");
     }
   };
 
@@ -50,19 +59,25 @@ export default function AccountManagement() {
               <input
                 id="username"
                 type="text"
-                className="p-5 border-2 rounded-xl "
+                className="p-5 border-2 rounded-xl"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <label htmlFor="password">Password</label>
               <input
                 id="password"
                 type="password"
                 className="p-5 border-2 rounded-xl "
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <label htmlFor="confirm password">Confirm Password</label>
               <input
                 id="confirm password"
                 type="confirm password"
                 className="p-5 border-2 rounded-xl "
+                value={cPassword}
+                onChange={(e) => setCPassword(e.target.value)}
               />
             </section>
             <section className="border flex justify-center items-center h-full w-full flex-col p-4">
@@ -72,18 +87,24 @@ export default function AccountManagement() {
                 type="date"
                 placeholder="username"
                 className="p-3 border-2 rounded-xl "
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
               />
               <label htmlFor="phone">Phone Number</label>
               <input
                 id="phone"
                 type="text"
                 className="p-3 border-2 rounded-xl "
+                value={phoneNum}
+                onChange={(e) => setPhoneNum(e.target.value)}
               />
               <label htmlFor="email">Email</label>
               <input
                 id="email"
                 type="email"
                 className="p-3 border-2 rounded-xl "
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </section>
           </div>

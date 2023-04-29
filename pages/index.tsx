@@ -14,7 +14,7 @@ export default function Home({ data }: any) {
   return (
     <>
       <Head>
-        <title>{"Home | " + data?.roles}</title>
+        <title>{"Home | " + (data?.roles ?? "Hi")}</title>
       </Head>
       <Layout>
         <div className="w-full h-full font-extrabold text-md">

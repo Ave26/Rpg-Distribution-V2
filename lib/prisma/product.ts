@@ -35,7 +35,14 @@ export const recieveProduct = async (
 
 export const findAllProducts = async () => {
   try {
-    const products = await prisma.products.findMany();
+    const products = await prisma.products.findMany({
+      select: {
+        id: true,
+        productName: true,
+        image: true,
+        quantity: true,
+      },
+    });
     return { products };
   } catch (error) {
     return { error };
@@ -52,6 +59,40 @@ export const findProducts = async () => {
       },
     });
     return { products };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const findProductsBarcodeId = async (barcodeId: string) => {
+  try {
+    const bid = await prisma.products.findUnique({
+      where: {
+        barcodeId: barcodeId,
+      },
+    });
+
+    return { bid };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const findProductBaseOnName = async (productName: string) => {
+  try {
+    const product = await prisma.products.findFirstOrThrow({
+      where: {
+        productName: ""
+      },
+      select: {
+        id: true,
+        barcodeId: true,
+        productName: true,
+        image: true,
+      },
+    });
+    console.log("this is from prisma product " + product);
+    return { product };
   } catch (error) {
     return { error };
   }

@@ -60,18 +60,25 @@ export default function Header({ data }: any) {
         className={` bg-sky-300 font-extrabold text-lg w-full h-full border-slate-900 py-[1em] px-[75px] flex justify-between items-center z-50`}
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
-        <Link href="/" passHref legacyBehavior>
-  <a>
-    <div className="rounded-md">
-      <Image
-        priority
-        src={RPG}
-        alt="RPG Icon"
-        style={{ width: "80px", height: "80px" }}
-      />
-    </div>
-  </a>
-</Link>
+        <div className="flex items-center">
+        <div className="rounded-md">
+=======
+          <Link href="/" className="rounded-md">
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
+          <Image
+            priority
+            src={ProStock}
+            alt="RPG Icon"
+<<<<<<< HEAD
+            style={{ width: "80px", height: "80px" }}
+          />
+        </div>
+        </div>
+=======
+            className="max-h-xs max-w-xs h-10 w-10"
+          />
+        </Link>
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
         <button onClick={toggleMenu}>
           {isOpen ? (
             <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
