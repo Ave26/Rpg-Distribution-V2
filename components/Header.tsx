@@ -62,15 +62,20 @@ export default function Header({ data }: any) {
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
         <div className="flex items-center">
-          <Link href={"/"} className="rounded-md">
+          <div className="rounded-md">
             <Image
               priority
               src={RPG}
               alt="RPG Icon"
               style={{ width: "80px", height: "80px" }}
             />
-          </Link>
+          </div>
         </div>
+=======
+            className="max-h-xs max-w-xs h-10 w-10"
+          />
+        </Link>
+>>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
         <button onClick={toggleMenu}>
           {isOpen ? (
             <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
@@ -124,7 +129,6 @@ export default function Header({ data }: any) {
             >
               Product Catalog
             </Link>
-
             <Link
               href={"/login"}
               className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"

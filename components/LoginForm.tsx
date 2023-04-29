@@ -151,9 +151,9 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
         )}
         {isLoading ? "Loading..." : "Login"}
       </button>
-      <div>
+      {/* <div>
         <p>Register</p>
-      </div>
+      </div> */}
     </form>
   );
 }
