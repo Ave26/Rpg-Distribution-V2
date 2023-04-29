@@ -78,8 +78,8 @@ export default function Products() {
                           src={imgSrc}
                           alt="Erbolo"
                           className=""
-                          width={10}
-                          height={10}
+                          width={110}
+                          height={100}
                         />
                       }
                       <h1>Quantity: {product.quantity}</h1>
