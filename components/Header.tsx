@@ -6,6 +6,7 @@ import style from "../styles/home.module.css";
 import { useRouter } from "next/router";
 // icons
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
+import { Libre_Barcode_128_Text } from "next/font/google";
 
 export default function Header({ data }: any) {
   const router = useRouter();
@@ -61,14 +62,14 @@ export default function Header({ data }: any) {
       >
         {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
         <div className="flex items-center">
-          <div className="rounded-md">
+          <Link href={"/"} className="rounded-md">
             <Image
               priority
               src={RPG}
               alt="RPG Icon"
               style={{ width: "80px", height: "80px" }}
             />
-          </div>
+          </Link>
         </div>
         <button onClick={toggleMenu}>
           {isOpen ? (

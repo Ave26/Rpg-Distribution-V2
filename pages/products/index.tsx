@@ -13,6 +13,7 @@ interface DATA {
 export default function Products() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<DATA[]>([]);
+  const [searchInput, setSearchInput] = useState<string>("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -31,6 +32,7 @@ export default function Products() {
         setIsLoading(false);
       });
   }, []);
+  console.log(data);
 
   return (
     <>
@@ -38,7 +40,7 @@ export default function Products() {
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border border-slate-900">
+        <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
           <div className="flex justify-center items-center w-full h-full m-4">
             {isLoading ? (
               <div className="px-3 py-1 text-lg font-medium leading-none text-centerrounded-full animate-pulse text-black">
@@ -50,6 +52,10 @@ export default function Products() {
                   <input
                     className="px-4 py-3 ring-2 rounded-md focus:ring-slate-950 outline-none ring-slate-200"
                     type="search"
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value);
+                    }}
                     name=""
                     id=""
                     placeholder="search products"
