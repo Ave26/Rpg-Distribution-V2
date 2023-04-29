@@ -10,8 +10,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "POST":
       // check if the request body is not empty
       const { username, password, additional_Info } = req.body;
-      console.log(req.body);
-      if (!username || !password || !additional_Info) {
+      console.log(req.body, "this is from req");
+      if (!username || !password) {
         return res.status(401).json({
           message: "Please Complete Credentials",
         });

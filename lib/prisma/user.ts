@@ -1,6 +1,6 @@
 import prisma from "./index";
 
-type AdditionaInfo = {
+type AdditionalInfo = {
   Dob: string;
   Phone_Number: number;
   email: string;
@@ -9,7 +9,7 @@ type AdditionaInfo = {
 export const createUser = async (
   username: string,
   password: string,
-  { Dob, Phone_Number, email }: AdditionaInfo
+  AdditionalInfo: AdditionalInfo
 ) => {
   try {
     const newUser = await prisma.users.create({
@@ -17,11 +17,7 @@ export const createUser = async (
         username: username,
         password: password,
         roles: "staff",
-        additional_Info: {
-          Dob: Dob,
-          Phone_Number: Phone_Number,
-          email: email,
-        },
+        additional_Info: AdditionalInfo,
       },
       select: {
         id: true,
