@@ -35,7 +35,7 @@ export default function AddProducts() {
     console.log("click");
     setIsLoading(true);
     try {
-      const response = await fetch("/api/product", {
+      const response = await fetch("/api/receive-product", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -61,7 +61,7 @@ export default function Header({ data }: any) {
         <Image
           src={RPG}
           alt="RPG LOGO"
-          className="w-10 h-10 m-4 hover:animate-bounce transition-all"
+          className="w-10 h-10 m-4 transition-all"
         />
       </Link>
       <button onClick={toggleMenu}>

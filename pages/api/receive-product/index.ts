@@ -24,23 +24,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     !poId
   ) {
     return res.status(401).json({
-      message: "Please complete credentials",
+      message: "Missing Details",
     });
   }
-
-  // const { bid, error }: any = findProductsBarcodeId(barcodeId);
-
-  // if (error) {
-  //   console.log("error api/products" + error);
-  //   return res.status(500).send(error);
-  // }
-
-  // if (bid) {
-  //   return res.status(401).json({
-  //     message: "Product Already Existed",
-  //     bid: bid,
-  //   });
-  // }
 
   try {
     const { newProduct, error } = await recieveProduct(
