@@ -34,36 +34,53 @@ export default function Products() {
       });
   }, []);
 
+  const filteredData = data
+    .filter(({ productName }) => {
+      return (
+        productName.charAt(0).toLocaleLowerCase() ===
+        searchInput.charAt(0).toLocaleLowerCase()
+      );
+    })
+    .filter(({ productName }) => {
+      return productName
+        .toLocaleLowerCase()
+        .includes(searchInput.toLocaleLowerCase());
+    });
+
   return (
     <>
       <Head>
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
+        <section className="h-screen w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
+          <div className="w-fit">
+            <input
+              className="px-4 py-3 ring-2 rounded-md focus:ring-slate-950 outline-none ring-slate-200"
+              type="search"
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+              }}
+              name=""
+              id=""
+              placeholder="search products"
+            />
+          </div>
           <div className="flex justify-center items-center w-full h-full m-4">
             {isLoading ? (
-              <div className="px-3 py-1 h-screen text-lg font-medium leading-none text-centerrounded-full animate-pulse text-black flex items-center">
+              <div className=" px-3 py-1 h-screen text-lg font-medium leading-none text-center rounded-full animate-pulse text-black flex items-center">
                 <Loading />
               </div>
             ) : (
-              <div className="grid grid-cols-4 grid-flow-row p-3 gap-6">
-                <div className="w-fit">
-                  <input
-                    className="px-4 py-3 ring-2 rounded-md focus:ring-slate-950 outline-none ring-slate-200"
-                    type="search"
-                    value={searchInput}
-                    onChange={(e) => {
-                      setSearchInput(e.target.value);
-                    }}
-                    name=""
-                    id=""
-                    placeholder="search products"
-                  />
-                </div>
-                {data.map((product) => {
-                  return <Product key={product.id} product={product} />;
-                })}
+              <div className="mt-52 grid grid-cols-4 grid-flow-row p-3 gap-6">
+                {!searchInput
+                  ? data.map((product) => {
+                      return <Product key={product.id} product={product} />;
+                    })
+                  : filteredData.map((product) => {
+                      return <Product key={product.id} product={product} />;
+                    })}
               </div>
             )}
           </div>
