@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Layout from "@/components/layout";
 import Product from "@/components/Product";
+import Loading from "@/components/Loading";
 
 interface DATA {
   productName: string;
@@ -32,7 +33,6 @@ export default function Products() {
         setIsLoading(false);
       });
   }, []);
-  console.log(data);
 
   return (
     <>
@@ -43,8 +43,8 @@ export default function Products() {
         <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
           <div className="flex justify-center items-center w-full h-full m-4">
             {isLoading ? (
-              <div className="px-3 py-1 text-lg font-medium leading-none text-centerrounded-full animate-pulse text-black">
-                loading...
+              <div className="px-3 py-1 h-screen text-lg font-medium leading-none text-centerrounded-full animate-pulse text-black flex items-center">
+                <Loading />
               </div>
             ) : (
               <div className="grid grid-cols-4 grid-flow-row p-3 gap-6">

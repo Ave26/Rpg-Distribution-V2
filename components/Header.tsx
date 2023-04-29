@@ -56,89 +56,35 @@ export default function Header({ data }: any) {
   }, [authenticated]);
 
   return (
-    <>
-      <div
-        className={` bg-sky-300 font-extrabold text-lg w-full h-full border-slate-900 py-[1em] px-[75px] flex justify-between items-center z-50`}
-      >
-        {/* <div className="font-mono w-full h-full border border-slate-900 py-[4px] px-[75px] flex justify-between items-center z-50 bg-gradient-to-r from-[#FFE8F5] to-[#234E70] shadow-[rgba(0,0,0,0.25)] text-lg gap-24 tracking-wide text-[#2F3C7E]"> */}
-        <div className="flex items-center">
-          <div className="rounded-md">
-            <Image
-              priority
-              src={RPG}
-              alt="RPG Icon"
-              style={{ width: "80px", height: "80px" }}
-            />
-          </div>
-        </div>
-=======
-            className="max-h-xs max-w-xs h-10 w-10"
-          />
+    <div className="font-bold flex justify-between items-center h-24 w-full px-4 bg-slate-200">
+      <Link href={"/"}>
+        <Image
+          src={RPG}
+          alt="RPG LOGO"
+          className="w-10 h-10 m-4 hover:animate-bounce transition-all"
+        />
+      </Link>
+      <button onClick={toggleMenu}>
+        {isOpen ? (
+          <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
+        ) : (
+          <HiMenu className="md:sr-only not-sr-only w-12" />
+        )}
+      </button>
+      <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only">
+        <Link href={"/products"} className="hover:text-sky-700">
+          Product Catalog
         </Link>
->>>>>>> fce6b1327dd09309ee1afef24faaef9532f4d73e
-        <button onClick={toggleMenu}>
-          {isOpen ? (
-            <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
-          ) : (
-            <HiMenu className="md:sr-only not-sr-only w-12" />
-          )}
+        <Link href={"/about"} className="hover:text-sky-700">
+          About Us
+        </Link>
+        <button
+          onClick={authenticated ? handleLogout : handleLogin}
+          className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
+        >
+          {authenticated ? "Logout" : "Login"}
         </button>
-
-        <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only ">
-          {/* {navList.map((list, index) => {
-            return (
-              <h1
-                onClick={(e) => {
-                  navigatePage(list);
-                }}
-                key={index}
-              >
-                {list}
-              </h1>
-            );
-          })} */}
-
-          {/* <Link href={"/"}>Home</Link> */}
-          <Link href={"/products"}>Product Catalog</Link>
-          <Link href={"/about"}>About Us</Link>
-          <button
-            onClick={authenticated ? handleLogout : handleLogin}
-            className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
-          >
-            {authenticated ? "Logout" : "Login"}
-          </button>
-        </nav>
-      </div>
-      {/* <div className="font-sans font-semibold shadow-md">
-        <section className="flex justify-between items-center md:h-20 md:w-full p-4">
-          <div className="">
-            <Image
-              priority
-              src={RPG}
-              alt="RPG Icon"
-              className="max-h-xs max-w-xs"
-            />
-          </div>
-          <Link href={"/"}>
-            <HiHome className="h-8 w-8 " />
-          </Link>
-          <nav className="md:flex md:items-center md:justify-center md:gap-3">
-            <Link
-              href={"/products"}
-              className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-            >
-              Product Catalog
-            </Link>
-            <Link
-              href={"/login"}
-              className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-            >
-              Login
-            </Link>
-          </nav>
-        </section>
-      </div> */}
-    </>
+      </nav>
+    </div>
   );
 }
-// linear-gradient(135deg, #FFE8F5, #234E70)
