@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import Image from "next/image";
 import login from "../../assets/login.jpg";
-import Toast from "@/components/Toast";
+import Toast from "@/components/Parts/Toast";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "@/components/layout";

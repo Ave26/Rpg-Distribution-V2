@@ -9,15 +9,20 @@ type AdditionalInfo = {
 export const createUser = async (
   username: string,
   password: string,
-  AdditionalInfo: AdditionalInfo
+  additional_Info: AdditionalInfo
 ) => {
+  // const { Dob, Phone_Number, email } = additional_Info;
+  if (additional_Info) {
+    console.log(additional_Info);
+    console.log("user.ts");
+  }
   try {
     const newUser = await prisma.users.create({
       data: {
         username: username,
         password: password,
         roles: "staff",
-        additional_Info: AdditionalInfo,
+        additional_Info,
       },
       select: {
         id: true,
@@ -26,8 +31,10 @@ export const createUser = async (
         additional_Info: true,
       },
     });
+    // console.log(newUser + " user.ts");
     return { newUser };
   } catch (error) {
+    console.log(error);
     return { error };
   }
 };
@@ -39,7 +46,6 @@ export const findUser = async (username: string) => {
         username,
       },
     });
-    console.log(user);
     return { user };
   } catch (error) {
     return { error };

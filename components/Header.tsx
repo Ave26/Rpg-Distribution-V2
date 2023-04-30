@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import RPG from "../public/assets/Prostocklogo.png";
 import Link from "next/link";
-import style from "../styles/home.module.css";
 import { useRouter } from "next/router";
 // icons
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
-import { Libre_Barcode_128_Text } from "next/font/google";
+// import { Libre_Barcode_128_Text } from "next/font/google";
 
 export default function Header({ data }: any) {
   const router = useRouter();

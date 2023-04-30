@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Layout from "@/components/layout";
 import Product from "@/components/Product";
-import Loading from "@/components/Loading";
+import Loading from "@/components/Parts/Loading";
 
 interface DATA {
   productName: string;
@@ -54,9 +54,9 @@ export default function Products() {
       </Head>
       <Layout>
         <section className="h-screen w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
-          <div className="w-fit">
+          <div className="relative w-fit">
             <input
-              className="px-4 py-3 ring-2 rounded-md focus:ring-slate-950 outline-none ring-slate-200"
+              className="absolute px-4 py-3 ring-1 rounded-md focus:ring-slate-950 outline-none ring-slate-200 m-3"
               type="search"
               value={searchInput}
               onChange={(e) => {

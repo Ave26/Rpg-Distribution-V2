@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import Loading from "./Loading";
+import Loading from "./Parts/Loading";
 
 import biberon from "../public/assets/products/biberon-2-1412154.jpg";
 import blender from "../public/assets/products/blender-10934_960_720.jpg";
@@ -12,6 +12,8 @@ import lipstick from "../public/assets/products/lipstick-g69ecf6007_1920.jpg";
 import eyeShadow from "../public/assets/products/make-up-g57fdab8c4_1920.jpg";
 import spiralNotebook from "../public/assets/products/notebook.jpg";
 import ballPoint from "../public/assets/products/ballpoint.jpg";
+
+import { HiArchive } from "react-icons/hi";
 
 interface ProductProps {
   productName: string;
@@ -85,7 +87,6 @@ export default function Product({ product }: any) {
         return undefined;
     }
   };
-
   return (
     <>
       <div className="h-full w-fit rounded-lg overflow-hidden shadow-lg relative">
@@ -106,6 +107,19 @@ export default function Product({ product }: any) {
               isHovered && "scale-110 transition-all"
             }  transition-all w-56 h-56`}
           />
+
+          {/* {!product.image ? (
+            <HiArchive />
+          ) : (
+            <Image
+              priority
+              {...getProductImage(product.productName)}
+              alt={product.productName}
+              className={`${
+                isHovered && "scale-110 transition-all"
+              }  transition-all w-56 h-56`}
+            />
+          )} */}
           <div
             className={`${
               isHovered

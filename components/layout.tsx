@@ -3,6 +3,7 @@ import Footer from "./Footer";
 
 // fetch
 import useSWR from "swr";
+import { useEffect } from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,10 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, data }: LayoutProps) {
+  // useEffect(() => {
+  //   console.log("rerender triggers");
+  // }, []);
+
   return (
     <>
       <Header data={data} />

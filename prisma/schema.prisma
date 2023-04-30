@@ -9,7 +9,7 @@ datasource db {
 
 type UsersAdditionalInfo {
   Dob          String
-  Phone_Number Int @map("Phone Number")
+  Phone_Number Int 
   email        String
 }
 
@@ -33,5 +33,4 @@ model users {
   roles           String              @default("staff")
   username        String              @unique(map: "username_1")
 }
-
 

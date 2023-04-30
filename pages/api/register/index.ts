@@ -1,8 +1,36 @@
 import { createUser, findUser } from "@/lib/prisma/user";
-import { NextApiRequest, NextApiResponse } from "next";
-
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { hashPassword } from "@/lib/helper/bcrypt";
 import emailValidator from "email-validator";
+import { verifyJwt } from "@/lib/helper/jwt";
+import { HiCalculator } from "react-icons/hi";
+
+const middleware =
+  (handler: NextApiHandler) =>
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    try {
+      const { verifiedToken, error }: any = await verifyJwt(req);
+      if (error) {
+        return res.status(403).json({
+          authenticated: false,
+          message: error,
+        });
+      }
+      if (verifiedToken.roles === "Admin") {
+        console.log(verifiedToken);
+        console.log("register");
+
+        return handler(req, res);
+      } else {
+        return res.status(500).json({
+          Authorized: false,
+          message: "Forbidden",
+        });
+      }
+    } catch (error) {
+      return res.send(error);
+    }
+  };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("Allow", ["POST", "GET"]);
@@ -10,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "POST":
       // check if the request body is not empty
       const { username, password, additional_Info } = req.body;
-      console.log(req.body, "this is from req");
+      // console.log(req.body);
       if (!username || !password) {
         return res.status(401).json({
           message: "Please Complete Credentials",
@@ -48,14 +76,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const hashedPwd = await hashPassword(password, 10);
         console.log(hashedPwd);
 
-        const { newUser } = await createUser(
-          username,
-          hashedPwd,
-          additional_Info
-        );
+        // convert Phone_Number to an integer
+        const { Dob, email } = additional_Info;
+        const Phone_Number = parseInt(additional_Info.Phone_Number);
+
+        const { newUser, error } = await createUser(username, hashedPwd, {
+          Dob,
+          email,
+          Phone_Number,
+        });
 
         console.log(newUser);
         // if all requirements met, Account can be create
+
+        if (error) {
+          return res.status(500).json({
+            message: "error from database" + error,
+          });
+        }
+
         return res.status(200).json({
           message: "Account Created",
           data: newUser,
@@ -73,4 +112,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default handler;
+export default middleware(handler);

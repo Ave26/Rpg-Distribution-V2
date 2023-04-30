@@ -50,10 +50,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
       try {
-        const { user }: any = await findUser(username);
+        const { user, error }: any = await findUser(username);
+        console.log(error);
         if (!user) {
           return res.status(401).json({
-            message: "No Account Match",
+            message: error,
           });
         }
 
