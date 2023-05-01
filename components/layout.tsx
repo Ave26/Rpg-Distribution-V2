@@ -18,7 +18,7 @@ export default function Layout({ children, data }: LayoutProps) {
   return (
     <>
       <Header data={data} />
-      <main>{children}</main>
+      <main className="h-full w-full font-extrabold">{children}</main>
       <Footer />
     </>
   );

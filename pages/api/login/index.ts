@@ -54,14 +54,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         console.log(error);
         if (!user) {
           return res.status(401).json({
-            message: error,
+            message: "Invalid Credentials",
           });
         }
 
         const { verifiedPwd } = await comparePassword(password, user.password);
         if (!verifiedPwd) {
           return res.status(404).json({
-            message: "Password not match",
+            message: "Invalid Credentials",
           });
         }
 

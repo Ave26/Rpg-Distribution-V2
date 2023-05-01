@@ -91,7 +91,7 @@ export default function Product({ product }: any) {
     <>
       <div className="h-full w-fit rounded-lg overflow-hidden shadow-lg relative">
         <div
-          className="w-56 h-56 flex justify-center items-center transition-all overflow-hidden relative"
+          className="w-56 h-56 flex justify-center items-center transition-all overflow-hidden relative w-full"
           onMouseEnter={() => {
             setIsHovered((hovered) => !hovered);
           }}
@@ -140,7 +140,7 @@ export default function Product({ product }: any) {
         </div>
         <div className="flex justify-center items-start flex-col p-2">
           <strong>
-            <h1 className="text-xs">Product Name: {product.productName}</h1>
+            <h1 className="text-xs">{product.productName}</h1>
           </strong>
           <h1 className="text-xs">Quantity: {product.quantity}</h1>
         </div>

@@ -55,7 +55,7 @@ export default function Header({ data }: any) {
   }, [authenticated]);
 
   return (
-    <div className="font-bold flex justify-between items-center h-24 w-full px-4 bg-slate-200">
+    <div className="font-bold flex justify-between items-center h-24 w-full px-4 bg-sky-900">
       <Link href={"/"}>
         <Image
           src={RPG}
@@ -71,10 +71,10 @@ export default function Header({ data }: any) {
         )}
       </button>
       <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only">
-        <Link href={"/products"} className="hover:text-sky-700">
+        <Link href={"/products"} className="hover:text-sky-50">
           Product Catalog
         </Link>
-        <Link href={"/about"} className="hover:text-sky-700">
+        <Link href={"/about"} className="hover:text-sky-50">
           About Us
         </Link>
         <button

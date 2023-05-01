@@ -53,7 +53,7 @@ export default function Products() {
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-screen w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 bg-slate-200">
+        <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 ">
           <div className="relative w-fit">
             <input
               className="absolute px-4 py-3 ring-1 rounded-md focus:ring-slate-950 outline-none ring-slate-200 m-3"
@@ -64,7 +64,7 @@ export default function Products() {
               }}
               name=""
               id=""
-              placeholder="search products"
+              placeholder="search product name..."
             />
           </div>
           <div className="flex justify-center items-center w-full h-full m-4">
@@ -73,7 +73,7 @@ export default function Products() {
                 <Loading />
               </div>
             ) : (
-              <div className="mt-52 grid grid-cols-4 grid-flow-row p-3 gap-6">
+              <div className="grid grid-cols-4 grid-flow-row p-3 gap-6">
                 {!searchInput
                   ? data.map((product) => {
                       return <Product key={product.id} product={product} />;

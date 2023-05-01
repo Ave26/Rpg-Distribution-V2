@@ -33,8 +33,8 @@ export default function Login({ auth }: any) {
         <title>Login</title>
       </Head>
       <Layout data={data}>
-        <section className="w-full h-screen md:h-full flex justify-center items-start md:justify-end font-sans font-extrabold">
-          <div className="md:h-[37em] md:w-1/2 md:p-[5em] mt-[2em] md:mt-[.5em] md:mr-28">
+        <section className="md:h-full flex justify-center items-start md:justify-center font-sans h-screen">
+          <div className="md:h-[37em] md:w-1/2 md:p-[5em] mt-[7em] md:mt-[1em]">
             <LoginForm setData={setData} setShow={setShow} />
             {show && <Toast data={data} />}
           </div>

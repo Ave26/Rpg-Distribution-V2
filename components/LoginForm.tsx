@@ -44,7 +44,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       console.log(json);
       switch (response.status) {
         case 200:
-          setData(json.authenticated);
+          setData(json.message);
           router.push("/");
           localStorage.setItem("authenticated", "true");
 
@@ -66,7 +66,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       console.log(error);
     } finally {
       setAuth({
-        username: "", 
+        username: "",
         password: "",
       });
       setIsLoading(false);
@@ -74,12 +74,12 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
     }
   };
   const inputStyle =
-    "px-6 py-4 rounded-md bg-transparent border border-slate-900 dark:text-white dark:border-white md:px-[3.5em] md:text-center";
+    "ring-1 ring-black px-6 py-4 rounded-md bg-transparent border border-slate-900 focus:rounded-xl text-black md:px-[3.5em] md:text-center";
 
   return (
     <form
       onSubmit={handleLogin}
-      className=" dark:bg-slate-700 dark:text-white bg-slate-100 shadow-2xl rounded-lg gap-6 p-4 flex justify-center items-center flex-col h-full tablet:mr-16 min-w-[22em]"
+      className="rounded-lg gap-6 p-4 flex justify-center items-center flex-col h-full md:mr-16 min-w-[22em]"
       onKeyDown={(e: React.KeyboardEvent) => {
         e.key === "Enter" && setBtnStyle("bg-slate-100 text-black");
       }}
@@ -87,38 +87,49 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
         e.key === "Enter" && setBtnStyle("");
       }}
     >
-      <h1>Login Account</h1>
-
-      <input
-        required
-        type="text"
-        placeholder="username"
-        value={auth.username}
-        onChange={(e) =>
-          setAuth((prevAuth) => {
-            return {
-              ...prevAuth,
-              username: e.target.value,
-            };
-          })
-        }
-        className={inputStyle}
-      />
-      <input
-        required
-        type="password"
-        placeholder="password"
-        value={auth.password}
-        onChange={(e) =>
-          setAuth((prevAuth) => {
-            return {
-              ...prevAuth,
-              password: e.target.value,
-            };
-          })
-        }
-        className={inputStyle}
-      />
+      <h1>Log in</h1>
+      <div className="flex items-center justify-center gap-2 flex-col">
+        <label htmlFor="username" className=" w-full text-sm">
+          Username
+        </label>
+        <input
+          required
+          id="username"
+          type="text"
+          placeholder="username"
+          value={auth.username}
+          onChange={(e) =>
+            setAuth((prevAuth) => {
+              return {
+                ...prevAuth,
+                username: e.target.value,
+              };
+            })
+          }
+          className={inputStyle}
+        />
+      </div>
+      <div className="flex items-center justify-center gap-2 flex-col">
+        <label htmlFor="password" className=" w-full text-sm">
+          Password
+        </label>
+        <input
+          required
+          id="password"
+          type="password"
+          placeholder="password"
+          value={auth.password}
+          onChange={(e) =>
+            setAuth((prevAuth) => {
+              return {
+                ...prevAuth,
+                password: e.target.value,
+              };
+            })
+          }
+          className={inputStyle}
+        />
+      </div>
       {/* <button
         type="submit"
         className={`bg-sky-600 w-full h-full p-2 rounded-md hover:bg-blue-600 active:bg-trasparent md:w-[20.5em] md:h-[3em] `}
