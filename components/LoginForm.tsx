@@ -79,7 +79,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
   return (
     <form
       onSubmit={handleLogin}
-      className="rounded-lg gap-6 p-4 flex justify-center items-center flex-col h-full md:mr-16 min-w-[22em]"
+      className="shadow-2xl rounded-lg gap-6 p-4 flex justify-center items-center flex-col h-full min-w-[22em] bg-transparent"
       onKeyDown={(e: React.KeyboardEvent) => {
         e.key === "Enter" && setBtnStyle("bg-slate-100 text-black");
       }}

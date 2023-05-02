@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "@/components/layout";
+import Toast from "@/components/Parts/Toast";
 
 export default function AccountManagement() {
+  const [data, setData] = useState<string | null>(null);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cPassword, setCPassword] = useState<string>("");
@@ -21,6 +23,18 @@ export default function AccountManagement() {
     },
   });
 
+  const [show, setShow] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [show]);
+
   const handleRegister = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -36,12 +50,14 @@ export default function AccountManagement() {
       const json = await response.json();
       console.log(json);
       if (response.status == 200) {
+        setData(json?.message);
         setIsLoading(false);
       } else {
         setIsLoading(false);
       }
-    } catch (error) {
+    } catch (error: any | unknown) {
       console.log(error);
+      setData(error);
       setIsLoading(false);
     } finally {
       setUsername("");
@@ -145,7 +161,7 @@ export default function AccountManagement() {
           </button>
         </form>
       </div>
-      ;
+      <Toast data={data} />
     </Layout>
   );
 }

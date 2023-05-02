@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
+
+// assets
+import addProducts from "../../public/assets/dashboardImg/addProducts.png";
+import accountMgmt from "../../public/assets/dashboardImg/accountManagement.png";
+import inventoryMgmt from "../../public/assets/dashboardImg/inventoryManagement.png";
+import palletteLoc from "../../public/assets/dashboardImg/palletteLocation.png";
+import pickAndPack from "../../public/assets/dashboardImg/pickingAndPacking.png";
+import transactionRec from "../../public/assets/dashboardImg/transactionRecords.png";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -34,7 +43,39 @@ export default function AdminDashboard() {
         break;
 
       default:
+        router.push("/");
         break;
+    }
+  };
+
+  const getDashboardImg = (list: string): any => {
+    switch (list) {
+      case "Add Products":
+        return {
+          src: addProducts,
+        };
+      case "Inventory Management":
+        return {
+          src: accountMgmt,
+        };
+      case "Pallette Location":
+        return {
+          src: palletteLoc,
+        };
+      case "Transaction Records":
+        return {
+          src: transactionRec,
+        };
+      case "Picking and Packing":
+        return {
+          src: pickAndPack,
+        };
+      case "Account Management":
+        return {
+          src: accountMgmt,
+        };
+      default:
+        return undefined;
     }
   };
 
@@ -43,13 +84,18 @@ export default function AdminDashboard() {
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="flex justify-center items-center w-40 h-40 p-10 text-center rounded-md shadow-md hover:shadow-xl bg-white"
+            className="flex justify-center gap-1 flex-col items-center w-40 h-40 p-10 text-center rounded-md shadow-md hover:shadow-xl bg-white"
             onClick={(e) => {
               navigateTo(list);
             }}
             key={index}
           >
-            {list}
+            <Image
+              {...getDashboardImg(list)}
+              alt={list}
+              className="bg-slate-900"
+            />
+            <p className="text-xs">{list}</p>
           </div>
         );
       })}

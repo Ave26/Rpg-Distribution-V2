@@ -91,7 +91,7 @@ export default function Product({ product }: any) {
     <>
       <div className="h-full w-fit rounded-lg overflow-hidden shadow-lg relative">
         <div
-          className="w-56 h-56 flex justify-center items-center transition-all overflow-hidden relative w-full"
+          className="w-56 h-56 flex justify-center items-center transition-all overflow-hidden relative"
           onMouseEnter={() => {
             setIsHovered((hovered) => !hovered);
           }}

@@ -7,7 +7,11 @@ import { useRouter } from "next/router";
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 // import { Libre_Barcode_128_Text } from "next/font/google";
 
-export default function Header({ data }: any) {
+export default function Header({
+  data,
+  headerBg = "bg-[#0b8acb] transition-all",
+  headerTxt,
+}: any) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -55,7 +59,9 @@ export default function Header({ data }: any) {
   }, [authenticated]);
 
   return (
-    <div className="font-bold flex justify-between items-center h-24 w-full px-4 bg-sky-900">
+    <div
+      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg}`}
+    >
       <Link href={"/"}>
         <Image
           src={RPG}
@@ -71,10 +77,10 @@ export default function Header({ data }: any) {
         )}
       </button>
       <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only">
-        <Link href={"/products"} className="hover:text-sky-50">
+        <Link href={"/products"} className={`${headerTxt}`}>
           Product Catalog
         </Link>
-        <Link href={"/about"} className="hover:text-sky-50">
+        <Link href={"/about"} className={`${headerTxt}`}>
           About Us
         </Link>
         <button

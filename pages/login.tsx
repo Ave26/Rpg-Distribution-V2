@@ -32,8 +32,12 @@ export default function Login({ auth }: any) {
       <Head>
         <title>Login</title>
       </Head>
-      <Layout data={data}>
-        <section className="md:h-full flex justify-center items-start md:justify-center font-sans h-screen">
+      <Layout
+        data={data}
+        headerBg="bg-white transition-alls"
+        headerTxt="text-black hover:text-sky-500"
+      >
+        <section className="md:h-screen flex justify-center items-start md:justify-center font-sans h-screen">
           <div className="md:h-[37em] md:w-1/2 md:p-[5em] mt-[7em] md:mt-[1em]">
             <LoginForm setData={setData} setShow={setShow} />
             {show && <Toast data={data} />}
