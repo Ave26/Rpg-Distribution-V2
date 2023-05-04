@@ -6,6 +6,7 @@ interface Prod {
 }
 
 export default function AddProducts() {
+  const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [barcodeId, setBarCodeId] = useState<string>("");
   const [productName, setProductName] = useState<string>("");
@@ -137,6 +138,7 @@ export default function AddProducts() {
           <div className="flex justify-center items-center gap-2">
             <button
               type="button"
+              onClick={undefined}
               className="text-gray-900 hover:text-white border w-full border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
             >
               Assign Location

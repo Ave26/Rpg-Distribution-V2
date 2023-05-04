@@ -3,14 +3,17 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 // assets
-import addProducts from "../../public/assets/dashboardImg/addProducts.png";
-import accountMgmt from "../../public/assets/dashboardImg/accountManagement.png";
-import inventoryMgmt from "../../public/assets/dashboardImg/inventoryManagement.png";
-import palletteLoc from "../../public/assets/dashboardImg/palletteLocation.png";
-import pickAndPack from "../../public/assets/dashboardImg/pickingAndPacking.png";
-import transactionRec from "../../public/assets/dashboardImg/transactionRecords.png";
+import addProducts from "../../public/assets/dashboardImg/AddProducts.png";
+import accountMgmt from "../../public/assets/dashboardImg/AccountManagement.png";
+import inventoryMgmt from "../../public/assets/dashboardImg/InventoryManagement.png";
+import palletteLoc from "../../public/assets/dashboardImg/PalletLocation.png";
+import pickAndPack from "../../public/assets/dashboardImg/PickingandPacking.png";
+import transactionRec from "../../public/assets/dashboardImg/TransactionManagement.png";
 
 export default function AdminDashboard() {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  console.log(isHovered);
+
   const router = useRouter();
   const [dashBoardList, setIsDashBoardList] = useState<string[]>([
     "Add Products",
@@ -53,48 +56,89 @@ export default function AdminDashboard() {
       case "Add Products":
         return {
           src: addProducts,
+          className: "w-full h-full p-4",
         };
       case "Inventory Management":
         return {
-          src: accountMgmt,
+          src: inventoryMgmt,
+          className: "w-full h-full p-4",
         };
       case "Pallette Location":
         return {
           src: palletteLoc,
+          className: "w-full h-full p-4",
         };
       case "Transaction Records":
         return {
           src: transactionRec,
+          className: "w-full h-full p-4",
         };
       case "Picking and Packing":
         return {
           src: pickAndPack,
+          className: "w-full h-full p-4",
         };
       case "Account Management":
         return {
           src: accountMgmt,
+          className: "w-full h-full p-4",
         };
       default:
         return undefined;
     }
   };
 
+  // const getStyle = (list: string): any => {
+  //   switch (list) {
+  //     case "Add Products":
+  //       return {
+  //         className:
+  //           "hover:transition-all hover:h-14 h-0 transition-all absolute transition-all w-full bg-slate-700 bottom-0",
+  //       };
+  //     case "Inventory Management":
+  //       return {
+  //         className:
+  //           "hover:transition-all hover:h-14 h-0 transition-all absolute transition-all w-full bg-slate-700 bottom-0",
+  //       };
+  //     case "Pallette Location":
+  //       return {
+  //         className: palletteLoc,
+  //       };
+  //     case "Transaction Records":
+  //       return {
+  //         className: transactionRec,
+  //       };
+  //     case "Picking and Packing":
+  //       return {
+  //         className: pickAndPack,
+  //       };
+  //     case "Account Management":
+  //       return {
+  //         className: accountMgmt,
+  //       };
+  //     default:
+  //       return undefined;
+  //   }
+  // };
+
   return (
     <section className="w-full h-screen flex justify-center items-center gap-2 select-none bg-gradient-to-b from-white via-[#5680E9] to-blue-500">
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="flex justify-center gap-1 flex-col items-center w-40 h-40 p-10 text-center rounded-md shadow-md hover:shadow-xl bg-white"
+            className="p-5 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
             onClick={(e) => {
               navigateTo(list);
             }}
             key={index}
+            onMouseEnter={() => {
+              setIsHovered((hovered) => !hovered);
+            }}
+            onMouseLeave={() => {
+              setIsHovered((hovered) => !hovered);
+            }}
           >
-            <Image
-              {...getDashboardImg(list)}
-              alt={list}
-              className="bg-slate-900"
-            />
+            <Image {...getDashboardImg(list)} alt={list} />
             <p className="text-xs">{list}</p>
           </div>
         );

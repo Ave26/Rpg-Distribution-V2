@@ -124,7 +124,7 @@ export default function Product({ product }: any) {
             className={`${
               isHovered
                 ? "opacity-100 transition-all"
-                : "transition-all opacity"
+                : "transition-all opacity-0"
             } absolute inset-0 bg-gray-900 bg-opacity-70 text-white flex justify-center items-center transition-all opacity-0 p-4`}
           >
             <h1 className="text-xs w-52 text-justify">
