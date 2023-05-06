@@ -12,6 +12,7 @@ import lipstick from "../public/assets/products/lipstick-g69ecf6007_1920.jpg";
 import eyeShadow from "../public/assets/products/make-up-g57fdab8c4_1920.jpg";
 import spiralNotebook from "../public/assets/products/notebook.jpg";
 import ballPoint from "../public/assets/products/ballpoint.jpg";
+import noProduct from "../public/assets/products/noProductDisplay.png";
 
 import { HiArchive } from "react-icons/hi";
 
@@ -84,7 +85,9 @@ export default function Product({ product }: any) {
           height: "100%",
         };
       default:
-        return undefined;
+        return {
+          src: noProduct,
+        };
     }
   };
   return (

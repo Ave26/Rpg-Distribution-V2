@@ -11,8 +11,7 @@ import pickAndPack from "../../public/assets/dashboardImg/PickingandPacking.png"
 import transactionRec from "../../public/assets/dashboardImg/TransactionManagement.png";
 
 export default function AdminDashboard() {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  console.log(isHovered);
+  // const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const router = useRouter();
   const [dashBoardList, setIsDashBoardList] = useState<string[]>([
@@ -88,55 +87,22 @@ export default function AdminDashboard() {
     }
   };
 
-  // const getStyle = (list: string): any => {
-  //   switch (list) {
-  //     case "Add Products":
-  //       return {
-  //         className:
-  //           "hover:transition-all hover:h-14 h-0 transition-all absolute transition-all w-full bg-slate-700 bottom-0",
-  //       };
-  //     case "Inventory Management":
-  //       return {
-  //         className:
-  //           "hover:transition-all hover:h-14 h-0 transition-all absolute transition-all w-full bg-slate-700 bottom-0",
-  //       };
-  //     case "Pallette Location":
-  //       return {
-  //         className: palletteLoc,
-  //       };
-  //     case "Transaction Records":
-  //       return {
-  //         className: transactionRec,
-  //       };
-  //     case "Picking and Packing":
-  //       return {
-  //         className: pickAndPack,
-  //       };
-  //     case "Account Management":
-  //       return {
-  //         className: accountMgmt,
-  //       };
-  //     default:
-  //       return undefined;
-  //   }
-  // };
-
   return (
     <section className="w-full h-screen flex justify-center items-center gap-2 select-none bg-gradient-to-b from-white via-[#5680E9] to-blue-500">
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="p-5 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
+            className="p-7 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
             onClick={(e) => {
               navigateTo(list);
             }}
             key={index}
-            onMouseEnter={() => {
-              setIsHovered((hovered) => !hovered);
-            }}
-            onMouseLeave={() => {
-              setIsHovered((hovered) => !hovered);
-            }}
+            // onMouseEnter={() => {
+            //   setIsHovered((hovered) => !hovered);
+            // }}
+            // onMouseLeave={() => {
+            //   setIsHovered((hovered) => !hovered);
+            // }}
           >
             <Image {...getDashboardImg(list)} alt={list} />
             <p className="text-xs">{list}</p>
