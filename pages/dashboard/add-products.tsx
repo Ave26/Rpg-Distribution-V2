@@ -68,7 +68,7 @@ export default function AddProducts() {
 
   return (
     <Layout>
-      <section className="border h-screen w-full p-3 font-bold">
+      <section className="border h-screen w-full p-3 font-bold relative">
         <form
           onSubmit={handleProduct}
           className="grid grid-rows-6 grid-flow-col gap-4 relative border"
@@ -182,9 +182,10 @@ export default function AddProducts() {
               "Save"
             )}
           </button>
-          {isLocationOpen ? <AssignPallette /> : null}
-          {/* setIsLocationOpen={setIsLocationOpen} */}
         </form>
+        {isLocationOpen ? (
+          <AssignPallette setIsLocationOpen={setIsLocationOpen} isLocationOpen={isLocationOpen} />
+        ) : null}
       </section>
     </Layout>
   );
