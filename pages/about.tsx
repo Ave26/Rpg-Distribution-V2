@@ -28,6 +28,7 @@ export default function About({ data }: any) {
           planning and analysis, we have the expertise you need to succeed.
           Thank you for considering our management system. We look forward to
           working with you and helping you achieve your goals.`}
+          'this is my changes'
           <h1 className="text-7xl">This Page is Under Construction</h1>
         </section>
       </Layout>
