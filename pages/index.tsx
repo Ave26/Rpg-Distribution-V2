@@ -28,8 +28,8 @@ export default function Home({ data }: any) {
                   <h1 className="text-xl m-2">Welcome to RPG Prostock!</h1>
                   <p className="text-xs">
                     Take Control of Your Warehouse with Prostock: The Ultimate
-                    Solution for Streamlined Management!
-                    To know more about our company click the button bellow!
+                    Solution for Streamlined Management! To know more about our
+                    company click the button bellow!
                   </p>
                   <Link
                     className="p-5 border rounded-lg mt-5 hover:bg-white hover:text-black"
