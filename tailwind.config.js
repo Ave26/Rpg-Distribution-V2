@@ -17,6 +17,9 @@ module.exports = {
       fontFamily: {
         // sans: ["Open Sans Extrabold", "Courier New", "Courier", "monospace"],
       },
+      animation: {
+        fade: "fade .2s linear forwards",
+      },
     },
   },
   plugins: [require("tailwind-scrollbar")],

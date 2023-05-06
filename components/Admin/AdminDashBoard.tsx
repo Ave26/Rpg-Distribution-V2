@@ -3,12 +3,12 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 // assets
-import addProducts from "../../public/assets/dashBoardImg/AddProducts.png";
-import accountMgmt from "../../public/assets/dashBoardImg/AccountManagement.png";
-import inventoryMgmt from "../../public/assets/dashboardImg/InventoryManagement.png";
-import palletteLoc from "../../public/assets/dashboardImg/PalletLocation.png";
-import pickAndPack from "../../public/assets/dashboardImg/PickingandPacking.png";
-import transactionRec from "../../public/assets/dashboardImg/TransactionManagement.png";
+import addProducts from "/public/assets/dashBoardImg/AddProducts.png";
+import accountMgmt from "/public/assets/dashBoardImg/AccountManagement.png";
+import inventoryMgmt from "/public/assets/dashboardImg/InventoryManagement.png";
+import palletteLoc from "/public/assets/dashboardImg/PalletLocation.png";
+import pickAndPack from "/public/assets/dashboardImg/PickingandPacking.png";
+import transactionRec from "/public/assets/dashboardImg/TransactionManagement.png";
 
 export default function AdminDashboard() {
   // const [isHovered, setIsHovered] = useState<boolean>(false);
