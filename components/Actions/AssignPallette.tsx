@@ -39,7 +39,7 @@ export default function AssignPallette({
       } bg-opacity-50 bg-sky-300 absolute inset-0 md:p-[10rem] md:px-96 w-full h-full`}
       onClick={handleClick}
       onAnimationEnd={() => {
-        
+        setIsLocationOpen(false);
       }}
     >
       <div className="bg-sky-900 h-full w-full" onClick={handleChildClick}>
