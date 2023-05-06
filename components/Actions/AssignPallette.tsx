@@ -34,8 +34,13 @@ export default function AssignPallette({
 
   return (
     <div
-      className={`bg-opacity-50 bg-sky-300 absolute inset-0 md:p-[10rem] md:px-96 w-full h-full`}
+      className={`${
+        !isLocationOpen && "animate-fade"
+      } bg-opacity-50 bg-sky-300 absolute inset-0 md:p-[10rem] md:px-96 w-full h-full`}
       onClick={handleClick}
+      onAnimationEnd={() => {
+        setIsLocationOpen(false);
+      }}
     >
       <div className="bg-sky-900 h-full w-full" onClick={handleChildClick}>
         AssignPallette

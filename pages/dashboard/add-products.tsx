@@ -183,9 +183,11 @@ export default function AddProducts() {
             )}
           </button>
         </form>
-        {isLocationOpen ? (
-          <AssignPallette setIsLocationOpen={setIsLocationOpen} isLocationOpen={isLocationOpen} />
-        ) : null}
+
+        <AssignPallette
+          setIsLocationOpen={setIsLocationOpen}
+          isLocationOpen={isLocationOpen}
+        />
       </section>
     </Layout>
   );
