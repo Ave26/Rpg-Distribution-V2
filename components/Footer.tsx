@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <div className="h-[15em] bg-sky-400 text-white flex justify-center items-center ">
+    <div className="h-[15em] bg-[#0b8acb] text-white flex justify-center items-center ">
       <section className="text-2xl">
         <p>&copy; 2023 Alright Reserve</p>
         <a href="#">Privacy Policy</a>
