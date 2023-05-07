@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../Parts/Loading";
 import { CgSearch } from "react-icons/cg";
 
 interface PalletteProps {
@@ -16,7 +15,6 @@ interface DATA {
 export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
   const [data, setData] = useState<DATA[]>([]);
   const [search, setSearch] = useState<string>("");
-  const [searchbasis, setSearchBasis] = useState<string>("");
   const [options, setOptions] = useState<string[]>([
     "Barcode Id",
     "Product Name",
@@ -26,43 +24,232 @@ export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("/api/public-products")
-      .then(async (response) => {
-        if (response.status === 200) {
-          const json = await response.json();
-          setData(json);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        // setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
   const handleClick = () => {
     setIsLocationOpen(false);
   };
 
-  const handleChildClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    // console.log("Child Clicked!");
+  const getUniqueProduct = async () => {
+    try {
+      const response = await fetch("/api/assign-pallette", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // body: JSON.stringify(search),
+      });
+
+      const json = await response.json();
+      setData(json.message);
+      console.log(json?.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSearchProduct = (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    getUniqueProduct();
+
+    // .then((response) => {
+    //   let json = response.json();
+    //   response.status === 200 && console.log(json);
+    // })
+    // .catch((error) => {
+    //   console.log(error);
+    // })
+    // .finally(() => {
+    //   setIsLoading(false);
+    //   console.log("click");
+    // });
   };
 
   return (
     <div
-      className="bg-opacity-50 bg-sky-300 absolute inset-0 md:px-11 py-10 w-full h-full shadow-2xl"
+      className="bg-opacity-50 bg-sky-300 absolute inset-0 w-full h-full shadow-2xl translate-full"
       onClick={handleClick}
     >
       <div
-        className="w-full h-[35rem] border bg-sky-500 rounded-lg"
-        onClick={handleChildClick}
+        className="border bg-sky-500 rounded-lg p-2 max-w-6xl max-h-3xl relative md:translate-x-40 md:translate-y-3"
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
       >
-        {/* <form>
+        <form
+          className="flex justify-center items-center border"
+          onSubmit={handleSearchProduct}
+        >
+          <select
+            name=""
+            id=""
+            className="p-2 w-36 h-11 text-sm font-extrabold"
+          >
+            {options.map((option, index) => {
+              return (
+                <option
+                  key={index}
+                  onClick={(e) => {
+                    console.log(option);
+                  }}
+                >
+                  {option}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            type="search"
+            value={search}
+            placeholder="search..."
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-11 px-5"
+          />
+          <button className="w-12 h-11 p-2" type="submit">
+            <CgSearch className="w-full h-full" />
+          </button>
+        </form>
+        <div className="flex justify-start items-center w-full h-28 gap-2 px-2">
+          <button className="w-28 h-16 bg-sky-700 rounded-lg">A</button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg">B</button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg">C</button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg">D</button>
+        </div>
+
+        <div className="flex justify-center items-center flex-col  gap-3 p-2 overflow-auto">
+          <table className=" border-red-500 overflow-hidden">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 rounded-xl">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Barcode Id
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Product Name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Quantity
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  sku
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  pallette Location
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  date Received
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  expiration Date
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  poId
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+              <tr>
+                <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  123242555345345
+                </th>
+                <td className="px-6 py-4">Herran Bread</td>
+                <td className="px-6 py-4">256</td>
+                <td className="px-6 py-4">SKU1</td>
+                <td className="px-6 py-4">A-1-1</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+                <td className="px-6 py-4">2</td>
+              </tr>
+            </tbody>
+          </table>
+          <button className="h-16 w-28 bg-red-500 rounded-lg">Assign</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// automatically put the id
+// detect key based on options
+// button search to finalized the filter
+
+// useEffect(() => {
+//   setIsLoading(true);
+//   fetch("/api/public-products")
+//     .then(async (response) => {
+//       if (response.status === 200) {
+//         const json = await response.json();
+//         setData(json);
+//       }
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       // setError(error);
+//     })
+//     .finally(() => {
+//       setIsLoading(false);
+//     });
+// }, []);
+
+{
+  /* <form>
           <div className="flex">
             <label
               htmlFor="search-dropdown"
@@ -164,77 +351,5 @@ export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
               </button>
             </div>
           </div>
-        </form> */}
-
-        <div className="flex justify-center items-center border">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="p-2"
-          />
-          <button className="">
-            <CgSearch className="border w-full h-full" />
-          </button>
-
-          <select name="" id="">
-            {/* <option value="">Barcode Id</option>
-            <option value="">Product Name</option>
-            <option value="">Sku</option>
-            <option value="">PO ID</option> */}
-            <option>Filter</option>
-            {options.map((option, index) => {
-              return (
-                <option
-                  key={index}
-                  onClick={(e) => {
-                    console.log(option);
-                  }}
-                >
-                  {option}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      </div>
-    </div>
-  );
+        </form> */
 }
-
-// <div className="flex md:justify-start justify-center items-center border p-2 gap-2">
-// <div className="flex justify-center items-center border">
-//   <input
-//     type="search"
-//     value={search}
-//     onChange={(e) => setSearch(e.target.value)}
-//     className="p-2"
-//   />
-//   <button className="">
-//     <CgSearch className="border w-full h-full" />
-//   </button>
-// </div>
-// <select
-//   className="p-2 outline-none focus:ring-2 border-none"
-//   name="productName"
-//   id="productName"
-// >
-//   {/* {data.map((product) => {
-//     return (
-//       <>
-//         {isLoading ? (
-//           "Loading..."
-//         ) : (
-//           <option className="" key={product?.id}>
-//             {product?.productName}
-//           </option>
-//         )}
-//       </>
-//     );
-//   })} */}
-
-//   <option>Barcode Id</option>
-//   <option>Profuct Name</option>
-//   <option>SKU</option>
-// </select>
-// </div>
