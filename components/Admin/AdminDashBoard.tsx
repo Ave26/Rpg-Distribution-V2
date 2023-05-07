@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 // assets
-import addProducts from "../../public/assets/dbrdimg/AddProducts.png"
+import addProducts from "../../public/assets/dbrdimg/AddProducts.png";
 import accountMgmt from "../../public/assets/dbrdimg/AccountManagement.png";
 import inventoryMgmt from "../../public/assets/dbrdimg/InventoryManagement.png";
 import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
@@ -92,17 +92,11 @@ export default function AdminDashboard() {
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="p-7 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
+            className="border p-7 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
             onClick={(e) => {
               navigateTo(list);
             }}
             key={index}
-            // onMouseEnter={() => {
-            //   setIsHovered((hovered) => !hovered);
-            // }}
-            // onMouseLeave={() => {
-            //   setIsHovered((hovered) => !hovered);
-            // }}
           >
             <Image {...getDashboardImg(list)} alt={list} />
             <p className="text-xs">{list}</p>

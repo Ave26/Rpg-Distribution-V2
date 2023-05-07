@@ -19,8 +19,7 @@ export default function AddProducts() {
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [poId, setpoId] = useState<string>("");
   const [image, setImage] = useState<string>("");
-  const inputStyle =
-    "rounded-md py-3 px-4 focus:ring-4 focus:outline-none border-2";
+
   const body = {
     barcodeId,
     productName,
@@ -66,12 +65,15 @@ export default function AddProducts() {
     }
   };
 
+  const inputStyle =
+    "rounded-md py-3 px-4 focus:ring-4 focus:outline-none border-2";
   return (
     <Layout>
-      <section className="border h-screen w-full p-3 font-bold relative">
+      <section className="h-screen w-full p-3 font-bold relative md:flex md:justify-center md:items-start">
         <form
           onSubmit={handleProduct}
-          className="grid grid-rows-6 grid-flow-col gap-4 relative border"
+          // className="grid grid-rows-6 grid-flow-col gap-4 relative border"
+          className="shadow-lg flex justify-center items-center flex-col gap-2 relative p-10 border-red-900 md:w-[50rem]"
         >
           <input
             type="text"
@@ -97,39 +99,51 @@ export default function AddProducts() {
           />
           <input
             type="text"
-            value={sku}
-            className={inputStyle}
-            placeholder="sku"
-            onChange={(e) => setSku(e.target.value)}
-          />
-          <input
-            type="text"
-            value={palletteLocation}
-            className={inputStyle}
-            placeholder="palletteLocation"
-            onChange={(e) => setPalletteLocation(e.target.value)}
-          />
-          <input
-            type="date"
-            value={dateReceived}
-            className={inputStyle}
-            placeholder="date Received"
-            onChange={(e) => setDateReceive(e.target.value)}
-          />
-          <input
-            type="date"
-            value={expirationDate}
-            className={inputStyle}
-            placeholder="expiration date"
-            onChange={(e) => setExpirationDate(e.target.value)}
-          />
-          <input
-            type="text"
             value={poId}
             className={inputStyle}
             placeholder="poId"
             onChange={(e) => setpoId(e.target.value)}
           />
+
+          <div className="grid grid-cols-2 grid-flow-row  p-4 gap-2">
+            <input
+              type="text"
+              value={sku}
+              className={inputStyle}
+              placeholder="sku"
+              onChange={(e) => setSku(e.target.value)}
+            />
+            <input
+              type="text"
+              value={palletteLocation}
+              className={inputStyle}
+              placeholder="palletteLocation"
+              onChange={(e) => setPalletteLocation(e.target.value)}
+            />
+            <div className="flex justify-center items-center flex-col gap-2 text-sm">
+              <label htmlFor="expirationDate">Expiration Date</label>
+              <input
+                type="date"
+                id="expirationDate"
+                value={expirationDate}
+                className={`border-2 p-2 w-full`}
+                placeholder="expiration date"
+                onChange={(e) => setExpirationDate(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-center items-center flex-col gap-2 text-sm">
+              <label htmlFor="dateReceived">Receive Date</label>
+              <input
+                type="date"
+                id="dateReceived"
+                value={dateReceived}
+                className={`border-2 p-2 w-full`}
+                placeholder="date Received"
+                onChange={(e) => setDateReceive(e.target.value)}
+              />
+            </div>
+          </div>
+
           {/* <input
             type="text"
             value={image}
@@ -137,7 +151,7 @@ export default function AddProducts() {
             placeholder="image"
             onChange={(e) => setImage(e.target.value)}
           /> */}
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center gap-2 border w-full h-full">
             <button
               type="button"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -150,7 +164,7 @@ export default function AddProducts() {
             </button>
             <button
               type="button"
-              className="text-gray-900 hover:text-white border w-full border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+              className="text-gray-900 hover:text-white border h-full w-full border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
             >
               Add Image
             </button>
@@ -184,10 +198,9 @@ export default function AddProducts() {
           </button>
         </form>
 
-        <AssignPallette
-          setIsLocationOpen={setIsLocationOpen}
-          isLocationOpen={isLocationOpen}
-        />
+        {isLocationOpen && (
+          <AssignPallette setIsLocationOpen={setIsLocationOpen} />
+        )}
       </section>
     </Layout>
   );
