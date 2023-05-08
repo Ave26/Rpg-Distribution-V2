@@ -10,6 +10,8 @@ interface LayoutProps {
   data?: any;
   headerBg?: string;
   headerTxt?: string;
+  headerSky?: string;
+  footerSky?: string;
 }
 
 export default function Layout({
@@ -17,12 +19,19 @@ export default function Layout({
   data,
   headerBg,
   headerTxt,
+  headerSky,
+  footerSky,
 }: LayoutProps) {
   return (
     <>
-      <Header data={data} headerBg={headerBg} headerTxt={headerTxt} />
+      <Header
+        data={data}
+        headerBg={headerBg}
+        headerTxt={headerTxt}
+        headerSky={headerSky}
+      />
       <main className="h-full w-full font-extrabold">{children}</main>
-      <Footer />
+      <Footer footerSky={footerSky} />
     </>
   );
 }

@@ -10,6 +10,7 @@ import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 export default function Header({
   data,
   headerBg = "bg-[#0b8acb] transition-all",
+  headerSky = "bg-transparent",
   headerTxt,
 }: any) {
   const router = useRouter();
@@ -60,15 +61,17 @@ export default function Header({
 
   return (
     <div
-      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg}`}
+      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg} relative`}
     >
-      <Link href={"/"}>
-        <Image
-          src={RPG}
-          alt="RPG LOGO"
-          className="w-10 h-10 m-4 transition-all"
-        />
-      </Link>
+      <div className={`absolute left-0 top-0 w-[41.2em] h-full ${headerSky}`}>
+        <Link href={"/"}>
+          <Image
+            src={RPG}
+            alt="RPG LOGO"
+            className="w-10 h-10 m-4 transition-all"
+          />
+        </Link>
+      </div>
       <button onClick={toggleMenu}>
         {isOpen ? (
           <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />

@@ -1,13 +1,18 @@
 import React from "react";
 
-export default function Footer() {
+export default function Footer({ footerSky = "bg-transparent" }) {
   return (
-    <div className="h-[15em] bg-[#0b8acb] text-white flex justify-center items-center ">
-      <section className="text-2xl">
+    <div
+      className={`h-[15em] bg-white text-black flex justify-center items-center relative`}
+    >
+      <section className={`text-2xl z-20 w-full pl-24`}>
         <p>&copy; 2023 Alright Reserve</p>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
       </section>
+      <div
+        className={`absolute left-0 bottom-0 w-[41.2em] h-full ${footerSky}`}
+      ></div>
 
       {/* <section className="fcontainer">
         <p>&copy; 2023 RPG Prostock. All Rights Reserved.</p>

@@ -36,6 +36,8 @@ export default function Login({ auth }: any) {
         data={data}
         headerBg="bg-white transition-alls"
         headerTxt="text-black hover:text-sky-500"
+        headerSky="bg-sky-300"
+        footerSky="bg-sky-300"
       >
         <section className="md:h-screen flex justify-center items-start md:justify-center font-sans h-screen">
           <div className="absolute bg-sky-300 h-full w-[41.2em] left-0 -z-50"></div>
