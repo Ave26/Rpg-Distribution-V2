@@ -8,7 +8,6 @@ interface Prod {
 
 export default function AddProducts() {
   const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
-  console.log(isLocationOpen);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [barcodeId, setBarCodeId] = useState<string>("");
   const [productName, setProductName] = useState<string>("");
@@ -66,14 +65,14 @@ export default function AddProducts() {
   };
 
   const inputStyle =
-    "rounded-md py-3 px-4 focus:ring-4 focus:outline-none border-2";
+    "rounded-md py-3 px-4 focus:ring-4 focus:outline-none border-2 md:w-full";
   return (
     <Layout>
       <section className="h-screen w-full p-3 font-bold relative md:flex md:justify-center md:items-start">
         <form
           onSubmit={handleProduct}
           // className="grid grid-rows-6 grid-flow-col gap-4 relative border"
-          className="shadow-lg flex justify-center items-center flex-col gap-2 relative p-10 border-red-900 md:w-[50rem]"
+          className=" shadow-lg flex justify-center items-center flex-col gap-2 relative p-10 border-red-900 md:w-[50rem]"
         >
           <input
             type="text"
@@ -105,7 +104,7 @@ export default function AddProducts() {
             onChange={(e) => setpoId(e.target.value)}
           />
 
-          <div className="grid grid-cols-2 grid-flow-row  p-4 gap-2">
+          <div className="grid grid-cols-2 grid-flow-row gap-2 w-full">
             <input
               type="text"
               value={sku}
