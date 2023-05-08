@@ -13,6 +13,7 @@ import eyeShadow from "../public/assets/products/make-up-g57fdab8c4_1920.jpg";
 import spiralNotebook from "../public/assets/products/notebook.jpg";
 import ballPoint from "../public/assets/products/ballpoint.jpg";
 import noProduct from "../public/assets/products/noProductDisplay.png";
+import razor from "../public/assets/products/supermax.jpg";
 
 import { HiArchive } from "react-icons/hi";
 
@@ -84,6 +85,12 @@ export default function Product({ product }: any) {
           width: "100%",
           height: "100%",
         };
+        case "Super-Max Razor":
+          return {
+            src: razor,
+            width: "100%",
+            height: "100%",
+          };
       default:
         return {
           src: noProduct,
