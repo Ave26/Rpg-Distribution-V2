@@ -67,11 +67,11 @@ export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
 
   return (
     <div
-      className="bg-opacity-50 bg-sky-300 absolute inset-0 w-full h-full shadow-2xl translate-full"
+      className="bg-opacity-50 bg-sky-300 absolute inset-0 w-full h-full shadow-2xl px-10"
       onClick={handleClick}
     >
       <div
-        className="border bg-sky-500 rounded-lg p-2 max-w-6xl max-h-3xl relative md:translate-x-40 md:translate-y-3"
+        className="border bg-sky-500 rounded-lg p-2 max-w-full  mb:translate-y-12 max-h-3xl relative"
         onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
       >
         <form
@@ -108,14 +108,22 @@ export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
           </button>
         </form>
         <div className="flex justify-start items-center w-full h-28 gap-2 px-2">
-          <button className="w-28 h-16 bg-sky-700 rounded-lg">A</button>
-          <button className="w-28 h-16 bg-sky-700 rounded-lg">B</button>
-          <button className="w-28 h-16 bg-sky-700 rounded-lg">C</button>
-          <button className="w-28 h-16 bg-sky-700 rounded-lg">D</button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg hover:bg-sky-600">
+            A
+          </button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg hover:bg-sky-600">
+            B
+          </button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg hover:bg-sky-600">
+            C
+          </button>
+          <button className="w-28 h-16 bg-sky-700 rounded-lg hover:bg-sky-600">
+            D
+          </button>
         </div>
 
         <div className="flex justify-center items-center flex-col  gap-3 p-2 overflow-auto">
-          <table className=" border-red-500 overflow-hidden">
+          <table className=" border-red-500 overflow-hidden w-full">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 rounded-xl">
               <tr>
                 <th scope="col" className="px-6 py-3">
@@ -219,8 +227,10 @@ export default function AssignPallette({ setIsLocationOpen }: PalletteProps) {
               </tr>
             </tbody>
           </table>
-          <button className="h-16 w-28 bg-red-500 rounded-lg">Assign</button>
         </div>
+        <button className="h-16 w-28 bg-red-500 rounded-lg w-full">
+          Assign
+        </button>
       </div>
     </div>
   );
