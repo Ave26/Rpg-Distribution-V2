@@ -57,7 +57,7 @@ export default function AdminDashboard() {
           src: inventoryMgmt,
           className: "w-full h-full p-4",
         };
-      case "Pallette Location":
+      case "Palette Location":
         return {
           src: palletteLoc,
           className: "w-full h-full p-4",
