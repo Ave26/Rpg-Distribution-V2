@@ -23,8 +23,8 @@ const DeliveryManagementPage = () => {
 
       {showGeolocation && (
         <div>
-          <h2>Geolocation Component:</h2>
-          {/* Render the Geolocation component here */}
+          
+          <Geolocation/>
           <Geolocation key={updateCount} />
         </div>
       )}
