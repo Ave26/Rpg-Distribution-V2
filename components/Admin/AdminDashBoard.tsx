@@ -10,6 +10,8 @@ import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
 import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
 
+import Geolocation from "../Geolocation";
+
 export default function AdminDashboard() {
   // const [isHovered, setIsHovered] = useState<boolean>(false);
 
@@ -103,6 +105,8 @@ export default function AdminDashboard() {
           </div>
         );
       })}
+
+      <Geolocation/>
     </section>
   );
 }

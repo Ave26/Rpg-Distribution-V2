@@ -1,7 +1,7 @@
 import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import logo from "/public/assets/aboutus.png";
+import logo from "/public/assets/Prostocklogo.png";
 // types
 import useSWR from "swr";
 
@@ -93,7 +93,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       <div className=" flex justify-center items-center flex-col gap-2 bg-sky-300 h-full w-72 px-20 rounded-l-2xl">
         <Image src={logo} alt="RPG LOGO" className="h-28 w-28" />
         <p className="text-center text-xs">
-          {"Welcome to our warehouse. Let's explore!"}
+          {"Welcome to our Warehouse Management System. Let's get started!"}
         </p>
       </div>
       <div className=" flex justify-center items-center flex-col h-full p-20 gap-4 relative">
