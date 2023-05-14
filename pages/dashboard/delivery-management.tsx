@@ -1,20 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Geolocation from "@/components/Geolocation";
 
 const DeliveryManagementPage = () => {
   const [showGeolocation, setShowGeolocation] = useState(false);
-  const [updateCount, setUpdateCount] = useState(0);
 
   const handleShowGeolocation = () => {
     setShowGeolocation(true);
-    setUpdateCount((prevCount) => prevCount + 1);
   };
-
-  useEffect(() => {
-    if (showGeolocation) {
-      setUpdateCount((prevCount) => prevCount + 1);
-    }
-  }, [showGeolocation]);
 
   return (
     <div>
@@ -23,9 +15,8 @@ const DeliveryManagementPage = () => {
 
       {showGeolocation && (
         <div>
-          
-          <Geolocation/>
-          <Geolocation key={updateCount} />
+          <h2>Geolocation Component:</h2>
+          <Geolocation />
         </div>
       )}
     </div>
