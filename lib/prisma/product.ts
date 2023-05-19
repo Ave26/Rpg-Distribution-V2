@@ -90,3 +90,68 @@ export const findProductBaseOnName = async (productName: string) => {
     return { error };
   }
 };
+
+// ________________________________________________
+
+// find, update or create
+// product details -> find ? create : update
+
+export const findProductDetails = async (barcodeId: string) => {
+  try {
+    const product = await prisma.productDetails.findFirstOrThrow({
+      where: {
+        barcodeId,
+      },
+
+      include: {
+        productLists: true,
+      },
+    });
+    console.log(product);
+    return { product };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const createProductDetails = async (barcodeId: string) => {
+  try {
+    const productDetails = await prisma.productDetails.create({
+      data: {
+        barcodeId,
+        img: "",
+        price: 0.0,
+        productName: "",
+        quantity: 0,
+        sku: "",
+      },
+    });
+    return { productDetails };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const createProductLists = async (id: string) => {
+  try {
+    const createdProductList = await prisma.productLists.create({
+      data: {
+        palleteLocation: "test",
+        status: "test",
+        poId: "test",
+        expirationDate: "test",
+        productDetails: {
+          connect: {
+            id,
+          },
+        },
+      },
+    });
+
+    const quantity = await prisma.productLists.findMany({});
+    console.log(quantity);
+    return { createdProductList, quantity };
+  } catch (error) {
+    return { error };
+  }
+};
