@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-
+import Geolocation from "../Geolocation";
 // assets
 import addProducts from "../../public/assets/dbrdimg/AddProducts.png";
 import accountMgmt from "../../public/assets/dbrdimg/AccountManagement.png";
@@ -9,7 +9,6 @@ import inventoryMgmt from "../../public/assets/dbrdimg/InventoryManagement.png";
 import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
 import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
-import Geolocation from "../Geolocation";
 
 export default function AdminDashboard() {
   // const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -22,6 +21,7 @@ export default function AdminDashboard() {
     "Transaction Records",
     "Picking and Packing",
     "Account Management",
+    "Delivery Management",
   ]);
 
   const navigateTo = (list: string) => {
@@ -44,6 +44,9 @@ export default function AdminDashboard() {
       case "Account Management":
         router.push("/dashboard/acc-management");
         break;
+        case "Delivery Management":
+          router.push("/dashboard/delivery-management");
+          break;
 
       default:
         router.push("/");
@@ -81,6 +84,12 @@ export default function AdminDashboard() {
       case "Account Management":
         return {
           src: accountMgmt,
+          className: "w-full h-full p-4",
+        };
+
+      case "Delivery Management":
+        return {
+          src: deliveryMgmt,
           className: "w-full h-full p-4",
         };
       default:
