@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Geolocation from "../Geolocation";
+// import Geolocation from "../Geolocation";
 // assets
 import addProducts from "../../public/assets/dbrdimg/AddProducts.png";
 import accountMgmt from "../../public/assets/dbrdimg/AccountManagement.png";
@@ -9,7 +9,7 @@ import inventoryMgmt from "../../public/assets/dbrdimg/InventoryManagement.png";
 import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
 import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
-import deliveryMgmt from "../../public/assets/dbrdimg/delivery-management icon.png"
+import deliveryMgmt from  '../../public/assets/dbrdimg/delivery-managementIcon.png'
 
 export default function AdminDashboard() {
   // const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -114,6 +114,7 @@ export default function AdminDashboard() {
           </div>
         );
       })}
+      {/* <Geolocation /> */}
     </section>
   );
 }

@@ -9,13 +9,13 @@ datasource db {
 
 type UsersAdditionalInfo {
   Dob          String
-  Phone_Number Int 
+  Phone_Number Int
   email        String
 }
 
 model products {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  barcodeId        String             @unique
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  barcodeId        String @unique
   productName      String
   quantity         Int
   sku              String
@@ -34,3 +34,38 @@ model users {
   username        String              @unique(map: "username_1")
 }
 
+// 
+
+// id           String         @id @default(auto()) @map("_id") @db.ObjectId
+
+model productDetails {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  barcodeId    String         @unique
+  img          String
+  quantity     Int
+  productName  String
+  price        Float
+  sku          String
+  productLists productLists[]
+}
+
+// one to many relationsShip
+
+model productLists {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  dateRecieve      DateTime        @default(now())
+  expirationDate   String
+  poId             String
+  status           String
+  palleteLocation  String
+  productDetails   productDetails? @relation(fields: [productDetailsId], references: [id])
+  productDetailsId String?         @db.ObjectId
+}
+
+model racks {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  rackName    String
+  maxQuantity Int    @default(100)
+  types       String
+  slots       String
+}

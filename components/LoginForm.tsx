@@ -100,7 +100,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
         <p className="text-xs absolute top-4 right-4 cursor-pointer">
           Need Help?
         </p>
-        <h1 className="border w-full text-center h-10">Log in</h1>
+        <h1 className="[ w-full text-center h-10">Log in</h1>
         <div className="flex items-center justify-center gap-2 flex-col">
           <label htmlFor="username" className=" w-full text-sm">
             Username
