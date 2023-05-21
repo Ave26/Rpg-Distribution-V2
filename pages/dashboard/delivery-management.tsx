@@ -47,18 +47,27 @@ const Geolocation = () => {
     if (isTracking && typeof window !== "undefined" && "geolocation" in window.navigator) {
       const watchId = window.navigator.geolocation.watchPosition(
         (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          setLocationLog((prevLog) => [
-            ...prevLog,
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              timestamp: new Date().toISOString(),
-            },
-          ]);
+          const newLatitude = position.coords.latitude;
+          const newLongitude = position.coords.longitude;
 
-          drawRoute();
+          if (
+            latitude !== newLatitude ||
+            longitude !== newLongitude ||
+            locationLog.length === 0
+          ) {
+            setLatitude(newLatitude);
+            setLongitude(newLongitude);
+            setLocationLog((prevLog) => [
+              ...prevLog,
+              {
+                latitude: newLatitude,
+                longitude: newLongitude,
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            drawRoute();
+          }
         },
         (error) => {
           setError(error.message);
@@ -69,7 +78,7 @@ const Geolocation = () => {
         window.navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [isTracking, drawRoute]);
+  }, [isTracking, drawRoute, latitude, longitude, locationLog.length]);
 
   const startTracking = () => {
     setIsTracking(true);
