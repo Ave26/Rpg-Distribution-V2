@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 
 type LocationEntry = {
   latitude: number;
@@ -12,19 +12,32 @@ const Geolocation = () => {
   const [error, setError] = useState<string | null>(null);
   const [locationLog, setLocationLog] = useState<LocationEntry[]>([]);
   const [isTracking, setIsTracking] = useState(false);
+  const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
 
   useEffect(() => {
     if (isTracking && typeof window !== "undefined" && "geolocation" in window.navigator) {
       const watchId = window.navigator.geolocation.watchPosition(
         (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
+          const newLatitude = position.coords.latitude;
+          const newLongitude = position.coords.longitude;
+
+          setLatitude(newLatitude);
+          setLongitude(newLongitude);
+
           setLocationLog((prevLog) => [
             ...prevLog,
             {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
+              latitude: newLatitude,
+              longitude: newLongitude,
               timestamp: new Date().toISOString(),
+            },
+          ]);
+
+          setPathPoints((prevPoints) => [
+            ...prevPoints,
+            {
+              x: newLongitude,
+              y: newLatitude,
             },
           ]);
         },
@@ -47,6 +60,36 @@ const Geolocation = () => {
     setIsTracking(false);
   };
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        pathPoints.forEach((point, index) => {
+          const x = (point.x - (longitude || 0)) * 1000 + canvas.width / 2;
+          const y = -((point.y - (latitude || 0)) * 1000) + canvas.height / 2;
+
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+
+        ctx.stroke();
+      }
+    }
+  }, [pathPoints, latitude, longitude]);
+
   const mapUrl = `https://maps.google.com/maps?q=${latitude || 0},${longitude || 0}&output=embed`;
 
   return (
@@ -55,14 +98,23 @@ const Geolocation = () => {
         <h1 className="text-3xl font-bold">Geolocation Map</h1>
         <div className="h-64 mt-4">
           {latitude && longitude ? (
-            <iframe
-              title="Map"
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              src={mapUrl}
-              allowFullScreen
-            ></iframe>
+            <>
+              <iframe
+                title="Map"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                src={mapUrl}
+                allowFullScreen
+              ></iframe>
+              <canvas
+                ref={canvasRef}
+                className="absolute top-0 left-0"
+                width="100%"
+                height="100%"
+                style={{ zIndex: 1 }}
+              ></canvas>
+            </>
           ) : (
             <p>Loading map...</p>
           )}
