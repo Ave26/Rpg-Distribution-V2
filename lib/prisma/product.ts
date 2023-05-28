@@ -1,4 +1,6 @@
+import { NextApiRequest } from "next";
 import prisma from ".";
+import { verifyJwt } from "../helper/jwt";
 
 export const recieveProduct = async (
   barcodeId: string,
@@ -91,66 +93,61 @@ export const findProductBaseOnName = async (productName: string) => {
   }
 };
 
-// ________________________________________________
+// ---------------------------------------------------------------> NEW LINE FOR FETCHING PRODUCT
+import { Product, ProductList, Count } from "@/types/types";
 
-// find, update or create
-// product details -> find ? create : update
-
-export const findProductDetails = async (barcodeId: string) => {
+export const createProdudctDetails = async (
+  req: NextApiRequest,
+  barcodeId: string
+) => {
+  const { verifiedToken, error }: any = await verifyJwt(req);
   try {
-    const product = await prisma.productDetails.findFirstOrThrow({
-      where: {
+    const newProduct = await prisma.productDetails.create({
+      data: {
         barcodeId,
       },
+    });
 
+    return { verifiedToken, error };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const findManyProduct = async () => {
+  try {
+    const product = await prisma.productDetails.findMany({
       include: {
+        _count: {
+          select: {
+            productLists: true,
+          },
+        },
         productLists: true,
       },
     });
-    console.log(product);
     return { product };
   } catch (error) {
     return { error };
   }
 };
 
-export const createProductDetails = async (barcodeId: string) => {
-  try {
-    const productDetails = await prisma.productDetails.create({
-      data: {
-        barcodeId,
-        img: "",
-        price: 0.0,
-        productName: "",
-        quantity: 0,
-        sku: "",
-      },
-    });
-    return { productDetails };
-  } catch (error) {
-    return { error };
-  }
-};
-
-export const createProductLists = async (id: string) => {
-  try {
-    const createdProductList = await prisma.productLists.create({
-      data: {
-        palleteLocation: "test",
-        status: "test",
-        poId: "test",
-        expirationDate: "test",
-        productDetails: {
-          connect: {
-            id,
-          },
+export const findProductDetails = async (barcodeId: string) => {
+  const product = await prisma.productDetails.findUnique({
+    where: {
+      barcodeId,
+    },
+    include: {
+      productLists: {
+        where: {
+          status: "good",
         },
       },
-    });
+    },
+  });
 
-    const quantity = await prisma.productLists.findMany({});
-    console.log(quantity);
-    return { createdProductList, quantity };
+  try {
+    return { product };
   } catch (error) {
     return { error };
   }

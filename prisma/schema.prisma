@@ -32,20 +32,14 @@ model users {
   password        String              @unique(map: "password_1")
   roles           String              @default("staff")
   username        String              @unique(map: "username_1")
+  productLists    productLists[]
 }
-
-// 
-
-// id           String         @id @default(auto()) @map("_id") @db.ObjectId
 
 model productDetails {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   barcodeId    String         @unique
-  img          String
-  quantity     Int
-  productName  String
-  price        Float
-  sku          String
+  img          String?
+  productName  String?
   productLists productLists[]
 }
 
@@ -53,19 +47,36 @@ model productDetails {
 
 model productLists {
   id               String          @id @default(auto()) @map("_id") @db.ObjectId
-  dateRecieve      DateTime        @default(now())
-  expirationDate   String
-  poId             String
-  status           String
-  palleteLocation  String
+  quantity         Int?
+  dateRecieve      DateTime?
+  expirationDate   String?
+  price            Float?
+  sku              String?
+  poId             String?
+  status           String?
+  paletteLocation  String?
+  productType      String?
+  user             users?          @relation(fields: [userId], references: [id])
+  userId           String?         @db.ObjectId
   productDetails   productDetails? @relation(fields: [productDetailsId], references: [id])
   productDetailsId String?         @db.ObjectId
 }
 
-model racks {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  rackName    String
-  maxQuantity Int    @default(100)
-  types       String
-  slots       String
+model skuTypes {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  price            Float?
+  manufacturer     String?
+  type             String?
+  size             String?
+  palletteLocation palletteLocation[]
+}
+
+model palletteLocation {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  skuTypes    skuTypes? @relation(fields: [skuTypesId], references: [id])
+  skuTypesId  String?   @db.ObjectId
+  category    String? // Food, Laundry, Cosmetics, Sanitary, Cleaning
+  row         Int?
+  column      Int?
+  maxCapacity Int?
 }

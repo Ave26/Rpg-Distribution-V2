@@ -17,8 +17,7 @@ const BurgerMenu: React.FC<Menu> = ({ menuOpen, setMenuOpen }) => {
       <div
         className={`${
           menuOpen && "w-6"
-        } transition-all w-9 rounded-md h-1.5 bg-gray-600`}
-      ></div>
+        } transition-all w-9 rounded-md h-1.5 bg-gray-600`}></div>
       <div className={`w-9 rounded-md h-1.5 bg-gray-600`}></div>
     </div>
   );

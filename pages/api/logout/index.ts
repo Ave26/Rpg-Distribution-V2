@@ -1,5 +1,6 @@
 import { deleteCookie } from "@/lib/helper/cookie";
-import { NextApiRequest, NextApiResponse } from "next";
+import { verifyJwt } from "@/lib/helper/jwt";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "DELETE") {

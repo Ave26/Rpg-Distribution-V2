@@ -22,8 +22,7 @@ export default function Home({ data }: any) {
             <section className="h-screen w-full">
               <div
                 className="mt-10  text-center opacity-90 bg-blue-800 text-white flex items-center justify-center flex-col ml-0 mr-0 w-full
-"
-              >
+">
                 <div className="text-center w-96 h-96 px-2 flex justify-center items-center flex-col">
                   <h1 className="text-xl m-2">Welcome to RPG Prostock!</h1>
                   <p className="text-xs">
@@ -33,8 +32,7 @@ export default function Home({ data }: any) {
                   </p>
                   <Link
                     className="p-5 border rounded-lg mt-5 hover:bg-white hover:text-black"
-                    href={"https://rpg-ph.com"}
-                  >
+                    href={"https://rpg-ph.com"}>
                     Learn More
                   </Link>
                 </div>
@@ -45,8 +43,7 @@ export default function Home({ data }: any) {
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
                     loop
-                    muted
-                  >
+                    muted>
                     <source src="/assets/homepage.mp4" type="video/mp4" />
                   </video>
                 </div>
@@ -65,12 +62,20 @@ export default function Home({ data }: any) {
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   const { verifiedToken, error }: any = await verifyJwt(req);
+
   if (error) {
     console.log(error);
+    return {
+      props: {
+        error: true,
+      },
+    };
   }
+  console.log(verifiedToken);
+
   return {
     props: {
-      data: verifiedToken ?? null,
+      data: verifiedToken || "Please Login",
     },
   };
 };

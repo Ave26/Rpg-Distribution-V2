@@ -61,8 +61,7 @@ export default function Header({
 
   return (
     <div
-      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg} relative`}
-    >
+      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg} relative`}>
       <div className={`absolute left-0 top-0 w-[41.2em] h-full ${headerSky}`}>
         <Link href={"/"}>
           <Image
@@ -88,8 +87,7 @@ export default function Header({
         </Link>
         <button
           onClick={authenticated ? handleLogout : handleLogin}
-          className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white"
-        >
+          className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white">
           {authenticated ? "Logout" : "Login"}
         </button>
       </nav>

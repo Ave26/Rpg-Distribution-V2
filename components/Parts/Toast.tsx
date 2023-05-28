@@ -1,7 +1,7 @@
 import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 
 interface DataForToast {
-  data?: ReactNode;
+  data?: ReactNode | any;
 }
 
 export default function Toast({ data }: DataForToast) {

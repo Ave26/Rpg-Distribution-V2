@@ -3,10 +3,12 @@ import Footer from "./Footer";
 
 // fetch
 import useSWR from "swr";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 
 interface LayoutProps {
   children: React.ReactNode;
+  error?: unknown | any;
   data?: any;
   headerBg?: string;
   headerTxt?: string;
@@ -30,6 +32,7 @@ export default function Layout({
         headerTxt={headerTxt}
         headerSky={headerSky}
       />
+
       <main className="h-full w-full font-extrabold">{children}</main>
       <Footer footerSky={footerSky} />
     </>
