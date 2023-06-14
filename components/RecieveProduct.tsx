@@ -20,7 +20,7 @@ export default function RecieveProduct() {
   const [data, setData] = useState<Product[]>([]);
 
   const [show, setShow] = useState<boolean>(false);
-  setTimeout(() => {
+  setTimeout(() => { 
     setShow(false);
   }, 5000);
 
