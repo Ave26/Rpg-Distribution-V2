@@ -38,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         //   ? res.status(200).json({ product })
         //   : res.status(404).json({ message: "Product Not found" });
 
-        return res.send("THIS IS THE POST METHOD");
+        return res.send("THIS IS THE POST METHOD " + "Quantity: " + quantity);
       } catch (error) {
         return res.json(error);
       }

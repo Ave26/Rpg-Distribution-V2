@@ -2,6 +2,7 @@ import Layout from "@/components/layout";
 import React, { useState } from "react";
 import AssignPallette from "@/components/Actions/AssignPallette";
 import RecieveProduct from "@/components/RecieveProduct";
+import BarcodeScanner from "@/components/BarcodeScanner";
 
 interface Prod {
   barcodeId: string;
@@ -205,9 +206,8 @@ export default function AddProducts() {
     //   </section>
     // </Layout>
     <Layout>
-      <section className="h-screen w-full border px-40 py-20 ">
-        <RecieveProduct />
-      </section>
+      {/* <RecieveProduct /> */}
+      <BarcodeScanner />
     </Layout>
   );
 }
