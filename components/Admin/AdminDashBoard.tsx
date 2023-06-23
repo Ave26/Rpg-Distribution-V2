@@ -9,7 +9,7 @@ import inventoryMgmt from "../../public/assets/dbrdimg/InventoryManagement.png";
 import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
 import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
-import deliveryMgmt from  '../../public/assets/dbrdimg/delivery-managementIcon.png'
+import deliveryMgmt from "../../public/assets/dbrdimg/delivery-managementIcon.png";
 
 export default function AdminDashboard() {
   // const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -45,9 +45,9 @@ export default function AdminDashboard() {
       case "Account Management":
         router.push("/dashboard/acc-management");
         break;
-        case "Delivery Management":
-          router.push("/dashboard/delivery-management");
-          break;
+      case "Delivery Management":
+        router.push("/dashboard/delivery-management");
+        break;
 
       default:
         router.push("/");
@@ -99,22 +99,20 @@ export default function AdminDashboard() {
   };
 
   return (
-    <section className="w-full h-screen flex justify-center items-center gap-2 select-none bg-gradient-to-b from-white via-[#5680E9] to-blue-500">
+    <section className="md:p-30 flex h-screen w-full select-none flex-wrap items-center justify-center gap-2 p-5 sm:p-24">
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="border p-7 relative select-none flex justify-center gap-1 flex-col items-center w-40 h-40 text-center rounded-md shadow-md hover:shadow-xl bg-white"
+            className="flex h-36 w-36 select-none flex-col items-center justify-center gap-1 rounded-md border bg-white  p-7 text-center shadow-md hover:p-5 hover:shadow-xl lg:h-40 lg:w-40"
             onClick={(e) => {
               navigateTo(list);
             }}
-            key={index}
-          >
+            key={index}>
             <Image {...getDashboardImg(list)} alt={list} />
             <p className="text-xs">{list}</p>
           </div>
         );
       })}
-      {/* <Geolocation /> */}
     </section>
   );
 }

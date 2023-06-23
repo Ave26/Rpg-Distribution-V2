@@ -1,25 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Product } from "@/types/types";
 import Image from "next/image";
+import { TiMessageTyping } from "react-icons/ti";
+import { BiQrScan } from "react-icons/bi";
 
 function BarcodeScanner() {
   const [v, setV] = useState<string>("");
+  const [isTypable, setisTypable] = useState<boolean>(false);
   const ref = useRef<string | null>(null);
   const [data, setData] = useState<any>();
+  const [isToggle, setIsToggle] = useState<boolean>(false);
 
   useEffect(() => {
-    if (v !== "") {
+    if (v != "") {
       ref.current = v;
-      console.log(ref.current);
     }
   }, [v]);
 
   useEffect(() => {
-    console.log(v);
-    // setTimeout(() => {
-    setV("");
-    // }, 200);
-  }, [v]);
+    console.log("rendering");
+    if (!isTypable) {
+      setTimeout(() => {
+        setV("");
+      }, 200);
+    }
+  }, [isTypable, v]);
 
   useEffect(() => {
     if (v) {
@@ -46,33 +51,72 @@ function BarcodeScanner() {
   }, [v]);
 
   return (
-    <section className="border-black w-full h-screen relative p-7">
-      <div className="flex justify-center w-fit flex-col">
+    <section className="relative flex h-screen w-full flex-col items-center justify-center border-black p-7">
+      <div className="flex flex-col items-center justify-start gap-2">
         <label htmlFor="barcode">Barcode Id:</label>
-        <input
-          autoFocus
-          id="barcode"
-          type="text"
-          value={v}
-          onChange={(e) => {
-            setV(e.target.value);
+
+        <div className="flex w-fit flex-col justify-center">
+          <input
+            autoFocus
+            id="barcode"
+            type="text"
+            value={v}
+            onChange={(e) => {
+              setV(e.target.value);
+            }}
+            className="border border-slate-900 p-4 text-black "
+          />
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setisTypable((prevType) => !prevType);
           }}
-          className="text-black p-4 border border-slate-900 "
-        />
+          className="flex h-[3.7em] w-12 items-center justify-center border border-black py-2">
+          {isTypable ? (
+            <TiMessageTyping className="h-full  w-full border-black" />
+          ) : (
+            <BiQrScan className="h-full  w-full border-black" />
+          )}
+        </button>
+
+        <label className="relative inline-flex cursor-pointer items-center">
+          <input
+            type="checkbox"
+            value=""
+            className="peer sr-only"
+            onClick={() => {
+              setIsToggle((prevToggle) => !prevToggle);
+            }}
+          />
+          <div className="peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-red-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-green-600"></div>
+          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+            {isToggle ? "Damage" : "Good"}
+          </span>
+        </label>
       </div>
+
       {ref.current && (
-        <div className="border-blue-400 border w-fit p-2 mt-2 drop-shadow-sm cursor-pointer select-none">
+        <div className="mt-2 w-fit cursor-pointer select-none border border-blue-400 p-2 drop-shadow-sm">
           {ref.current}
         </div>
       )}
       <h1>{data?.id}</h1>
       <h1>{data?.barcodeId}</h1>
 
+      <div>
+        <select className="p-2">
+          <option>Small</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+      </div>
       {data && (
         <Image
           src={data?.img}
           alt="productImg"
-          className="w-[20em] h-[20em]"
+          className="h-[20em] w-[20em]"
           width={20}
           height={20}
         />

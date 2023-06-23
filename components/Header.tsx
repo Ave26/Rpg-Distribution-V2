@@ -61,24 +61,24 @@ export default function Header({
 
   return (
     <div
-      className={`font-bold flex justify-between items-center h-24 w-full px-4 ${headerBg} relative`}>
-      <div className={`absolute left-0 top-0 w-[41.2em] h-full ${headerSky}`}>
+      className={`flex h-24 w-full items-center justify-between px-4 font-bold ${headerBg} relative`}>
+      <div className={`h-full w-[41.2em] ${headerSky}`}>
         <Link href={"/"}>
           <Image
             src={RPG}
             alt="RPG LOGO"
-            className="w-10 h-10 m-4 transition-all"
+            className="m-4 h-10 w-10 transition-all"
           />
         </Link>
       </div>
       <button onClick={toggleMenu}>
         {isOpen ? (
-          <HiMenuAlt1 className="md:sr-only not-sr-only w-12" />
+          <HiMenuAlt1 className="not-sr-only w-12 md:sr-only" />
         ) : (
-          <HiMenu className="md:sr-only not-sr-only w-12" />
+          <HiMenu className="not-sr-only w-12 md:sr-only" />
         )}
       </button>
-      <nav className="select-none flex justify-center items-center gap-10 md:not-sr-only sr-only">
+      <nav className="sr-only flex select-none items-center justify-center gap-10 md:not-sr-only">
         <Link href={"/products"} className={`${headerTxt}`}>
           Product Catalog
         </Link>
@@ -87,7 +87,7 @@ export default function Header({
         </Link>
         <button
           onClick={authenticated ? handleLogout : handleLogin}
-          className="w-[130px] h-[50px] bg-transparent outline-none rounded-[6px] border-2 cursor-pointer border-[#EEA47FFF] transition-all hover:bg-[#EEA47FFF] text-[#EEA47FFF] hover:text-white">
+          className="h-[50px] w-[130px] cursor-pointer rounded-[6px] border-2 border-[#EEA47FFF] bg-transparent text-[#EEA47FFF] outline-none transition-all hover:bg-[#EEA47FFF] hover:text-white">
           {authenticated ? "Logout" : "Login"}
         </button>
       </nav>

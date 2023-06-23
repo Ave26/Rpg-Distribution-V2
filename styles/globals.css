@@ -23,3 +23,16 @@
     opacity: 0%;
   }
 }
+
+
+@keyframes emerge {
+  100% {
+    opacity: 100%;
+  }
+  50% {
+    opacity: 50%;
+  }
+  0% {
+    opacity: 0%;
+  }
+}

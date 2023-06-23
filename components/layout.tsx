@@ -33,7 +33,7 @@ export default function Layout({
         headerSky={headerSky}
       />
 
-      <main className="h-full w-full font-extrabold">{children}</main>
+      <main>{children}</main>
       <Footer footerSky={footerSky} />
     </>
   );

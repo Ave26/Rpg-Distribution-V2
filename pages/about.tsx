@@ -10,20 +10,14 @@ export default function About({ data }: any) {
         <title>About Us | MyCompany</title>
       </Head>
       <Layout>
-        <div className="rounded-md p-6 bg-white shadow-md justify-center items-center gap-16 flex  border-black">
-          <div className="w-[25rem]">
-            <Image
-              src={aboutus}
-              alt="About Us"
-              // className={aboutStyles.image}
-              className="w-full h-full "
-            />
+        <div className="flex flex-col items-center justify-center rounded-md border-black bg-white shadow-md lg:flex-row">
+          <div className="p-10 lg:w-[50%]">
+            <Image src={aboutus} alt="About Us" className="h-full w-full" />
           </div>
           <section
-            className={`w-1/2 flex justify-center item-center flex-col gap-5`}
-          >
+            className={`item-center flex w-[80%] flex-col justify-center gap-5`}>
             <h1 className={"text-3xl "}>Who We Are</h1>
-            <p className={" text-black leading-relaxed   font-roboto"}>
+            <p className={" font-roboto leading-relaxed  text-black"}>
               <strong className="text-3xl text-yellow-400">W</strong>elcome to{" "}
               <strong className="text-3xl text-yellow-400">ProStock</strong>! We
               are a team of experienced professionals
@@ -39,7 +33,7 @@ export default function About({ data }: any) {
           and develop strategies that deliver results.`}
             </p>
             <h2 className={"text-3xl "}>Our Expertise</h2>
-            <p className={"text-black leading-relaxed  "}>
+            <p className={"leading-relaxed text-black  "}>
               <strong className="text-3xl text-yellow-400">O</strong>ur team has
               a wealth of experience in a variety of industries and can help you
               navigate complex challenges and capitalize on new opportunities.
@@ -47,7 +41,7 @@ export default function About({ data }: any) {
               have the expertise you need to succeed.
             </p>
             <h2 className={"text-3xl  "}> Our Promise</h2>
-            <p className={"text-black leading-relaxed  "}>
+            <p className={"leading-relaxed text-black  "}>
               {` Whether you're a small startup or a large corporation, we're here to
               help you achieve your goals. We promise to provide you with
               personalized service and solutions that are tailored to your unique
