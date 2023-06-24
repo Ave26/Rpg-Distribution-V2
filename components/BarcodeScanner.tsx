@@ -6,6 +6,7 @@ import { BiQrScan } from "react-icons/bi";
 
 function BarcodeScanner() {
   const [v, setV] = useState<string>("");
+  const [poId, setPoId] = useState<string>("");
   const [isTypable, setisTypable] = useState<boolean>(false);
   const ref = useRef<string | null>(null);
   const [data, setData] = useState<any>();
@@ -51,11 +52,12 @@ function BarcodeScanner() {
   }, [v]);
 
   return (
-    <section className="relative flex h-screen w-full flex-col items-center justify-center border-black p-7">
-      <div className="flex flex-col items-center justify-start gap-2">
-        <label htmlFor="barcode">Barcode Id:</label>
-
-        <div className="flex w-fit flex-col justify-center">
+    <section className="relative flex h-screen w-full flex-col items-center justify-start p-7 font-bold">
+      <div className="justify-startborder flex w-full flex-col items-center border border-black p-5">
+        <label htmlFor="barcode" className="w-full">
+          Barcode Id:
+        </label>
+        <div className="flex w-full items-center justify-between px-4 py-2">
           <input
             autoFocus
             id="barcode"
@@ -64,23 +66,38 @@ function BarcodeScanner() {
             onChange={(e) => {
               setV(e.target.value);
             }}
-            className="border border-slate-900 p-4 text-black "
+            className="border border-slate-900 p-4 text-black"
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setisTypable((prevType) => !prevType);
+            }}
+            className="flex h-[3.7em] w-12  items-center justify-center py-2">
+            {isTypable ? (
+              <TiMessageTyping className="h-full  w-full border-black" />
+            ) : (
+              <BiQrScan className="h-full  w-full border-black" />
+            )}
+          </button>
+        </div>
+        <div className="flex w-full flex-col items-start justify-center">
+          <label htmlFor="poId" className="w-full ">
+            Purchase Order Id:
+          </label>
+          <input
+            autoFocus
+            id="poId "
+            type="text"
+            value={poId}
+            onChange={(e) => {
+              setPoId(e.target.value);
+            }}
+            className="mx-4 my-2 border border-slate-900 p-4 text-black"
           />
         </div>
-
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setisTypable((prevType) => !prevType);
-          }}
-          className="flex h-[3.7em] w-12 items-center justify-center border border-black py-2">
-          {isTypable ? (
-            <TiMessageTyping className="h-full  w-full border-black" />
-          ) : (
-            <BiQrScan className="h-full  w-full border-black" />
-          )}
-        </button>
-
+      </div>
+      <div className="flex w-full items-center justify-center gap-20 border border-black py-2">
         <label className="relative inline-flex cursor-pointer items-center">
           <input
             type="checkbox"
@@ -95,8 +112,15 @@ function BarcodeScanner() {
             {isToggle ? "Damage" : "Good"}
           </span>
         </label>
-      </div>
 
+        <div>
+          <select className="p-2">
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
+        </div>
+      </div>
       {ref.current && (
         <div className="mt-2 w-fit cursor-pointer select-none border border-blue-400 p-2 drop-shadow-sm">
           {ref.current}
@@ -105,13 +129,6 @@ function BarcodeScanner() {
       <h1>{data?.id}</h1>
       <h1>{data?.barcodeId}</h1>
 
-      <div>
-        <select className="p-2">
-          <option>Small</option>
-          <option>Medium</option>
-          <option>Hard</option>
-        </select>
-      </div>
       {data && (
         <Image
           src={data?.img}
