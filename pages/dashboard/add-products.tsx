@@ -206,8 +206,8 @@ export default function AddProducts() {
     //   </section>
     // </Layout>
     <Layout>
-      {/* <RecieveProduct /> */}
-      <BarcodeScanner />
+      <RecieveProduct />
+      {/* <BarcodeScanner /> */}
     </Layout>
   );
 }

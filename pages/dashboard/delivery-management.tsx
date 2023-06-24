@@ -62,33 +62,59 @@ const Geolocation = () => {
     setIsTracking(true);
   };
 
+  useEffect(() => {
+    if (isTracking && latitude !== null && longitude !== null) {
+      setLocationLog((prevLog) => [
+        ...prevLog,
+        {
+          latitude: latitude,
+          longitude: longitude,
+          timestamp: new Date().toISOString(),
+          message: "Delivery has been initiated",
+        },
+      ]);
+    }
+  }, [isTracking, latitude, longitude]);
+
   const stopTracking = () => {
     setIsTracking(false);
+
+    setLocationLog((prevLog) => [
+      ...prevLog,
+      {
+        latitude: latitude || 0,
+        longitude: longitude || 0,
+        timestamp: new Date().toISOString(),
+        message: "Delivery has been completed",
+      },
+    ]);
   };
 
   const handleGasStop = () => {
     if (latitude && longitude) {
-      const logEntry: LocationEntry = {
-        latitude,
-        longitude,
-        timestamp: new Date().toISOString(),
-        message: "Gas Stop",
-      };
-
-      setLocationLog((prevLog) => [...prevLog, logEntry]);
+      setLocationLog((prevLog) => [
+        ...prevLog,
+        {
+          latitude,
+          longitude,
+          timestamp: new Date().toISOString(),
+          message: "Gas Stop",
+        },
+      ]);
     }
   };
 
   const handleEmergencyStop = () => {
     if (latitude && longitude) {
-      const logEntry: LocationEntry = {
-        latitude,
-        longitude,
-        timestamp: new Date().toISOString(),
-        message: "Emergency Stop",
-      };
-
-      setLocationLog((prevLog) => [...prevLog, logEntry]);
+      setLocationLog((prevLog) => [
+        ...prevLog,
+        {
+          latitude,
+          longitude,
+          timestamp: new Date().toISOString(),
+          message: "Emergency Stop",
+        },
+      ]);
     }
   };
 
@@ -130,13 +156,15 @@ const Geolocation = () => {
           {!isTracking ? (
             <button
               className="bg-blue-500 text-white py-2 px-4 rounded"
-              onClick={startTracking}>
+              onClick={startTracking}
+            >
               Start Delivery
             </button>
           ) : (
             <button
               className="bg-red-500 text-white py-2 px-4 rounded"
-              onClick={stopTracking}>
+              onClick={stopTracking}
+            >
               Delivery Complete
             </button>
           )}
@@ -154,7 +182,8 @@ const Geolocation = () => {
                       location.message === "Gas Stop"
                         ? "text-red-500"
                         : ""
-                    }`}>
+                    }`}
+                  >
                     {location.message}
                   </span>
                 )}
@@ -166,7 +195,7 @@ const Geolocation = () => {
                   Longitude: {location.longitude}
                 </span>{" "}
                 <span className="font-thin">
-                  Longitude: {location.timestamp}
+                  Timestamp: {location.timestamp}
                 </span>{" "}
               </li>
             ))}
@@ -183,26 +212,30 @@ const Geolocation = () => {
                 frameBorder="0"
                 src={`https://maps.google.com/maps?q=${latitude},${longitude}&output=embed`}
                 allowFullScreen
-                style={{ zIndex: 0 }}></iframe>
+                style={{ zIndex: 0 }}
+              ></iframe>
             )}
             <canvas
               ref={canvasRef}
               className="absolute top-0 left-0"
               width="100%"
               height="100%"
-              style={{ zIndex: 1 }}></canvas>
+              style={{ zIndex: 1 }}
+            ></canvas>
           </div>
         </div>
 
         <div className="mt-8 space-x-4">
           <button
             className="bg-green-500 text-white py-2 px-4 rounded"
-            onClick={handleGasStop}>
+            onClick={handleGasStop}
+          >
             Gas Stop
           </button>
           <button
             className="bg-red-500 text-white py-2 px-4 rounded"
-            onClick={handleEmergencyStop}>
+            onClick={handleEmergencyStop}
+          >
             Emergency Stop
           </button>
         </div>
