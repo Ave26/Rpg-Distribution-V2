@@ -61,24 +61,36 @@ export default function Header({
 
   return (
     <div
-      className={`flex h-24 w-full items-center justify-between px-4 font-bold ${headerBg} relative`}>
-      <div className={`h-full w-[41.2em] ${headerSky}`}>
-        <Link href={"/"}>
-          <Image
-            src={RPG}
-            alt="RPG LOGO"
-            className="m-4 h-10 w-10 transition-all"
-          />
-        </Link>
+      className={`${headerBg} flex flex-col items-center justify-center font-bold lg:flex-row ${
+        isOpen ? "" : ""
+      }`}>
+      <div className="relative flex h-24 w-full items-center justify-between px-4 font-bold">
+        <div className={`h-fit w-fit ${headerSky}`}>
+          <Link href={"/"}>
+            <Image
+              src={RPG}
+              alt="RPG LOGO"
+              className="h-10 w-10 transition-all"
+            />
+          </Link>
+        </div>
+        <div className="h-fit">
+          <button onClick={toggleMenu}>
+            {isOpen ? (
+              <HiMenuAlt1 className="not-sr-only w-12 lg:sr-only" />
+            ) : (
+              <HiMenu className="not-sr-only w-12 lg:sr-only" />
+            )}
+          </button>
+        </div>
       </div>
-      <button onClick={toggleMenu}>
-        {isOpen ? (
-          <HiMenuAlt1 className="not-sr-only w-12 md:sr-only" />
-        ) : (
-          <HiMenu className="not-sr-only w-12 md:sr-only" />
-        )}
-      </button>
-      <nav className="sr-only flex select-none items-center justify-center gap-10 md:not-sr-only">
+
+      <nav
+        className={`flex flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:h-full lg:w-full lg:flex-row lg:gap-10 lg:p-5 ${
+          isOpen
+            ? "not-sr-only animate-emerge transition-all"
+            : "sr-only transition-all"
+        }`}>
         <Link href={"/products"} className={`${headerTxt}`}>
           Product Catalog
         </Link>
