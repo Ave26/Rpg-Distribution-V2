@@ -51,7 +51,12 @@ const Geolocation = () => {
             ]);
 
             setDeliveryInitiated(true);
-          } else if (isTracking && latitude !== null && longitude !== null) {
+          } else if (
+            isTracking &&
+            latitude !== null &&
+            longitude !== null &&
+            locationLog[0]?.message !== "Start Delivery has been initiated"
+          ) {
             setLocationLog((prevLog) => [
               ...prevLog,
               {
@@ -68,6 +73,8 @@ const Geolocation = () => {
                 y: newLatitude,
               },
             ]);
+
+            setDeliveryInitiated(true);
           }
         },
         (error) => {
