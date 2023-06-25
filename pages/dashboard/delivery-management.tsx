@@ -61,8 +61,8 @@ const Geolocation = () => {
             setDeliveryInitiated(true);
           } else if (
             isTracking &&
-            latitude !== null &&
-            longitude !== null &&
+            newLatitude !== null &&
+            newLongitude !== null &&
             locationLog[0]?.message !== "Start Delivery has been initiated"
           ) {
             setLocationLog((prevLog) => [
@@ -94,7 +94,7 @@ const Geolocation = () => {
         window.navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [isTracking]);
+  }, [isTracking, locationLog.length, pathPoints.length]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
