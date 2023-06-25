@@ -30,15 +30,6 @@ const Geolocation = () => {
           setLatitude(newLatitude);
           setLongitude(newLongitude);
 
-          setLocationLog((prevLog) => [
-            ...prevLog,
-            {
-              latitude: newLatitude,
-              longitude: newLongitude,
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-
           setPathPoints((prevPoints) => [
             ...prevPoints,
             {
@@ -60,32 +51,26 @@ const Geolocation = () => {
 
   const startTracking = () => {
     setIsTracking(true);
-  };
-
-  useEffect(() => {
-    if (isTracking && latitude !== null && longitude !== null) {
-      setLocationLog((prevLog) => [
-        ...prevLog,
-        {
-          latitude: latitude,
-          longitude: longitude,
-          timestamp: new Date().toISOString(),
-          message: "Delivery has been initiated",
-        },
-      ]);
-    }
-  }, [isTracking, latitude, longitude]);
-
-  const stopTracking = () => {
-    setIsTracking(false);
-
     setLocationLog((prevLog) => [
       ...prevLog,
       {
         latitude: latitude || 0,
         longitude: longitude || 0,
         timestamp: new Date().toISOString(),
-        message: "Delivery has been completed",
+        message: "Start Delivery has been initiated",
+      },
+    ]);
+  };
+
+  const stopTracking = () => {
+    setIsTracking(false);
+    setLocationLog((prevLog) => [
+      ...prevLog,
+      {
+        latitude: latitude || 0,
+        longitude: longitude || 0,
+        timestamp: new Date().toISOString(),
+        message: "Complete Delivery has been initiated",
       },
     ]);
   };
@@ -98,7 +83,7 @@ const Geolocation = () => {
           latitude,
           longitude,
           timestamp: new Date().toISOString(),
-          message: "Gas Stop",
+          message: "Gas Stop on",
         },
       ]);
     }
@@ -112,7 +97,7 @@ const Geolocation = () => {
           latitude,
           longitude,
           timestamp: new Date().toISOString(),
-          message: "Emergency Stop",
+          message: "Emergency Stop on",
         },
       ]);
     }
@@ -165,7 +150,7 @@ const Geolocation = () => {
               className="bg-red-500 text-white py-2 px-4 rounded"
               onClick={stopTracking}
             >
-              Delivery Complete
+              Complete Delivery
             </button>
           )}
         </div>
@@ -175,28 +160,27 @@ const Geolocation = () => {
           <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
             {locationLog.map((location, index) => (
               <li key={index} className="mb-2">
-                {location.message && (
-                  <span
-                    className={`font-bold ${
-                      location.message === "Emergency Stop" ||
-                      location.message === "Gas Stop"
-                        ? "text-red-500"
-                        : ""
-                    }`}
-                  >
-                    {location.message}
-                  </span>
-                )}
-                {location.message && <span className="mx-2 font-thin">at</span>}
-                <span className="font-thin">
-                  Latitude: {location.latitude},
-                </span>{" "}
-                <span className="font-thin">
-                  Longitude: {location.longitude}
-                </span>{" "}
+                <span className="font-bold">
+                  {location.message}{" "}
+                  {location.message !== "Start Delivery has been initiated" &&
+                    location.message !== "Complete Delivery has been initiated" &&
+                    "on"}
+                </span>
+                {location.message !== "Start Delivery has been initiated" &&
+                  location.message !== "Complete Delivery has been initiated" && (
+                    <span className="font-thin">
+                      Latitude: {location.latitude},
+                    </span>
+                  )}
+                {location.message !== "Start Delivery has been initiated" &&
+                  location.message !== "Complete Delivery has been initiated" && (
+                    <span className="font-thin">
+                      Longitude: {location.longitude}
+                    </span>
+                  )}
                 <span className="font-thin">
                   Timestamp: {location.timestamp}
-                </span>{" "}
+                </span>
               </li>
             ))}
           </ul>
