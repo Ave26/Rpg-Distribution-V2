@@ -8,6 +8,14 @@ type LocationEntry = {
   message?: string;
 };
 
+type PositionError = {
+  code: number;
+  message: string;
+  PERMISSION_DENIED: number;
+  POSITION_UNAVAILABLE: number;
+  TIMEOUT: number;
+};
+
 const Geolocation = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -77,7 +85,7 @@ const Geolocation = () => {
             setDeliveryInitiated(true);
           }
         },
-        (error) => {
+        (error: PositionError) => {
           setError(error.message);
         }
       );
