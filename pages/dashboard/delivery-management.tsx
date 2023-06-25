@@ -20,7 +20,7 @@ const Geolocation = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [coordinateLog, setCoordinateLog] = useState<LocationEntry[]>([]);
+  const [locationLog, setLocationLog] = useState<LocationEntry[]>([]);
   const [isTracking, setIsTracking] = useState(false);
   const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
   const [deliveryInitiated, setDeliveryInitiated] = useState(false);
@@ -39,8 +39,8 @@ const Geolocation = () => {
           setLatitude(newLatitude);
           setLongitude(newLongitude);
 
-          if (!coordinateLog.length && !pathPoints.length) {
-            setCoordinateLog((prevLog) => [
+          if (!locationLog.length && !pathPoints.length) {
+            setLocationLog((prevLog) => [
               ...prevLog,
               {
                 latitude: newLatitude,
@@ -63,9 +63,9 @@ const Geolocation = () => {
             isTracking &&
             newLatitude !== null &&
             newLongitude !== null &&
-            coordinateLog[0]?.message !== "Start Delivery has been initiated"
+            locationLog[0]?.message !== "Start Delivery has been initiated"
           ) {
-            setCoordinateLog((prevLog) => [
+            setLocationLog((prevLog) => [
               ...prevLog,
               {
                 latitude: newLatitude,
@@ -94,11 +94,11 @@ const Geolocation = () => {
         window.navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [isTracking, coordinateLog.length, pathPoints.length]);
+  }, [isTracking, locationLog.length, pathPoints.length]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
-      setCoordinateLog((prevLog) => [
+      setLocationLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -112,7 +112,7 @@ const Geolocation = () => {
 
   const handleEmergencyStop = () => {
     if (latitude && longitude) {
-      setCoordinateLog((prevLog) => [
+      setLocationLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -126,7 +126,7 @@ const Geolocation = () => {
 
   const handleCompleteDelivery = () => {
     if (latitude && longitude) {
-      setCoordinateLog((prevLog) => [
+      setLocationLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -153,8 +153,8 @@ const Geolocation = () => {
         ctx.beginPath();
 
         pathPoints.forEach((point, index) => {
-          const x = (point.x - (longitude || 0)) * 1000 + canvas.width / 2;
-          const y = -((point.y - (latitude || 0)) * 1000) + canvas.height / 2;
+          const x = (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
+          const y = -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
 
           if (index === 0) {
             ctx.moveTo(x, y);
@@ -166,7 +166,19 @@ const Geolocation = () => {
         ctx.stroke();
       }
     }
-  }, [pathPoints, latitude, longitude]);
+  }, [pathPoints]);
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      setPathPoints((prevPoints) => [
+        ...prevPoints,
+        {
+          x: longitude,
+          y: latitude,
+        },
+      ]);
+    }
+  }, [latitude, longitude]);
 
   return (
     <Layout>
@@ -180,7 +192,7 @@ const Geolocation = () => {
                 setIsTracking(true);
                 setLatitude(null);
                 setLongitude(null);
-                setCoordinateLog([]);
+                setLocationLog([]);
                 setPathPoints([]);
               }}
             >
@@ -203,7 +215,7 @@ const Geolocation = () => {
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-2">Location Log:</h3>
           <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
-            {coordinateLog.map((location, index) => (
+            {locationLog.map((location, index) => (
               <li key={index} className="mb-2">
                 {location.message && (
                   <span
