@@ -229,12 +229,14 @@ const Geolocation = () => {
           <button
             className="bg-green-500 text-white py-2 px-4 rounded"
             onClick={handleGasStop}
+            disabled={!isTracking}
           >
             Gas Stop
           </button>
           <button
             className="bg-red-500 text-white py-2 px-4 rounded"
             onClick={handleEmergencyStop}
+            disabled={!isTracking}
           >
             Emergency Stop
           </button>
