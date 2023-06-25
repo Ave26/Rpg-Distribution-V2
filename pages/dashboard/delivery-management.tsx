@@ -39,53 +39,50 @@ const Geolocation = () => {
           setLatitude(newLatitude);
           setLongitude(newLongitude);
 
-          if (
+          if (!locationLog.length && !pathPoints.length) {
+            setLocationLog((prevLog) => [
+              ...prevLog,
+              {
+                latitude: newLatitude,
+                longitude: newLongitude,
+                timestamp: new Date().toISOString(),
+                message: "Start Delivery has been initiated",
+              },
+            ]);
+
+            setPathPoints((prevPoints) => [
+              ...prevPoints,
+              {
+                x: newLongitude,
+                y: newLatitude,
+              },
+            ]);
+
+            setDeliveryInitiated(true);
+          } else if (
             isTracking &&
             newLatitude !== null &&
             newLongitude !== null &&
-            (locationLog.length === 0 ||
-              (latitude !== newLatitude && longitude !== newLongitude))
+            locationLog[0]?.message !== "Start Delivery has been initiated"
           ) {
-            if (!locationLog.length && !pathPoints.length) {
-              setLocationLog((prevLog) => [
-                ...prevLog,
-                {
-                  latitude: newLatitude,
-                  longitude: newLongitude,
-                  timestamp: new Date().toISOString(),
-                  message: "Start Delivery has been initiated",
-                },
-              ]);
+            setLocationLog((prevLog) => [
+              ...prevLog,
+              {
+                latitude: newLatitude,
+                longitude: newLongitude,
+                timestamp: new Date().toISOString(),
+              },
+            ]);
 
-              setPathPoints((prevPoints) => [
-                ...prevPoints,
-                {
-                  x: newLongitude,
-                  y: newLatitude,
-                },
-              ]);
+            setPathPoints((prevPoints) => [
+              ...prevPoints,
+              {
+                x: newLongitude,
+                y: newLatitude,
+              },
+            ]);
 
-              setDeliveryInitiated(true);
-            } else {
-              setLocationLog((prevLog) => [
-                ...prevLog,
-                {
-                  latitude: newLatitude,
-                  longitude: newLongitude,
-                  timestamp: new Date().toISOString(),
-                },
-              ]);
-
-              setPathPoints((prevPoints) => [
-                ...prevPoints,
-                {
-                  x: newLongitude,
-                  y: newLatitude,
-                },
-              ]);
-
-              setDeliveryInitiated(true);
-            }
+            setDeliveryInitiated(true);
           }
         },
         (error: PositionError) => {
@@ -156,12 +153,8 @@ const Geolocation = () => {
         ctx.beginPath();
 
         pathPoints.forEach((point, index) => {
-          const x =
-            (point.x - (pathPoints[0]?.x || 0)) * 1000 +
-            canvas.width / 2;
-          const y =
-            -((point.y - (pathPoints[0]?.y || 0)) * 1000) +
-            canvas.height / 2;
+          const x = (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
+          const y = -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
 
           if (index === 0) {
             ctx.moveTo(x, y);
@@ -186,15 +179,6 @@ const Geolocation = () => {
       ]);
     }
   }, [latitude, longitude]);
-
-  // Filter essential location entries
-  const essentialLocationLog = locationLog.filter(
-    (location) =>
-      location.message === "Start Delivery has been initiated" ||
-      location.message === "Gas Stop" ||
-      location.message === "Emergency Stop" ||
-      location.message === "Complete Delivery"
-  );
 
   return (
     <Layout>
@@ -231,12 +215,13 @@ const Geolocation = () => {
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-2">Location Log:</h3>
           <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
-            {essentialLocationLog.map((location, index) => (
+            {locationLog.map((location, index) => (
               <li key={index} className="mb-2">
                 {location.message && (
                   <span
                     className={`font-bold ${
-                      location.message === "Emergency Stop"
+                      location.message === "Emergency Stop" ||
+                      location.message === "Gas Stop"
                         ? "text-red-500"
                         : "text-blue-500"
                     }`}
@@ -257,34 +242,44 @@ const Geolocation = () => {
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-2">Map:</h3>
           {deliveryInitiated ? (
-            <canvas
-              ref={canvasRef}
-              className="border border-gray-300"
-              width="800"
-              height="400"
-            ></canvas>
+            <div className="relative h-72">
+              <iframe
+                title="Map"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                src={`https://maps.google.com/maps?q=${latitude},${longitude}&output=embed`}
+                allowFullScreen
+                style={{ zIndex: 0 }}
+              ></iframe>
+              <canvas
+                ref={canvasRef}
+                className="absolute top-0 left-0 h-full w-full pointer-events-none"
+              ></canvas>
+            </div>
           ) : (
-            <div className="bg-gray-200 p-4">Start delivery to see the map</div>
+            <p>No delivery initiated yet.</p>
           )}
         </div>
 
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-
         <div className="mt-8">
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded"
-            onClick={handleGasStop}
-            disabled={!isTracking || !deliveryInitiated}
-          >
-            Gas Stop
-          </button>
-          <button
-            className="bg-red-500 text-white py-2 px-4 rounded ml-4"
-            onClick={handleEmergencyStop}
-            disabled={!isTracking || !deliveryInitiated}
-          >
-            Emergency Stop
-          </button>
+          <h3 className="text-lg font-bold mb-2">Actions:</h3>
+          <div>
+            <button
+              className="bg-green-500 text-white py-2 px-4 rounded mr-4"
+              onClick={handleGasStop}
+              disabled={!isTracking}
+            >
+              Gas Stop
+            </button>
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded"
+              onClick={handleEmergencyStop}
+              disabled={!isTracking}
+            >
+              Emergency Stop
+            </button>
+          </div>
         </div>
       </div>
     </Layout>
