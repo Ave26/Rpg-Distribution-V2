@@ -70,8 +70,8 @@ export default function AddProducts() {
     "rounded-md py-3 px-4 focus:ring-4 focus:outline-none border-2 md:w-full";
   return (
     <Layout>
-      <RecieveProduct />
-      {/* <BarcodeScanner /> */}
+      {/* <RecieveProduct /> */}
+      <BarcodeScanner />
     </Layout>
   );
 }

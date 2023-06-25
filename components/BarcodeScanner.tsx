@@ -53,7 +53,7 @@ function BarcodeScanner() {
 
   return (
     <section className="relative flex h-screen w-full flex-col items-center justify-start p-7 font-bold">
-      <div className="justify-startborder flex w-full flex-col items-center border border-black p-5">
+      <div className="flex w-full flex-col items-center justify-start  border border-black p-5">
         <label htmlFor="barcode" className="w-full">
           Barcode Id:
         </label>
@@ -73,7 +73,7 @@ function BarcodeScanner() {
               e.preventDefault();
               setisTypable((prevType) => !prevType);
             }}
-            className="flex h-[3.7em] w-12  items-center justify-center py-2">
+            className="flex h-[3.7em] w-12  items-center justify-center border border-black py-2">
             {isTypable ? (
               <TiMessageTyping className="h-full  w-full border-black" />
             ) : (
@@ -108,9 +108,9 @@ function BarcodeScanner() {
             }}
           />
           <div className="peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-red-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-green-600"></div>
-          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+          {/* <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
             {isToggle ? "Damage" : "Good"}
-          </span>
+          </span> */}
         </label>
 
         <div>
