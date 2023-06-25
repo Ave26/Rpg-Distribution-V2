@@ -20,7 +20,7 @@ const Geolocation = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [locationLog, setLocationLog] = useState<LocationEntry[]>([]);
+  const [coordinateLog, setCoordinateLog] = useState<LocationEntry[]>([]);
   const [isTracking, setIsTracking] = useState(false);
   const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
   const [deliveryInitiated, setDeliveryInitiated] = useState(false);
@@ -39,8 +39,8 @@ const Geolocation = () => {
           setLatitude(newLatitude);
           setLongitude(newLongitude);
 
-          if (!locationLog.length && !pathPoints.length) {
-            setLocationLog((prevLog) => [
+          if (!coordinateLog.length && !pathPoints.length) {
+            setCoordinateLog((prevLog) => [
               ...prevLog,
               {
                 latitude: newLatitude,
@@ -63,9 +63,9 @@ const Geolocation = () => {
             isTracking &&
             newLatitude !== null &&
             newLongitude !== null &&
-            locationLog[0]?.message !== "Start Delivery has been initiated"
+            coordinateLog[0]?.message !== "Start Delivery has been initiated"
           ) {
-            setLocationLog((prevLog) => [
+            setCoordinateLog((prevLog) => [
               ...prevLog,
               {
                 latitude: newLatitude,
@@ -94,11 +94,11 @@ const Geolocation = () => {
         window.navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [isTracking, locationLog.length, pathPoints.length]);
+  }, [isTracking, coordinateLog.length, pathPoints.length]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
-      setLocationLog((prevLog) => [
+      setCoordinateLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -112,7 +112,7 @@ const Geolocation = () => {
 
   const handleEmergencyStop = () => {
     if (latitude && longitude) {
-      setLocationLog((prevLog) => [
+      setCoordinateLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -126,7 +126,7 @@ const Geolocation = () => {
 
   const handleCompleteDelivery = () => {
     if (latitude && longitude) {
-      setLocationLog((prevLog) => [
+      setCoordinateLog((prevLog) => [
         ...prevLog,
         {
           latitude,
@@ -180,7 +180,7 @@ const Geolocation = () => {
                 setIsTracking(true);
                 setLatitude(null);
                 setLongitude(null);
-                setLocationLog([]);
+                setCoordinateLog([]);
                 setPathPoints([]);
               }}
             >
@@ -203,7 +203,7 @@ const Geolocation = () => {
         <div className="mt-8">
           <h3 className="text-lg font-bold mb-2">Location Log:</h3>
           <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
-            {locationLog.map((location, index) => (
+            {coordinateLog.map((location, index) => (
               <li key={index} className="mb-2">
                 {location.message && (
                   <span
