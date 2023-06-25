@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import RPG from "../public/assets/Prostocklogo.png";
+import ProStockV2 from "../public/assets/ProStockV2.png";
 import Link from "next/link";
 import { useRouter } from "next/router";
 // icons
@@ -61,16 +61,16 @@ export default function Header({
 
   return (
     <div
-      className={`${headerBg} flex flex-col items-center justify-center font-bold lg:flex-row ${
+      className={`flex flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row ${
         isOpen ? "" : ""
       }`}>
-      <div className="relative flex h-24 w-full items-center justify-between px-4 font-bold">
+      <div className="relative flex h-24 w-full items-center justify-between  px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky}`}>
           <Link href={"/"}>
             <Image
-              src={RPG}
+              src={ProStockV2}
               alt="RPG LOGO"
-              className="h-10 w-10 transition-all"
+              className="h-16 w-16 transition-all"
             />
           </Link>
         </div>

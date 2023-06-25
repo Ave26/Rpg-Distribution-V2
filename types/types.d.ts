@@ -42,4 +42,10 @@ interface ProductList {
   productDetailsId: string;
 }
 
-export { Product, ProductList, Count };
+interface InputType {
+  barcodeId: string;
+  quantity: number;
+  expiry?: Date;
+}
+
+export { Product, ProductList, Count, InputType };
