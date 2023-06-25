@@ -15,6 +15,7 @@ const Geolocation = () => {
   const [locationLog, setLocationLog] = useState<LocationEntry[]>([]);
   const [isTracking, setIsTracking] = useState(false);
   const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
+  const [deliveryInitiated, setDeliveryInitiated] = useState(false);
 
   useEffect(() => {
     if (
@@ -30,13 +31,44 @@ const Geolocation = () => {
           setLatitude(newLatitude);
           setLongitude(newLongitude);
 
-          setPathPoints((prevPoints) => [
-            ...prevPoints,
-            {
-              x: newLongitude,
-              y: newLatitude,
-            },
-          ]);
+          if (!locationLog.length && !pathPoints.length) {
+            setLocationLog((prevLog) => [
+              ...prevLog,
+              {
+                latitude: newLatitude,
+                longitude: newLongitude,
+                timestamp: new Date().toISOString(),
+                message: "Start Delivery has been initiated",
+              },
+            ]);
+
+            setPathPoints((prevPoints) => [
+              ...prevPoints,
+              {
+                x: newLongitude,
+                y: newLatitude,
+              },
+            ]);
+
+            setDeliveryInitiated(true);
+          } else if (isTracking && latitude !== null && longitude !== null) {
+            setLocationLog((prevLog) => [
+              ...prevLog,
+              {
+                latitude: newLatitude,
+                longitude: newLongitude,
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            setPathPoints((prevPoints) => [
+              ...prevPoints,
+              {
+                x: newLongitude,
+                y: newLatitude,
+              },
+            ]);
+          }
         },
         (error) => {
           setError(error.message);
@@ -49,32 +81,6 @@ const Geolocation = () => {
     }
   }, [isTracking]);
 
-  const startTracking = () => {
-    setIsTracking(true);
-    setLocationLog((prevLog) => [
-      ...prevLog,
-      {
-        latitude: latitude || 0,
-        longitude: longitude || 0,
-        timestamp: new Date().toISOString(),
-        message: "Start Delivery has been initiated",
-      },
-    ]);
-  };
-
-  const stopTracking = () => {
-    setIsTracking(false);
-    setLocationLog((prevLog) => [
-      ...prevLog,
-      {
-        latitude: latitude || 0,
-        longitude: longitude || 0,
-        timestamp: new Date().toISOString(),
-        message: "Complete Delivery has been initiated",
-      },
-    ]);
-  };
-
   const handleGasStop = () => {
     if (latitude && longitude) {
       setLocationLog((prevLog) => [
@@ -83,7 +89,7 @@ const Geolocation = () => {
           latitude,
           longitude,
           timestamp: new Date().toISOString(),
-          message: "Gas Stop on",
+          message: "Gas Stop",
         },
       ]);
     }
@@ -97,7 +103,21 @@ const Geolocation = () => {
           latitude,
           longitude,
           timestamp: new Date().toISOString(),
-          message: "Emergency Stop on",
+          message: "Emergency Stop",
+        },
+      ]);
+    }
+  };
+
+  const handleCompleteDelivery = () => {
+    if (latitude && longitude) {
+      setLocationLog((prevLog) => [
+        ...prevLog,
+        {
+          latitude,
+          longitude,
+          timestamp: new Date().toISOString(),
+          message: "Complete Delivery",
         },
       ]);
     }
@@ -141,14 +161,24 @@ const Geolocation = () => {
           {!isTracking ? (
             <button
               className="bg-blue-500 text-white py-2 px-4 rounded"
-              onClick={startTracking}
+              onClick={() => {
+                setIsTracking(true);
+                setLatitude(null);
+                setLongitude(null);
+                setLocationLog([]);
+                setPathPoints([]);
+              }}
             >
               Start Delivery
             </button>
           ) : (
             <button
               className="bg-red-500 text-white py-2 px-4 rounded"
-              onClick={stopTracking}
+              onClick={() => {
+                setIsTracking(false);
+                setDeliveryInitiated(false);
+                handleCompleteDelivery();
+              }}
             >
               Complete Delivery
             </button>
@@ -160,27 +190,28 @@ const Geolocation = () => {
           <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
             {locationLog.map((location, index) => (
               <li key={index} className="mb-2">
-                <span className="font-bold">
-                  {location.message}{" "}
-                  {location.message !== "Start Delivery has been initiated" &&
-                    location.message !== "Complete Delivery has been initiated" &&
-                    "on"}
-                </span>
-                {location.message !== "Start Delivery has been initiated" &&
-                  location.message !== "Complete Delivery has been initiated" && (
-                    <span className="font-thin">
-                      Latitude: {location.latitude},
-                    </span>
-                  )}
-                {location.message !== "Start Delivery has been initiated" &&
-                  location.message !== "Complete Delivery has been initiated" && (
-                    <span className="font-thin">
-                      Longitude: {location.longitude}
-                    </span>
-                  )}
+                {location.message && (
+                  <span
+                    className={`font-bold ${
+                      location.message === "Emergency Stop" ||
+                      location.message === "Gas Stop"
+                        ? "text-red-500"
+                        : ""
+                    }`}
+                  >
+                    {location.message}
+                  </span>
+                )}
+                {location.message && <span className="mx-2 font-thin">at</span>}
+                <span className="font-thin">
+                  Latitude: {location.latitude},
+                </span>{" "}
+                <span className="font-thin">
+                  Longitude: {location.longitude}
+                </span>{" "}
                 <span className="font-thin">
                   Timestamp: {location.timestamp}
-                </span>
+                </span>{" "}
               </li>
             ))}
           </ul>
@@ -213,14 +244,14 @@ const Geolocation = () => {
           <button
             className="bg-green-500 text-white py-2 px-4 rounded"
             onClick={handleGasStop}
-            disabled={!isTracking}
+            disabled={!deliveryInitiated}
           >
             Gas Stop
           </button>
           <button
             className="bg-red-500 text-white py-2 px-4 rounded"
             onClick={handleEmergencyStop}
-            disabled={!isTracking}
+            disabled={!deliveryInitiated}
           >
             Emergency Stop
           </button>
