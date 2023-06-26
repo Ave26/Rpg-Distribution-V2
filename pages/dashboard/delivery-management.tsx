@@ -24,7 +24,6 @@ const Geolocation = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
   const [deliveryInitiated, setDeliveryInitiated] = useState(false);
-  const watchIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (
@@ -32,7 +31,7 @@ const Geolocation = () => {
       typeof window !== "undefined" &&
       "geolocation" in window.navigator
     ) {
-      watchIdRef.current = window.navigator.geolocation.watchPosition(
+      const watchId = window.navigator.geolocation.watchPosition(
         (position) => {
           const newLatitude = position.coords.latitude;
           const newLongitude = position.coords.longitude;
@@ -61,6 +60,7 @@ const Geolocation = () => {
 
             setDeliveryInitiated(true);
           } else if (
+            isTracking &&
             newLatitude !== null &&
             newLongitude !== null &&
             locationLog[0]?.message !== "Start Delivery has been initiated"
@@ -81,20 +81,20 @@ const Geolocation = () => {
                 y: newLatitude,
               },
             ]);
+
+            setDeliveryInitiated(true);
           }
         },
         (error: PositionError) => {
           setError(error.message);
         }
       );
-    }
 
-    return () => {
-      if (watchIdRef.current) {
-        window.navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-    };
-  }, [isTracking]);
+      return () => {
+        window.navigator.geolocation.clearWatch(watchId);
+      };
+    }
+  }, [isTracking, locationLog.length, pathPoints.length]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
@@ -166,7 +166,7 @@ const Geolocation = () => {
   }, [pathPoints]);
 
   useEffect(() => {
-    if (latitude && longitude && isTracking) {
+    if (latitude && longitude) {
       setPathPoints((prevPoints) => [
         ...prevPoints,
         {
@@ -175,7 +175,7 @@ const Geolocation = () => {
         },
       ]);
     }
-  }, [latitude, longitude, isTracking]);
+  }, [latitude, longitude]);
 
   return (
     <Layout>
