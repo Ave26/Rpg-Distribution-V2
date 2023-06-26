@@ -24,6 +24,7 @@ const Geolocation = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[]>([]);
   const [deliveryInitiated, setDeliveryInitiated] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (
@@ -31,7 +32,7 @@ const Geolocation = () => {
       typeof window !== "undefined" &&
       "geolocation" in window.navigator
     ) {
-      const watchId = window.navigator.geolocation.watchPosition(
+      watchIdRef.current = window.navigator.geolocation.watchPosition(
         (position) => {
           const newLatitude = position.coords.latitude;
           const newLongitude = position.coords.longitude;
@@ -60,7 +61,6 @@ const Geolocation = () => {
 
             setDeliveryInitiated(true);
           } else if (
-            isTracking &&
             newLatitude !== null &&
             newLongitude !== null &&
             locationLog[0]?.message !== "Start Delivery has been initiated"
@@ -81,20 +81,20 @@ const Geolocation = () => {
                 y: newLatitude,
               },
             ]);
-
-            setDeliveryInitiated(true);
           }
         },
         (error: PositionError) => {
           setError(error.message);
         }
       );
-
-      return () => {
-        window.navigator.geolocation.clearWatch(watchId);
-      };
     }
-  }, [isTracking, locationLog.length, pathPoints.length]);
+
+    return () => {
+      if (watchIdRef.current) {
+        window.navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, [isTracking]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
@@ -150,26 +150,23 @@ const Geolocation = () => {
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 2;
 
-        ctx.beginPath();
+        if (pathPoints.length >= 2) {
+          ctx.beginPath();
+          const startPoint = pathPoints[0];
+          ctx.moveTo(startPoint.x, startPoint.y);
 
-        pathPoints.forEach((point, index) => {
-          const x = (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
-          const y = -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
+          pathPoints.slice(1).forEach((point) => {
+            ctx.lineTo(point.x, point.y);
+          });
 
-          if (index === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-        });
-
-        ctx.stroke();
+          ctx.stroke();
+        }
       }
     }
   }, [pathPoints]);
 
   useEffect(() => {
-    if (latitude && longitude) {
+    if (latitude && longitude && isTracking) {
       setPathPoints((prevPoints) => [
         ...prevPoints,
         {
@@ -178,7 +175,7 @@ const Geolocation = () => {
         },
       ]);
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, isTracking]);
 
   return (
     <Layout>
