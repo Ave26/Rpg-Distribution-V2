@@ -27,7 +27,6 @@ export default function Products() {
       })
       .catch((error) => {
         console.log(error);
-        // setError(error);
       })
       .finally(() => {
         setIsLoading(false);
@@ -53,10 +52,10 @@ export default function Products() {
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-full w-full font-bold overflow-hidden overflow-y-auto scrollbar-none border-slate-900 ">
+        <section className="h-full w-full overflow-hidden overflow-y-auto border-slate-900 font-bold scrollbar-none ">
           <div className="relative w-fit">
             <input
-              className="absolute px-4 py-3 ring-1 rounded-md focus:ring-slate-950 outline-none ring-slate-200 m-3"
+              className="absolute m-3 rounded-md px-4 py-3 outline-none ring-1 ring-slate-200 focus:ring-slate-950"
               type="search"
               value={searchInput}
               onChange={(e) => {
@@ -67,13 +66,13 @@ export default function Products() {
               placeholder="search product name..."
             />
           </div>
-          <div className="flex justify-center items-center w-full h-full m-4">
+          <div className="m-4 flex h-full w-full items-center justify-center">
             {isLoading ? (
-              <div className=" px-3 py-1 h-screen text-lg font-medium leading-none text-center rounded-full animate-pulse text-black flex items-center">
+              <div className=" flex h-screen animate-pulse items-center rounded-full px-3 py-1 text-center text-lg font-medium leading-none text-black">
                 <Loading />
               </div>
             ) : (
-              <div className="grid grid-cols-4 grid-flow-row p-3 gap-6">
+              <div className="grid grid-flow-row grid-cols-4 gap-6 p-3">
                 {!searchInput
                   ? data.map((product) => {
                       return <Product key={product.id} product={product} />;

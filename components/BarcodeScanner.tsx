@@ -1,34 +1,35 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Product } from "@/types/types";
 import Image from "next/image";
 import { TiMessageTyping } from "react-icons/ti";
 import { BiQrScan } from "react-icons/bi";
+import ReusableInput from "./Parts/ReusableInput";
 
 function BarcodeScanner() {
-  const [v, setV] = useState<string>("");
-  const [poId, setPoId] = useState<string>("");
+  const [barcodeId, setBarcodeId] = useState<string>("");
+  const [purchaseOrder, setPurchaseOrder] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(0);
   const [isTypable, setisTypable] = useState<boolean>(false);
   const ref = useRef<string | null>(null);
   const [data, setData] = useState<any>();
   const [isToggle, setIsToggle] = useState<boolean>(false);
 
   useEffect(() => {
-    if (v != "") {
-      ref.current = v;
+    if (barcodeId != "") {
+      ref.current = barcodeId;
     }
-  }, [v]);
+  }, [barcodeId]);
 
   useEffect(() => {
     console.log("rendering");
     if (!isTypable) {
       setTimeout(() => {
-        setV("");
+        setBarcodeId("");
       }, 200);
     }
-  }, [isTypable, v]);
+  }, [isTypable, barcodeId]);
 
   useEffect(() => {
-    if (v) {
+    if (barcodeId) {
       try {
         (async () => {
           const response = await fetch("/api/product/find", {
@@ -49,55 +50,48 @@ function BarcodeScanner() {
         console.log(error);
       }
     }
-  }, [v]);
+  }, [barcodeId]);
 
   return (
-    <section className="relative flex h-screen w-full flex-col items-center justify-start p-7 font-bold">
-      <div className="flex w-full flex-col items-center justify-start  border border-black p-5">
-        <label htmlFor="barcode" className="w-full">
-          Barcode Id:
-        </label>
-        <div className="flex w-full items-center justify-between px-4 py-2">
-          <input
-            autoFocus
-            id="barcode"
-            type="text"
-            value={v}
-            onChange={(e) => {
-              setV(e.target.value);
-            }}
-            className="border border-slate-900 p-4 text-black"
-          />
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setisTypable((prevType) => !prevType);
-            }}
-            className="flex h-[3.7em] w-12  items-center justify-center border border-black py-2">
-            {isTypable ? (
-              <TiMessageTyping className="h-full  w-full border-black" />
-            ) : (
-              <BiQrScan className="h-full  w-full border-black" />
-            )}
-          </button>
-        </div>
-        <div className="flex w-full flex-col items-start justify-center">
-          <label htmlFor="poId" className="w-full ">
-            Purchase Order Id:
-          </label>
-          <input
-            autoFocus
-            id="poId "
-            type="text"
-            value={poId}
-            onChange={(e) => {
-              setPoId(e.target.value);
-            }}
-            className="mx-4 my-2 border border-slate-900 p-4 text-black"
-          />
-        </div>
+    <section className="h-screen w-full break-all font-bold">
+      <div className="flex flex-wrap items-center justify-start">
+        <ReusableInput
+          type="text"
+          name="Barcode Id:"
+          value={barcodeId}
+          placeholder="barcodeid"
+          onChange={(newValue) => {
+            setBarcodeId(newValue);
+          }}
+        />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setisTypable((prevType) => !prevType);
+          }}
+          className="py-2w max-w- flex h-[3.7em] items-center justify-center border border-black">
+          {isTypable ? (
+            <TiMessageTyping className="h-full w-full border-black" />
+          ) : (
+            <BiQrScan className="h-full w-full border-black" />
+          )}
+        </button>
       </div>
-      <div className="flex w-full items-center justify-center gap-20 border border-black py-2">
+      <div className="flex items-center justify-center">
+        <ReusableInput
+          type="text"
+          name="Purchase Order:"
+          value={purchaseOrder}
+          placeholder="purchaseOrder"
+          onChange={(newValue) => {
+            setPurchaseOrder(newValue);
+          }}
+        />
+        <h1 className="mx-2 flex h-20 w-full items-center justify-center border border-black">
+          {quantity}
+        </h1>
+      </div>
+      <div className="flex w-full flex-wrap items-center justify-center gap-20  py-2">
         <label className="relative inline-flex cursor-pointer items-center">
           <input
             type="checkbox"
@@ -108,11 +102,10 @@ function BarcodeScanner() {
             }}
           />
           <div className="peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-red-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-green-600"></div>
-          {/* <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
             {isToggle ? "Damage" : "Good"}
-          </span> */}
+          </span>
         </label>
-
         <div>
           <select className="p-2">
             <option>Small</option>
@@ -121,14 +114,12 @@ function BarcodeScanner() {
           </select>
         </div>
       </div>
-      {ref.current && (
-        <div className="mt-2 w-fit cursor-pointer select-none border border-blue-400 p-2 drop-shadow-sm">
-          {ref.current}
-        </div>
-      )}
-      <h1>{data?.id}</h1>
-      <h1>{data?.barcodeId}</h1>
 
+      {ref.current && (
+        <h1 className="mt-2 w-fit max-w-full cursor-pointer select-none break-all border border-blue-400 p-2 drop-shadow-sm">
+          {String(ref.current)}
+        </h1>
+      )}
       {data && (
         <Image
           src={data?.img}

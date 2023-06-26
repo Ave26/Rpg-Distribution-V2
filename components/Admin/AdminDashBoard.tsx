@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-// import Geolocation from "../Geolocation";
-// assets
+
 import addProducts from "../../public/assets/dbrdimg/AddProducts.png";
 import accountMgmt from "../../public/assets/dbrdimg/AccountManagement.png";
 import inventoryMgmt from "../../public/assets/dbrdimg/InventoryManagement.png";
@@ -10,9 +9,10 @@ import palletteLoc from "../../public/assets/dbrdimg/PalletLocation.png";
 import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
 import deliveryMgmt from "../../public/assets/dbrdimg/delivery-managementIcon.png";
+import ReusableButton from "../Parts/ReusableButton";
 
 export default function AdminDashboard() {
-  // const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const router = useRouter();
   const [dashBoardList, setIsDashBoardList] = useState<string[]>([
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   const navigateTo = (list: string) => {
     switch (list) {
       case "Add Products":
-        router.push("/dashboard/add-products");
+        // router.push("/dashboard/add-products");
         break;
       case "Inventory Management":
         router.push("/dashboard/inventory-management");
@@ -60,38 +60,38 @@ export default function AdminDashboard() {
       case "Add Products":
         return {
           src: addProducts,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       case "Inventory Management":
         return {
           src: inventoryMgmt,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       case "Pallette Location":
         return {
           src: palletteLoc,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       case "Transaction Records":
         return {
           src: transactionRec,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       case "Picking and Packing":
         return {
           src: pickAndPack,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       case "Account Management":
         return {
           src: accountMgmt,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
 
       case "Delivery Management":
         return {
           src: deliveryMgmt,
-          className: "w-full h-full p-4",
+          className: "w-full h-full p-4 transition-all",
         };
       default:
         return undefined;
@@ -103,13 +103,39 @@ export default function AdminDashboard() {
       {dashBoardList.map((list, index) => {
         return (
           <div
-            className="flex h-36 w-36 select-none flex-col items-center justify-center gap-1 rounded-md border bg-white  p-7 text-center shadow-md hover:p-5 hover:shadow-xl lg:h-40 lg:w-40"
+            className={`relative flex h-36 w-36 select-none flex-col items-center justify-center gap-1 rounded-md border p-8 text-center opacity-100 shadow-md transition-all hover:bg-opacity-70 hover:p-5 hover:shadow-xl lg:h-40 lg:w-40`}
+            onMouseEnter={() => {
+              list === "Add Products" && setIsHovered(true);
+            }}
+            onMouseLeave={() => {
+              list === "Add Products" && setIsHovered(false);
+            }}
             onClick={(e) => {
               navigateTo(list);
             }}
             key={index}>
             <Image {...getDashboardImg(list)} alt={list} />
-            <p className="text-xs">{list}</p>
+            <p className="text-xs">
+              {isHovered && list === "Add Products" ? null : list}
+            </p>
+            {isHovered && list === "Add Products" && (
+              <div className="absolute flex h-full w-full flex-col items-center justify-center gap-2 p-2 transition-all">
+                <ReusableButton
+                  name={"Scan Barcode"}
+                  onClick={() => {
+                    console.log("open Scan BArcode");
+                    router.push("/dashboard/barcode-scanner");
+                  }}
+                />
+                <ReusableButton
+                  name={"Add New Product"}
+                  onClick={() => {
+                    console.log("Open Add New Product");
+                    router.push("/dashboard/add-new-product");
+                  }}
+                />
+              </div>
+            )}
           </div>
         );
       })}
