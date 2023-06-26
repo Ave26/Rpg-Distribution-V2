@@ -150,17 +150,20 @@ const Geolocation = () => {
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 2;
 
-        if (pathPoints.length >= 2) {
-          ctx.beginPath();
-          const startPoint = pathPoints[0];
-          ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.beginPath();
 
-          pathPoints.slice(1).forEach((point) => {
-            ctx.lineTo(point.x, point.y);
-          });
+        pathPoints.forEach((point, index) => {
+          const x = (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
+          const y = -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
 
-          ctx.stroke();
-        }
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+
+        ctx.stroke();
       }
     }
   }, [pathPoints]);
