@@ -1,5 +1,9 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findManyProduct, findProductDetails } from "@/lib/prisma/product";
+import {
+  addNewProduct,
+  findManyProduct,
+  findProductDetails,
+} from "@/lib/prisma/product";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -25,20 +29,35 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { barcodeId, quantity } = req.body;
+  const { barcodeId, category, image, price, productName, quantity } = req.body;
   switch (req.method) {
     case "POST":
       try {
-        // const { product, error } = await findProductDetails(barcodeId);
-        // if (error) {
-        //   return res.json({ error });
-        // }
+        if (!barcodeId || !category || !image || !price || !productName) {
+          return res.json({
+            message: "Please complete the fields",
+          });
+        }
 
-        // return product
-        //   ? res.status(200).json({ product })
-        //   : res.status(404).json({ message: "Product Not found" });
+        console.log(barcodeId, category, image, price, productName, "server");
 
-        return res.send("THIS IS THE POST METHOD " + "Quantity: " + quantity);
+        const { newProduct, error, findProduct } = await addNewProduct(
+          barcodeId,
+          category,
+          image,
+          Number(price),
+          productName
+        );
+
+        if (findProduct) {
+          return res.json({ message: "Product Already Created" });
+        }
+
+        if (error) {
+          return res.json({ error });
+        }
+
+        return res.status(200).json({ newProduct, message: "Product Added" });
       } catch (error) {
         return res.json(error);
       }

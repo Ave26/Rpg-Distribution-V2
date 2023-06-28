@@ -1,11 +1,17 @@
-import type { ChangeEvent, FC, SetStateAction } from "react";
+import {
+  useState,
+  type ChangeEvent,
+  type FC,
+  type SetStateAction,
+} from "react";
 
 interface ReusableInputProps {
   name?: string;
   type?: string;
   value: any;
   placeholder?: string;
-  onChange: (value: string) => void;
+  className?: string;
+  onChange: (value: any) => void;
 }
 
 const ReusableInput: FC<ReusableInputProps> = ({
@@ -13,14 +19,20 @@ const ReusableInput: FC<ReusableInputProps> = ({
   type,
   value,
   placeholder,
+  className,
   onChange,
 }) => {
+  const [initialStyle, setInitialStyle] = useState<string>(
+    "border border-black p-2"
+  );
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange(event.target.value);
   };
 
   return (
-    <div className="flex max-w-full flex-col items-start justify-center gap-2 p-2 font-bold">
+    <div
+      className={`flex max-w-full flex-col items-start justify-center gap-2 p-2 font-bold`}>
       <label htmlFor={name}>{name}</label>
       <input
         type={type}
@@ -28,7 +40,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
         id={name}
         value={value}
         placeholder={placeholder}
-        className="max-w-full border border-black p-2"
+        className={className ? className : initialStyle}
         onChange={handleInputChange}
       />
     </div>

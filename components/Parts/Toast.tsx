@@ -1,12 +1,17 @@
 import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 
 interface DataForToast {
+  isShow?: boolean;
+  style?: string;
   data?: ReactNode | any;
 }
 
-export default function Toast({ data }: DataForToast) {
+export default function Toast({ data, isShow }: DataForToast) {
   return (
-    <div className="fixed flex items-center w-fit max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow bottom-5 left-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800">
+    <div
+      className={`space-x fixed bottom-5 left-5 z-50 flex w-fit max-w-xs ${
+        isShow ? "animate-emerge" : "animate-fade"
+      }  items-center space-x-4 divide-x divide-gray-200 rounded-lg bg-white p-4 text-gray-500 shadow transition-all dark:divide-gray-700 dark:bg-gray-800 dark:text-gray-400`}>
       <p>{data}</p>
     </div>
   );

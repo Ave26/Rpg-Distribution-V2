@@ -152,3 +152,61 @@ export const findProductDetails = async (barcodeId: string) => {
     return { error };
   }
 };
+
+// ------------------------------------------------------------- test product adding
+
+// interface ProductDetails {
+//   barcodeId: string;
+//   category: string;
+//   image: string;
+//   price: number;
+//   productName: string;
+// }
+
+export const findProduct = async (barcodeId: string) => {
+  try {
+    const product = await prisma.sampleProductDetails.findUnique({
+      where: {
+        barcodeId,
+      },
+    });
+    return { product };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const addNewProduct = async (
+  barcodeId: string,
+  category: string,
+  image: string,
+  price: number,
+  productName: string
+) => {
+  console.log(barcodeId, category, image, price, productName, "prisma");
+  try {
+    const findProduct = await prisma.sampleProductDetails.findUnique({
+      where: {
+        barcodeId,
+      },
+    });
+
+    if (findProduct) {
+      return { findProduct };
+    } else {
+      const newProduct = await prisma.sampleProductDetails.create({
+        data: {
+          barcodeId: barcodeId,
+          category,
+          image,
+          price,
+          productName,
+        },
+      });
+      return { newProduct };
+    }
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
+};

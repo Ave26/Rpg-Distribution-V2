@@ -80,3 +80,25 @@ model palletteLocation {
   column      Int?
   maxCapacity Int?
 }
+
+model sampleProductDetails {
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  barcodeId          String?              @unique
+  productName        String?
+  image              String?
+  price              Float?
+  category           String?
+  sampleProductLists sampleProductLists[]
+}
+
+model sampleProductLists {
+  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrder        String?
+  boxType              String?
+  expirationDate       String?
+  Quality              String?
+  Quantity             Int?
+  location             String?
+  sampleProductDetails sampleProductDetails? @relation(fields: [productDetailsId], references: [id])
+  productDetailsId     String                @db.ObjectId
+}
