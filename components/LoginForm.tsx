@@ -1,9 +1,10 @@
 import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import logo from "/public/assets/Prostocklogo.png";
+import logo from "@/public/assets/ProStockV2.png";
 // types
 import useSWR from "swr";
+import ReusableInput from "./Parts/ReusableInput";
 
 interface Auth {
   username: string;
@@ -35,7 +36,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
     });
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("/api/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,12 +77,11 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
     }
   };
   const inputStyle =
-    "ring-1 ring-black px-6 py-4 rounded-sm bg-transparent border border-slate-900 text-black md:px-[3.5em] md:text-center";
+    "ring-1 ring-black px-6 py-4 rounded-sm bg-transparent border border-slate-900 text-black md:px-[3.5em] md:text-center w-full";
 
   return (
     <form
-      className="flex items-center justify-center w-fit h-full shadow-2xl drop-shadow-2xl rounded-2xl "
-      // className="shadow-2xl rounded-lg gap-6 p-4 flex justify-center items-center flex-col h-full min-w-[22em] opacity-70 bg-transparent"
+      className="relative flex h-full w-fit flex-col items-center justify-center rounded-2xl font-bold shadow-2xl drop-shadow-2xl md:flex-row-reverse"
       onSubmit={handleLogin}
       onKeyDown={(e: React.KeyboardEvent) => {
         e.key === "Enter" && setBtnStyle("bg-slate-100 text-black");
@@ -89,19 +89,10 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       onKeyUp={(e: React.KeyboardEvent) => {
         e.key === "Enter" && setBtnStyle("");
       }}>
-      <div className=" flex justify-center items-center flex-col gap-2 bg-sky-300 h-full w-72 px-20 rounded-l-2xl">
-        <Image src={logo} alt="RPG LOGO" className="h-28 w-28" />
-        <p className="text-center text-xs">
-          {"Welcome to our Warehouse Management System. Let's get started!"}
-        </p>
-      </div>
-      <div className=" flex justify-center items-center flex-col h-full p-20 gap-4 relative">
-        <p className="text-xs absolute top-4 right-4 cursor-pointer">
-          Need Help?
-        </p>
-        <h1 className="[ w-full text-center h-10">Log in</h1>
-        <div className="flex items-center justify-center gap-2 flex-col">
-          <label htmlFor="username" className=" w-full text-sm">
+      <div className="relative flex h-full flex-col items-center justify-center gap-4 md:p-5">
+        <h1 className="[ h-10 w-full text-center">Log in</h1>
+        <div className="flex w-full flex-col items-center justify-center gap-2">
+          <label htmlFor="username" className="w-full text-sm">
             Username
           </label>
           <input
@@ -121,7 +112,8 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
             className={inputStyle}
           />
         </div>
-        <div className="flex items-center justify-center gap-2 flex-col">
+
+        <div className="flex flex-col items-center justify-center gap-2">
           <label htmlFor="password" className=" w-full text-sm">
             Password
           </label>
@@ -145,12 +137,12 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
 
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+          className="mr-2 inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4 focus:ring-blue-300 hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700">
           {isLoading && (
             <svg
               aria-hidden="true"
               role="status"
-              className="inline w-4 h-4 mr-3 text-white animate-spin"
+              className="mr-3 inline h-4 w-4 animate-spin text-white"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg">
@@ -166,6 +158,12 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
           )}
           {isLoading ? "Loading..." : "Login"}
         </button>
+      </div>
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-b-2xl bg-sky-300 md:rounded-l-2xl md:rounded-br-none">
+        <Image src={logo} alt="RPG LOGO" className="h-24 w-24" />
+        <p className="break-all p-5 text-center text-xs">
+          Welcome to our Warehouse Management System. Let&apos;s get started!
+        </p>
       </div>
     </form>
   );

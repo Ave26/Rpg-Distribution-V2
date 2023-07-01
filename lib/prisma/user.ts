@@ -69,3 +69,12 @@ export const findUserBasedOnId = async (id: string) => {
     return { error };
   }
 };
+
+export const findAllUsers = async () => {
+  const users = await prisma.users.findMany({});
+  try {
+    return { users };
+  } catch (error) {
+    return { error };
+  }
+};

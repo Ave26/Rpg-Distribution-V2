@@ -39,7 +39,7 @@ export default function AccountManagement() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/user/register", {
         method: "POST",
         body: requestBody,
         headers: {
@@ -72,19 +72,18 @@ export default function AccountManagement() {
   const inputStyle = "";
   return (
     <Layout>
-      <div className="w-full h-screen flex justify-center font-bold mt-16">
+      <div className="mt-16 flex h-screen w-full justify-center font-bold">
         <form
           action=""
           onSubmit={handleRegister}
-          className="flex justify-center items-center flex-col border w-1/2 h-2/3 hover:shadow-lg shadow-md gap-3"
-        >
-          <div className="flex justify-center items-center">
-            <section className="border flex justify-center items-center h-full w-full flex-col p-4">
+          className="flex h-2/3 w-1/2 flex-col items-center justify-center gap-3 border shadow-md hover:shadow-lg">
+          <div className="flex items-center justify-center">
+            <section className="flex h-full w-full flex-col items-center justify-center border p-4">
               <label htmlFor="username">Username</label>
               <input
                 id="username"
                 type="text"
-                className="p-5 border-2 rounded-xl"
+                className="rounded-xl border-2 p-5"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -92,7 +91,7 @@ export default function AccountManagement() {
               <input
                 id="password"
                 type="password"
-                className="p-5 border-2 rounded-xl "
+                className="rounded-xl border-2 p-5 "
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -100,18 +99,18 @@ export default function AccountManagement() {
               <input
                 id="confirm password"
                 type="password"
-                className="p-5 border-2 rounded-xl "
+                className="rounded-xl border-2 p-5 "
                 value={cPassword}
                 onChange={(e) => setCPassword(e.target.value)}
               />
             </section>
-            <section className="border flex justify-center items-center h-full w-full flex-col p-4">
+            <section className="flex h-full w-full flex-col items-center justify-center border p-4">
               <label htmlFor="dob">Date of Birth</label>
               <input
                 id="dob"
                 type="date"
                 placeholder="username"
-                className="p-3 border-2 rounded-xl "
+                className="rounded-xl border-2 p-3 "
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
               />
@@ -119,7 +118,7 @@ export default function AccountManagement() {
               <input
                 id="phone"
                 type="text"
-                className="p-3 border-2 rounded-xl "
+                className="rounded-xl border-2 p-3 "
                 value={phoneNum}
                 onChange={(e) => setPhoneNum(e.target.value)}
               />
@@ -127,7 +126,7 @@ export default function AccountManagement() {
               <input
                 id="email"
                 type="email"
-                className="p-3 border-2 rounded-xl "
+                className="rounded-xl border-2 p-3 "
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -135,17 +134,15 @@ export default function AccountManagement() {
           </div>
           <button
             type="submit"
-            className="w-full justify-center text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center"
-          >
+            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700">
             {isLoading ? (
               <svg
                 aria-hidden="true"
                 role="status"
-                className="inline w-4 h-4 mr-3 text-white animate-spin"
+                className="mr-3 inline h-4 w-4 animate-spin text-white"
                 viewBox="0 0 100 101"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
                   fill="#E5E7EB"

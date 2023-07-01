@@ -25,7 +25,7 @@ export default function Header({
   const handleLogout = async () => {
     console.log("click");
     try {
-      const response = await fetch("/api/logout", {
+      const response = await fetch("/api/user/logout", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

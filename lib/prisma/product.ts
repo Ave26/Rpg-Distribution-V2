@@ -154,23 +154,72 @@ export const findProductDetails = async (barcodeId: string) => {
 };
 
 // ------------------------------------------------------------- test product adding
+// Barcode Scan
+// Create a auto assign bin system
 
-// interface ProductDetails {
-//   barcodeId: string;
-//   category: string;
-//   image: string;
-//   price: number;
-//   productName: string;
-// }
+interface ProductDetails {
+  barcodeId: string;
+  category: string;
+  image: string;
+  price: number;
+  productName: string;
+}
 
-export const findProduct = async (barcodeId: string) => {
+const setBinQuantity = async (binMaxQuantity: number) => {
   try {
-    const product = await prisma.sampleProductDetails.findUnique({
-      where: {
-        barcodeId,
+    const maxQuantity = await prisma.bin.create({
+      data: {
+        maxQuantiy: binMaxQuantity,
       },
     });
-    return { product };
+    if (maxQuantity) {
+      console.log("do something");
+    }
+
+    return {
+      message: `Max quantity set to ${maxQuantity}`,
+    };
+  } catch (error) {
+    return { error };
+  }
+};
+
+const findMaxQuantityPerBin = async (maxSize: string) => {
+  try {
+    switch (maxSize) {
+      case "Small":
+        console.log("set bin quantity to 12");
+        let maxQuantity = 12;
+        setBinQuantity(12);
+        break;
+
+      case "Medium":
+        console.log("set bin quantity to 10");
+        setBinQuantity(10);
+        break;
+      case "Large":
+        console.log("set bin quantity to 6");
+        setBinQuantity(6);
+        break;
+
+      default:
+        console.log("Default");
+        break;
+    }
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const scanBarcode = async (barcodeId: string, category: string) => {
+  // find the barcode inside the rack
+  try {
+    const barcodeIdInBin = await prisma.racks.findUnique({
+      where: {
+        productBarcodeId: barcodeId,
+      },
+    });
+    return { barcodeIdInBin };
   } catch (error) {
     return { error };
   }
@@ -190,6 +239,7 @@ export const addNewProduct = async (
         barcodeId,
       },
     });
+    // await findMaxQuantityPerBin(barcodeId)
 
     if (findProduct) {
       return { findProduct };

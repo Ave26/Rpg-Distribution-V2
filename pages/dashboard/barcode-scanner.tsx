@@ -5,6 +5,10 @@ import { BiQrScan } from "react-icons/bi";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import Layout from "@/components/layout";
 import Link from "next/link";
+import noImg from "../../public/assets/products/noProductDisplay.png";
+import ReusableButton from "@/components/Parts/ReusableButton";
+import Toast from "@/components/Parts/Toast";
+import Loading from "@/components/Parts/Loading";
 
 function BarcodeScanner() {
   const [barcodeId, setBarcodeId] = useState<string>("");
@@ -20,6 +24,8 @@ function BarcodeScanner() {
   const ref = useRef<string | null>(null);
   const [data, setData] = useState<any>();
   const [isToggle, setIsToggle] = useState<boolean>(false);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (barcodeId != "") {
@@ -37,19 +43,8 @@ function BarcodeScanner() {
   }, [isTypable, barcodeId]);
 
   useEffect(() => {
-    //  this what the simulation will work
     if (barcodeId) {
-      try {
-        setQuantity((prevState) => prevState + 1);
-        // console.log(`Quantity added: ${quantity}`);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  }, [barcodeId]);
-
-  useEffect(() => {
-    if (barcodeId) {
+      setIsLoading(true);
       try {
         (async () => {
           const response = await fetch("/api/product/find", {
@@ -63,18 +58,20 @@ function BarcodeScanner() {
           });
 
           const json = await response.json();
-          const product = await json?.product;
-          setData(product);
+          setIsLoading(false);
+          setData(json);
         })();
       } catch (error) {
         console.log(error);
+        setData(error);
+        setIsLoading(false);
       }
     }
   }, [barcodeId]);
 
   return (
     <Layout>
-      <section className="h-screen w-full break-all font-bold">
+      <section className="h-full w-full break-all font-bold">
         <div className="border border-black">
           <div className="flex flex-wrap items-center justify-start">
             <ReusableInput
@@ -149,17 +146,44 @@ function BarcodeScanner() {
               {String(ref.current)}
             </h1>
           )}
-          {data && (
+          {isLoading ? (
+            <Loading />
+          ) : (
             <Image
-              src={data?.img}
+              priority
+              src={data?.product?.image || noImg}
               alt="productImg"
               className="h-[20em] w-[20em]"
-              width={20}
-              height={20}
+              width={256}
+              height={256}
             />
           )}
           <Link href="/dashboard/add-new-product">Add new Product</Link>
         </div>
+
+        <button
+          className="border border-black p-3"
+          onClick={async (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.preventDefault();
+            console.log("click");
+            try {
+              const response = await fetch("/api/product/scan", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  message: "hey mf",
+                }),
+              });
+              const json = await response.json();
+              console.log(json?.message);
+            } catch (error: unknown) {
+              console.log(error);
+            }
+          }}>
+          Click to Test
+        </button>
       </section>
     </Layout>
   );

@@ -12,7 +12,7 @@ const middleware =
 
       if (error) {
         return res.status(403).json({
-          authenticated: false, 
+          authenticated: false,
           message: error,
         });
       }

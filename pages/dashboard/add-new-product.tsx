@@ -115,8 +115,10 @@ const AddNewProduct: FC = ({}) => {
   return (
     <Layout>
       <section className="h-full w-full">
-        <form onSubmit={handleAddProduct}>
-          <div className="flex flex-col flex-wrap items-center justify-center break-all font-bold md:grid md:gap-2 lg:grid-cols-2 lg:place-items-center">
+        <form
+          onSubmit={handleAddProduct}
+          className="flex flex-col items-center justify-center gap-3">
+          <div className="flex flex-col flex-wrap items-center justify-center gap-2 break-all font-bold md:grid lg:grid-cols-2 lg:place-items-center">
             <ReusableInput
               value={barcodeId}
               name="Barcode Id"
@@ -140,12 +142,6 @@ const AddNewProduct: FC = ({}) => {
               placeholder="0.00"
               type="text"
               onChange={(newValue) => {
-                // if (/^\d*$/.test(newValue)) {
-                //   setPrice(newValue);
-                // } else {
-                //   setPrice(0);
-                // }
-
                 const filteredValue = newValue.replace(/[^0-9.]/g, "");
                 setPrice(filteredValue);
               }}

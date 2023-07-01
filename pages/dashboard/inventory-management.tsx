@@ -39,14 +39,14 @@ export default function InventoryManageMent() {
   return (
     <Layout>
       <section className="h-screen w-full border">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-full">
+        <div className="relative h-full overflow-x-auto shadow-md sm:rounded-lg">
           {isLoading ? (
-            <div className="h-screen flex justify-center items-center">
+            <div className="flex h-screen items-center justify-center">
               <Loading />
             </div>
           ) : (
-            <table className="w-full h-screen text-sm text-left text-gray-500 dark:text-gray-400 overflow-y-scroll">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <table className="h-screen w-full overflow-y-scroll text-left text-sm text-gray-500 dark:text-gray-400">
+              <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                   <th scope="col" className="px-6 py-3">
                     Id
@@ -85,12 +85,10 @@ export default function InventoryManageMent() {
                   return (
                     <tr
                       key={product.id}
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                    >
+                      className="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
                       <th
                         scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
+                        className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
                         {product?.id}
                       </th>
 
@@ -106,8 +104,7 @@ export default function InventoryManageMent() {
                       <td className="px-6 py-4">
                         <a
                           href="#"
-                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                        >
+                          className="font-medium text-blue-600 hover:underline dark:text-blue-500">
                           Edit
                         </a>
                       </td>
