@@ -89,7 +89,7 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
       onKeyUp={(e: React.KeyboardEvent) => {
         e.key === "Enter" && setBtnStyle("");
       }}>
-      <div className="relative flex h-full flex-col items-center justify-center gap-4 md:p-5">
+      <div className="relative flex h-full flex-col items-center justify-center gap-4 md:p-20">
         <h1 className="[ h-10 w-full text-center">Log in</h1>
         <div className="flex w-full flex-col items-center justify-center gap-2">
           <label htmlFor="username" className="w-full text-sm">
@@ -159,9 +159,13 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
           {isLoading ? "Loading..." : "Login"}
         </button>
       </div>
-      <div className="flex h-full w-full flex-col items-center justify-center rounded-b-2xl bg-sky-300 md:rounded-l-2xl md:rounded-br-none">
-        <Image src={logo} alt="RPG LOGO" className="h-24 w-24" />
-        <p className="break-all p-5 text-center text-xs">
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-b-2xl bg-sky-300 md:gap-4 md:rounded-l-2xl md:rounded-br-none">
+        <Image
+          src={logo}
+          alt="RPG LOGO"
+          className="h-24 w-24 transition-all md:h-36 md:w-36"
+        />
+        <p className="text-md break-words p-5 text-center md:p-1">
           Welcome to our Warehouse Management System. Let&apos;s get started!
         </p>
       </div>

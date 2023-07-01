@@ -34,9 +34,7 @@ export default function Login({ auth }: any) {
       </Head>
       <Layout
         data={data}
-        headerBg="bg-white transition-alls"
-        headerTxt="text-black hover:text-sky-500"
-        headerSky="bg-sky-300"
+        headerBg="bg-white transition-all"
         footerSky="bg-sky-300">
         <section className="flex h-screen items-center justify-center p-2 font-sans md:h-screen md:justify-center">
           <LoginForm setData={setData} setShow={setShow} />
