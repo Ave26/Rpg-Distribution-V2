@@ -66,7 +66,6 @@ export default function AccountManagement() {
     }
   };
 
-  const inputStyle = "";
   return (
     <Layout>
       <form action="" onSubmit={handleRegister} className="p-4 lg:px-96 ">
