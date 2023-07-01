@@ -8,18 +8,22 @@ import {
 interface ReusableInputProps {
   name?: string;
   type?: string;
+  id?: string;
   value: any;
   placeholder?: string;
+  autoComplete?: string;
   className?: string;
   onChange: (value: any) => void;
 }
 
 const ReusableInput: FC<ReusableInputProps> = ({
   name,
+  id,
   type,
   value,
   placeholder,
   className,
+  autoComplete,
   onChange,
 }) => {
   const [initialStyle, setInitialStyle] = useState<string>(
@@ -39,6 +43,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
         name={name}
         id={name}
         value={value}
+        autoComplete={autoComplete}
         placeholder={placeholder}
         className={className ? className : initialStyle}
         onChange={handleInputChange}
