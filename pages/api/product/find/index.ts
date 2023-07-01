@@ -27,21 +27,21 @@ const middleware =
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
-      const { barcodeId } = req.body;
+    // const { barcodeId } = req.body;
 
-      try {
-        const { product, error } = await findProduct(barcodeId);
-        if (error) {
-          return res.json({ error });
-        }
-        return product
-          ? res
-              .status(200)
-              .json({ message: "Product Already Created", product })
-          : res.status(404).json({ message: "Product Not found" });
-      } catch (error) {
-        // return res.json(error);
-      }
+    // try {
+    //   const { product, error } = await findProduct(barcodeId);
+    //   if (error) {
+    //     return res.json({ error });
+    //   }
+    //   return product
+    //     ? res
+    //         .status(200)
+    //         .json({ message: "Product Already Created", product })
+    //     : res.status(404).json({ message: "Product Not found" });
+    // } catch (error) {
+    //   // return res.json(error);
+    // }
 
     case "GET":
       try {
