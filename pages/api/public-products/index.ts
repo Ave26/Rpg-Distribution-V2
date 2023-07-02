@@ -1,15 +1,13 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import { findAllProducts, findProductBaseOnName } from "@/lib/prisma/product";
+import { findPublicProducts } from "@/lib/prisma/product";
 import { verifyJwt } from "@/lib/helper/jwt";
-
-// pages/api/middleware.js
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("allow", ["GET"]);
 
   switch (req.method) {
     case "GET":
-      const { products, error } = await findAllProducts();
+      const { products, error } = await findPublicProducts();
 
       try {
         if (error) {
@@ -20,21 +18,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       } catch (error) {
         return res.send(error);
       }
-
-    // case "POST":
-    //   const { productName } = req.body;
-    //   const product = findProductBaseOnName(productName);
-    //   if (!product) {
-    //     return res.send("no product");
-    //   }
-    //   try {
-    //     // return res.send("post is working " + productName);
-    //     return product;
-    //   } catch (error) {
-    //     return res.status(500).json({
-    //       message: "GET Error " + error,
-    //     });
-    //   }
 
     default:
       return res

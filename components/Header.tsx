@@ -68,6 +68,7 @@ export default function Header({
         <div className={`h-fit w-fit ${headerSky}`}>
           <Link href={"/"}>
             <Image
+              priority
               src={ProStockV2}
               alt="RPG LOGO"
               className="h-16 w-16 transition-all"

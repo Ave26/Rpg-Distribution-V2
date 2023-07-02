@@ -3,12 +3,14 @@ import Head from "next/head";
 import Layout from "@/components/layout";
 import Product from "@/components/Product";
 import Loading from "@/components/Parts/Loading";
+import Image from "next/image";
 
 interface DATA {
-  productName: string;
-  expirationDate: string;
-  quantity: number;
-  id: string;
+  barcodeId?: string;
+  category?: string;
+  image?: any;
+  price?: number;
+  productName?: string;
 }
 
 export default function Products() {
@@ -22,6 +24,7 @@ export default function Products() {
       .then(async (response) => {
         if (response.status === 200) {
           const json = await response.json();
+          console.log(json);
           setData(json);
         }
       })
@@ -33,18 +36,18 @@ export default function Products() {
       });
   }, []);
 
-  const filteredData = data
-    .filter(({ productName }) => {
-      return (
-        productName.charAt(0).toLocaleLowerCase() ===
-        searchInput.charAt(0).toLocaleLowerCase()
-      );
-    })
-    .filter(({ productName }) => {
-      return productName
-        .toLocaleLowerCase()
-        .includes(searchInput.toLocaleLowerCase());
-    });
+  // const filteredData = data
+  //   .filter(({ productName }) => {
+  //     return (
+  //       productName.charAt(0).toLocaleLowerCase() ===
+  //       searchInput.charAt(0).toLocaleLowerCase()
+  //     );
+  //   })
+  //   .filter(({ productName }) => {
+  //     return productName
+  //       .toLocaleLowerCase()
+  //       .includes(searchInput.toLocaleLowerCase());
+  //   });
 
   return (
     <>
@@ -52,8 +55,8 @@ export default function Products() {
         <title>Products</title>
       </Head>
       <Layout>
-        <section className="h-full w-full overflow-hidden overflow-y-auto border-slate-900 font-bold scrollbar-none ">
-          <div className="relative w-fit">
+        <section className="h-full w-full font-bold">
+          {/* <div className="relative w-fit">
             <input
               className="absolute m-3 rounded-md px-4 py-3 outline-none ring-1 ring-slate-200 focus:ring-slate-950"
               type="search"
@@ -65,21 +68,36 @@ export default function Products() {
               id=""
               placeholder="search product name..."
             />
-          </div>
-          <div className="m-4 flex h-full w-full items-center justify-center">
+          </div> */}
+          <div className="flex h-full w-full items-center justify-center">
             {isLoading ? (
-              <div className=" flex h-screen animate-pulse items-center rounded-full px-3 py-1 text-center text-lg font-medium leading-none text-black">
+              <div className="flex h-screen animate-pulse items-center rounded-full px-3 py-1 text-center text-lg font-medium leading-none text-black">
                 <Loading />
               </div>
             ) : (
-              <div className="grid grid-flow-row grid-cols-4 gap-6 p-3">
-                {!searchInput
-                  ? data.map((product) => {
-                      return <Product key={product.id} product={product} />;
-                    })
-                  : filteredData.map((product) => {
-                      return <Product key={product.id} product={product} />;
-                    })}
+              <div className="flex flex-col flex-wrap items-center justify-center gap-2 p-5 transition-all md:flex-row">
+                {data.map((value, index) => {
+                  return (
+                    <div
+                      className="flex flex-col items-center justify-center gap-3 shadow-lg"
+                      key={index}>
+                      <Image
+                        priority
+                        alt="Product Image"
+                        src={value?.image}
+                        className="h-96 w-96 object-contain p-3 transition-all md:h-56 md:w-56"
+                        width="0"
+                        height="0"
+                      />
+                      <div className="flex w-full flex-col items-start justify-center p-2">
+                        <strong>
+                          <h1 className="text-xs">{value?.productName}</h1>
+                          <h1 className="text-xs">{value?.category}</h1>
+                        </strong>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

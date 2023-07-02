@@ -13,19 +13,6 @@ type UsersAdditionalInfo {
   email        String
 }
 
-model products {
-  id               String @id @default(auto()) @map("_id") @db.ObjectId
-  barcodeId        String @unique
-  productName      String
-  quantity         Int
-  sku              String
-  palletteLocation String
-  dateReceived     String
-  expirationDate   String
-  poId             String
-  image            String
-}
-
 model users {
   id                 String               @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info    UsersAdditionalInfo  @map("additional Info")
@@ -36,32 +23,35 @@ model users {
   sampleProductLists sampleProductLists[]
 }
 
-model productDetails {
+model products {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   barcodeId    String         @unique
-  img          String?
-  productName  String?
+  category     String?
+  image        String?
+  price        Float?
+  productName  String
   productLists productLists[]
 }
 
 // one to many relationsShip
 
 model productLists {
-  id               String          @id @default(auto()) @map("_id") @db.ObjectId
-  quantity         Int?
-  dateRecieve      DateTime?
-  expirationDate   String?
-  price            Float?
-  sku              String?
-  poId             String?
-  status           String?
-  paletteLocation  String?
-  productType      String?
-  user             users?          @relation(fields: [userId], references: [id])
-  userId           String?         @db.ObjectId
-  productDetails   productDetails? @relation(fields: [productDetailsId], references: [id])
-  productDetailsId String?         @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  quantity        Int?
+  dateRecieve     DateTime?
+  expirationDate  String?
+  sku             String?
+  poId            String?
+  status          String?
+  paletteLocation String?
+  productType     String?
+  user            users?    @relation(fields: [userId], references: [id])
+  userId          String?   @db.ObjectId
+  products        products? @relation(fields: [productsId], references: [id])
+  productsId      String?   @db.ObjectId
 }
+
+// ---------------------------------------------------------------------------
 
 model sampleProductDetails {
   id                 String               @id @default(auto()) @map("_id") @db.ObjectId
@@ -70,9 +60,10 @@ model sampleProductDetails {
   image              String?
   price              Float?
   category           String?
+  racks              racks?               @relation(fields: [racksId], references: [id])
+  racksId            String?              @db.ObjectId
   sampleProductLists sampleProductLists[]
-  paletteLocation    paletteLocation[]
-  racks              racks?
+  bin                bin[]
 }
 
 model sampleProductLists {
@@ -90,27 +81,21 @@ model sampleProductLists {
   productDetailsId     String                @db.ObjectId
 }
 
-// many to many relationship between palletteLocation and productDetails
-model paletteLocation {
-  id               String                @id @default(auto()) @map("_id") @db.ObjectId
-  productDetails   sampleProductDetails? @relation(fields: [productDetailsId], references: [id])
-  productDetailsId String                @db.ObjectId
-  bin              bin[]
-}
-
 model racks {
-  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String                 @id @default(auto()) @map("_id") @db.ObjectId
   category             String?
   section              String?
-  column               Int?
-  row                  Int?
-  sampleProductDetails sampleProductDetails? @relation(fields: [productBarcodeId], references: [barcodeId])
-  productBarcodeId     String?               @unique
+  sampleProductDetails sampleProductDetails[]
+  bin                  bin[]
 }
 
 model bin {
-  id                String           @id @default(auto()) @map("_id") @db.ObjectId
-  paletteLocation   paletteLocation? @relation(fields: [paletteLocationId], references: [id])
-  paletteLocationId String           @db.ObjectId
-  maxQuantiy        Int?
+  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  maxQuantiy           Int?
+  column               Int?
+  row                  Int?
+  sampleProductDetails sampleProductDetails? @relation(fields: [productId], references: [id])
+  productId            String?               @db.ObjectId
+  racks                racks?                @relation(fields: [racksId], references: [id])
+  racksId              String?               @db.ObjectId
 }

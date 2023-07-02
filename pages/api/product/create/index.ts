@@ -1,9 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import {
-  addNewProduct,
-  findManyProduct,
-  findProductDetails,
-} from "@/lib/prisma/product";
+import { addNewProduct } from "@/lib/prisma/product";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -75,3 +71,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default middleware(handler);
+
+// Product Movement
+// const category = async(category: string)=>{
+//   switch (category) {
+//     case 'Food':
+//       function LIFO = async()=>{
+
+//         console.log{'Priority'}
+//       }
+//       break;
+//     default:
+
+//     function FIFO = async()=>{}
+//     function FEFO = async()=>{}
+//       break;
+//   }
+// }

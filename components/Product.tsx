@@ -85,12 +85,12 @@ export default function Product({ product }: any) {
           width: "100%",
           height: "100%",
         };
-        case "Super-Max Razor":
-          return {
-            src: razor,
-            width: "100%",
-            height: "100%",
-          };
+      case "Super-Max Razor":
+        return {
+          src: razor,
+          width: "100%",
+          height: "100%",
+        };
       default:
         return {
           src: noProduct,
@@ -99,45 +99,31 @@ export default function Product({ product }: any) {
   };
   return (
     <>
-      <div className="h-full w-fit rounded-lg overflow-hidden shadow-lg relative">
+      <div className="relative h-full w-fit overflow-hidden rounded-lg shadow-lg">
         <div
-          className="w-56 h-56 flex justify-center items-center transition-all overflow-hidden relative"
+          className="relative flex h-56 w-56 items-center justify-center overflow-hidden transition-all"
           onMouseEnter={() => {
             setIsHovered((hovered) => !hovered);
           }}
           onMouseLeave={() => {
             setIsHovered((hovered) => !hovered);
-          }}
-        >
+          }}>
           <Image
             priority
             {...getProductImage(product.productName)}
             alt={product.productName}
             className={`${
               isHovered && "scale-110 transition-all"
-            }  transition-all w-56 h-56`}
+            }  h-56 w-56 transition-all`}
           />
 
-          {/* {!product.image ? (
-            <HiArchive />
-          ) : (
-            <Image
-              priority
-              {...getProductImage(product.productName)}
-              alt={product.productName}
-              className={`${
-                isHovered && "scale-110 transition-all"
-              }  transition-all w-56 h-56`}
-            />
-          )} */}
           <div
             className={`${
               isHovered
                 ? "opacity-100 transition-all"
-                : "transition-all opacity-0"
-            } absolute inset-0 bg-gray-900 bg-opacity-70 text-white flex justify-center items-center transition-all opacity-0 p-4`}
-          >
-            <h1 className="text-xs w-52 text-justify">
+                : "opacity-0 transition-all"
+            } absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 p-4 text-white opacity-0 transition-all`}>
+            <h1 className="w-52 text-justify text-xs">
               <strong className="font-extrabold">Description: </strong>
               <p className="font-semibold">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore
@@ -148,7 +134,7 @@ export default function Product({ product }: any) {
             </h1>
           </div>
         </div>
-        <div className="flex justify-center items-start flex-col p-2">
+        <div className="flex flex-col items-start justify-center p-2">
           <strong>
             <h1 className="text-xs">{product.productName}</h1>
           </strong>

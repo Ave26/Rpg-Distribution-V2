@@ -43,7 +43,7 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
     };
   }
   console.log(verifiedToken);
-
+  
   return {
     props: {
       data: verifiedToken || "Please Login",

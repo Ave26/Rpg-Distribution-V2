@@ -114,7 +114,7 @@ export default function AdminDashboard() {
               navigateTo(list);
             }}
             key={index}>
-            <Image {...getDashboardImg(list)} alt={list} />
+            <Image {...getDashboardImg(list)} alt={list} priority />
             <p className="text-xs">
               {isHovered && list === "Add Products" ? null : list}
             </p>
