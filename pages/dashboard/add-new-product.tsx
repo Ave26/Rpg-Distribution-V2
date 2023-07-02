@@ -114,7 +114,7 @@ const AddNewProduct: FC = ({}) => {
 
   return (
     <Layout>
-      <section className="h-full w-full">
+      <section className="h-full w-full border border-black">
         <form
           onSubmit={handleAddProduct}
           className="flex flex-col items-center justify-center gap-3">
@@ -164,7 +164,7 @@ const AddNewProduct: FC = ({}) => {
             </select>
           </div>
 
-          <div className="flex flex-col flex-wrap items-center justify-center gap-2 px-10">
+          <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2  px-10">
             <input
               type="file"
               accept="image/jpg, image/jpeg, image/png"
@@ -184,18 +184,18 @@ const AddNewProduct: FC = ({}) => {
               }}
               className="break-all font-bold"
             />
-            <div className="border border-black">
+            <div className="flex items-center justify-center">
               <Image
                 priority
                 src={image || noImg}
                 alt="productImg"
-                className="h-[20em] w-[20em]"
-                width={256}
-                height={256}
+                className="h-full w-full object-contain"
+                width={0}
+                height={0}
               />
             </div>
 
-            <div className="flex w-full flex-wrap items-center justify-center gap-2 px-10 py-5">
+            <div className="relative flex w-full flex-wrap items-center justify-center gap-2 px-10 py-5">
               <ReusableButton
                 name={"Add Now"}
                 type="submit"

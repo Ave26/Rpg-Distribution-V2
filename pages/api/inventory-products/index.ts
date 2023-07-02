@@ -1,5 +1,5 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import { findAllProducts } from "@/lib/prisma/product";
+import { findPublicProducts } from "@/lib/prisma/product";
 import { verifyJwt } from "@/lib/helper/jwt";
 
 // pages/api/middleware.js
@@ -26,7 +26,7 @@ const middleware =
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("allow", ["GET"]);
-  const { products, error } = await findAllProducts();
+  const { products, error } = await findPublicProducts();
   if (req.method === "GET") {
     try {
       if (error) {

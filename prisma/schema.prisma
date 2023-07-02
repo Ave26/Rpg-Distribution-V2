@@ -14,13 +14,12 @@ type UsersAdditionalInfo {
 }
 
 model users {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
-  additional_Info    UsersAdditionalInfo  @map("additional Info")
-  password           String               @unique(map: "password_1")
-  roles              String               @default("staff")
-  username           String               @unique(map: "username_1")
-  productLists       productLists[]
-  sampleProductLists sampleProductLists[]
+  id              String              @id @default(auto()) @map("_id") @db.ObjectId
+  additional_Info UsersAdditionalInfo @map("additional Info")
+  password        String              @unique(map: "password_1")
+  roles           String              @default("staff")
+  username        String              @unique(map: "username_1")
+  productLists    productLists[]
 }
 
 model products {
@@ -31,71 +30,42 @@ model products {
   price        Float?
   productName  String
   productLists productLists[]
+  bin          bin[]
 }
 
 // one to many relationsShip
 
 model productLists {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  quantity        Int?
-  dateRecieve     DateTime?
-  expirationDate  String?
-  sku             String?
-  poId            String?
-  status          String?
-  paletteLocation String?
-  productType     String?
-  user            users?    @relation(fields: [userId], references: [id])
-  userId          String?   @db.ObjectId
-  products        products? @relation(fields: [productsId], references: [id])
-  productsId      String?   @db.ObjectId
-}
-
-// ---------------------------------------------------------------------------
-
-model sampleProductDetails {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
-  barcodeId          String?              @unique
-  productName        String?
-  image              String?
-  price              Float?
-  category           String?
-  racks              racks?               @relation(fields: [racksId], references: [id])
-  racksId            String?              @db.ObjectId
-  sampleProductLists sampleProductLists[]
-  bin                bin[]
-}
-
-model sampleProductLists {
-  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
-  purchaseOrder        String?
-  boxType              String?
-  expirationDate       String?
-  receiveDate          String?
-  Quality              String?
-  Quantity             Int?
-  location             String?
-  author               users?                @relation(fields: [userId], references: [id])
-  userId               String                @db.ObjectId
-  sampleProductDetails sampleProductDetails? @relation(fields: [productDetailsId], references: [id])
-  productDetailsId     String                @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  purchaseOrder  String?
+  boxType        String?
+  expirationDate String?
+  receiveDate    String?
+  Quality        String?
+  Quantity       Int?
+  location       String?
+  author         users?    @relation(fields: [userId], references: [id])
+  userId         String    @db.ObjectId
+  products       products? @relation(fields: [productsId], references: [id])
+  productsId     String?   @db.ObjectId
 }
 
 model racks {
-  id                   String                 @id @default(auto()) @map("_id") @db.ObjectId
-  category             String?
-  section              String?
-  sampleProductDetails sampleProductDetails[]
-  bin                  bin[]
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  category String?
+  section  String?
+
+  bin bin[]
 }
 
 model bin {
-  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
-  maxQuantiy           Int?
-  column               Int?
-  row                  Int?
-  sampleProductDetails sampleProductDetails? @relation(fields: [productId], references: [id])
-  productId            String?               @db.ObjectId
-  racks                racks?                @relation(fields: [racksId], references: [id])
-  racksId              String?               @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  maxQuantiy Int?
+  column     Int?
+  row        Int?
+  productId  String?   @db.ObjectId
+  racks      racks?    @relation(fields: [racksId], references: [id])
+  racksId    String?   @db.ObjectId
+  products   products? @relation(fields: [productsId], references: [id])
+  productsId String?   @db.ObjectId
 }

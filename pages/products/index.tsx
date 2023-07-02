@@ -4,6 +4,7 @@ import Layout from "@/components/layout";
 import Product from "@/components/Product";
 import Loading from "@/components/Parts/Loading";
 import Image from "next/image";
+import { findPublicProducts } from "@/lib/prisma/product";
 
 interface DATA {
   barcodeId?: string;
@@ -17,14 +18,15 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<DATA[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
-
+  const [sampleData, setSampleData] = useState<DATA[]>([]);
+  console.log(sampleData);
   useEffect(() => {
     setIsLoading(true);
     fetch("/api/public-products")
       .then(async (response) => {
         if (response.status === 200) {
           const json = await response.json();
-          console.log(json);
+
           setData(json);
         }
       })

@@ -30,24 +30,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       try {
-        const { barcodeIdInBin, error } = await scanBarcode(
-          barcodeId,
-          category
-        );
-
-        if (error) {
-          return res.json({
-            message: error,
-          });
-        }
-
-        if (!barcodeIdInBin) {
-          return res.json({
-            message: "Product Not Found",
-          });
-        }
-
-        return res.json({ message, barcodeIdInBin, category });
+        console.log("return something");
+        await scanBarcode(barcodeId, category);
       } catch (error) {
         return res.json(error);
       }

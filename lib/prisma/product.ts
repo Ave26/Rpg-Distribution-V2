@@ -46,43 +46,24 @@ export const findProductBaseOnName = async (productName: string) => {
 };
 
 // ---------------------------------------------------------------> NEW LINE FOR FETCHING PRODUCT
-// import { Product, ProductList, Count } from "@/types/types";
 
-// export const createProdudctDetails = async (
-//   req: NextApiRequest,
-//   barcodeId: string
-// ) => {
-//   const { verifiedToken, error }: any = await verifyJwt(req);
-//   try {
-//     const newProduct = await prisma.productDetails.create({
-//       data: {
-//         barcodeId,
-//       },
-//     });
-
-//     return { verifiedToken, error };
-//   } catch (error) {
-//     return { error };
-//   }
-// };
-
-// export const findManyProduct = async () => {
-//   try {
-//     const product = await prisma.productDetails.findMany({
-//       include: {
-//         _count: {
-//           select: {
-//             productLists: true,
-//           },
-//         },
-//         productLists: true,
-//       },
-//     });
-//     return { product };
-//   } catch (error) {
-//     return { error };
-//   }
-// };
+export const findManyProduct = async () => {
+  try {
+    const product = await prisma.products.findMany({
+      include: {
+        _count: {
+          select: {
+            productLists: true,
+          },
+        },
+        productLists: true,
+      },
+    });
+    return { product };
+  } catch (error) {
+    return { error };
+  }
+};
 
 // export const findProductDetails = async (barcodeId: string) => {
 //   const product = await prisma.productDetails.findUnique({
@@ -158,6 +139,14 @@ const findMaxQuantityPerBin = async (maxSize: string) => {
         console.log("Default");
         break;
     }
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const scanBarcode = async (barcodeId: string, category: string) => {
+  try {
+    console.log("return something");
   } catch (error) {
     return { error };
   }
