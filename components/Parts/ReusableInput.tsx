@@ -27,7 +27,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
   onChange,
 }) => {
   const [initialStyle, setInitialStyle] = useState<string>(
-    "border border-black p-2"
+    "border border-black p-2 w-full break-all"
   );
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -36,8 +36,10 @@ const ReusableInput: FC<ReusableInputProps> = ({
 
   return (
     <div
-      className={`flex max-w-full flex-col items-start justify-center gap-2 p-2 font-bold`}>
-      <label htmlFor={name}>{name}</label>
+      className={`flex w-full flex-col items-start justify-center gap-2 p-2 font-bold`}>
+      <label htmlFor={name} className="w-full">
+        {name}
+      </label>
       <input
         type={type}
         name={name}

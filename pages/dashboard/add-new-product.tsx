@@ -114,7 +114,7 @@ const AddNewProduct: FC = ({}) => {
 
   return (
     <Layout>
-      <section className="h-full w-full border border-black">
+      <section className="h-full w-full">
         <form
           onSubmit={handleAddProduct}
           className="flex flex-col items-center justify-center gap-3">
@@ -164,7 +164,7 @@ const AddNewProduct: FC = ({}) => {
             </select>
           </div>
 
-          <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2  px-10">
+          <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
             <input
               type="file"
               accept="image/jpg, image/jpeg, image/png"
@@ -182,9 +182,9 @@ const AddNewProduct: FC = ({}) => {
                   console.log(reader);
                 }
               }}
-              className="break-all font-bold"
+              className="w-full break-all font-bold"
             />
-            <div className="flex items-center justify-center">
+            <div className="flex w-full items-center justify-center">
               <Image
                 priority
                 src={image || noImg}

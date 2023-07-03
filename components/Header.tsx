@@ -23,7 +23,6 @@ export default function Header({
   const handleLogin = () => {
     router.push("/login");
   };
-  console.log(data?.isLogin);
 
   const handleLogout = async () => {
     console.log("click");

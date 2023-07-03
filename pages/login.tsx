@@ -12,7 +12,7 @@ interface Auth {
   roles: string[];
 }
 
-export default function Login({ auth }: any) {
+export default function Login() {
   const router = useRouter();
   const [data, setData] = useState<ReactNode>("");
   const [show, setShow] = useState<boolean>(false);
