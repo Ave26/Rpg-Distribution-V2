@@ -3,6 +3,8 @@ import Head from "next/head";
 import Layout from "@/components/layout";
 import Loading from "@/components/Parts/Loading";
 import Image from "next/image";
+import { findPublicProducts } from "@/lib/prisma/product";
+import { NextApiRequest } from "next";
 
 interface DATA {
   barcodeId?: string;
@@ -12,28 +14,17 @@ interface DATA {
   productName?: string;
 }
 
-export default function Products() {
+export default function Products({
+  products,
+  error,
+}: {
+  products: DATA[];
+  error: unknown;
+}) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<DATA[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("/api/public-products")
-      .then(async (response) => {
-        if (response.status === 200) {
-          const json = await response.json();
-
-          setData(json);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  console.log(products);
 
   // const filteredData = data
   //   .filter(({ productName }) => {
@@ -75,7 +66,7 @@ export default function Products() {
               </div>
             ) : (
               <div className="flex flex-col flex-wrap items-center justify-center gap-2 p-5 transition-all md:flex-row">
-                {data.map((value, index) => {
+                {products.map((value, index) => {
                   return (
                     <div
                       className="flex flex-col items-center justify-center gap-3 shadow-lg"
@@ -105,3 +96,21 @@ export default function Products() {
     </>
   );
 }
+
+export const getServerSideProps = async () => {
+  const { products, error } = await findPublicProducts();
+
+  if (error) {
+    return {
+      props: {
+        error,
+      },
+    };
+  }
+
+  return {
+    props: {
+      products,
+    },
+  };
+};
