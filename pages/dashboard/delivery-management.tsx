@@ -94,7 +94,7 @@ const Geolocation = () => {
         window.navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [isTracking, locationLog.length, pathPoints.length]);
+  }, [isTracking, locationLog.length, pathPoints.length, locationLog]);
 
   const handleGasStop = () => {
     if (latitude && longitude) {
@@ -153,8 +153,10 @@ const Geolocation = () => {
         ctx.beginPath();
 
         pathPoints.forEach((point, index) => {
-          const x = (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
-          const y = -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
+          const x =
+            (point.x - (pathPoints[0]?.x || 0)) * 1000 + canvas.width / 2;
+          const y =
+            -((point.y - (pathPoints[0]?.y || 0)) * 1000) + canvas.height / 2;
 
           if (index === 0) {
             ctx.moveTo(x, y);
@@ -187,34 +189,32 @@ const Geolocation = () => {
           <h1 className="text-2xl font-bold">Delivery Tracking</h1>
           {!isTracking ? (
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded"
+              className="rounded bg-blue-500 px-4 py-2 text-white"
               onClick={() => {
                 setIsTracking(true);
                 setLatitude(null);
                 setLongitude(null);
                 setLocationLog([]);
                 setPathPoints([]);
-              }}
-            >
+              }}>
               Start Delivery
             </button>
           ) : (
             <button
-              className="bg-red-500 text-white py-2 px-4 rounded"
+              className="rounded bg-red-500 px-4 py-2 text-white"
               onClick={() => {
                 setIsTracking(false);
                 setDeliveryInitiated(false);
                 handleCompleteDelivery();
-              }}
-            >
+              }}>
               Complete Delivery
             </button>
           )}
         </div>
 
         <div className="mt-8">
-          <h3 className="text-lg font-bold mb-2">Location Log:</h3>
-          <ul className="border border-gray-300 p-4 h-[20em] overflow-y-scroll">
+          <h3 className="mb-2 text-lg font-bold">Location Log:</h3>
+          <ul className="h-[20em] overflow-y-scroll border border-gray-300 p-4">
             {locationLog.map((location, index) => (
               <li key={index} className="mb-2">
                 {location.message && (
@@ -224,8 +224,7 @@ const Geolocation = () => {
                       location.message === "Gas Stop"
                         ? "text-red-500"
                         : "text-blue-500"
-                    }`}
-                  >
+                    }`}>
                     {location.message}
                   </span>
                 )}
@@ -240,7 +239,7 @@ const Geolocation = () => {
         </div>
 
         <div className="mt-8">
-          <h3 className="text-lg font-bold mb-2">Map:</h3>
+          <h3 className="mb-2 text-lg font-bold">Map:</h3>
           {deliveryInitiated ? (
             <div className="relative h-72">
               <iframe
@@ -250,12 +249,10 @@ const Geolocation = () => {
                 frameBorder="0"
                 src={`https://maps.google.com/maps?q=${latitude},${longitude}&output=embed`}
                 allowFullScreen
-                style={{ zIndex: 0 }}
-              ></iframe>
+                style={{ zIndex: 0 }}></iframe>
               <canvas
                 ref={canvasRef}
-                className="absolute top-0 left-0 h-full w-full pointer-events-none"
-              ></canvas>
+                className="pointer-events-none absolute left-0 top-0 h-full w-full"></canvas>
             </div>
           ) : (
             <p>No delivery initiated yet.</p>
@@ -263,20 +260,18 @@ const Geolocation = () => {
         </div>
 
         <div className="mt-8">
-          <h3 className="text-lg font-bold mb-2">Actions:</h3>
+          <h3 className="mb-2 text-lg font-bold">Actions:</h3>
           <div>
             <button
-              className="bg-green-500 text-white py-2 px-4 rounded mr-4"
+              className="mr-4 rounded bg-green-500 px-4 py-2 text-white"
               onClick={handleGasStop}
-              disabled={!isTracking}
-            >
+              disabled={!isTracking}>
               Gas Stop
             </button>
             <button
-              className="bg-red-500 text-white py-2 px-4 rounded"
+              className="rounded bg-red-500 px-4 py-2 text-white"
               onClick={handleEmergencyStop}
-              disabled={!isTracking}
-            >
+              disabled={!isTracking}>
               Emergency Stop
             </button>
           </div>

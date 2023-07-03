@@ -9,6 +9,7 @@ import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 
 export default function Header({
   data,
+  error,
   headerBg = "bg-[#0b8acb] transition-all",
   headerSky = "bg-transparent",
   headerTxt,
@@ -17,10 +18,12 @@ export default function Header({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [buttonName, setButtonName] = useState<string>("Login");
 
   const handleLogin = () => {
     router.push("/login");
   };
+  console.log(data?.isLogin);
 
   const handleLogout = async () => {
     console.log("click");
@@ -58,7 +61,6 @@ export default function Header({
       setAuthenticated(false);
     }
   }, [authenticated]);
-
   return (
     <div
       className={`flex flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row ${
@@ -66,7 +68,7 @@ export default function Header({
       }`}>
       <div className="relative flex h-24 w-full items-center justify-between  px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky}`}>
-          <Link href={"/"}>
+          <Link href="/" passHref>
             <Image
               priority
               src={ProStockV2}
@@ -85,7 +87,6 @@ export default function Header({
           </button>
         </div>
       </div>
-
       <nav
         className={`flex flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:h-full lg:w-full lg:flex-row lg:gap-10 lg:p-5 ${
           isOpen
@@ -101,7 +102,7 @@ export default function Header({
         <button
           onClick={authenticated ? handleLogout : handleLogin}
           className="h-[50px] w-[130px] cursor-pointer rounded-[6px] border-2 border-[#EEA47FFF] bg-transparent text-[#EEA47FFF] outline-none transition-all hover:bg-[#EEA47FFF] hover:text-white">
-          {authenticated ? "Logout" : "Login"}
+          {data?.isLogin === true ? "Logout" : "Login"}
         </button>
       </nav>
     </div>

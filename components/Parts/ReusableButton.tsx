@@ -17,7 +17,7 @@ const ReusableButton: React.FC<ReusableButtonProps> = ({
     <button
       type={type}
       onClick={onClick}
-      className={`flex w-full animate-emerge items-center justify-center rounded-md border border-black bg-transparent py-2 text-[6] transition-all hover:bg-sky-500 active:bg-transparent`}>
+      className={`flex w-full animate-emerge items-center justify-center rounded-md border border-black bg-transparent p-2 py-2 text-[6] transition-all hover:bg-sky-500 active:bg-transparent`}>
       {isLoading ? <Loading /> : name}
     </button>
   );

@@ -1,42 +1,9 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
-// test
 import { createJwt, verifyJwt } from "@/lib/helper/jwt";
 import { comparePassword } from "@/lib/helper/bcrypt";
 import { createCookie } from "@/lib/helper/cookie";
 import { findUser, findUserBasedOnId } from "@/lib/prisma/user";
-
-// const authenticate =
-//   (handler: NextApiHandler) =>
-//   async (req: NextApiRequest, res: NextApiResponse) => {
-//     const { verifiedToken, error } = await verifyJwt(req);
-//     if (verifiedToken) {
-//       try {
-//         const { user, error } = await findUserBasedOnId(verifiedToken.id);
-//         if (error) {
-//           return res.json(error);
-//         }
-//         return res.status(200).json({
-//           authenticated: true,
-//           data: user,
-//         });
-//       } catch (error) {
-//         return res.send(error);
-//       }
-//     }
-
-//     if (error) {
-//       try {
-//         return handler(req, res);
-//       } catch (error) {
-//         res.json(error);
-//       }
-//     } else {
-//       return res
-//         .status(405)
-//         .json({ message: `Method '${req.method}' not allowed` });
-//     }
-//   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("allow", ["POST", "DELETE", "GET"]);

@@ -5,6 +5,7 @@ import Loading from "@/components/Parts/Loading";
 import Image from "next/image";
 import { findPublicProducts } from "@/lib/prisma/product";
 import { NextApiRequest } from "next";
+import { verifyJwt } from "@/lib/helper/jwt";
 
 interface DATA {
   barcodeId?: string;
@@ -17,14 +18,14 @@ interface DATA {
 export default function Products({
   products,
   error,
+  data,
 }: {
+  data: any;
   products: DATA[];
   error: unknown;
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [data, setData] = useState<DATA[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
-  console.log(products);
 
   // const filteredData = data
   //   .filter(({ productName }) => {
@@ -44,7 +45,7 @@ export default function Products({
       <Head>
         <title>Products</title>
       </Head>
-      <Layout>
+      <Layout data={data}>
         <section className="h-full w-full font-bold">
           {/* <div className="relative w-fit">
             <input
@@ -97,9 +98,21 @@ export default function Products({
   );
 }
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   const { products, error } = await findPublicProducts();
-
+  const { verifiedToken }: any = await verifyJwt(req);
+  let data = {};
+  console.log(verifiedToken);
+  if (verifiedToken) {
+    data = {
+      isLogin: true,
+      verifiedToken,
+    };
+  } else {
+    data = {
+      isLogin: false,
+    };
+  }
   if (error) {
     return {
       props: {
@@ -111,6 +124,7 @@ export const getServerSideProps = async () => {
   return {
     props: {
       products,
+      data,
     },
   };
 };

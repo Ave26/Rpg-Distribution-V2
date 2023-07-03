@@ -3,13 +3,15 @@ import Head from "next/head";
 import React from "react";
 import Image from "next/image";
 import aboutus from "../public/assets/aboutus.png";
+import { verifyJwt } from "@/lib/helper/jwt";
+import { NextApiRequest } from "next";
 export default function About({ data }: any) {
   return (
     <>
       <Head>
         <title>About Us | MyCompany</title>
       </Head>
-      <Layout>
+      <Layout data={data}>
         <div className="flex flex-col items-center justify-center rounded-md border-black bg-white shadow-md lg:flex-row">
           <div className="p-10 lg:w-[50%]">
             <Image src={aboutus} alt="About Us" className="h-full w-full" />
@@ -54,3 +56,24 @@ export default function About({ data }: any) {
     </>
   );
 }
+
+export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
+  const { verifiedToken }: any = await verifyJwt(req);
+  let data = {};
+  console.log(verifiedToken);
+  if (verifiedToken) {
+    data = {
+      isLogin: true,
+      verifiedToken,
+    };
+  } else {
+    data = {
+      isLogin: false,
+    };
+  }
+  return {
+    props: {
+      data,
+    },
+  };
+};

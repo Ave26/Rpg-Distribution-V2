@@ -1,10 +1,7 @@
 import Layout from "@/components/layout";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiRequest } from "next";
-import { Inter } from "next/font/google";
 import Head from "next/head";
-
-const inter = Inter({ subsets: ["latin"] });
 
 import AdminDashboard from "@/components/Admin/AdminDashBoard";
 import StaffDashboard from "@/components/Staff/StaffDashBoard";
@@ -16,11 +13,11 @@ export default function Home({ data }: any) {
       <Head>
         <title>{"Home | " + (data?.roles ?? "Hi")}</title>
       </Head>
-      <Layout>
+      <Layout data={data}>
         <div className="text-md h-full w-full font-extrabold">
-          {!data ? (
+          {data.isLogin === false ? (
             <InitialPage />
-          ) : data?.roles === "Admin" ? (
+          ) : data?.verifiedToken?.roles === "Admin" ? (
             <AdminDashboard />
           ) : (
             <StaffDashboard />
@@ -30,24 +27,22 @@ export default function Home({ data }: any) {
     </>
   );
 }
-
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const { verifiedToken, error }: any = await verifyJwt(req);
-
-  if (error) {
-    console.log(error);
-    return {
-      props: {
-        error: true,
-      },
+  const { verifiedToken }: any = await verifyJwt(req);
+  let data = {};
+  if (verifiedToken) {
+    data = {
+      isLogin: true,
+      verifiedToken,
+    };
+  } else {
+    data = {
+      isLogin: false,
     };
   }
-  console.log(verifiedToken);
-
   return {
     props: {
-      data: verifiedToken || "Please Login",
+      data,
     },
   };
 };
-// server side rendering pare
