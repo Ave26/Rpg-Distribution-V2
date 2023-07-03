@@ -53,9 +53,8 @@ model productLists {
 model racks {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   category String?
-  section  String?
-
-  bin bin[]
+  section  String? @unique
+  bin      bin[]
 }
 
 model bin {

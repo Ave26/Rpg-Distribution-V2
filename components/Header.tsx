@@ -60,6 +60,7 @@ export default function Header({
       setAuthenticated(false);
     }
   }, [authenticated]);
+
   return (
     <div
       className={`flex flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row ${
@@ -92,10 +93,14 @@ export default function Header({
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"
         }`}>
-        <Link href={"/products"} className={`${headerTxt}`}>
+        <Link
+          href={"/products"}
+          className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>
           Product Catalog
         </Link>
-        <Link href={"/about"} className={`${headerTxt}`}>
+        <Link
+          href={"/about"}
+          className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>
           About Us
         </Link>
         <button

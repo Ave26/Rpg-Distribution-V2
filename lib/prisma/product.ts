@@ -1,6 +1,4 @@
-import { NextApiRequest } from "next";
 import prisma from ".";
-import { verifyJwt } from "../helper/jwt";
 
 export const findPublicProducts = async () => {
   try {
