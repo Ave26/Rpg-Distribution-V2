@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
-import { scanBarcode } from "@/lib/prisma/product";
+import { scanBarcode } from "@/lib/prisma/scan";
 
 const middleware =
   (handler: NextApiHandler) =>
@@ -25,13 +25,22 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { message, barcodeId, category } = req.body;
+  const { barcodeId, purchaseOrder, boxValue, expiration, quantity } = req.body;
 
+  if (!barcodeId || !boxValue) {
+    return res.status(405).json({
+      message: "Incomplete Field",
+    });
+  }
   switch (req.method) {
     case "POST":
       try {
-        console.log("return something");
-        await scanBarcode(barcodeId, category);
+        const { assignment, data }: any = await scanBarcode(
+          barcodeId,
+          boxValue
+        );
+        console.log({ assignment });
+        console.log({ data });
       } catch (error) {
         return res.json(error);
       }
@@ -45,3 +54,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default middleware(handler);
+
+// Setup a plan
+// rack category, section and bin in order to assign it

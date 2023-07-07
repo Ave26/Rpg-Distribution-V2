@@ -63,27 +63,6 @@ export const findManyProduct = async () => {
   }
 };
 
-// export const findProductDetails = async (barcodeId: string) => {
-//   const product = await prisma.productDetails.findUnique({
-//     where: {
-//       barcodeId,
-//     },
-//     include: {
-//       productLists: {
-//         where: {
-//           status: "good",
-//         },
-//       },
-//     },
-//   });
-
-//   try {
-//     return { product };
-//   } catch (error) {
-//     return { error };
-//   }
-// };
-
 // ------------------------------------------------------------- test product adding
 // Barcode Scan
 // Create a auto assign bin system
@@ -142,15 +121,8 @@ const findMaxQuantityPerBin = async (maxSize: string) => {
   }
 };
 
-export const scanBarcode = async (barcodeId: string, category: string) => {
-  try {
-    console.log("return something");
-  } catch (error) {
-    return { error };
-  }
-};
-
 export const addNewProduct = async (
+  // this will create new product
   barcodeId: string,
   category: string,
   image: string,

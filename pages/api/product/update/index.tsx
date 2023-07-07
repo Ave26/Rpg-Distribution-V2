@@ -1,5 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { createRack } from "@/lib/prisma/racks";
+import { findManyProduct } from "@/lib/prisma/product";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -25,49 +25,27 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { category, rack: rck } = req.body;
-
-  if (!category || !rck) {
-    return res.status(405).json({
-      message: "Filled Incomplete",
-    });
-  }
-
+  const { image } = req.body;
   switch (req.method) {
-    case "POST":
+    case "PUT":
+      console.log(image);
+
+    case "GET":
       try {
-        const { rack, error, categoriesAndRack, createdRack } =
-          await createRack(category, rck);
-
-        if (rack) {
-          return res.status(200).json({
-            message: "Rack Already Created",
-            rack,
-          });
+        const { product, error } = await findManyProduct();
+        if (error) {
+          return res.json(error);
         }
 
-        if (createdRack) {
-          return res.status(200).json({
-            message: "Section Added Successfully",
-            createdRack,
-          });
-        }
-
-        return categoriesAndRack
-          ? res.status(200).json({
-              message: "Added Successfully",
-              categoriesAndRack,
-            })
-          : res.json(error);
+        return res.status(200).json({
+          product,
+        });
       } catch (error) {
         return res.json(error);
       }
-
-    case "PATCH":
 
     default:
       return res.send(`Method ${req.method} is not available`);
   }
 };
-
 export default middleware(handler);

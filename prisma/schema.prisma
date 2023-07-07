@@ -30,7 +30,7 @@ model products {
   price        Float?
   productName  String
   productLists productLists[]
-  bin          bin[]
+  assigment    assignment[]
 }
 
 // one to many relationsShip
@@ -50,21 +50,39 @@ model productLists {
   productsId     String?   @db.ObjectId
 }
 
+model categories {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  category    String? @unique
+  binQuantity Int     @default(36)
+  racks       racks[]
+}
+
 model racks {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  category String?
-  section  String? @unique
-  bin      bin[]
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String      @unique
+  status       String?
+  bin          bin[] // kung ilang id ang nagawa na is 0 - binQuantity 36
+  categories   categories? @relation(fields: [categoriesId], references: [id])
+  categoriesId String?     @db.ObjectId
 }
 
 model bin {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  maxQuantiy Int?
-  column     Int?
-  row        Int?
-  productId  String?   @db.ObjectId
-  racks      racks?    @relation(fields: [racksId], references: [id])
-  racksId    String?   @db.ObjectId
-  products   products? @relation(fields: [productsId], references: [id])
-  productsId String?   @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  maxQuantity Int?
+  column      Int?
+  row         Int?
+  status      String?
+  assignment  assignment[]
+  racks       racks?       @relation(fields: [racksId], references: [id])
+  racksId     String?      @db.ObjectId
+}
+
+model assignment {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  quantity    Int?
+  dateReceive String?
+  products    products? @relation(fields: [productId], references: [id])
+  productId   String?   @db.ObjectId
+  bin         bin?      @relation(fields: [binId], references: [id])
+  binId       String?   @db.ObjectId
 }

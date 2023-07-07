@@ -6,17 +6,11 @@ import Toast from "@/components/Parts/Toast";
 
 export default function PalleteLocation() {
   const [category, setCategory] = useState<String>("");
-  const [section, setSection] = useState<String>("");
+  const [rack, setRack] = useState<String>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
   const [data, setData] = useState<any>("");
-  const categories: string[] = [
-    "Food",
-    "Laundry",
-    "Cosmetics",
-    "Sanitary",
-    "Cleaning",
-  ];
+
   const handleCreateRack = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -28,7 +22,7 @@ export default function PalleteLocation() {
         },
         body: JSON.stringify({
           category,
-          section,
+          rack,
         }),
       });
       const json = await response.json();
@@ -41,7 +35,7 @@ export default function PalleteLocation() {
 
       setIsLoading(false);
     } finally {
-      setSection("");
+      setRack("");
     }
   };
 
@@ -55,9 +49,60 @@ export default function PalleteLocation() {
     };
   }, [isShow]);
 
+  const setLevel = (index: number) => {
+    switch (index) {
+      case 0:
+        console.log("High");
+        break;
+      case 1:
+        console.log("High");
+        break;
+      case 2:
+        console.log("Medium");
+        break;
+      case 3:
+        console.log("Medium");
+        break;
+      case 4:
+        console.log("Low");
+        break;
+      case 5:
+        console.log("Low");
+        break;
+
+      default:
+        console.log("exceeded into the heighest realm");
+        break;
+    }
+  };
+
   return (
     <Layout>
-      <section className="h-screen w-full font-bold">
+      <section className="h-full w-full font-bold">
+        {/* <div className="h-96 overflow-y-scroll">
+          {array.map((value, index) => {
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-center border">
+                {value.map((v, i) => {
+                  return (
+                    <button
+                      onClick={(e) => {
+                        console.log(index);
+                        setLevel(index);
+                      }}
+                      key={i}
+                      className="border border-black p-10 hover:bg-sky-400">
+                      {i} - {v}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div> */}
+
         <form onSubmit={handleCreateRack} className="">
           <ReusableInput
             name="Set Category"
@@ -67,10 +112,10 @@ export default function PalleteLocation() {
             }}
           />
           <ReusableInput
-            name="Set Section"
-            value={section}
+            name="Set Rack"
+            value={rack}
             onChange={function (value: any): void {
-              setSection(value);
+              setRack(value);
             }}
           />
           <ReusableButton

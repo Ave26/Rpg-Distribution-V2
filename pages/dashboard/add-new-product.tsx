@@ -5,6 +5,7 @@ import Image from "next/image";
 import React, { useState, type FC, ChangeEvent, useEffect } from "react";
 import noImg from "../../public/assets/products/noProductDisplay.png";
 import Toast from "@/components/Parts/Toast";
+import { stringify } from "querystring";
 interface NewProduct {
   barcodeId: string;
   productName: string;
