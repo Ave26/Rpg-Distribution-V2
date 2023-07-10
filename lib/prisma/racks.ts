@@ -23,7 +23,6 @@ export const createRack = async (category: string, rck: string) => {
       if (rack) {
         return { rack };
       } else {
-        let rackWBin = new Object();
         const createdRack = await prisma.racks.create({
           data: {
             name: rck,
@@ -42,22 +41,31 @@ export const createRack = async (category: string, rck: string) => {
         return { createdRack };
       }
     } else {
-      const categoriesAndRack = await prisma.categories.create({
+      const categories = await prisma.categories.create({
         data: {
           category,
-          racks: {
-            create: {
-              name: rck,
-              isAvailable: true,
-            },
-          },
         },
         include: {
           racks: true,
         },
       });
 
-      return { categoriesAndRack };
+      const createdRack = await prisma.racks.create({
+        data: {
+          name: rck,
+          categoriesId: categories.id,
+        },
+      });
+
+      for (let i = 0; i < categories?.capacity; i++) {
+        await prisma.bin.create({
+          data: {
+            racksId: createdRack?.id,
+          },
+        });
+      }
+
+      return { categories };
     }
   } catch (error) {
     return { error };

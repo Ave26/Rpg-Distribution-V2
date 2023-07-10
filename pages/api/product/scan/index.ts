@@ -25,7 +25,8 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { barcodeId, purchaseOrder, boxValue, expiration, quantity } = req.body;
+  const { barcodeId, purchaseOrder, boxValue, expiration, quantity, binId } =
+    req.body;
 
   if (!barcodeId || !boxValue || !purchaseOrder) {
     return res.status(405).json({
@@ -39,7 +40,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           barcodeId,
           boxValue,
           expiration,
-          quantity
+          quantity,
+          binId,
+          purchaseOrder
         );
       } catch (error) {
         return res.json(error);

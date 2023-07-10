@@ -1,5 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findManyProduct } from "@/lib/prisma/product";
+import { findManyProduct, findProduct } from "@/lib/prisma/product";
 import { findCategory } from "@/lib/prisma/scan";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
@@ -29,21 +29,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { barcodeId } = req.body;
   switch (req.method) {
     case "POST":
-    // const { barcodeId } = req.body;
+      const { barcodeId } = req.body;
 
-    // try {
-    //   const { product, error } = await findProduct(barcodeId);
-    //   if (error) {
-    //     return res.json({ error });
-    //   }
-    //   return product
-    //     ? res
-    //         .status(200)
-    //         .json({ message: "Product Already Created", product })
-    //     : res.status(404).json({ message: "Product Not found" });
-    // } catch (error) {
-    //   // return res.json(error);
-    // }
+      try {
+        const { product, error } = await findProduct(barcodeId);
+        if (error) {
+          return res.json({ error });
+        }
+        return product
+          ? res.status(200).json({ message: "Product Found", product })
+          : res.status(404).json({ message: "Product Not Found" });
+      } catch (error) {
+        // return res.json(error);
+      }
 
     case "GET":
       try {

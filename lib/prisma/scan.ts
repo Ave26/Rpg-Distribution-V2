@@ -48,9 +48,32 @@ export async function scanBarcode(
   barcodeId: string,
   boxValue: string,
   expiration: string,
-  quantity: number
+  quantity: number,
+  binId: string,
+  purchaseOrder: string
 ) {
   try {
+    const { capacity } = setCapacity(boxValue);
+    const product = await prisma.products.findUnique({
+      where: {
+        barcodeId,
+      },
+    });
+    quantity = 10;
+    if (quantity) {
+      const { date } = dateFormatter();
+      for (let i = 0; i < quantity; i++) {
+        await prisma.assignment.create({
+          data: {
+            productId: product?.id,
+            binId,
+            purchaseOrder,
+            dateReceive: date,
+          },
+        });
+      }
+    }
+
     // scan a barcode
     // create a bin and set the capacity
     // the bin has can have different Ids
@@ -59,6 +82,12 @@ export async function scanBarcode(
   } catch (error) {
     return { error };
   }
+}
+
+function dateFormatter() {
+  const currentDate = new Date();
+  const date = currentDate.toLocaleDateString();
+  return { date };
 }
 
 function setCapacity(boxSize: string) {
@@ -188,3 +217,7 @@ function setCapacity(boxSize: string) {
 
 //   return { newBin };
 // };
+
+// the A is already there, need to remove it if there is no product found in the bin
+// need to set the capacity in the right way
+// need to be stable

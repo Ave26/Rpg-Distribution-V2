@@ -67,55 +67,14 @@ export const findManyProduct = async () => {
 // Barcode Scan
 // Create a auto assign bin system
 
-interface ProductDetails {
-  barcodeId: string;
-  category: string;
-  image: string;
-  price: number;
-  productName: string;
-}
-
-const setBinQuantity = async (binMaxQuantity: number) => {
+export const findProduct = async (barcodeId: string) => {
   try {
-    const maxQuantity = await prisma.bin.create({
-      data: {
-        // maxQuantiy: binMaxQuantity,
+    const product = await prisma.products.findUnique({
+      where: {
+        barcodeId,
       },
     });
-    if (maxQuantity) {
-      console.log("do something");
-    }
-
-    return {
-      message: `Max quantity set to ${maxQuantity}`,
-    };
-  } catch (error) {
-    return { error };
-  }
-};
-
-const findMaxQuantityPerBin = async (maxSize: string) => {
-  try {
-    switch (maxSize) {
-      case "Small":
-        console.log("set bin quantity to 12");
-        let maxQuantity = 12;
-        setBinQuantity(12);
-        break;
-
-      case "Medium":
-        console.log("set bin quantity to 10");
-        setBinQuantity(10);
-        break;
-      case "Large":
-        console.log("set bin quantity to 6");
-        setBinQuantity(6);
-        break;
-
-      default:
-        console.log("Default");
-        break;
-    }
+    return { product };
   } catch (error) {
     return { error };
   }

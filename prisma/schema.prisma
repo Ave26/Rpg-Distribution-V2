@@ -79,10 +79,9 @@ model bin {
 // check the count assignment and bin max qunatity
 model assignment {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  scanQuantity   Int?
-  manualQuantity Int?
-  Capacity       Int?
-  dateReceive    String?
+  dateReceive    DateTime
+  purchaseOrder  String?
+  expirationDate DateTime
   products       products? @relation(fields: [productId], references: [id])
   productId      String?   @db.ObjectId
   bin            bin?      @relation(fields: [binId], references: [id])

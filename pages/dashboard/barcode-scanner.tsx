@@ -23,6 +23,15 @@ interface Bin {
   racksId: string;
 }
 
+interface Product {
+  id: string;
+  barcodeId: string;
+  category: string;
+  image: string;
+  price: number;
+  productName: string;
+}
+
 function BarcodeScanner() {
   const boxSize = ["Small", "Medium", "Large"];
   const [barcodeId, setBarcodeId] = useState<string>("");
@@ -40,6 +49,8 @@ function BarcodeScanner() {
   const [racks, setRacks] = useState<Racks[]>([]);
   const [rackName, setRackName] = useState<string>("");
   const [bin, setBin] = useState<Bin[] | undefined>([]);
+  const [binId, setBinId] = useState<string>("");
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     if (barcodeId != "") {
@@ -87,17 +98,42 @@ function BarcodeScanner() {
       console.log(error);
     }
   }
+  console.log(binId);
+  // fetch product to view image
+  async function fetchProduct() {
+    try {
+      const response = await fetch("/api/product/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          barcodeId: ref.current,
+        }),
+      });
+      const json = await response.json();
+      const product: Product = json?.product;
+      setProduct(product);
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    if (isTypable) {
-      const timer = setTimeout(() => {
+    try {
+      if (isTypable) {
+        const timer = setTimeout(() => {
+          fetchRack();
+          return () => {
+            clearTimeout(timer);
+          };
+        }, 2500);
+      } else {
         fetchRack();
-        return () => {
-          clearTimeout(timer);
-        };
-      }, 2500);
-    } else {
-      fetchRack();
+        fetchProduct();
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [barcodeId]);
 
@@ -162,8 +198,8 @@ function BarcodeScanner() {
               </span>
             </label>
             <div>
-              <select
-                className="p-2"
+              <select // box size
+                className="w-full p-2"
                 value={boxValue}
                 onChange={(e) => {
                   setBoxValue(e.target.value);
@@ -185,23 +221,25 @@ function BarcodeScanner() {
             }}
           />
           {ref.current && (
-            <h1 className="mt-2 w-fit max-w-full cursor-pointer select-none break-all border border-blue-400 p-2 drop-shadow-sm">
+            <h1 className="mt-2 w-full max-w-full cursor-pointer select-none break-all border border-blue-400 p-2 text-center drop-shadow-sm">
               {String(ref.current)}
             </h1>
           )}
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <Image
-              priority
-              src={data?.product?.image || noImg}
-              alt="productImg"
-              className="h-[20em] w-[20em]"
-              width={256}
-              height={256}
-            />
-          )}
-          <Link href="/dashboard/add-new-product">Add new Product</Link>
+
+          <div className="flex items-center justify-center p-2">
+            {isLoading ? (
+              <Loading />
+            ) : (
+              <Image
+                priority
+                src={product?.image || noImg}
+                alt="productImg"
+                className="h-[20em] w-[20em] object-contain"
+                width={256}
+                height={256}
+              />
+            )}
+          </div>
         </div>
 
         <button
@@ -218,7 +256,10 @@ function BarcodeScanner() {
                 },
                 body: JSON.stringify({
                   barcodeId: ref.current,
+                  expiration,
                   boxValue,
+                  purchaseOrder,
+                  binId,
                 }),
               });
               const json = await response.json();
@@ -230,34 +271,55 @@ function BarcodeScanner() {
           }}>
           Click to Test
         </button>
-        <select
-          className="relative"
-          value={rackName}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setRackName(e.target.value)
-          }>
-          <option>Select Rack</option>
-          {racks
-            ?.filter((rack) => {
-              return rack.isAvailable === true;
-            })
-            .map((rack) => {
+        <div className="flex flex-col flex-wrap items-center justify-center border border-black">
+          <select
+            className="relative w-full transition-all"
+            value={rackName}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setRackName(e.target.value)
+            }>
+            <option className="text-center">Select Rack</option>
+            {racks
+              ?.filter((rack) => {
+                return rack.isAvailable === true;
+              })
+              .map((rack) => {
+                return (
+                  <option key={rack?.id} className="text-center">
+                    {rack?.name}
+                  </option>
+                );
+              })}
+          </select>
+          <h1 className="break-normal">
+            NOTE: The reading of the physical racks is from bottom left corner
+            to right
+          </h1>
+          <div className="grid h-fit w-full grid-flow-row  grid-cols-6 place-items-center gap-2 p-3 transition-all">
+            {bin?.map((data, index) => {
               return (
-                <option key={rack?.id} className="text-center">
-                  {rack?.name}
-                </option>
+                <div
+                  key={data.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setBinId(data.id);
+                  }}
+                  className={`${
+                    data.isAvailable ? "bg-green-300" : "bg-red-500"
+                  } h-full w-full cursor-pointer select-none border border-black p-2 text-center focus:bg-slate-500 hover:bg-sky-500`}>
+                  Bin {index + 1}
+                </div>
               );
             })}
-        </select>
+          </div>
+        </div>
+        <Link
+          className="item flex w-full justify-center border border-black text-center"
+          href="/dashboard/add-new-product">
+          Add new Product
+        </Link>
       </section>
       <Toast isShow={isShow} data={data} />
-      {bin?.map((data, index) => {
-        return (
-          <div key={data.id}>
-            {String(data.isAvailable)} {data.racksId} {index}
-          </div>
-        );
-      })}
     </Layout>
   );
 }

@@ -36,8 +36,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       try {
-        const { rack, error, categoriesAndRack, createdRack } =
-          await createRack(category, rck);
+        const { rack, error, categories, createdRack } = await createRack(
+          category,
+          rck
+        );
 
         if (rack) {
           return res.status(200).json({
@@ -53,10 +55,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           });
         }
 
-        return categoriesAndRack
+        return categories
           ? res.status(200).json({
               message: "Added Successfully",
-              categoriesAndRack,
+              categories,
             })
           : res.json(error);
       } catch (error) {
