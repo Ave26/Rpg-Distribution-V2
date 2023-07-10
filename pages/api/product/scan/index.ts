@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
-import { scanBarcode } from "@/lib/prisma/scan";
+import { findCategory, scanBarcode } from "@/lib/prisma/scan";
 
 const middleware =
   (handler: NextApiHandler) =>
@@ -27,7 +27,7 @@ const middleware =
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { barcodeId, purchaseOrder, boxValue, expiration, quantity } = req.body;
 
-  if (!barcodeId || !boxValue) {
+  if (!barcodeId || !boxValue || !purchaseOrder) {
     return res.status(405).json({
       message: "Incomplete Field",
     });
@@ -35,20 +35,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       try {
-        const { assignment, data }: any = await scanBarcode(
+        const { error }: any = await scanBarcode(
           barcodeId,
-          boxValue
+          boxValue,
+          expiration,
+          quantity
         );
-        console.log({ assignment });
-        console.log({ data });
       } catch (error) {
         return res.json(error);
       }
 
-    case "PATCH":
-      break;
+    case "GET":
+      try {
+      } catch (error) {
+        return res.json(error);
+      }
 
     default:
+      console.log(`Method ${req.method} is not allowed`);
+
       break;
   }
 };

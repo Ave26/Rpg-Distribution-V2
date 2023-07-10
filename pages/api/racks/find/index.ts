@@ -1,5 +1,4 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findManyProduct } from "@/lib/prisma/product";
 import { findCategory } from "@/lib/prisma/scan";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
@@ -26,38 +25,14 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { barcodeId } = req.body;
+  const { barcodeId, rackName } = req.body;
   switch (req.method) {
     case "POST":
-    // const { barcodeId } = req.body;
-
-    // try {
-    //   const { product, error } = await findProduct(barcodeId);
-    //   if (error) {
-    //     return res.json({ error });
-    //   }
-    //   return product
-    //     ? res
-    //         .status(200)
-    //         .json({ message: "Product Already Created", product })
-    //     : res.status(404).json({ message: "Product Not found" });
-    // } catch (error) {
-    //   // return res.json(error);
-    // }
+      console.log(barcodeId, rackName);
+      const { data } = await findCategory(barcodeId, rackName);
+      return res.status(200).json(data);
 
     case "GET":
-      try {
-        const { product, error } = await findManyProduct();
-        if (error) {
-          return res.json(error);
-        }
-
-        return res.status(200).json({
-          product,
-        });
-      } catch (error) {
-        return res.json(error);
-      }
 
     default:
       return res.send(`Method ${req.method} is not available`);

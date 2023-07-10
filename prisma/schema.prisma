@@ -51,16 +51,17 @@ model productLists {
 }
 
 model categories {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  category    String? @unique
-  binQuantity Int     @default(36)
-  racks       racks[]
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  category String? @unique
+  capacity Int     @default(36)
+  racks    racks[]
 }
 
 model racks {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String      @unique
-  status       String?
+  isAvailable  Boolean     @default(true)
+  capacity     Int         @default(36)
   bin          bin[] // kung ilang id ang nagawa na is 0 - binQuantity 36
   categories   categories? @relation(fields: [categoriesId], references: [id])
   categoriesId String?     @db.ObjectId
@@ -68,21 +69,22 @@ model racks {
 
 model bin {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  maxQuantity Int?
-  column      Int?
-  row         Int?
-  status      String?
+  isAvailable Boolean      @default(true)
+  capacity    Int?
   assignment  assignment[]
   racks       racks?       @relation(fields: [racksId], references: [id])
   racksId     String?      @db.ObjectId
 }
 
+// check the count assignment and bin max qunatity
 model assignment {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  quantity    Int?
-  dateReceive String?
-  products    products? @relation(fields: [productId], references: [id])
-  productId   String?   @db.ObjectId
-  bin         bin?      @relation(fields: [binId], references: [id])
-  binId       String?   @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  scanQuantity   Int?
+  manualQuantity Int?
+  Capacity       Int?
+  dateReceive    String?
+  products       products? @relation(fields: [productId], references: [id])
+  productId      String?   @db.ObjectId
+  bin            bin?      @relation(fields: [binId], references: [id])
+  binId          String?   @db.ObjectId
 }

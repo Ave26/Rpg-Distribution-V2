@@ -71,20 +71,3 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default middleware(handler);
-
-// Product Movement
-// const category = async(category: string)=>{
-//   switch (category) {
-//     case 'Food':
-//       function LIFO = async()=>{
-
-//         console.log{'Priority'}
-//       }
-//       break;
-//     default:
-
-//     function FIFO = async()=>{}
-//     function FEFO = async()=>{}
-//       break;
-//   }
-// }

@@ -5,8 +5,6 @@ import Footer from "./Footer";
 import useSWR from "swr";
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { verifyJwt } from "@/lib/helper/jwt";
-import { NextApiRequest } from "next";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,21 +24,9 @@ export default function Layout({
   headerSky,
   footerSky,
 }: LayoutProps) {
-  useEffect(() => {
-    console.log("it is fetching");
-  }, []);
-
   return (
     <>
-      <Header
-        data={data}
-        headerBg={headerBg}
-        headerTxt={headerTxt}
-        headerSky={headerSky}
-      />
-
       <main>{children}</main>
-      <Footer footerSky={footerSky} />
     </>
   );
 }

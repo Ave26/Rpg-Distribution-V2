@@ -10,28 +10,18 @@ import ReusableButton from "@/components/Parts/ReusableButton";
 import Toast from "@/components/Parts/Toast";
 import Loading from "@/components/Parts/Loading";
 
-const array = [
-  {
-    id: 1,
-    availability: false,
-    title: "rack 1",
-  },
-  {
-    id: 2,
-    availability: true,
-    title: "rack 2",
-  },
-  {
-    id: 3,
-    availability: false,
-    title: "rack 3",
-  },
-  {
-    id: 4,
-    availability: true,
-    title: "rack 4",
-  },
-];
+interface Racks {
+  categoriesId: string;
+  id: string;
+  isAvailable: boolean;
+  name: string;
+}
+interface Bin {
+  capacity: string;
+  id: string;
+  isAvailable: boolean;
+  racksId: string;
+}
 
 function BarcodeScanner() {
   const boxSize = ["Small", "Medium", "Large"];
@@ -42,11 +32,14 @@ function BarcodeScanner() {
   const [quantity, setQuantity] = useState<number>(0);
   const [isTypable, setisTypable] = useState<boolean>(false);
   const ref = useRef<string | null>(null);
-  const [data, setData] = useState<any>();
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [section, setSection] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
+  const [data, setData] = useState<any>();
+  const [racks, setRacks] = useState<Racks[]>([]);
+  const [rackName, setRackName] = useState<string>("");
+  const [bin, setBin] = useState<Bin[] | undefined>([]);
 
   useEffect(() => {
     if (barcodeId != "") {
@@ -73,58 +66,47 @@ function BarcodeScanner() {
     }
   }, [isTypable, barcodeId]);
 
-  // useEffect(() => {
-  //   if (barcodeId) {
-  //     setIsLoading(true);
-  //     try {
-  //       (async () => {
-  //         const response = await fetch("/api/product/find", {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             barcodeId: ref.current,
-  //           }),
-  //         });
+  // find the racks corresponds to the barcodeId Category
+  async function fetchRack() {
+    try {
+      const response = await fetch("/api/racks/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          barcodeId: ref.current,
+          rackName,
+        }),
+      });
+      const json = await response.json();
+      setRacks(json?.racks);
+      setBin(json?.bin);
+      console.log(json?.bin);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  //         const json = await response.json();
-  //         setIsLoading(false);
-  //         setData(json);
-  //       })();
-  //     } catch (error) {
-  //       console.log(error);
-  //       setData(error);
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // }, [barcodeId]);
-  const [v, setV] = useState<any | null>(null);
   useEffect(() => {
-    // this is where the assignment table will be process
-    //
+    if (isTypable) {
+      const timer = setTimeout(() => {
+        fetchRack();
+        return () => {
+          clearTimeout(timer);
+        };
+      }, 2500);
+    } else {
+      fetchRack();
+    }
   }, [barcodeId]);
-  console.log(v);
+
+  useEffect(() => {
+    fetchRack();
+  }, [rackName]);
+
   return (
     <Layout>
-      <select
-        value={v}
-        onChange={(e) => {
-          setV(e.target.value);
-        }}>
-        <option>Choose Available Racks</option>
-        {array
-          .filter((val: any) => {
-            return val.availability === true;
-          })
-          .map((val: any) => {
-            return (
-              <option className="skwak" key={val.id}>
-                Availability: {String(val.availability)}, {val.title}
-              </option>
-            );
-          })}
-      </select>
       <section className="h-full w-full break-all font-bold">
         <div className="border border-black">
           <div className="flex flex-wrap items-center justify-start">
@@ -186,6 +168,7 @@ function BarcodeScanner() {
                 onChange={(e) => {
                   setBoxValue(e.target.value);
                 }}>
+                <option>Choose Box Size</option>
                 {boxSize.map((value, index) => {
                   return <option key={index}>{value}</option>;
                 })}
@@ -193,6 +176,7 @@ function BarcodeScanner() {
             </div>
           </div>
           <ReusableInput
+            name="Expiration Date"
             type="date"
             value={expiration}
             placeholder="expiry"
@@ -246,8 +230,34 @@ function BarcodeScanner() {
           }}>
           Click to Test
         </button>
+        <select
+          className="relative"
+          value={rackName}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setRackName(e.target.value)
+          }>
+          <option>Select Rack</option>
+          {racks
+            ?.filter((rack) => {
+              return rack.isAvailable === true;
+            })
+            .map((rack) => {
+              return (
+                <option key={rack?.id} className="text-center">
+                  {rack?.name}
+                </option>
+              );
+            })}
+        </select>
       </section>
       <Toast isShow={isShow} data={data} />
+      {bin?.map((data, index) => {
+        return (
+          <div key={data.id}>
+            {String(data.isAvailable)} {data.racksId} {index}
+          </div>
+        );
+      })}
     </Layout>
   );
 }

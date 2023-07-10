@@ -48,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (createdRack) {
           return res.status(200).json({
-            message: "Section Added Successfully",
+            message: "Rack Added Successfully",
             createdRack,
           });
         }

@@ -79,7 +79,7 @@ const setBinQuantity = async (binMaxQuantity: number) => {
   try {
     const maxQuantity = await prisma.bin.create({
       data: {
-        maxQuantiy: binMaxQuantity,
+        // maxQuantiy: binMaxQuantity,
       },
     });
     if (maxQuantity) {

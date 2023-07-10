@@ -6,7 +6,7 @@ import Image from "next/image";
 import { findPublicProducts } from "@/lib/prisma/product";
 import { NextApiRequest } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
-
+import noImg from "@/public/assets/products/noProductDisplay.png";
 interface DATA {
   barcodeId?: string;
   category?: string;
@@ -47,19 +47,6 @@ export default function Products({
       </Head>
       <Layout data={data}>
         <section className="h-full w-full font-bold">
-          {/* <div className="relative w-fit">
-            <input
-              className="absolute m-3 rounded-md px-4 py-3 outline-none ring-1 ring-slate-200 focus:ring-slate-950"
-              type="search"
-              value={searchInput}
-              onChange={(e) => {
-                setSearchInput(e.target.value);
-              }}
-              name=""
-              id=""
-              placeholder="search product name..."
-            />
-          </div> */}
           <div className="flex h-full w-full items-center justify-center">
             {isLoading ? (
               <div className="flex h-screen animate-pulse items-center rounded-full px-3 py-1 text-center text-lg font-medium leading-none text-black">
@@ -75,7 +62,7 @@ export default function Products({
                       <Image
                         priority
                         alt="Product Image"
-                        src={value?.image}
+                        src={value?.image || noImg}
                         className="h-96 w-96 object-contain p-3 transition-all md:h-56 md:w-56"
                         width="0"
                         height="0"

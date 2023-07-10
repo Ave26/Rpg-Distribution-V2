@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import ReusableButton from "@/components/Parts/ReusableButton";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import Toast from "@/components/Parts/Toast";
+import { NextApiRequest, NextPage } from "next";
+import { verifyJwt } from "@/lib/helper/jwt";
+import Header from "@/components/Header";
 
-export default function PalleteLocation() {
+export default function PalleteLocation({ data: dta }: any) {
   const [category, setCategory] = useState<String>("");
   const [rack, setRack] = useState<String>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,60 +52,9 @@ export default function PalleteLocation() {
     };
   }, [isShow]);
 
-  const setLevel = (index: number) => {
-    switch (index) {
-      case 0:
-        console.log("High");
-        break;
-      case 1:
-        console.log("High");
-        break;
-      case 2:
-        console.log("Medium");
-        break;
-      case 3:
-        console.log("Medium");
-        break;
-      case 4:
-        console.log("Low");
-        break;
-      case 5:
-        console.log("Low");
-        break;
-
-      default:
-        console.log("exceeded into the heighest realm");
-        break;
-    }
-  };
-
   return (
-    <Layout>
+    <Layout data={dta}>
       <section className="h-full w-full font-bold">
-        {/* <div className="h-96 overflow-y-scroll">
-          {array.map((value, index) => {
-            return (
-              <div
-                key={index}
-                className="flex items-center justify-center border">
-                {value.map((v, i) => {
-                  return (
-                    <button
-                      onClick={(e) => {
-                        console.log(index);
-                        setLevel(index);
-                      }}
-                      key={i}
-                      className="border border-black p-10 hover:bg-sky-400">
-                      {i} - {v}
-                    </button>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div> */}
-
         <form onSubmit={handleCreateRack} className="">
           <ReusableInput
             name="Set Category"

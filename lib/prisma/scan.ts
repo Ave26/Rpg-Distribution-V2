@@ -1,7 +1,9 @@
+import { categories } from "@prisma/client";
 import prisma from ".";
 
-export const scanBarcode = async (barcodeId: string, boxValue: string) => {
-  console.log(boxValue);
+export async function findCategory(barcodeId: string, rackName: string) {
+  // this will find all the racks that is base on the category
+  let data = new Object();
   try {
     const product = await prisma.products.findUnique({
       where: {
@@ -9,182 +11,180 @@ export const scanBarcode = async (barcodeId: string, boxValue: string) => {
       },
     });
 
-    if (product) {
-      // see if there is equal category in product and categories
-      const categories = await prisma.categories.findFirst({
+    const category = await prisma.categories.findFirst({
+      where: {
+        category: product?.category,
+      },
+    });
+    if (category !== null) {
+      const racks = await prisma.racks.findMany({
         where: {
-          category: product.category,
+          categoriesId: category.id,
+        },
+      });
+
+      const rack = await prisma.racks.findFirst({
+        where: {
+          name: rackName,
+          categoriesId: category.id,
+          isAvailable: true,
         },
         include: {
-          racks: true,
+          bin: true,
         },
       });
-      console.log("rack category", categories?.category);
+      const bin = rack?.bin;
 
-      if (categories) {
-        const racks = await prisma.racks.findMany({
-          where: {
-            categoriesId: categories.id,
-          },
-          include: {
-            _count: {
-              select: {
-                bin: true,
-              },
-            },
-          },
-        });
-        console.log("available racks: ", racks);
-        if (racks) {
-          // find all the section based on barcode Id
-          racks.forEach((rackItem: any) => {
-            const binCount = rackItem._count.bin;
-            console.log(`Bin count: ${binCount} in section: ${rackItem.id}`);
-            if (binCount >= categories.binQuantity) {
-              // if the binCount is exceeded then go to another rack
-              return updateSection(
-                "exceeded",
-                rackItem.id,
-                rackItem.status,
-                boxValue,
-                categories.id
-              );
-            } else {
-              return updateSection(
-                // if binCount is available then create new Bin
-                "available",
-                rackItem.id,
-                rackItem.status,
-                boxValue,
-                categories.id
-              );
-            }
-          });
-        }
-      }
+      console.log(rack?.bin);
+      data = { racks, bin };
     }
-
-    if (product) {
-      const assignment = await prisma.assignment.findFirst({
-        where: {
-          productId: product.id,
-        },
-      });
-
-      if (assignment) {
-        if (assignment.quantity !== null) {
-          const data = await prisma.assignment.update({
-            where: {
-              id: assignment.id,
-            },
-            data: {
-              quantity: assignment.quantity + 1,
-            },
-          });
-          console.log("updated");
-          return { data };
-        }
-      } else {
-        console.log("need to create");
-        const currentDate = new Date();
-        const date = currentDate.toLocaleDateString();
-        const data = await prisma.assignment.create({
-          data: {
-            quantity: 1,
-            productId: product.id,
-            dateReceive: date,
-          },
-        });
-        return { data };
-      }
-      return { assignment };
-    }
+    return { data };
   } catch (error) {
     return { error };
   }
-};
+}
 
-export const updateSection = async (
-  data: string,
-  id: string,
-  status: string | null,
+export async function scanBarcode(
+  barcodeId: string,
   boxValue: string,
-  categories: any
-) => {
-  switch (data) {
-    case "exceeded":
-      await prisma.racks.update({
-        where: {
-          id,
-        },
-        data: {
-          status: "exceeded",
-        },
-      });
+  expiration: string,
+  quantity: number
+) {
+  try {
+    // scan a barcode
+    // create a bin and set the capacity
+    // the bin has can have different Ids
+    // the bin has a name
+    // insert asignment in the bin based on the quantity
+  } catch (error) {
+    return { error };
+  }
+}
 
-      console.log(status, id);
+function setCapacity(boxSize: string) {
+  // capacity setter
+  let capacity = 0;
+  switch (boxSize) {
+    case "Small":
+      capacity = 20;
       break;
-    case "available":
-      const section = await prisma.racks.updateMany({
-        where: {
-          id,
-        },
-        data: {
-          status: "available",
-        },
-      });
-      console.log(section, "this is in the available status");
-      await setMaxQuantity(boxValue, categories);
+    case "Medium":
+      capacity = 15;
       break;
-
+    case "Large":
+      capacity = 10;
+      break;
     default:
       break;
   }
-};
+  return { capacity };
+}
 
-export const createBin = async (maxQuantity: number, cateogryId: any) => {
-  console.log(maxQuantity);
-  const rack = await prisma.racks.findMany({
-    where: {
-      categoriesId: cateogryId,
-    },
-  });
-  if (rack) { // it needs to create bin and insert all the assignment
-    const bin = await prisma.bin.create({
-      data: {
-        maxQuantity,
-      },
-    });
-  }
-  console.log(rack, "this is rack");
-  const assignment = await prisma.assignment.findMany({});
+// if a bin is still available then just create assignment otherwise create bin
 
-  console.log(assignment);
-};
+// export const setMaxQuantity = async (boxValue: string) => {
+//   try {
+//     switch (boxValue) {
+//       case "Small":
+//         console.log(`set bin quantity to ${20}`);
+//         return { maxQuantity: 20 };
 
-export const setMaxQuantity = async (maxSize: string, categories: any) => {
-  try {
-    switch (maxSize) {
-      case "Small":
-        console.log(`set bin quantity to ${20}`);
-        // setBinQuantity(12);
-        return await createBin(20, categories);
+//       case "Medium":
+//         console.log(`set bin quantity to ${15}`);
+//         return { maxQuantity: 15 };
 
-      case "Medium":
-        console.log(`set bin quantity to ${15}`);
-        // setBinQuantity(10);
-        return await createBin(15, categories);
+//       case "Large":
+//         console.log(`set bin quantity to ${5}`);
+//         return { maxQuantity: 5 };
 
-      case "Large":
-        console.log(`set bin quantity to ${10}`);
-        // setBinQuantity(6);
-        return await createBin(10, categories);
+//       default:
+//         console.log("Size does not matter");
+//         break;
+//     }
+//   } catch (error) {
+//     return { error };
+//   }
+// };
 
-      default:
-        console.log("Size does not matter");
-        break;
-    }
-  } catch (error) {
-    return { error };
-  }
-};
+// export const createAssignment = async (
+//   product: any,
+//   currentAvailableBin: any,
+//   totalQuantity: number,
+//   currentAvailableRack: any,
+//   maxQuantity: number,
+//   assignment: any
+// ) => {
+//   if (totalQuantity >= currentAvailableBin?.maxQuantity) {
+//     await prisma.bin.update({
+//       where: {
+//         id: currentAvailableBin?.id,
+//       },
+//       data: {
+//         isAvailable: false,
+//       },
+//     });
+//   } else {
+//     await prisma.bin.update({
+//       where: {
+//         id: currentAvailableBin?.id,
+//       },
+//       data: {
+//         isAvailable: true,
+//       },
+//     });
+
+//     const assignment = await prisma.assignment.findFirst({
+//       where: {
+//         productId: product.id,
+//       },
+//     });
+
+//     if (assignment) {
+//       // if assignment is
+//       if (assignment.quantity !== null) {
+//         const data = await prisma.assignment.update({
+//           where: {
+//             id: assignment.id,
+//           },
+//           data: {
+//             quantity: assignment.quantity + 1,
+//           },
+//         });
+
+//         return { data };
+//       }
+//     } else {
+//       const currentDate = new Date();
+//       const date = currentDate.toLocaleDateString();
+//       const data = await prisma.assignment.create({
+//         data: {
+//           quantity: 1,
+//           productId: product.id,
+//           dateReceive: date,
+//           binId: currentAvailableBin?.id,
+//         },
+//       });
+//       return { data };
+//     }
+//     return { assignment };
+//   }
+// };
+
+// export const checkBinCapacity = async (
+//   maxValue: number,
+//   currentValue: number
+// ) => {};
+
+// export const createBin = async (
+//   maxQuantity: number,
+//   currentAvailableRack: any
+// ) => {
+//   const newBin = await prisma.bin.create({
+//     data: {
+//       maxQuantity,
+//       racksId: currentAvailableRack?.id,
+//     },
+//   });
+
+//   return { newBin };
+// };

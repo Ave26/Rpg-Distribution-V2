@@ -10,6 +10,7 @@ import pickAndPack from "../../public/assets/dbrdimg/PickingandPacking.png";
 import transactionRec from "../../public/assets/dbrdimg/TransactionManagement.png";
 import deliveryMgmt from "../../public/assets/dbrdimg/delivery-managementIcon.png";
 import ReusableButton from "../Parts/ReusableButton";
+import Layout from "../layout";
 
 export default function AdminDashboard() {
   const [isHovered, setIsHovered] = useState<boolean>(false);

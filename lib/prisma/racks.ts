@@ -10,6 +10,7 @@ export const createRack = async (category: string, rck: string) => {
         racks: true,
       },
     });
+    console.log(categories);
 
     if (categories) {
       const rack = await prisma.racks.findFirst({
@@ -18,16 +19,25 @@ export const createRack = async (category: string, rck: string) => {
           categoriesId: categories.id,
         },
       });
+      console.log(rack);
       if (rack) {
         return { rack };
       } else {
+        let rackWBin = new Object();
         const createdRack = await prisma.racks.create({
           data: {
             name: rck,
             categoriesId: categories.id,
-            status: "Available",
           },
         });
+
+        for (let i = 0; i < categories.capacity; i++) {
+          await prisma.bin.create({
+            data: {
+              racksId: createdRack.id,
+            },
+          });
+        }
 
         return { createdRack };
       }
@@ -38,6 +48,7 @@ export const createRack = async (category: string, rck: string) => {
           racks: {
             create: {
               name: rck,
+              isAvailable: true,
             },
           },
         },
