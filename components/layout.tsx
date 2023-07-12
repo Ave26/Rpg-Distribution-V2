@@ -18,6 +18,16 @@ interface LayoutProps {
   footerSky?: string;
 }
 
+interface Dta {
+  authenticated: boolean;
+  data: {
+    id: string;
+    username: string;
+    roles: string;
+    additional_Info: { Dob: string; Phone_Number: number; email: string };
+  };
+}
+
 export default function Layout({
   children,
   data,
@@ -26,8 +36,20 @@ export default function Layout({
   headerSky,
   footerSky,
 }: LayoutProps) {
+  const [dta, setDta] = useState<Dta | null>(null);
+
   useEffect(() => {
     console.log("it is fetching");
+    (async () => {
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+      console.log(json);
+    })();
   }, []);
 
   return (
@@ -39,7 +61,7 @@ export default function Layout({
         headerSky={headerSky}
       />
 
-      <main>{children}</main>
+      <main className="">{children}</main>
       <Footer footerSky={footerSky} />
     </>
   );

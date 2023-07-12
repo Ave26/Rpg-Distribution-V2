@@ -6,6 +6,8 @@ import Head from "next/head";
 import AdminDashboard from "@/components/Admin/AdminDashBoard";
 import StaffDashboard from "@/components/Staff/StaffDashBoard";
 import InitialPage from "@/components/InitialPage";
+import DashboardLayout from "@/components/dashboardLayout";
+import { ReactElement } from "react";
 
 export default function Home({ data }: any) {
   return (
@@ -27,6 +29,7 @@ export default function Home({ data }: any) {
     </>
   );
 }
+
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   const { verifiedToken }: any = await verifyJwt(req);
   let data = {};

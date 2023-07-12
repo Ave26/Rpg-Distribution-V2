@@ -69,7 +69,6 @@ function BarcodeScanner() {
   }, [isShow]);
 
   useEffect(() => {
-    console.log("rendering");
     if (!isTypable) {
       setTimeout(() => {
         setBarcodeId("");
@@ -96,9 +95,11 @@ function BarcodeScanner() {
       console.log(json?.bin);
     } catch (error) {
       console.log(error);
+      setRacks([]);
+      setBin([]);
     }
   }
-  console.log(binId);
+
   // fetch product to view image
   async function fetchProduct() {
     try {
@@ -146,6 +147,12 @@ function BarcodeScanner() {
       <section className="h-full w-full break-all font-bold">
         <div className="border border-black">
           <div className="flex flex-wrap items-center justify-start">
+            <div className="break-normal text-center">
+              <h1>Note: It may vary depending on the box size</h1>
+              <h1>Small: 20</h1>
+              <h1>Medium: 15</h1>
+              <h1>Small: 10</h1>
+            </div>
             <ReusableInput
               type="text"
               name="Barcode Id:"
@@ -178,9 +185,22 @@ function BarcodeScanner() {
                 setPurchaseOrder(newValue);
               }}
             />
-            <h1 className="mx-2 flex h-20 w-full items-center justify-center border border-black">
-              {quantity}
-            </h1>
+
+            {isTypable ? (
+              <ReusableInput
+                type="text"
+                name="Quantity:"
+                value={quantity}
+                placeholder="quantity"
+                onChange={(newValue) => {
+                  setQuantity(newValue);
+                }}
+              />
+            ) : (
+              <h1 className="mx-2 flex h-20 w-full items-center justify-center border border-black">
+                {quantity}
+              </h1>
+            )}
           </div>
           <div className="flex w-full flex-wrap items-center justify-center gap-20 py-2">
             <label className="relative inline-flex cursor-pointer items-center">
@@ -217,7 +237,7 @@ function BarcodeScanner() {
             value={expiration}
             placeholder="expiry"
             onChange={(newValue) => {
-              setExpiration(newValue);
+              setExpiration(newValue.trim());
             }}
           />
           {ref.current && (
@@ -247,7 +267,7 @@ function BarcodeScanner() {
           onClick={async (event: React.MouseEvent<HTMLButtonElement>) => {
             event.preventDefault();
             setIsShow(true);
-            console.log("click");
+
             try {
               const response = await fetch("/api/product/scan", {
                 method: "POST",
@@ -260,13 +280,17 @@ function BarcodeScanner() {
                   boxValue,
                   purchaseOrder,
                   binId,
+                  quantity,
                 }),
               });
+
               const json = await response.json();
               setData(json?.message);
               console.log(json?.message);
             } catch (error: unknown) {
               console.log(error);
+            } finally {
+              fetchRack();
             }
           }}>
           Click to Test
@@ -303,6 +327,7 @@ function BarcodeScanner() {
                   onClick={(e) => {
                     e.preventDefault();
                     setBinId(data.id);
+                    console.log(binId);
                   }}
                   className={`${
                     data.isAvailable ? "bg-green-300" : "bg-red-500"

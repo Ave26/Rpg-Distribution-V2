@@ -11,8 +11,7 @@ const middleware =
 
       if (error) {
         return res.status(403).json({
-          authenticated: false,
-          message: error,
+          message: "Need to be authenticated",
         });
       }
 
@@ -28,22 +27,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { barcodeId, purchaseOrder, boxValue, expiration, quantity, binId } =
     req.body;
 
-  if (!barcodeId || !boxValue || !purchaseOrder) {
-    return res.status(405).json({
-      message: "Incomplete Field",
-    });
-  }
+  // if (!barcodeId || !purchaseOrder || !boxValue || !expiration || !binId) {
+  //   return res.status(405).json({
+  //     message: "Incomplete Field",
+  //   });
+  // }
   switch (req.method) {
     case "POST":
       try {
-        const { error }: any = await scanBarcode(
+        const data = await scanBarcode(
           barcodeId,
           boxValue,
           expiration,
-          quantity,
+          Number(quantity),
           binId,
           purchaseOrder
         );
+        return res.status(200).json(data);
       } catch (error) {
         return res.json(error);
       }

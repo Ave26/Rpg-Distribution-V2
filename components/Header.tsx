@@ -93,6 +93,8 @@ export default function Header({
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"
         }`}>
+        <Link href={`/test-dashboard/AccountManagement`}>Dashboard</Link>
+
         <Link
           href={"/products"}
           className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>

@@ -144,13 +144,3 @@ export default function AccountManagement() {
     </Layout>
   );
 }
-
-// {
-//   "username": "admin9",
-//   "password": "admin",
-// 	  "additional_Info": {
-//     "Dob": "01/01/2000",
-//     "Phone_Number": 1234567890,
-//     "email": "admin@yahoo.com"
-//   }
-// }
