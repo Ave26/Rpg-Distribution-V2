@@ -74,6 +74,7 @@ export async function scanBarcode(
           purchaseOrder,
           product,
           quantity,
+          expiration,
           availableBin,
           totalCount,
           capacity
@@ -179,6 +180,7 @@ async function insertAssignment(
   purchaseOrder: string,
   product: any,
   quantity: number,
+  expiration: string,
   availableBin: any,
   totalCount: number,
   capacity: number
@@ -202,6 +204,7 @@ async function insertAssignment(
             binId,
             purchaseOrder,
             dateReceive: date,
+            expirationDate: expiration,
           },
         });
         console.log("incremental entry");
@@ -214,6 +217,7 @@ async function insertAssignment(
           binId,
           purchaseOrder,
           dateReceive: date,
+          expirationDate: expiration,
         },
       });
       console.log("new entry");
