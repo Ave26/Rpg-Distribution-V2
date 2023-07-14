@@ -14,7 +14,7 @@ const ReusableButton: React.FC<ReusableButtonProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="w-full p-2">
+    <div className="w-full">
       <button
         type={type}
         onClick={onClick}

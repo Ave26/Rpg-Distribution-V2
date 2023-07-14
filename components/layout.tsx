@@ -38,19 +38,19 @@ export default function Layout({
 }: LayoutProps) {
   const [dta, setDta] = useState<Dta | null>(null);
 
-  useEffect(() => {
-    console.log("it is fetching");
-    (async () => {
-      const response = await fetch("/api/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await response.json();
-      console.log(json);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   console.log("it is fetching");
+  //   (async () => {
+  //     const response = await fetch("/api/user", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const json = await response.json();
+  //     console.log(json);
+  //   })();
+  // }, []);
 
   return (
     <>

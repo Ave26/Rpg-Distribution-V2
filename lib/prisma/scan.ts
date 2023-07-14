@@ -1,4 +1,4 @@
-import { categories } from "@prisma/client";
+import { GetResult } from "@prisma/client/runtime/library";
 import prisma from ".";
 
 export async function findCategory(barcodeId: string, rackName: string) {
@@ -49,8 +49,10 @@ export async function scanBarcode(
   expiration: string,
   quantity: number,
   binId: string,
-  purchaseOrder: string
+  purchaseOrder: string,
+  quality: string
 ) {
+  let message;
   try {
     const { capacity } = setCapacity(boxValue);
     const product = await prisma.products.findUnique({
@@ -58,184 +60,240 @@ export async function scanBarcode(
         barcodeId,
       },
     });
-
-    const { availableBin }: any = await updateBinCapacity(binId, capacity);
-    console.log(availableBin);
-    const { totalCount }: any = await getAssignmentTotalCount(binId);
-    console.log(`Capacity ${capacity}, Total Assigned Product ${totalCount}`);
-    const { availability } = await checkAndUpdateIfBinCapacityMaxOut(
-      availableBin,
-      totalCount
-    );
-
-    return availability
-      ? await insertAssignment(
-          availableBin?.id,
-          purchaseOrder,
-          product,
-          quantity,
-          expiration,
-          availableBin,
-          totalCount,
-          capacity
-        )
-      : {
-          message: `Quantity: ${quantity}, Total Count: ${totalCount}, Capacity: ${availableBin?.capacity}}`,
-        };
-  } catch (error) {
-    return { error };
-  }
-}
-
-async function findBin(binId: string) {
-  try {
-    const bin = await prisma.bin.findUnique({
-      where: {
-        id: binId,
-      },
-    });
-    return { bin };
-  } catch (error) {
-    return { error };
-  }
-}
-
-async function checkAndUpdateIfBinCapacityMaxOut(
-  bin: any,
-  totalAssignment: number
-) {
-  try {
-    let availability;
-    if (bin?.capacity <= totalAssignment) {
-      const updateBin = await prisma.bin.update({
+    if (product) {
+      const category = await prisma.categories.findFirst({
         where: {
-          id: bin?.id,
-        },
-        data: {
-          isAvailable: false,
+          category: product?.category,
         },
       });
-      availability = Boolean(updateBin?.isAvailable);
-      console.log(Boolean(updateBin?.isAvailable));
-    } else {
-      const updateBin = await prisma.bin.update({
+
+      const rack = await prisma.racks.findFirst({
         where: {
-          id: bin?.id,
-        },
-        data: {
           isAvailable: true,
+          categoriesId: category?.id,
         },
       });
-      console.log(Boolean(updateBin?.isAvailable));
 
-      availability = Boolean(updateBin?.isAvailable);
-    }
-
-    return { availability };
-  } catch (error) {
-    return { error };
-  }
-}
-
-async function getAssignmentTotalCount(binId: string) {
-  try {
-    const totalCount = await prisma.assignment.count({
-      where: {
-        binId,
-      },
-    });
-    return { totalCount };
-  } catch (error) {
-    return { error };
-  }
-}
-
-async function updateBinCapacity(binId: string, capacity: number) {
-  try {
-    let availableBin = new Object();
-    const { bin } = await findBin(binId);
-
-    if (bin?.capacity) {
-      availableBin = bin;
-    } else {
-      const data = await prisma.bin.update({
+      const bin = await prisma.bin.findFirst({
         where: {
-          id: binId,
-        },
-        data: {
-          capacity,
+          isAvailable: true,
+          racksId: rack?.id,
         },
       });
-      console.log(data);
-      availableBin = data;
-    }
-    return { availableBin };
-  } catch (error) {
-    return { error };
-  }
-}
 
-async function insertAssignment(
-  binId: string,
-  purchaseOrder: string,
-  product: any,
-  quantity: number,
-  expiration: string,
-  availableBin: any,
-  totalCount: number,
-  capacity: number
-) {
-  try {
-    const { date } = dateFormatter();
-    let assignment;
-    console.log(`quantity: ${quantity}`);
-    if (quantity) {
-      if (quantity + totalCount > capacity) {
-        console.log(
-          `Quantity: ${quantity}, Total Count: ${totalCount}, Capacity: ${capacity}}`
-        );
-        console.log("quantity exceeded");
-        return assignment;
-      }
-      for (let i = 0; i < quantity; i++) {
-        const data = await prisma.assignment.create({
-          data: {
-            productId: product?.id,
-            binId,
-            purchaseOrder,
-            dateReceive: date,
-            expirationDate: expiration,
-          },
-        });
-        console.log("incremental entry");
-        assignment = data;
-      }
-    } else {
-      const data = await prisma.assignment.create({
+      const assignProduct = await prisma.assignment.create({
         data: {
+          binId: bin?.id,
           productId: product?.id,
-          binId,
-          purchaseOrder,
-          dateReceive: date,
-          expirationDate: expiration,
         },
       });
-      console.log("new entry");
-      return (assignment = data);
+      console.log(assignProduct);
+
+      const count = await prisma.assignment.count({
+        where: {
+          binId: bin?.id,
+        },
+      });
+      message = `Product Added Count: ${count}`;
     }
-    await checkAndUpdateIfBinCapacityMaxOut(availableBin, totalCount);
-    await getAssignmentTotalCount(binId);
-    return { assignment };
+    return { message };
+
+    // const { availableBin } = await updateBinCapacity(bin, capacity);
+
+    // const { totalCount, error } = await getAssignmentTotalCount(binId);
+
+    // await checkAndUpdateIfBinCapacityMaxOut(availableBin, totalCount);
+
+    //   return availability
+    //     ? await insertAssignment(
+    //         availableBin?.id,
+    //         purchaseOrder,
+    //         product,
+    //         quantity,
+    //         expiration,
+    //         availableBin,
+    //         totalCount,
+    //         capacity,
+    //         quality
+    //       )
+    //     : {
+    //         message: `Quantity has been exceeded`,
+    //       };
   } catch (error) {
     return { error };
   }
 }
 
-function dateFormatter() {
-  const currentDate = new Date();
-  const date = currentDate.toLocaleDateString();
-  return { date };
-}
+// async function findBin(binId: string) {
+//   try {
+//     const bin = await prisma.bin.findUnique({
+//       where: {
+//         id: binId,
+//       },
+//     });
+//     return { bin };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
+
+// async function checkAndUpdateIfBinCapacityMaxOut(
+//   bin:
+//     | (GetResult<
+//         {
+//           id: string;
+//           isAvailable: boolean;
+//           capacity: number | null;
+//           racksId: string | null;
+//         },
+//         { [x: string]: () => unknown }
+//       > & {})
+//     | undefined,
+//   totalAssignment: number | undefined
+// ) {
+//   try {
+//     if (bin?.capacity <= totalAssignment) {
+//       const updateBin = await prisma.bin.update({
+//         where: {
+//           id: bin?.id,
+//         },
+//         data: {
+//           isAvailable: false,
+//         },
+//       });
+//       return { availability: Boolean(updateBin?.isAvailable) };
+//     }
+//   } catch (error) {
+//     return { error };
+//   }
+// }
+
+// async function getAssignmentTotalCount(binId: string) {
+//   try {
+//     const totalCount: number = await prisma.assignment.count({
+//       where: {
+//         binId,
+//       },
+//     });
+//     return { totalCount };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
+
+// async function updateBinCapacity(binId: string, capacity: number) {
+//   try {
+//     const { bin } = await findBin(binId);
+
+//     if (bin?.capacity) {
+//       return { bin };
+//     } else {
+//       const availableBin = await prisma.bin.update({
+//         where: {
+//           id: binId,
+//         },
+//         data: {
+//           capacity,
+//         },
+//       });
+
+//       return { availableBin };
+//     }
+//   } catch (error) {
+//     return { error };
+//   }
+// }
+
+// async function insertAssignment(
+//   binId: string | undefined,
+//   purchaseOrder: string,
+//   product: any,
+//   quantity: number,
+//   expiration: string,
+//   availableBin: any,
+//   totalCount: number,
+//   capacity: number,
+//   quality: string
+// ) {
+//   try {
+//     const { date } = dateFormatter();
+//     let assignment;
+
+//     switch (quality) {
+//       case "Good":
+//         console.log("good triggered");
+
+//         if (quantity) {
+//           if (quantity + totalCount > capacity) {
+//             console.log("quantity exceeded");
+//             return assignment;
+//           }
+//           for (let i = 0; i < quantity; i++) {
+//             const data = await prisma.assignment.create({
+//               data: {
+//                 productId: product?.id,
+//                 binId,
+//                 purchaseOrder,
+//                 dateReceive: date,
+//                 expirationDate: expiration,
+//               },
+//             });
+//             console.log("incremental entry");
+//             assignment = data;
+//           }
+//         } else {
+//           const data = await prisma.assignment.create({
+//             data: {
+//               productId: product?.id,
+//               binId,
+//               purchaseOrder,
+//               dateReceive: date,
+//               expirationDate: expiration,
+//             },
+//           });
+//           console.log("new entry");
+//           return (assignment = data);
+//         }
+
+//         break;
+//       case "Damage":
+//         console.log("bad triggered");
+//         return {
+//           message: "moved to the damage area",
+//         };
+
+//       default:
+//         console.log(
+//           "There is no Good and Bad in this world only organic sheeshables"
+//         );
+//         break;
+//     }
+//   } catch (error) {
+//     return { error };
+//   } finally {
+//     const { availability: available } = await checkAndUpdateIfBinCapacityMaxOut(
+//       availableBin,
+//       totalCount
+//     );
+//     const { totalCount: count } = await getAssignmentTotalCount(binId);
+
+//     return {
+//       message: `Quantity: ${quantity}, Total Count: ${count}, Capacity: ${availableBin.capacity}, Availability: ${available}}`,
+//       count: count,
+//       capacity: availableBin?.capacity,
+//       availability: available,
+//     };
+//   }
+// }
+
+// function dateFormatter() {
+//   const currentDate = new Date();
+//   const formatter = new Intl.DateTimeFormat("en-PH", {
+//     dateStyle: "long",
+//   });
+//   const date = formatter.format(currentDate);
+//   return { date };
+// }
 
 function setCapacity(boxSize: string) {
   let capacity = 0;
@@ -256,116 +314,48 @@ function setCapacity(boxSize: string) {
   return { capacity };
 }
 
-// if a bin is still available then just create assignment otherwise create bin
+// TASKS:
 
-// export const setMaxQuantity = async (boxValue: string) => {
-//   try {
-//     switch (boxValue) {
-//       case "Small":
-//         console.log(`set bin quantity to ${20}`);
-//         return { maxQuantity: 20 };
+// Need to vary depending on the quality of the product
+// for instance the product is good then make sure to scan and
+// push it to the bin base on Category otherwise push it to damage bay
 
-//       case "Medium":
-//         console.log(`set bin quantity to ${15}`);
-//         return { maxQuantity: 15 };
+// DAMAGE TYPES: receiving, inside and outside
 
-//       case "Large":
-//         console.log(`set bin quantity to ${5}`);
-//         return { maxQuantity: 5 };
+// We may need to take care of the FEFO, LIFO and FIFO depending on
+// what category
 
-//       default:
-//         console.log("Size does not matter");
-//         break;
-//     }
-//   } catch (error) {
-//     return { error };
-//   }
-// };
+function setMethod(category: string) {
+  // prototype
+  switch (category) {
+    case "Food":
+      console.log("FEFO Method");
+      break;
+    case "Laundry":
+      console.log("LIFO METHOD");
+      break;
+    case "Cleaning":
+      console.log("FIFO Method");
+      break;
 
-// export const createAssignment = async (
-//   product: any,
-//   currentAvailableBin: any,
-//   totalQuantity: number,
-//   currentAvailableRack: any,
-//   maxQuantity: number,
-//   assignment: any
-// ) => {
-//   if (totalQuantity >= currentAvailableBin?.maxQuantity) {
-//     await prisma.bin.update({
-//       where: {
-//         id: currentAvailableBin?.id,
-//       },
-//       data: {
-//         isAvailable: false,
-//       },
-//     });
-//   } else {
-//     await prisma.bin.update({
-//       where: {
-//         id: currentAvailableBin?.id,
-//       },
-//       data: {
-//         isAvailable: true,
-//       },
-//     });
+    default:
+      console.log("Everyone needs hug");
+      break;
+  }
+}
 
-//     const assignment = await prisma.assignment.findFirst({
-//       where: {
-//         productId: product.id,
-//       },
-//     });
+// WE MAY NEED TO ESTABLISH MANUAL AND AUTOMATED FOR BARCODE SCANNER
+// manual:
+//   Allows the user to manually select on what bin it wanted to choose
+//   Allows the use to manually select what quantity it wanted to set
 
-//     if (assignment) {
-//       // if assignment is
-//       if (assignment.quantity !== null) {
-//         const data = await prisma.assignment.update({
-//           where: {
-//             id: assignment.id,
-//           },
-//           data: {
-//             quantity: assignment.quantity + 1,
-//           },
-//         });
+// Automated:
+//   Automatically set the bin based on the category and set what method it
+//   will choose (FEFO, LIFO and FIFO) to deal with product management
+//   Automatically insert a product into a bin
 
-//         return { data };
-//       }
-//     } else {
-//       const currentDate = new Date();
-//       const date = currentDate.toLocaleDateString();
-//       const data = await prisma.assignment.create({
-//         data: {
-//           quantity: 1,
-//           productId: product.id,
-//           dateReceive: date,
-//           binId: currentAvailableBin?.id,
-//         },
-//       });
-//       return { data };
-//     }
-//     return { assignment };
-//   }
-// };
+// need to improve
+// what if the product has been inserted to the wrong been and the been
+// automatically set the capacity
 
-// export const checkBinCapacity = async (
-//   maxValue: number,
-//   currentValue: number
-// ) => {};
-
-// export const createBin = async (
-//   maxQuantity: number,
-//   currentAvailableRack: any
-// ) => {
-//   const newBin = await prisma.bin.create({
-//     data: {
-//       maxQuantity,
-//       racksId: currentAvailableRack?.id,
-//     },
-//   });
-
-//   return { newBin };
-// };
-
-// the A is already there, need to remove it if there is no product found in the bin
-// need to set the capacity in the right way
-// need to be stable
-// {racksId: ObjectId('64abd68f6f8344377930e50c')"}
+// answer: create a set capacity button

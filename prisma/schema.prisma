@@ -71,7 +71,7 @@ model racks {
 model bin {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   isAvailable Boolean      @default(true)
-  capacity    Int?
+  capacity    Int          @default(0)
   assignment  assignment[]
   racks       racks?       @relation(fields: [racksId], references: [id])
   racksId     String?      @db.ObjectId
@@ -80,9 +80,9 @@ model bin {
 // check the count assignment and bin max qunatity
 model assignment {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive    DateTime
+  dateReceive    String?
   purchaseOrder  String?
-  expirationDate DateTime
+  expirationDate String?
   products       products? @relation(fields: [productId], references: [id])
   productId      String?   @db.ObjectId
   bin            bin?      @relation(fields: [binId], references: [id])
