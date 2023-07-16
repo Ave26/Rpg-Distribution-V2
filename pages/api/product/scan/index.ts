@@ -1,6 +1,7 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { findCategory, scanBarcode } from "@/lib/prisma/scan";
+import prisma from "@/lib/prisma";
 
 const middleware =
   (handler: NextApiHandler) =>

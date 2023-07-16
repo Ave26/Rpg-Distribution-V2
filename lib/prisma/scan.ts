@@ -55,13 +55,22 @@ export async function scanBarcode(
   let message;
   try {
     const { capacity } = setCapacity(boxValue);
+
     const product = await prisma.products.findUnique({
       where: {
         barcodeId,
       },
     });
-    if (product) {
-      const category = await prisma.categories.findFirst({
+    console.log(product);
+
+    // return product === null
+    //   ? { message: "Product Not found | coming from the scan server" }
+    //   : { message: "do something" };
+
+    if (product === null) {
+      return { message: "Product Not found | coming from the scan server" };
+    } else {
+      const categories = await prisma.categories.findFirst({
         where: {
           category: product?.category,
         },
@@ -69,8 +78,7 @@ export async function scanBarcode(
 
       const rack = await prisma.racks.findFirst({
         where: {
-          isAvailable: true,
-          categoriesId: category?.id,
+          categoriesId: categories?.id,
         },
       });
 
@@ -83,20 +91,19 @@ export async function scanBarcode(
 
       const assignProduct = await prisma.assignment.create({
         data: {
-          binId: bin?.id,
           productId: product?.id,
+          binId: bin?.id,
         },
       });
-      console.log(assignProduct);
 
       const count = await prisma.assignment.count({
         where: {
-          binId: bin?.id,
+          binId: assignProduct?.binId,
         },
       });
-      message = `Product Added Count: ${count}`;
+
+      return { message: `Product Added ${count}` };
     }
-    return { message };
 
     // const { availableBin } = await updateBinCapacity(bin, capacity);
 
@@ -118,7 +125,6 @@ export async function scanBarcode(
     //       )
     //     : {
     //         message: `Quantity has been exceeded`,
-    //       };
   } catch (error) {
     return { error };
   }

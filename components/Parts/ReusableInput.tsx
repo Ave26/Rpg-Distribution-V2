@@ -9,7 +9,7 @@ interface ReusableInputProps {
   name?: string;
   type?: string;
   id?: string;
-  value: any;
+  value: any | undefined;
   placeholder?: string;
   autoComplete?: string;
   className?: string;

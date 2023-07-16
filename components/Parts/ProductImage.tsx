@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Toast from "./Toast";
 
@@ -6,48 +7,57 @@ import noImage from "@/public/assets/products/noProductDisplay.png";
 import Loading from "./Loading";
 
 interface ProductImageProps {
-  barcodeId: string | null;
+  barcodeId: string | undefined;
 }
+
+interface Data {}
 
 export default function ProductImage({
   barcodeId,
 }: ProductImageProps): JSX.Element {
+  const router = useRouter();
   const [productImage, setProductImage] = useState<string>("");
-  const [msg, setMsg] = useState<string>("");
+  const [message, setMessage] = useState<Object>();
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   async function handleSubmit() {
-    if (!barcodeId === null) {
-      setIsShow(false);
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/product/find", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          barcodeId,
-        }),
-      });
-      const json = await response.json();
-      const product = await json?.product;
-      setProductImage(product?.image);
-      setMsg(json?.message);
-      setIsLoading(false);
-      setIsShow(true);
-      console.log(json?.message);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
+    if (barcodeId?.length === 12) {
+      try {
+        const response = await fetch("/api/product/find", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            barcodeId,
+          }),
+        });
+
+        const json = await response.json();
+        const product = await json?.product;
+
+        setProductImage(product?.image);
+        // console.log(json);
+        if (json?.authenticated === false || response.status === 403) {
+          setMessage(json?.message);
+          router.push("/login");
+        }
+
+        setIsLoading(false);
+        setIsShow(true);
+
+        // console.log(json?.message);
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+      }
     }
   }
 
   useEffect(() => {
     handleSubmit();
   }, [barcodeId]);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsShow(false);
@@ -73,7 +83,7 @@ export default function ProductImage({
           height={0}
         />
       )}
-      <Toast data={msg} isShow={isShow} />
+      <Toast data={message} isShow={isShow} />
     </div>
   );
 }

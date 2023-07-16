@@ -6,14 +6,13 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 const middleware =
   (handler: NextApiHandler) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log("middleware working properly");
     try {
       const { verifiedToken, error }: any = await verifyJwt(req);
 
       if (error) {
         return res.status(403).json({
           authenticated: false,
-          message: error,
+          message: error?.message,
         });
       }
 
