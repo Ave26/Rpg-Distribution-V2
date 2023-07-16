@@ -11,8 +11,8 @@ export default function ScanBarcode({
   barcodeId,
   setBarcodeId,
 }: Barcode): JSX.Element {
-  const [isTrigger, setIsTrigger] = useState<boolean>(false);
-
+  const [isFetch, setIsFetch] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(0);
   async function assignProduct() {
     const response = await fetch("/api/product/scan", {
       method: "POST",
@@ -23,9 +23,10 @@ export default function ScanBarcode({
         barcodeId,
       }),
     });
-    setIsTrigger(false);
+    setIsFetch(false);
     const json = await response.json();
     console.log(json?.message);
+    setCount(json?.count);
     try {
     } catch (error) {
       console.log(error);
@@ -33,25 +34,26 @@ export default function ScanBarcode({
   }
 
   useEffect(() => {
-    if (isTrigger) {
+    if (isFetch) {
       assignProduct();
     }
-  }, [isTrigger]);
+  }, [isFetch]);
 
   return (
-    <>
+    <div className="flex h-full w-full items-center justify-center font-bold">
       <ReusableInput
         name="Barcode Id:"
         value={barcodeId}
         onChange={(value: string) => {
-          setIsTrigger(true);
+          setIsFetch(true);
           setBarcodeId(value);
           if (value.length > 12) {
             setBarcodeId(value.slice(12));
           }
         }}
       />
-      <Toast data={"+1"} />
-    </>
+
+      <div className="h-full w-28 text-center">{count}</div>
+    </div>
   );
 }

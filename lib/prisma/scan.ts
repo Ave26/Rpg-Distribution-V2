@@ -102,7 +102,7 @@ export async function scanBarcode(
         },
       });
 
-      return { message: `Product Added ${count}` };
+      return { message: `Product Added ${count}`, count };
     }
 
     // const { availableBin } = await updateBinCapacity(bin, capacity);
