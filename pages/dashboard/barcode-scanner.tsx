@@ -24,7 +24,11 @@ function BarcodeScanner() {
       <div className="break-all  p-5 font-bold">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
         <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-transparent p-4 shadow-2xl">
-          <ScanBarcode barcodeId={barcodeId} setBarcodeId={setBarcodeId} />
+          <ScanBarcode
+            barcodeId={barcodeId}
+            setBarcodeId={setBarcodeId}
+            isManual={isManual}
+          />
 
           <ReusableInput
             name="Purchase Order:"

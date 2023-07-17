@@ -61,11 +61,6 @@ export async function scanBarcode(
         barcodeId,
       },
     });
-    console.log(product);
-
-    // return product === null
-    //   ? { message: "Product Not found | coming from the scan server" }
-    //   : { message: "do something" };
 
     if (product === null) {
       return { message: "Product Not found | coming from the scan server" };
@@ -79,6 +74,7 @@ export async function scanBarcode(
       const rack = await prisma.racks.findFirst({
         where: {
           categoriesId: categories?.id,
+          isAvailable: true,
         },
       });
 
@@ -96,11 +92,41 @@ export async function scanBarcode(
         },
       });
 
+      // trying to count assignment and bin
+      const countBin = await prisma.bin.count({
+        where: {
+          racksId: rack?.id,
+        },
+      });
+
+      if (countBin > Number(rack?.capacity)) {
+        // update rack availability
+        await prisma.racks.update({
+          where: {
+            id: rack?.id,
+          },
+          data: {
+            isAvailable: false,
+          },
+        });
+      }
+
       const count = await prisma.assignment.count({
         where: {
           binId: assignProduct?.binId,
         },
       });
+
+      if (count >= Number(bin?.capacity)) {
+        await prisma.bin.update({
+          where: {
+            id: bin?.id,
+          },
+          data: {
+            isAvailable: false,
+          },
+        });
+      }
 
       return { message: `Product Added ${count}`, count };
     }

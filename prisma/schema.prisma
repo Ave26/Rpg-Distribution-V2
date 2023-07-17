@@ -71,7 +71,7 @@ model racks {
 model bin {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   isAvailable Boolean      @default(true)
-  capacity    Int          @default(0)
+  capacity    Int
   assignment  assignment[]
   racks       racks?       @relation(fields: [racksId], references: [id])
   racksId     String?      @db.ObjectId

@@ -60,6 +60,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           purchaseOrder,
           quality
         );
+
+        if (!data) {
+          return res.status(404).json({
+            message: "Something went wrong, please try again!",
+          });
+        }
+
         return res.status(200).json(data);
       } catch (error) {
         return res.json(error);
@@ -79,8 +86,3 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default middleware(handler);
-
-// Setup a plan
-// rack category, section and bin in order to assign it
-
-// bin (available bin, )

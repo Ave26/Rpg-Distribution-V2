@@ -29,14 +29,15 @@ export const createRack = async (category: string, rck: string) => {
             categoriesId: categories.id,
           },
         });
+        await createBin(createdRack?.id);
 
-        for (let i = 0; i < categories.capacity; i++) {
-          await prisma.bin.create({
-            data: {
-              racksId: createdRack.id,
-            },
-          });
-        }
+        // for (let i = 0; i < categories.capacity; i++) {
+        //   await prisma.bin.create({
+        //     data: {
+        //       racksId: createdRack.id,
+        //     },
+        //   });
+        // }
 
         return { createdRack };
       }
@@ -57,13 +58,16 @@ export const createRack = async (category: string, rck: string) => {
         },
       });
 
-      for (let i = 0; i < categories?.capacity; i++) {
-        await prisma.bin.create({
-          data: {
-            racksId: createdRack?.id,
-          },
-        });
-      }
+      await createBin(createdRack?.id);
+
+      // console.log(createdRack)
+      // for (let i = 0; i < categories?.capacity; i++) {
+      //   await prisma.bin.create({
+      //     data: {
+      //       racksId: createdRack?.id,
+      //     },
+      //   });
+      // }
 
       return { categories };
     }
@@ -71,3 +75,32 @@ export const createRack = async (category: string, rck: string) => {
     return { error };
   }
 };
+
+async function createBin(rackId: string) {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 12; j++) {
+      await prisma.bin.create({
+        data: {
+          capacity: setCapacity(i),
+          racksId: rackId,
+        },
+      });
+    }
+  }
+}
+
+function setCapacity(threshold: number): number {
+  switch (threshold) {
+    case 0:
+      return 10;
+
+    case 1:
+      return 20;
+
+    case 2:
+      return 30;
+
+    default:
+      throw new Error("Invalid threshold value");
+  }
+}

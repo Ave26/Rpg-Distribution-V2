@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NextApiRequest } from "next";
+import { sign, verify, decode, JwtPayload } from "jsonwebtoken";
 
 export async function middleware(req: NextRequest, res: NextResponse) {
-  const cookies = req.cookies.get("token");
-
-  if (cookies) {
-    console.log("working only in index ");
-  } else {
-  }
+  const cookie = req.cookies.get("token")?.value;
 }
-export const config = {
-  matcher: "/dashboard:path*",
-};

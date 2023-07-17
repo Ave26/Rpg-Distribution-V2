@@ -1,6 +1,7 @@
 import { sign, verify, decode, JwtPayload } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { NextRequest } from "next/server";
 
 export const createJwt = (user: any) => {
   const { id, roles } = user;
@@ -10,8 +11,8 @@ export const createJwt = (user: any) => {
   return token;
 };
 
-export const verifyJwt = async (req: NextApiRequest | undefined) => {
-  const token: any = req?.cookies.token;
+export const verifyJwt = async (req: NextApiRequest) => {
+  const token: any = req?.cookies?.token;
   console.log(`Token: ${token}`);
 
   try {

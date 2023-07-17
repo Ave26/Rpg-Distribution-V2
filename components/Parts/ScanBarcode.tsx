@@ -4,12 +4,14 @@ import Toast from "./Toast";
 
 interface Barcode {
   barcodeId: string;
+  isManual?: boolean;
   setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function ScanBarcode({
   barcodeId,
   setBarcodeId,
+  isManual,
 }: Barcode): JSX.Element {
   const [isFetch, setIsFetch] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
@@ -29,6 +31,7 @@ export default function ScanBarcode({
     setCount(json?.count);
     try {
     } catch (error) {
+      setCount(0);
       console.log(error);
     }
   }
@@ -40,7 +43,7 @@ export default function ScanBarcode({
   }, [isFetch]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center font-bold">
+    <div className="flex h-full w-full items-center justify-center gap-2 font-bold">
       <ReusableInput
         name="Barcode Id:"
         value={barcodeId}
@@ -52,8 +55,24 @@ export default function ScanBarcode({
           }
         }}
       />
-
-      <div className="h-full w-28 text-center">{count}</div>
+      {isManual ? (
+        <div className="transition-all">
+          <ReusableInput
+            type="number"
+            name="Quantity"
+            value={count}
+            onChange={(value: any) => {
+              setCount(value);
+            }}
+          />
+        </div>
+      ) : (
+        <div className="h-24 w-28 p-4 transition-all">
+          <div className="flex h-full w-full items-center justify-center rounded-lg border border-black">
+            {count}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
