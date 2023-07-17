@@ -89,6 +89,7 @@ export async function scanBarcode(
         data: {
           productId: product?.id,
           binId: bin?.id,
+          expirationDate: expiration,
         },
       });
 
@@ -116,8 +117,8 @@ export async function scanBarcode(
           binId: assignProduct?.binId,
         },
       });
-
-      if (count >= Number(bin?.capacity)) {
+      const capacity: number = Number(bin?.capacity);
+      if (count >= capacity) {
         await prisma.bin.update({
           where: {
             id: bin?.id,
@@ -127,8 +128,24 @@ export async function scanBarcode(
           },
         });
       }
+      const productExpiry = await prisma.assignment.findMany({
+        where: {
+          binId: bin?.id,
+        },
+      });
 
-      return { message: `Product Added ${count}`, count };
+      calculateDateBasedOnExpirationDate(productExpiry);
+
+      const result = calculateDateBasedOnExpirationDate(productExpiry);
+      console.log("Calculated Date:", result.calculatedDate);
+      console.log("First Item:", result.firstItem);
+      console.log("Days until Expiration:", result.daysUntilExpiration);
+
+      return {
+        message: `Product Added ${count}/${bin?.capacity}`,
+        count,
+        capacity,
+      };
     }
 
     // const { availableBin } = await updateBinCapacity(bin, capacity);
@@ -155,6 +172,37 @@ export async function scanBarcode(
     return { error };
   }
 }
+
+function calculateDateBasedOnExpirationDate(items: any) {
+  items.sort(
+    (a: { expirationDate: string }, b: { expirationDate: string }) =>
+      new Date(a.expirationDate).getTime() -
+      new Date(b.expirationDate).getTime()
+  );
+
+  const firstItem = items[0];
+
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  const expirationDate = new Date(firstItem.expirationDate);
+  expirationDate.setHours(0, 0, 0, 0);
+
+  const timeDiff = expirationDate.getTime() - currentDate.getTime();
+  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+  return {
+    calculatedDate: currentDate.toISOString().split("T")[0], // Change format as needed
+    firstItem: firstItem,
+    daysUntilExpiration: daysDiff,
+  };
+}
+
+const items = [
+  { expirationDate: "2023-08-15", name: "Item 1" },
+  { expirationDate: "2023-07-30", name: "Item 2" },
+  { expirationDate: "2023-08-05", name: "Item 3" },
+];
 
 // async function findBin(binId: string) {
 //   try {

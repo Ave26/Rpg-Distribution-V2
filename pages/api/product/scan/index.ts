@@ -11,6 +11,7 @@ const middleware =
 
       if (error) {
         return res.status(403).json({
+          isAuthenticated: false,
           message: "Need to be authenticated",
         });
       }
@@ -26,20 +27,19 @@ const middleware =
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     barcodeId,
+    expirationDate,
     purchaseOrder,
     boxValue,
-    expiration,
     quantity,
     binId,
     quality,
   } = req.body;
 
   if (
-    !barcodeId
-    // ||
+    !barcodeId ||
+    !expirationDate
     // !purchaseOrder ||
     // !boxValue ||
-    // !expiration ||
     // !binId ||
     // !quality
   ) {
@@ -54,7 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const data = await scanBarcode(
           barcodeId,
           boxValue,
-          expiration,
+          expirationDate,
           Number(quantity),
           binId,
           purchaseOrder,

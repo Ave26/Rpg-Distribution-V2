@@ -28,6 +28,9 @@ function BarcodeScanner() {
             barcodeId={barcodeId}
             setBarcodeId={setBarcodeId}
             isManual={isManual}
+            purchaseOrder={purchaseOrder}
+            boxSize={boxSize}
+            expirationDate={expirationDate}
           />
 
           <ReusableInput
