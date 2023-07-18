@@ -31,7 +31,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
   );
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.value);
+    onChange(event.target.value.trim());
   };
 
   return (

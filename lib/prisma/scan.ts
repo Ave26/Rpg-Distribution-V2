@@ -118,6 +118,7 @@ export async function scanBarcode(
         },
       });
       const capacity: number = Number(bin?.capacity);
+      const binId: string = String(bin?.id);
       if (count >= capacity) {
         await prisma.bin.update({
           where: {
@@ -145,6 +146,7 @@ export async function scanBarcode(
         message: `Product Added ${count}/${bin?.capacity}`,
         count,
         capacity,
+        binId,
       };
     }
 
