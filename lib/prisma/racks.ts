@@ -31,8 +31,9 @@ export const createRack = async (category: string, rck: string) => {
         });
         await createBin(createdRack?.id);
         const { bins } = await findManyBin(createdRack?.id);
+        const { transformedArray } = await formatBin(bins);
 
-        return { createdRack, bins };
+        return { createdRack, transformedArray };
       }
     } else {
       const categories = await prisma.categories.create({
