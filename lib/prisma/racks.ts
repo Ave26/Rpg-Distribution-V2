@@ -65,16 +65,20 @@ export const createRack = async (category: string, rck: string) => {
 };
 
 async function createBin(rackId: string) {
+  const binData = new Array();
+
   for (let i = 1; i <= 36; i++) {
-    await prisma.bin.create({
-      data: {
-        racksId: rackId,
-        binSection: i,
-        capacity: setCapacity(i),
-        shelfLevel: String(setShelfLevel(i)),
-      },
+    binData.push({
+      racksId: rackId,
+      binSection: i,
+      capacity: setCapacity(i),
+      shelfLevel: String(setShelfLevel(i)),
     });
   }
+
+  await prisma.bin.createMany({
+    data: binData,
+  });
 }
 
 function setShelfLevel(i: number): string {
