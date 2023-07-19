@@ -59,24 +59,34 @@ model categories {
 }
 
 model racks {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  name         String      @unique
-  isAvailable  Boolean     @default(true)
-  capacity     Int         @default(36)
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  name         String       @unique
+  isAvailable  Boolean      @default(true)
+  capacity     Int          @default(36) // input
+  shelfLevel   shelfLevel[]
   bin          bin[] // kung ilang id ang nagawa na is 0 - binQuantity 36
-  categories   categories? @relation(fields: [categoriesId], references: [id])
-  categoriesId String?     @db.ObjectId
+  categories   categories?  @relation(fields: [categoriesId], references: [id])
+  categoriesId String?      @db.ObjectId
+}
+
+model shelfLevel {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  level   Int
+  bin     bin[]
+  racks   racks?  @relation(fields: [racksId], references: [id])
+  racksId String? @db.ObjectId
 }
 
 model bin {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable Boolean      @default(true)
-  shelfLevel  String
-  binSection  Int
-  capacity    Int
-  assignment  assignment[]
-  racks       racks?       @relation(fields: [racksId], references: [id])
-  racksId     String?      @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable  Boolean?     @default(true)
+  binSection   Int?
+  capacity     Int?
+  assignment   assignment[]
+  racks        racks?       @relation(fields: [racksId], references: [id])
+  racksId      String?      @db.ObjectId
+  shelfLevel   shelfLevel?  @relation(fields: [shelfLevelId], references: [id])
+  shelfLevelId String?      @db.ObjectId
 }
 
 // check the count assignment and bin max qunatity

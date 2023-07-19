@@ -36,24 +36,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       try {
-        const { rack, error, categories, createdRack, bins, transformedArray } =
-          await createRack(category, rck);
+        const { rack, error, categories, rackFound } = await createRack(
+          category,
+          rck
+        );
 
         if (rack) {
           return res.status(200).json({
             message: "Rack Already Created",
             rack,
-            bins,
-            transformedArray,
+            rackFound,
           });
         }
 
-        if (createdRack) {
+        if (rackFound) {
           return res.status(200).json({
             message: "Rack Added Successfully",
-            createdRack,
-            bins,
-            transformedArray,
+            rackFound,
           });
         }
 
@@ -61,8 +60,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           ? res.status(200).json({
               message: "Added Successfully",
               categories,
-              bins,
-              transformedArray,
+              rackFound,
             })
           : res.json(error);
       } catch (error) {

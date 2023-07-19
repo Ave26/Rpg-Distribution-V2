@@ -18,6 +18,7 @@ function BarcodeScanner() {
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
+
   // kailangan naka base na sa expiry and category
 
   return (
