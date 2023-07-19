@@ -7,6 +7,7 @@ import ProductImage from "@/components/Parts/ProductImage";
 import Toggle from "@/components/Parts/Toggle";
 import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
+import ViewRacks from "@/components/ViewRacks";
 
 function BarcodeScanner() {
   const [barcodeId, setBarcodeId] = useState<string>("");
@@ -16,14 +17,14 @@ function BarcodeScanner() {
   const [expirationDate, setExpirationDate] = useState<string>("");
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
-
+  const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   // kailangan naka base na sa expiry and category
 
   return (
     <Layout>
-      <div className="break-all  p-5 font-bold">
+      <div className="break-all  p-5 font-bold ">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
-        <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-transparent p-4 shadow-2xl">
+        <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
           <ScanBarcode
             barcodeId={barcodeId}
             setBarcodeId={setBarcodeId}
@@ -73,7 +74,18 @@ function BarcodeScanner() {
           />
 
           <Toggle setIsToggle={setIsToggle} isToggle={isToggle} />
-          <ProductImage barcodeId={barcodeId} />
+          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsOpenRack((prevState) => !prevState);
+              }}
+              className="absolute">
+              Open Rack
+            </button>
+            <ProductImage barcodeId={barcodeId} />
+            <ViewRacks isOpenRack={isOpenRack} />
+          </div>
 
           {isManual && (
             <ReusableButton name={"Find"} type={"submit"}></ReusableButton>
