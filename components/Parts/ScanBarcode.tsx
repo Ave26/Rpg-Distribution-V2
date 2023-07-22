@@ -27,6 +27,8 @@ export default function ScanBarcode({
   const [count, setCount] = useState<number>(0);
   const [capacity, setCapacity] = useState<number>(0);
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function assignProduct() {
@@ -69,6 +71,7 @@ export default function ScanBarcode({
 
   return (
     <div className="flex h-full w-full items-center justify-center gap-2 font-bold">
+      <label></label>
       <ReusableInput
         name="Barcode Id:"
         value={barcodeId}
@@ -83,6 +86,7 @@ export default function ScanBarcode({
       {isManual ? (
         <div className="transition-all">
           <ReusableInput
+            min={0}
             type="number"
             name="Quantity"
             value={count}

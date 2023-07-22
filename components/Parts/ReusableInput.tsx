@@ -13,6 +13,7 @@ interface ReusableInputProps {
   placeholder?: string;
   autoComplete?: string;
   className?: string;
+  min?: number;
   onChange: (value: any) => void;
 }
 
@@ -25,6 +26,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
   className,
   autoComplete,
   onChange,
+  min,
 }) => {
   const [initialStyle, setInitialStyle] = useState<string>(
     "w-full rounded-xl border border-gray-500 p-2 break-all"
@@ -41,6 +43,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
         {name}
       </label>
       <input
+        min={min}
         type={type}
         name={name}
         id={name}

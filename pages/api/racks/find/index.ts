@@ -1,5 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findCategory } from "@/lib/prisma/scan";
+import { findCategory, findRacks } from "@/lib/prisma/racks";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -26,11 +26,25 @@ const middleware =
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { barcodeId, rackName } = req.body;
+
+  if (!barcodeId) {
+    return res.status(404).json({
+      message: "Filled Incomplete",
+    });
+  }
+
   switch (req.method) {
     case "POST":
-      console.log(barcodeId, rackName);
       const { data } = await findCategory(barcodeId, rackName);
-      return res.status(200).json(data);
+      const { shelfLevel } = await findRacks(barcodeId);
+
+      if (!shelfLevel) {
+        return res.status(404).json({
+          message: "Oops! something went wrong",
+        });
+      }
+
+      return res.status(200).json(shelfLevel);
 
     case "GET":
 

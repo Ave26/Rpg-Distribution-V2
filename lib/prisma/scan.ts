@@ -1,48 +1,6 @@
 import { GetResult } from "@prisma/client/runtime/library";
 import prisma from ".";
 
-export async function findCategory(barcodeId: string, rackName: string) {
-  // this will find all the racks that is base on the category
-  let data = new Object();
-  try {
-    const product = await prisma.products.findUnique({
-      where: {
-        barcodeId,
-      },
-    });
-    if (product) {
-      const category = await prisma.categories.findFirst({
-        where: {
-          category: product?.category,
-        },
-      });
-      if (category !== null) {
-        const racks = await prisma.racks.findMany({
-          where: {
-            categoriesId: category.id,
-          },
-        });
-
-        const rack = await prisma.racks.findFirst({
-          where: {
-            name: rackName,
-            categoriesId: category.id,
-            isAvailable: true,
-          },
-          include: {
-            bin: true,
-          },
-        });
-        const bin = rack?.bin;
-        data = { racks, bin };
-      }
-    }
-    return { data };
-  } catch (error) {
-    return { error };
-  }
-}
-
 export async function scanBarcode(
   barcodeId: string,
   boxValue: string,
@@ -71,107 +29,84 @@ export async function scanBarcode(
         },
       });
 
-      const rack = await prisma.racks.findFirst({
+      const racks = await prisma.racks.findFirst({
         where: {
           categoriesId: categories?.id,
           isAvailable: true,
         },
       });
 
-      const bin = await prisma.bin.findFirst({
+      checkFirstBinAvailabilityForEveryShelfLevel(String(racks?.id));
+
+      const shelfLevels = await prisma.shelfLevel.findFirst({
         where: {
-          isAvailable: true,
-          racksId: rack?.id,
+          racksId: racks?.id,
         },
       });
+
+      const firstBinForEachShelfLevel = await prisma.bin.findFirst({
+        where: {
+          isAvailable: true,
+          shelfLevelId: shelfLevels?.id,
+        },
+      });
+
+      console.log(firstBinForEachShelfLevel);
 
       const assignProduct = await prisma.assignment.create({
         data: {
           productId: product?.id,
-          binId: bin?.id,
           expirationDate: expiration,
+          binId: firstBinForEachShelfLevel?.id,
+          purchaseOrder,
         },
       });
 
-      // trying to count assignment and bin
-      const countBin = await prisma.bin.count({
+      const numberOfAssignmentInTheBin = await prisma.assignment.count({
         where: {
-          racksId: rack?.id,
+          binId: firstBinForEachShelfLevel?.id,
         },
       });
 
-      if (countBin > Number(rack?.capacity)) {
-        // update rack availability
-        await prisma.racks.update({
+      if (
+        numberOfAssignmentInTheBin >=
+        Number(firstBinForEachShelfLevel?.capacity)
+      ) {
+        // update the bin to !available
+        const updateBinAvailability = await prisma.bin.update({
           where: {
-            id: rack?.id,
+            id: firstBinForEachShelfLevel?.id,
           },
           data: {
             isAvailable: false,
           },
         });
+
+        return console.log(updateBinAvailability);
       }
 
-      const count = await prisma.assignment.count({
-        where: {
-          binId: assignProduct?.binId,
-        },
-      });
-      const capacity: number = Number(bin?.capacity);
-      const binId: string = String(bin?.id);
-      if (count >= capacity) {
-        await prisma.bin.update({
-          where: {
-            id: bin?.id,
-          },
-          data: {
-            isAvailable: false,
-          },
-        });
-      }
-      const productExpiry = await prisma.assignment.findMany({
-        where: {
-          binId: bin?.id,
-        },
-      });
-
-      calculateDateBasedOnExpirationDate(productExpiry);
-
-      const result = calculateDateBasedOnExpirationDate(productExpiry);
-      console.log("Calculated Date:", result.calculatedDate);
-      console.log("First Item:", result.firstItem);
-      console.log("Days until Expiration:", result.daysUntilExpiration);
-
-      return {
-        message: `Product Added ${count}/${bin?.capacity}`,
-        count,
-        capacity,
-        binId,
-      };
+      // if the first bin availablity is false then go to other shelfLevel
     }
-
-    // const { availableBin } = await updateBinCapacity(bin, capacity);
-
-    // const { totalCount, error } = await getAssignmentTotalCount(binId);
-
-    // await checkAndUpdateIfBinCapacityMaxOut(availableBin, totalCount);
-
-    //   return availability
-    //     ? await insertAssignment(
-    //         availableBin?.id,
-    //         purchaseOrder,
-    //         product,
-    //         quantity,
-    //         expiration,
-    //         availableBin,
-    //         totalCount,
-    //         capacity,
-    //         quality
-    //       )
-    //     : {
-    //         message: `Quantity has been exceeded`,
   } catch (error) {
     return { error };
+  }
+}
+
+async function checkFirstBinAvailabilityForEveryShelfLevel(racksId: string) {
+  const shelfLevels = await prisma.shelfLevel.findMany({
+    where: {
+      racksId,
+    },
+  });
+
+  for (let shelfLevel of shelfLevels) {
+    const findFirstBinForEachShelfLevels = await prisma.bin.findFirst({
+      where: {
+        shelfLevelId: shelfLevel?.id,
+      },
+    });
+
+    console.log(findFirstBinForEachShelfLevels);
   }
 }
 

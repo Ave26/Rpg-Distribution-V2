@@ -9,6 +9,23 @@ import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
 import ViewRacks from "@/components/ViewRacks";
 
+interface Bin {
+  id: string;
+  isAvailable: boolean;
+  binSection: null;
+  capacity: number;
+  racksId: null;
+  shelfLevelId: string;
+}
+
+interface ShelfLevel {
+  id: string;
+  level: number;
+  capacity: boolean;
+  racksId: string;
+  bin: Bin[];
+}
+
 function BarcodeScanner() {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
@@ -18,9 +35,40 @@ function BarcodeScanner() {
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
+  const [racks, setRacks] = useState<ShelfLevel[] | undefined>(undefined);
 
-  // kailangan naka base na sa expiry and category
+  async function findRacks() {
+    try {
+      const response = await fetch("/api/racks/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          barcodeId,
+        }),
+      });
 
+      const json = await response.json();
+      setRacks(json);
+      if (response.status === 403) {
+        setRacks(undefined);
+      }
+      if (response.status === 404) {
+        setRacks(undefined);
+      }
+      console.log(json);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    findRacks();
+    return () => void {};
+  }, [barcodeId]);
+
+  // console.log(racks);
   return (
     <Layout>
       <div className="break-all  p-5 font-bold ">
@@ -76,16 +124,16 @@ function BarcodeScanner() {
 
           <Toggle setIsToggle={setIsToggle} isToggle={isToggle} />
           <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
-            <button
+            {/* <button
               onClick={(e) => {
                 e.preventDefault();
                 setIsOpenRack((prevState) => !prevState);
               }}
               className="absolute">
               Open Rack
-            </button>
+            </button> */}
             <ProductImage barcodeId={barcodeId} />
-            <ViewRacks isOpenRack={isOpenRack} />
+            <ViewRacks isOpenRack={isOpenRack} racks={racks} />
           </div>
 
           {isManual && (

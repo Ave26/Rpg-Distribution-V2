@@ -28,6 +28,7 @@ model products {
   barcodeId    String         @unique
   category     String?
   image        String?
+  sku          String?
   price        Float?
   productName  String
   productLists productLists[]
@@ -59,42 +60,36 @@ model categories {
 }
 
 model racks {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  name         String       @unique
-  isAvailable  Boolean      @default(true)
-  capacity     Int          @default(36) // input
-  shelfLevel   shelfLevel[]
-  bin          bin[] // kung ilang id ang nagawa na is 0 - binQuantity 36
-  categories   categories?  @relation(fields: [categoriesId], references: [id])
-  categoriesId String?      @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String      @unique
+  isAvailable  Boolean     @default(true)
+  bin          bin[]
+  categories   categories? @relation(fields: [categoriesId], references: [id])
+  categoriesId String?     @db.ObjectId
 }
 
 model shelfLevel {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  level   Int
-  bin     bin[]
-  racks   racks?  @relation(fields: [racksId], references: [id])
-  racksId String? @db.ObjectId
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  level    Int
+  capacity Int?
 }
 
 model bin {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable  Boolean?     @default(true)
-  binSection   Int?
-  capacity     Int?
-  assignment   assignment[]
-  racks        racks?       @relation(fields: [racksId], references: [id])
-  racksId      String?      @db.ObjectId
-  shelfLevel   shelfLevel?  @relation(fields: [shelfLevelId], references: [id])
-  shelfLevelId String?      @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable Boolean      @default(true)
+  capacity    Int
+  shelfLevel  Int
+  assignment  assignment[]
+  racks       racks?       @relation(fields: [racksId], references: [id])
+  racksId     String?      @db.ObjectId
 }
 
-// check the count assignment and bin max qunatity
 model assignment {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   dateReceive    String?
   purchaseOrder  String?
   expirationDate String?
+  boxSize        String?
   products       products? @relation(fields: [productId], references: [id])
   productId      String?   @db.ObjectId
   bin            bin?      @relation(fields: [binId], references: [id])

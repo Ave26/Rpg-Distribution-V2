@@ -1,5 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { createRack } from "@/lib/prisma/racks";
+import { setUpRack } from "@/lib/prisma/racks";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -25,9 +25,9 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { category, rack: rck } = req.body;
+  const { rackCategory, rackName, numberOfBins, shelfLevel } = req.body;
 
-  if (!category || !rck) {
+  if (!rackCategory || !rackName || !numberOfBins || !shelfLevel) {
     return res.status(405).json({
       message: "Filled Incomplete",
     });
@@ -36,35 +36,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
       try {
-        const { rack, error, categories, rackFound } = await createRack(
-          category,
-          rck
+        const newBin = await setUpRack(
+          rackCategory,
+          rackName,
+          Number(numberOfBins),
+          Number(shelfLevel)
         );
-
-        if (rack) {
-          return res.status(200).json({
-            message: "Rack Already Created",
-            rack,
-            rackFound,
+        if (!newBin) {
+          return res.status(500).json({
+            message: "Oops! something went wrong",
           });
         }
 
-        if (rackFound) {
-          return res.status(200).json({
-            message: "Rack Added Successfully",
-            rackFound,
-          });
-        }
-
-        return categories
-          ? res.status(200).json({
-              message: "Added Successfully",
-              categories,
-              rackFound,
-            })
-          : res.json(error);
+        return res.json(newBin);
       } catch (error) {
-        return res.json(error);
+        console.log(error);
       }
 
     case "PATCH":

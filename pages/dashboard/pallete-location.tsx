@@ -1,11 +1,7 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import ReusableButton from "@/components/Parts/ReusableButton";
-import ReusableInput from "@/components/Parts/ReusableInput";
-import Toast from "@/components/Parts/Toast";
-import { NextApiRequest, NextPage } from "next";
-import { verifyJwt } from "@/lib/helper/jwt";
-import Header from "@/components/Header";
+
 import CreateRack from "@/components/CreateRack";
 import UpdateRack from "@/components/UpdateRack";
 

@@ -6,7 +6,6 @@ interface Operation {
 }
 
 function OperationalToggle({ isManual, setIsManual }: Operation): JSX.Element {
-  console.log(isManual);
   return (
     <div className="relative flex w-full flex-row-reverse items-center justify-start ">
       <label className="relative flex h-full w-fit cursor-pointer items-center justify-start gap-2 p-2">
