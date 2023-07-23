@@ -27,37 +27,38 @@ const middleware =
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     barcodeId,
-    expirationDate,
     purchaseOrder,
-    boxValue,
-    quantity,
-    binId,
+    boxSize,
+    expirationDate,
     quality,
+    // quantity,
+    // binId,
   } = req.body;
 
   if (
     !barcodeId ||
-    !expirationDate
-    // !purchaseOrder ||
-    // !boxValue ||
-    // !binId ||
-    // !quality
+    !purchaseOrder ||
+    !boxSize ||
+    !expirationDate ||
+    !quality
+    // !quantity ||
+    // !binId
   ) {
     return res.status(405).json({
       message: "Incomplete Field",
     });
   }
 
+  console.log(req.body);
+
   switch (req.method) {
     case "POST":
       try {
         const data = await scanBarcode(
           barcodeId,
-          boxValue,
-          expirationDate,
-          Number(quantity),
-          binId,
           purchaseOrder,
+          boxSize,
+          expirationDate,
           quality
         );
 

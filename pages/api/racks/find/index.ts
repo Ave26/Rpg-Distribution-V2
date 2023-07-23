@@ -1,5 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findCategory, findRacks } from "@/lib/prisma/racks";
+import { findCategory } from "@/lib/prisma/racks";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
@@ -35,17 +35,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (req.method) {
     case "POST":
-      const { data } = await findCategory(barcodeId, rackName);
-      const { shelfLevel } = await findRacks(barcodeId);
-
-      if (!shelfLevel) {
+      const { data } = await findCategory();
+      if (!data) {
         return res.status(404).json({
-          message: "Oops! something went wrong",
+          message: "No record",
         });
       }
-
-      return res.status(200).json(shelfLevel);
-
     case "GET":
 
     default:

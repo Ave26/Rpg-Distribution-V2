@@ -68,12 +68,6 @@ model racks {
   categoriesId String?     @db.ObjectId
 }
 
-model shelfLevel {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  level    Int
-  capacity Int?
-}
-
 model bin {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   isAvailable Boolean      @default(true)

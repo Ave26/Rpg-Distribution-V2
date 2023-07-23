@@ -6,20 +6,22 @@ import Loading from "./Loading";
 
 interface Barcode {
   barcodeId: string;
-  isManual?: boolean;
+  setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
   purchaseOrder: string;
   boxSize: string;
   expirationDate: string;
-  setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
+  quality: string;
+  isManual?: boolean;
 }
 
 export default function ScanBarcode({
   barcodeId,
   setBarcodeId,
-  isManual,
   purchaseOrder,
   boxSize,
   expirationDate,
+  quality,
+  isManual,
 }: Barcode): JSX.Element {
   const router = useRouter();
   const [isFetch, setIsFetch] = useState<boolean>(false);
@@ -28,7 +30,6 @@ export default function ScanBarcode({
   const [capacity, setCapacity] = useState<number>(0);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function assignProduct() {
@@ -40,7 +41,10 @@ export default function ScanBarcode({
       },
       body: JSON.stringify({
         barcodeId,
+        purchaseOrder,
+        boxSize,
         expirationDate,
+        quality,
       }),
     });
     setIsLoading(false);
@@ -50,8 +54,9 @@ export default function ScanBarcode({
     if (json?.isAuthenticated === false) {
       router.push("/login");
     }
-    console.log(json?.message, json?.binId);
-    setCount(json?.count);
+    console.log(json?.message);
+    setCount(json?.TotalAssignedProduct);
+
     setCapacity(json?.capacity);
     setBinId(json?.binId);
     try {
@@ -70,7 +75,7 @@ export default function ScanBarcode({
   }, [isFetch]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center gap-2 font-bold">
+    <div className="flex h-full w-full items-center justify-center border font-bold transition-all">
       <label></label>
       <ReusableInput
         name="Barcode Id:"
@@ -84,19 +89,19 @@ export default function ScanBarcode({
         }}
       />
       {isManual ? (
-        <div className="transition-all">
+        <div className="p-2 transition-all">
           <ReusableInput
             min={0}
             type="number"
             name="Quantity"
             value={count}
-            onChange={(value: any) => {
+            onChange={(value: number) => {
               setCount(value);
             }}
           />
         </div>
       ) : (
-        <div className="h-24 w-28 p-4 transition-all">
+        <div className="h-24 w-28 p-1 transition-all">
           <div
             className={`${
               count > 0 &&

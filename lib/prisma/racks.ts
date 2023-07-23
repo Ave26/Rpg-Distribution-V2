@@ -111,3 +111,17 @@ function getBinCapacity(shelfLevel: number): number[] | number | number {
       return 0;
   }
 }
+
+export async function findCategory() {
+  const data = await prisma.categories.findMany({
+    include: {
+      racks: {
+        include: {
+          bin: true,
+        },
+      },
+    },
+  });
+
+  return { data };
+}

@@ -30,8 +30,9 @@ function BarcodeScanner() {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
   const [boxSize, setBoxSize] = useState<string>("thisi");
-  const arraySize: string[] = ["Small", "Medium", "Large"];
   const [expirationDate, setExpirationDate] = useState<string>("");
+  const [quality, setQuality] = useState<string>("");
+  const arraySize: string[] = ["Small", "Medium", "Large"];
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
@@ -50,7 +51,7 @@ function BarcodeScanner() {
       });
 
       const json = await response.json();
-      setRacks(json);
+      // setRacks(json);
       if (response.status === 403) {
         setRacks(undefined);
       }
@@ -77,10 +78,11 @@ function BarcodeScanner() {
           <ScanBarcode
             barcodeId={barcodeId}
             setBarcodeId={setBarcodeId}
-            isManual={isManual}
             purchaseOrder={purchaseOrder}
             boxSize={boxSize}
             expirationDate={expirationDate}
+            quality={quality}
+            isManual={isManual}
           />
 
           <ReusableInput
@@ -115,14 +117,19 @@ function BarcodeScanner() {
 
           <ReusableInput
             type="date"
-            name="Expiration Date"
+            name="Batch Number"
             value={expirationDate}
             onChange={(value: any) => {
               setExpirationDate(value);
             }}
           />
 
-          <Toggle setIsToggle={setIsToggle} isToggle={isToggle} />
+          <Toggle
+            setIsToggle={setIsToggle}
+            isToggle={isToggle}
+            setQuality={setQuality}
+            quality={quality}
+          />
           <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
             {/* <button
               onClick={(e) => {
