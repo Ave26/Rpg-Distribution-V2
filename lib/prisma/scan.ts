@@ -90,16 +90,7 @@ export async function scanBarcode(
         }
       }
 
-      /* SCENARIO: SCAN USE CASE
-        - Scan a product and automatically set the a specific bin for that expiry and
-        product Id
-        - 
-        - 
-        
-        
-
-
-       */
+      // TODO: ADD THE SEPARATION OF DIFFERENT BARCODE ID AND DEPENDS IF IT IS THE SAME VARIANTS
 
       return {
         // categories,

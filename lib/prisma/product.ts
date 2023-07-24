@@ -47,16 +47,7 @@ export const findProductBaseOnName = async (productName: string) => {
 
 export const findManyProduct = async () => {
   try {
-    const product = await prisma.products.findMany({
-      include: {
-        _count: {
-          select: {
-            productLists: true,
-          },
-        },
-        productLists: true,
-      },
-    });
+    const product = await prisma.products.findMany({});
     return { product };
   } catch (error) {
     return { error };
