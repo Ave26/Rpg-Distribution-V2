@@ -30,8 +30,9 @@ function BarcodeScanner() {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
   const [boxSize, setBoxSize] = useState<string>("thisi");
-  const [expirationDate, setExpirationDate] = useState<string>("");
+  const [expirationDate, setExpirationDate] = useState<Date | null>(null);
   const [quality, setQuality] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(0);
   const arraySize: string[] = ["Small", "Medium", "Large"];
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
@@ -82,6 +83,7 @@ function BarcodeScanner() {
             boxSize={boxSize}
             expirationDate={expirationDate}
             quality={quality}
+            quantity={quantity}
             isManual={isManual}
           />
 

@@ -13,6 +13,7 @@ interface ReusableInputProps {
   placeholder?: string;
   autoComplete?: string;
   className?: string;
+  autoFocus?: boolean;
   min?: number;
   onChange: (value: any) => void;
 }
@@ -24,6 +25,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
   value,
   placeholder,
   className,
+  autoFocus,
   autoComplete,
   onChange,
   min,
@@ -48,6 +50,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
         name={name}
         id={name}
         value={value}
+        autoFocus={autoFocus}
         autoComplete={autoComplete}
         placeholder={placeholder}
         className={className ? className : initialStyle}

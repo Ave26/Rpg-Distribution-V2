@@ -83,7 +83,6 @@ export default function ProductImage({
           height={0}
         />
       )}
-      <Toast data={message} isShow={isShow} />
     </div>
   );
 }

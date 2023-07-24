@@ -58,7 +58,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           barcodeId,
           purchaseOrder,
           boxSize,
-          expirationDate,
+          new Date(expirationDate),
           quality
         );
 

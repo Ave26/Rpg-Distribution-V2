@@ -9,8 +9,9 @@ interface Barcode {
   setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
   purchaseOrder: string;
   boxSize: string;
-  expirationDate: string;
+  expirationDate: Date | null;
   quality: string;
+  quantity: number;
   isManual?: boolean;
 }
 
@@ -21,6 +22,7 @@ export default function ScanBarcode({
   boxSize,
   expirationDate,
   quality,
+  quantity,
   isManual,
 }: Barcode): JSX.Element {
   const router = useRouter();
@@ -31,6 +33,9 @@ export default function ScanBarcode({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
   async function assignProduct() {
     setIsLoading(true);
@@ -45,6 +50,7 @@ export default function ScanBarcode({
         boxSize,
         expirationDate,
         quality,
+        quantity,
       }),
     });
     setIsLoading(false);
@@ -54,9 +60,14 @@ export default function ScanBarcode({
     if (json?.isAuthenticated === false) {
       router.push("/login");
     }
-    console.log(json?.message);
-    setCount(json?.TotalAssignedProduct);
 
+    if (response.status === 200 || response.status === 405) {
+      console.log(json?.message);
+      setMessage(json?.message);
+      setIsShow(true);
+    }
+    console.log(json);
+    setCount(json?.TotalAssignedProduct);
     setCapacity(json?.capacity);
     setBinId(json?.binId);
     try {
@@ -74,10 +85,20 @@ export default function ScanBarcode({
     }
   }, [isFetch]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShow(false);
+    }, 2100);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isShow, barcodeId]);
+
   return (
     <div className="flex h-full w-full items-center justify-center border font-bold transition-all">
       <label></label>
       <ReusableInput
+        autoFocus
         name="Barcode Id:"
         value={barcodeId}
         onChange={(value: string) => {
@@ -92,9 +113,10 @@ export default function ScanBarcode({
         <div className="p-2 transition-all">
           <ReusableInput
             min={0}
+            placeholder={""}
             type="number"
             name="Quantity"
-            value={count}
+            value={quantity}
             onChange={(value: number) => {
               setCount(value);
             }}
@@ -104,15 +126,14 @@ export default function ScanBarcode({
         <div className="h-24 w-28 p-1 transition-all">
           <div
             className={`${
-              count > 0 &&
-              capacity > 0 &&
-              count === capacity &&
-              "border-none bg-pink-400 shadow-lg transition-all"
-            } flex h-full w-full items-center justify-center rounded-lg border border-black transition-all`}>
+              count >= capacity &&
+              "border-none bg-pink-400/70 shadow-lg transition-all"
+            } flex h-full w-full items-center justify-center rounded-lg border border-black bg-pink-400/30 transition-all`}>
             {isLoading ? <Loading /> : `${count ?? 0} / ${capacity ?? 0}`}
           </div>
         </div>
       )}
+      <Toast data={message} isShow={isShow} />
     </div>
   );
 }

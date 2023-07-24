@@ -1,6 +1,6 @@
 import { verifyJwt } from "@/lib/helper/jwt";
 import { findManyProduct, findProduct } from "@/lib/prisma/product";
-import { findCategory } from "@/lib/prisma/scan";
+// import { findCategory } from "@/lib/prisma/scan";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =

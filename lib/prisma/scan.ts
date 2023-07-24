@@ -5,7 +5,7 @@ export async function scanBarcode(
   barcodeId: string,
   purchaseOrder: string,
   boxSize: string,
-  expirationDate: string,
+  expirationDate: Date,
   quality: string
 ) {
   let message;
@@ -31,45 +31,82 @@ export async function scanBarcode(
         },
       });
 
-      const bin = await prisma.bin.findFirst({
+      const bins = await prisma.bin.findMany({
         where: {
           racksId: racks?.id,
-          isAvailable: true,
+        },
+        include: {
+          assignment: true,
         },
       });
 
-      await prisma.assignment.create({
-        data: {
-          binId: bin?.id,
-          productId: product?.id,
-          expirationDate,
-          boxSize,
-          purchaseOrder,
-        },
-      });
-
-      const TotalAssignedProduct = await prisma.assignment.count({
-        where: {
-          binId: bin?.id,
-        },
-      });
-
-      if (TotalAssignedProduct >= Number(bin?.capacity)) {
-        await prisma.bin.update({
+      for (const bin of bins) {
+        const availableBin = await prisma.bin.findFirst({
           where: {
-            id: bin?.id,
-          },
-          data: {
-            isAvailable: false,
+            id: bin.id,
+            isAvailable: true,
+            assignment: {
+              every: {
+                expirationDate: {
+                  equals: expirationDate,
+                },
+              },
+            },
           },
         });
+
+        if (availableBin) {
+          // Found a bin with the same expirationDate in its assignments
+          // Create a new assignment
+          const newAssignment = await prisma.assignment.create({
+            data: {
+              productId: product?.id,
+              binId: availableBin?.id,
+              boxSize,
+              purchaseOrder,
+              expirationDate,
+            },
+          });
+
+          const TotalAssignedProduct = await prisma.assignment.count({
+            where: {
+              binId: bin?.id,
+            },
+          });
+          const capacity = Number(bin?.capacity);
+          if (TotalAssignedProduct >= capacity) {
+            await prisma.bin.update({
+              where: {
+                id: bin?.id,
+              },
+              data: {
+                isAvailable: false,
+              },
+            });
+          }
+
+          console.log(`Created new assignment with ID: ${newAssignment.id}`);
+          break; // Break the loop since the assignment is created
+        }
       }
-      const capacity = Number(bin?.capacity);
+
+      /* SCENARIO: SCAN USE CASE
+        - Scan a product and automatically set the a specific bin for that expiry and
+        product Id
+        - 
+        - 
+        
+        
+
+
+       */
+
       return {
-        categories,
-        message: `Product Added ${TotalAssignedProduct}`,
-        TotalAssignedProduct,
-        capacity,
+        // categories,
+        message: `Product Added ${"TotalAssignedProduct"}`,
+        // TotalAssignedProduct,
+        // capacity,
+        // sortedProduct,
       };
     }
   } catch (error) {
