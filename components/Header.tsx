@@ -68,7 +68,7 @@ export default function Header({
       }`}>
       <div className="relative flex h-24 w-full items-center justify-between  px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky}`}>
-          <Link href="/" passHref>
+          <Link href="/dashboard/barcode-scanner" passHref>
             <Image
               priority
               src={ProStockV2}
@@ -93,8 +93,6 @@ export default function Header({
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"
         }`}>
-        <Link href={`/test-dashboard/AccountManagement`}>Dashboard</Link>
-
         <Link
           href={"/products"}
           className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>

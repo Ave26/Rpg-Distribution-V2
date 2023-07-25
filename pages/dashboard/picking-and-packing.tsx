@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import Layout from "@/components/layout";
-import DashboardLayout from "@/components/dashboardLayout";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
 export default function PickingAndPacking() {
   return (

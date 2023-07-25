@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import Toast from "@/components/Parts/Toast";
 import ReusableInput from "@/components/Parts/ReusableInput";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
-export default function AccountManagement() {
+const AccountManagement = (): JSX.Element => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cPassword, setCPassword] = useState<string>("");
@@ -67,7 +68,7 @@ export default function AccountManagement() {
   };
 
   return (
-    <Layout>
+    <>
       <form action="" onSubmit={handleRegister} className="p-4 lg:px-96 ">
         <div className="flex h-screen w-full grid-flow-col grid-rows-3 flex-col items-center justify-center p-2 md:grid md:gap-4 md:py-40">
           <ReusableInput
@@ -141,6 +142,16 @@ export default function AccountManagement() {
         </button>
       </form>
       <Toast data={data} />
+    </>
+  );
+};
+
+export default AccountManagement;
+
+AccountManagement.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
     </Layout>
   );
-}
+};

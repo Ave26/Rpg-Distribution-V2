@@ -68,7 +68,7 @@ export async function setUpRack(
 async function set_shelfLevel_and_capacity(
   numberOfBins: number,
   shelfLevel: number,
-  newRack: any
+  rack: any
 ) {
   const binData = [];
   for (let i = 0; i < numberOfBins; i++) {
@@ -81,7 +81,7 @@ async function set_shelfLevel_and_capacity(
       : capacity;
 
     binData.push({
-      racksId: newRack?.id,
+      racksId: rack?.id,
       capacity: Number(binCapacity),
       shelfLevel: shelfNumber,
     });

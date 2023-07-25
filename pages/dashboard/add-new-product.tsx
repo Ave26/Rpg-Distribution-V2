@@ -2,10 +2,17 @@ import ReusableButton from "@/components/Parts/ReusableButton";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import Layout from "@/components/layout";
 import Image from "next/image";
-import React, { useState, type FC, ChangeEvent, useEffect } from "react";
+import React, {
+  useState,
+  type FC,
+  ChangeEvent,
+  useEffect,
+  ReactElement,
+} from "react";
 import noImg from "../../public/assets/products/noProductDisplay.png";
 import Toast from "@/components/Parts/Toast";
 import { stringify } from "querystring";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 interface NewProduct {
   barcodeId: string;
   productName: string;
@@ -14,7 +21,7 @@ interface NewProduct {
   category: string | undefined;
 }
 
-const AddNewProduct: FC = ({}) => {
+const AddNewProduct = ({}): JSX.Element => {
   const categories: string[] = [
     "Food",
     "Laundry",
@@ -114,7 +121,7 @@ const AddNewProduct: FC = ({}) => {
   }, [barcodeId]);
 
   return (
-    <Layout>
+    <>
       <section className="h-full w-full">
         <form
           onSubmit={handleAddProduct}
@@ -190,7 +197,7 @@ const AddNewProduct: FC = ({}) => {
                 priority
                 src={image || noImg}
                 alt="productImg"
-                className="h-full w-full object-contain"
+                className="object-contain"
                 width={0}
                 height={0}
               />
@@ -217,7 +224,15 @@ const AddNewProduct: FC = ({}) => {
         </form>
         {isShow && <Toast data={msg} isShow={isShow} />}
       </section>
-    </Layout>
+    </>
   );
 };
 export default AddNewProduct;
+
+AddNewProduct.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

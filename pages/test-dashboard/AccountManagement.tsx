@@ -1,5 +1,5 @@
 import ReusableInput from "@/components/Parts/ReusableInput";
-import DashboardLayout from "@/components/dashboardLayout";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 import Layout from "@/components/layout";
 import React, { ReactElement, useState } from "react";
 

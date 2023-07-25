@@ -12,13 +12,13 @@ const BurgerMenu: React.FC<Menu> = ({ menuOpen, setMenuOpen }) => {
   };
 
   return (
-    <div className="block space-y-1 tablet:hidden" onClick={handleMenu}>
-      <div className={`w-9 rounded-md h-1.5 bg-gray-600`}></div>
+    <div className="tablet:hidden block space-y-1" onClick={handleMenu}>
+      <div className={`h-1.5 w-9 rounded-md bg-gray-600 transition-all`}></div>
       <div
         className={`${
-          menuOpen && "w-6"
-        } transition-all w-9 rounded-md h-1.5 bg-gray-600`}></div>
-      <div className={`w-9 rounded-md h-1.5 bg-gray-600`}></div>
+          menuOpen && "w-6 transition-all"
+        } h-1.5 w-9 rounded-md bg-gray-600 transition-all`}></div>
+      <div className={`h-1.5 w-9 rounded-md bg-gray-600`}></div>
     </div>
   );
 };

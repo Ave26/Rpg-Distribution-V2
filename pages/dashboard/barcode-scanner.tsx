@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 
 import ReusableButton from "@/components/Parts/ReusableButton";
 import ReusableInput from "@/components/Parts/ReusableInput";
@@ -8,6 +8,7 @@ import Toggle from "@/components/Parts/Toggle";
 import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
 import ViewRacks from "@/components/ViewRacks";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
 interface Bin {
   id: string;
@@ -26,7 +27,7 @@ interface ShelfLevel {
   bin: Bin[];
 }
 
-function BarcodeScanner() {
+function BarcodeScanner(): JSX.Element {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
   const [boxSize, setBoxSize] = useState<string>("thisi");
@@ -72,7 +73,7 @@ function BarcodeScanner() {
 
   // console.log(racks);
   return (
-    <Layout>
+    <>
       <div className="break-all  p-5 font-bold ">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
         <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
@@ -150,8 +151,16 @@ function BarcodeScanner() {
           )}
         </form>
       </div>
-    </Layout>
+    </>
   );
 }
 
 export default BarcodeScanner;
+
+BarcodeScanner.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

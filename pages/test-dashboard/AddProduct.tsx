@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/dashboardLayout";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 import Layout from "@/components/layout";
 import React, { ReactElement, useEffect } from "react";
 export default function AddProduct() {
