@@ -30,26 +30,11 @@ export async function setUpRack(
         },
       });
 
-      const binData = [];
-      for (let i = 1; i <= numberOfBins; i++) {
-        const shelfNumber =
-          i % shelfLevel === 0
-            ? Number(shelfLevel)
-            : Number(i % Number(shelfLevel));
-        const capacity = getBinCapacity(shelfLevel);
-        const binCapacity = Array.isArray(capacity)
-          ? capacity[i % capacity.length]
-          : capacity;
-        console.log(binCapacity);
-        binData.push({
-          racksId: createdRack?.id,
-          capacity: binCapacity,
-          shelfLevel: shelfNumber,
-        });
-      }
-      const newBin = await prisma.bin.createMany({
-        data: binData,
-      });
+      const { newBin } = await set_shelfLevel_and_capacity(
+        numberOfBins,
+        shelfLevel,
+        createdRack
+      );
       return { newBin, message: "Rack and Bin Created" };
     }
   } else {
@@ -70,29 +55,43 @@ export async function setUpRack(
       },
     });
 
-    const binData = [];
-    for (let i = 1; i <= numberOfBins; i++) {
-      const shelfNumber =
-        i % shelfLevel === 0
-          ? Number(shelfLevel)
-          : Number(i % Number(shelfLevel));
+    const { newBin } = await set_shelfLevel_and_capacity(
+      numberOfBins,
+      shelfLevel,
+      newRack
+    );
 
-      const capacity = getBinCapacity(shelfLevel);
-      const binCapacity = Array.isArray(capacity)
-        ? Number(capacity[i % Number(capacity.length)])
-        : capacity;
-
-      binData.push({
-        racksId: newRack?.id,
-        capacity: Number(binCapacity),
-        shelfLevel: shelfNumber,
-      });
-    }
-    const newBin = await prisma.bin.createMany({
-      data: binData,
-    });
     return { newBin, message: "Category, Rack and Bin Created" };
   }
+}
+
+async function set_shelfLevel_and_capacity(
+  numberOfBins: number,
+  shelfLevel: number,
+  newRack: any
+) {
+  const binData = [];
+  for (let i = 0; i < numberOfBins; i++) {
+    const shelfNumber =
+      i % shelfLevel === 0 ? 1 : Number((i % Number(shelfLevel)) + 1);
+
+    const capacity = getBinCapacity(shelfLevel);
+    const binCapacity = Array.isArray(capacity)
+      ? Number(capacity[i % Number(capacity.length)])
+      : capacity;
+
+    binData.push({
+      racksId: newRack?.id,
+      capacity: Number(binCapacity),
+      shelfLevel: shelfNumber,
+    });
+  }
+
+  const newBin = await prisma.bin.createMany({
+    data: binData,
+  });
+
+  return { newBin };
 }
 
 function getBinCapacity(shelfLevel: number): number[] | number | number {

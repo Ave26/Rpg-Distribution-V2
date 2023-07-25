@@ -47,6 +47,9 @@ export async function scanBarcode(
             isAvailable: true,
             assignment: {
               every: {
+                productId: {
+                  equals: product?.id,
+                },
                 expirationDate: {
                   equals: expirationDate,
                 },
