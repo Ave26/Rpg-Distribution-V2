@@ -20,7 +20,7 @@ export default function Header({
   const [authenticated, setAuthenticated] = useState(false);
   const [buttonName, setButtonName] = useState<string>("Login");
 
-  const handleLogin = () => {
+  const gotoLogin = () => {
     router.push("/login");
   };
 
@@ -63,12 +63,12 @@ export default function Header({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row ${
-        isOpen ? "" : ""
-      }`}>
+      className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between  px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky}`}>
-          <Link href="/dashboard/barcode-scanner" passHref>
+          <Link
+            href={`${data?.isLogin ? "/dashboard/barcode-scanner" : "/"}`}
+            passHref>
             <Image
               priority
               src={ProStockV2}
@@ -103,11 +103,13 @@ export default function Header({
           className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>
           About Us
         </Link>
-        <button
-          onClick={authenticated ? handleLogout : handleLogin}
-          className="h-[50px] w-[130px] cursor-pointer rounded-[6px] border-2 border-[#EEA47FFF] bg-transparent text-[#EEA47FFF] outline-none transition-all hover:bg-[#EEA47FFF] hover:text-white">
-          {data?.isLogin === true ? "Logout" : "Login"}
-        </button>
+        {data?.isLogin ? (
+          <button
+            onClick={gotoLogin}
+            className="h-[50px] w-[130px] cursor-pointer rounded-[6px] border-2 border-[#EEA47FFF] bg-transparent text-[#EEA47FFF] outline-none transition-all hover:bg-[#EEA47FFF] hover:text-white">
+            Login
+          </button>
+        ) : null}
       </nav>
     </div>
   );

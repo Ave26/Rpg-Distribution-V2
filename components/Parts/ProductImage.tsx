@@ -78,7 +78,7 @@ export default function ProductImage({
           priority
           alt="Product Image"
           src={productImage || noImage}
-          className="h-full w-full object-contain md:h-56 md:w-56"
+          className="object-contain md:h-40 md:w-40"
           width={0}
           height={0}
         />

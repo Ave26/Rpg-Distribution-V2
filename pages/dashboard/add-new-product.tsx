@@ -122,108 +122,106 @@ const AddNewProduct = ({}): JSX.Element => {
 
   return (
     <>
-      <section className="h-full w-full">
-        <form
-          onSubmit={handleAddProduct}
-          className="flex flex-col items-center justify-center gap-3">
-          <div className="flex flex-col flex-wrap items-center justify-center gap-2 break-all font-bold md:grid lg:grid-cols-2 lg:place-items-center">
-            <ReusableInput
-              value={barcodeId}
-              name="Barcode Id"
-              type="text"
-              onChange={(newValue) => {
-                setBarcodeId(newValue);
-              }}
-            />
-            <ReusableInput
-              value={productName}
-              name="Product Name"
-              type="text"
-              onChange={(newValue) => {
-                setProductName(newValue);
-              }}
-            />
+      <form
+        onSubmit={handleAddProduct}
+        className="flex h-full w-full flex-col items-center justify-center gap-3">
+        <div className="flex flex-col flex-wrap items-center justify-center gap-2 break-all font-bold md:grid lg:grid-cols-2 lg:place-items-center">
+          <ReusableInput
+            value={barcodeId}
+            name="Barcode Id"
+            type="text"
+            onChange={(newValue) => {
+              setBarcodeId(newValue);
+            }}
+          />
+          <ReusableInput
+            value={productName}
+            name="Product Name"
+            type="text"
+            onChange={(newValue) => {
+              setProductName(newValue);
+            }}
+          />
 
-            <ReusableInput
-              value={price}
-              name="Price"
-              placeholder="0.00"
-              type="text"
-              onChange={(newValue) => {
-                const filteredValue = newValue.replace(/[^0-9.]/g, "");
-                setPrice(filteredValue);
-              }}
-            />
+          <ReusableInput
+            value={price}
+            name="Price"
+            placeholder="0.00"
+            type="text"
+            onChange={(newValue) => {
+              const filteredValue = newValue.replace(/[^0-9.]/g, "");
+              setPrice(filteredValue);
+            }}
+          />
 
-            <select
-              className="p-2"
-              value={category}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setCategory(e.target.value)
-              }>
-              <option>Select Rack Category</option>s
-              {categories.map((value, index) => {
-                return (
-                  <option key={index} value={value}>
-                    {value}
-                  </option>
-                );
-              })}
-            </select>
+          <select
+            className="p-2"
+            value={category}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setCategory(e.target.value)
+            }>
+            <option>Select Rack Category</option>s
+            {categories.map((value, index) => {
+              return (
+                <option key={index} value={value}>
+                  {value}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
+        <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
+          <input
+            type="file"
+            accept="image/jpg, image/jpeg, image/png"
+            name="file"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              const file = event.target?.files?.[0];
+              console.log(file);
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const base64String = reader.result as string;
+                  setImage(base64String);
+                };
+                reader.readAsDataURL(file);
+                console.log(reader);
+              }
+            }}
+            className="w-full break-all font-bold"
+          />
+          <div className="flex w-full items-center justify-center">
+            <Image
+              priority
+              src={image || noImg}
+              alt="productImg"
+              className="object-contain"
+              width={10}
+              height={10}
+            />
           </div>
 
-          <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
-            <input
-              type="file"
-              accept="image/jpg, image/jpeg, image/png"
-              name="file"
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                const file = event.target?.files?.[0];
-                console.log(file);
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = () => {
-                    const base64String = reader.result as string;
-                    setImage(base64String);
-                  };
-                  reader.readAsDataURL(file);
-                  console.log(reader);
-                }
-              }}
-              className="w-full break-all font-bold"
+          <div className="relative flex w-full flex-wrap items-center justify-center gap-2 px-10 py-5">
+            <ReusableButton
+              name={"Add Now"}
+              type="submit"
+              isLoading={isLoading}
             />
-            <div className="flex w-full items-center justify-center">
-              <Image
-                priority
-                src={image || noImg}
-                alt="productImg"
-                className="object-contain"
-                width={0}
-                height={0}
-              />
-            </div>
-
-            <div className="relative flex w-full flex-wrap items-center justify-center gap-2 px-10 py-5">
-              <ReusableButton
-                name={"Add Now"}
-                type="submit"
-                isLoading={isLoading}
-              />
-              <ReusableButton
-                name="Clear"
-                type="button"
-                onClick={() => {
-                  setBarcodeId("");
-                  setPrice(0);
-                  setProductName("");
-                  setImage("");
-                }}
-              />
-            </div>
+            <ReusableButton
+              name="Clear"
+              type="button"
+              onClick={() => {
+                setBarcodeId("");
+                setPrice(0);
+                setProductName("");
+                setImage("");
+              }}
+            />
           </div>
-        </form>
-        {isShow && <Toast data={msg} isShow={isShow} />}
-      </section>
+        </div>
+      </form>
+      {isShow && <Toast data={msg} isShow={isShow} />}
     </>
   );
 };

@@ -12,29 +12,26 @@ import { ReactElement } from "react";
 import { redirect } from "next/dist/server/api-utils";
 import Loading from "@/components/Parts/Loading";
 
-export default function Home({ data }: any) {
+interface TokenProps {
+  isLogin?: boolean;
+  verifiedToken?: any;
+}
+
+export default function Home({ data }: any): JSX.Element {
   const router = useRouter();
-  if (data?.verifiedToken?.roles === "Admin") {
-    router.push("/dashboard/barcode-scanner");
-  } else {
+
+  if (data?.isLogin) {
     router.push("/dashboard/barcode-scanner");
   }
 
   return (
     <>
       <Head>
-        <title>{"Home | " + (data?.roles ?? "Hi")}</title>
+        <title>{"Home |" + (data?.roles ?? "Hi")}</title>
       </Head>
       <Layout data={data}>
-        <div className="text-md flex h-screen w-full items-center justify-center font-extrabold">
-          {
-            data.isLogin === false ? <InitialPage /> : <Loading />
-            // ) : data?.verifiedToken?.roles === "Admin" ? (
-            //   <AdminDashboard />
-            // ) : (
-            //   <StaffDashboard />
-            // )
-          }
+        <div className="text-md flex h-full w-full items-center justify-center font-extrabold">
+          <InitialPage />
         </div>
       </Layout>
     </>
@@ -54,6 +51,7 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
       isLogin: false,
     };
   }
+  console.log(data);
   return {
     props: {
       data,

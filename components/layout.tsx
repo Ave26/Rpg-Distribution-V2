@@ -53,16 +53,15 @@ export default function Layout({
   // }, []);
 
   return (
-    <>
+    <div className="">
       <Header
         data={data}
         headerBg={headerBg}
         headerTxt={headerTxt}
         headerSky={headerSky}
       />
-
       <main className="">{children}</main>
       <Footer footerSky={footerSky} />
-    </>
+    </div>
   );
 }

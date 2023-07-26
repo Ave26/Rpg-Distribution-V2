@@ -73,68 +73,68 @@ function BarcodeScanner(): JSX.Element {
 
   // console.log(racks);
   return (
-    <>
-      <div className="break-all  p-5 font-bold ">
-        <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
-        <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
-          <ScanBarcode
-            barcodeId={barcodeId}
-            setBarcodeId={setBarcodeId}
-            purchaseOrder={purchaseOrder}
-            boxSize={boxSize}
-            expirationDate={expirationDate}
-            quality={quality}
-            quantity={quantity}
-            isManual={isManual}
-          />
+    <div className="">
+      {/* flex h-full w-full flex-col items-center justify-center break-all */}
+      <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
+      <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
+        <ScanBarcode
+          barcodeId={barcodeId}
+          setBarcodeId={setBarcodeId}
+          purchaseOrder={purchaseOrder}
+          boxSize={boxSize}
+          expirationDate={expirationDate}
+          quality={quality}
+          quantity={quantity}
+          isManual={isManual}
+        />
 
-          <ReusableInput
-            name="Purchase Order:"
-            value={purchaseOrder}
-            onChange={(value: any) => {
-              setPurchaseOrder(value);
+        <ReusableInput
+          name="Purchase Order:"
+          value={purchaseOrder}
+          onChange={(value: any) => {
+            setPurchaseOrder(value);
+          }}
+        />
+        <div className="flex w-full flex-col flex-wrap items-start justify-center gap-2">
+          <label htmlFor={"boxSize"}>Select Box Size</label>
+          <select
+            id="boxSize"
+            value={boxSize}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              setBoxSize(e.target.value);
             }}
-          />
-          <div className="flex w-full flex-col flex-wrap items-start justify-center gap-2">
-            <label htmlFor={"boxSize"}>Select Box Size</label>
-            <select
-              id="boxSize"
-              value={boxSize}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setBoxSize(e.target.value);
-              }}
-              className="w-full break-all rounded-xl border border-gray-500 p-3
+            className="w-full break-all rounded-xl border border-gray-500 p-3
             transition-all">
-              <option value="Select" className="font-bold">
-                Select...
-              </option>
-              {arraySize.map((value, index) => {
-                return (
-                  <option key={index} className="font-ball">
-                    {value}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+            <option value="Select" className="font-bold">
+              Select...
+            </option>
+            {arraySize.map((value, index) => {
+              return (
+                <option key={index} className="font-ball">
+                  {value}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-          <ReusableInput
-            type="date"
-            name="Batch Number"
-            value={expirationDate}
-            onChange={(value: any) => {
-              setExpirationDate(value);
-            }}
-          />
+        <ReusableInput
+          type="date"
+          name="Batch Number"
+          value={expirationDate}
+          onChange={(value: any) => {
+            setExpirationDate(value);
+          }}
+        />
 
-          <Toggle
-            setIsToggle={setIsToggle}
-            isToggle={isToggle}
-            setQuality={setQuality}
-            quality={quality}
-          />
-          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
-            {/* <button
+        <Toggle
+          setIsToggle={setIsToggle}
+          isToggle={isToggle}
+          setQuality={setQuality}
+          quality={quality}
+        />
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
+          {/* <button
               onClick={(e) => {
                 e.preventDefault();
                 setIsOpenRack((prevState) => !prevState);
@@ -142,16 +142,15 @@ function BarcodeScanner(): JSX.Element {
               className="absolute">
               Open Rack
             </button> */}
-            <ProductImage barcodeId={barcodeId} />
-            <ViewRacks isOpenRack={isOpenRack} racks={racks} />
-          </div>
+          {/* <ViewRacks isOpenRack={isOpenRack} racks={racks} /> */}
+        </div>
+        <ProductImage barcodeId={barcodeId} />
 
-          {isManual && (
-            <ReusableButton name={"Find"} type={"submit"}></ReusableButton>
-          )}
-        </form>
-      </div>
-    </>
+        {isManual && (
+          <ReusableButton name={"Find"} type={"submit"}></ReusableButton>
+        )}
+      </form>
+    </div>
   );
 }
 
