@@ -95,10 +95,11 @@ export default function ScanBarcode({
   }, [isShow, barcodeId]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center border font-bold transition-all">
+    <div className="flex h-full w-full items-center justify-center font-bold transition-all">
       <label></label>
       <ReusableInput
         autoFocus
+        disableLabel={true}
         name="Barcode Id:"
         value={barcodeId}
         onChange={(value: string) => {

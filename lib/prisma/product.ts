@@ -77,7 +77,8 @@ export const addNewProduct = async (
   category: string,
   image: string,
   price: number,
-  productName: string
+  productName: string,
+  sku: string
 ) => {
   console.log(barcodeId, category, image, price, productName, "prisma");
   try {
@@ -98,6 +99,7 @@ export const addNewProduct = async (
           image,
           price,
           productName,
+          sku,
         },
       });
       return { newProduct };

@@ -9,7 +9,7 @@ function BarcodeScanner() {
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
   const [isTypable, setisTypable] = useState<boolean>(false);
-  const ref = useRef<string | null>(null);
+  const ref = useRef<string>("");
   const [data, setData] = useState<any>();
   const [isToggle, setIsToggle] = useState<boolean>(false);
 
@@ -115,11 +115,6 @@ function BarcodeScanner() {
         </div>
       </div>
 
-      {ref.current && (
-        <h1 className="mt-2 w-fit max-w-full cursor-pointer select-none break-all border border-blue-400 p-2 drop-shadow-sm">
-          {String(ref.current)}
-        </h1>
-      )}
       {data && (
         <Image
           src={data?.img}

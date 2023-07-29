@@ -73,10 +73,10 @@ function BarcodeScanner(): JSX.Element {
 
   // console.log(racks);
   return (
-    <div className="">
+    <div className="h-full w-full">
       {/* flex h-full w-full flex-col items-center justify-center break-all */}
       <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
-      <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
+      <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50 md:gap-1 md:py-1">
         <ScanBarcode
           barcodeId={barcodeId}
           setBarcodeId={setBarcodeId}
@@ -91,11 +91,12 @@ function BarcodeScanner(): JSX.Element {
         <ReusableInput
           name="Purchase Order:"
           value={purchaseOrder}
+          disableLabel={true}
           onChange={(value: any) => {
             setPurchaseOrder(value);
           }}
         />
-        <div className="flex w-full flex-col flex-wrap items-start justify-center gap-2">
+        <div className="flex h-full w-full flex-col flex-wrap items-start justify-center gap-2 font-bold">
           <label htmlFor={"boxSize"}>Select Box Size</label>
           <select
             id="boxSize"
@@ -103,7 +104,7 @@ function BarcodeScanner(): JSX.Element {
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               setBoxSize(e.target.value);
             }}
-            className="w-full break-all rounded-xl border border-gray-500 p-3
+            className="h-full w-full break-all rounded-xl border border-gray-500 p-3
             transition-all">
             <option value="Select" className="font-bold">
               Select...
@@ -120,6 +121,7 @@ function BarcodeScanner(): JSX.Element {
 
         <ReusableInput
           type="date"
+          disableLabel={true}
           name="Batch Number"
           value={expirationDate}
           onChange={(value: any) => {
@@ -133,17 +135,7 @@ function BarcodeScanner(): JSX.Element {
           setQuality={setQuality}
           quality={quality}
         />
-        <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
-          {/* <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIsOpenRack((prevState) => !prevState);
-              }}
-              className="absolute">
-              Open Rack
-            </button> */}
-          {/* <ViewRacks isOpenRack={isOpenRack} racks={racks} /> */}
-        </div>
+
         <ProductImage barcodeId={barcodeId} />
 
         {isManual && (

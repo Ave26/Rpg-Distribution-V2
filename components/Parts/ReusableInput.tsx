@@ -15,6 +15,7 @@ interface ReusableInputProps {
   className?: string;
   autoFocus?: boolean;
   min?: number;
+  disableLabel?: boolean;
   onChange: (value: any) => void;
 }
 
@@ -29,6 +30,7 @@ const ReusableInput: FC<ReusableInputProps> = ({
   autoComplete,
   onChange,
   min,
+  disableLabel,
 }) => {
   const [initialStyle, setInitialStyle] = useState<string>(
     "w-full rounded-xl border border-gray-500 p-2 break-all"
@@ -41,9 +43,11 @@ const ReusableInput: FC<ReusableInputProps> = ({
   return (
     <div
       className={`flex w-full flex-col items-start justify-center gap-2 font-bold`}>
-      <label htmlFor={name} className="w-full">
-        {name}
-      </label>
+      {disableLabel && (
+        <label htmlFor={name} className="w-full">
+          {name}
+        </label>
+      )}
       <input
         min={min}
         type={type}

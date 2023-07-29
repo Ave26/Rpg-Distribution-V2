@@ -63,9 +63,9 @@ export default function Header({
 
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-slate-200 lg:flex-row`}>
+      className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between  px-5 font-bold lg:justify-start  lg:px-14">
-        <div className={`h-fit w-fit ${headerSky}`}>
+        <div className={`h-fit w-fit ${headerSky} select-none`}>
           <Link
             href={`${data?.isLogin ? "/dashboard/barcode-scanner" : "/"}`}
             passHref>
@@ -77,7 +77,7 @@ export default function Header({
             />
           </Link>
         </div>
-        <div className="h-fit">
+        <div className="h-fit ">
           <button onClick={toggleMenu}>
             {isOpen ? (
               <HiMenuAlt1 className="not-sr-only w-12 lg:sr-only" />
@@ -88,7 +88,7 @@ export default function Header({
         </div>
       </div>
       <nav
-        className={`flex flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:h-full lg:w-full lg:flex-row lg:gap-10 lg:p-5 ${
+        className={`flex select-none flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:h-full lg:w-full lg:flex-row lg:gap-10 lg:p-5 ${
           isOpen
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"
@@ -103,13 +103,6 @@ export default function Header({
           className={`${headerTxt} transition-all hover:text-sky-500 active:text-black`}>
           About Us
         </Link>
-        {data?.isLogin ? (
-          <button
-            onClick={gotoLogin}
-            className="h-[50px] w-[130px] cursor-pointer rounded-[6px] border-2 border-[#EEA47FFF] bg-transparent text-[#EEA47FFF] outline-none transition-all hover:bg-[#EEA47FFF] hover:text-white">
-            Login
-          </button>
-        ) : null}
       </nav>
     </div>
   );

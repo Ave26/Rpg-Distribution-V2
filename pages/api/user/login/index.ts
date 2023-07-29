@@ -18,7 +18,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
       try {
         const { user, error }: any = await findUser(username);
-        console.log(error);
         if (!user) {
           return res.status(401).json({
             message: "Invalid Credentials",

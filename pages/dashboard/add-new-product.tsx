@@ -19,6 +19,7 @@ interface NewProduct {
   image: string | undefined;
   price: number | undefined;
   category: string | undefined;
+  sku: string;
 }
 
 const AddNewProduct = ({}): JSX.Element => {
@@ -37,6 +38,7 @@ const AddNewProduct = ({}): JSX.Element => {
   const [productName, setProductName] = useState<string>("");
   const [image, setImage] = useState<string>("");
   const [price, setPrice] = useState<number>();
+  const [sku, setSku] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<NewProduct | null>(null);
@@ -47,6 +49,7 @@ const AddNewProduct = ({}): JSX.Element => {
     image,
     price,
     productName,
+    sku,
   };
 
   const handleAddProduct = async (e: React.MouseEvent<HTMLFormElement>) => {
@@ -87,47 +90,48 @@ const AddNewProduct = ({}): JSX.Element => {
     };
   }, [isShow]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (barcodeId) {
-        try {
-          (async () => {
-            const response = await fetch("/api/product/find", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                barcodeId,
-              }),
-            });
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (barcodeId) {
+  //       try {
+  //         (async () => {
+  //           const response = await fetch("/api/product/find", {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             body: JSON.stringify({
+  //               barcodeId,
+  //             }),
+  //           });
 
-            const json = await response.json();
-            const product = await json?.product;
-            setData(product);
-            if (response.status === 200) {
-              setIsShow(true);
-              setMsg(json?.message);
-            }
-          })();
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }, 500);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [barcodeId]);
+  //           const json = await response.json();
+  //           const product = await json?.product;
+  //           setData(product);
+  //           if (response.status === 200) {
+  //             setIsShow(true);
+  //             setMsg(json?.message);
+  //           }
+  //         })();
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   }, 500);
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [barcodeId]);
 
   return (
     <>
       <form
         onSubmit={handleAddProduct}
-        className="flex h-full w-full flex-col items-center justify-center gap-3">
-        <div className="flex flex-col flex-wrap items-center justify-center gap-2 break-all font-bold md:grid lg:grid-cols-2 lg:place-items-center">
+        className="flex h-full w-full flex-col items-center justify-center gap-3 p-2">
+        <div className="grid grid-flow-row grid-cols-3 gap-2">
           <ReusableInput
             value={barcodeId}
+            disableLabel={true}
             name="Barcode Id"
             type="text"
             onChange={(newValue) => {
@@ -136,6 +140,7 @@ const AddNewProduct = ({}): JSX.Element => {
           />
           <ReusableInput
             value={productName}
+            disableLabel={true}
             name="Product Name"
             type="text"
             onChange={(newValue) => {
@@ -145,6 +150,7 @@ const AddNewProduct = ({}): JSX.Element => {
 
           <ReusableInput
             value={price}
+            disableLabel={true}
             name="Price"
             placeholder="0.00"
             type="text"
@@ -153,22 +159,32 @@ const AddNewProduct = ({}): JSX.Element => {
               setPrice(filteredValue);
             }}
           />
-
-          <select
-            className="p-2"
-            value={category}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setCategory(e.target.value)
-            }>
-            <option>Select Rack Category</option>s
-            {categories.map((value, index) => {
-              return (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              );
-            })}
-          </select>
+          <ReusableInput
+            value={sku}
+            type="text"
+            disableLabel={true}
+            name="Stock Keeping Unit"
+            onChange={(value: string) => {
+              setSku(value);
+            }}
+          />
+          <div className="flex items-end justify-center">
+            <select
+              className="h-fit w-full rounded-lg border border-black p-2 outline-none"
+              value={category}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                setCategory(e.target.value)
+              }>
+              <option>Select Rack Category</option>s
+              {categories.map((value, index) => {
+                return (
+                  <option key={index} value={value} className="h-full w-full">
+                    {value}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
 
         <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
@@ -196,9 +212,9 @@ const AddNewProduct = ({}): JSX.Element => {
               priority
               src={image || noImg}
               alt="productImg"
-              className="object-contain"
-              width={10}
-              height={10}
+              className="rounded-lg object-contain"
+              width={250}
+              height={250}
             />
           </div>
 

@@ -29,6 +29,7 @@ model products {
   image       String?
   price       Float?
   productName String
+  sku         String?
   variations  variations[]
   assigment   assignment[]
 }

@@ -69,8 +69,7 @@ export default function ProductImage({
   }, [isShow]);
 
   return (
-    <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 border p-3">
-      View Product Image
+    <div className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 border p-3">
       {isLoading ? (
         <Loading />
       ) : (

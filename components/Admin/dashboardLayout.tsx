@@ -4,6 +4,8 @@ import ReusableButton from "../Parts/ReusableButton";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+import AccountManagement from "@/public/assets/dashBoardIcons/AccountManagement.png";
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -66,19 +68,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   return (
-    <div className="justify-cente flex h-full w-full flex-wrap items-center md:flex-nowrap md:items-center md:justify-center">
-      <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto border p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-7 md:dark:bg-slate-200">
+    <div className="flex h-full w-full flex-wrap items-center justify-center md:flex-nowrap md:items-center md:justify-center">
+      <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
         <ReusableDropDownMenu
           initialName={"Manage Products"}
           numberOfChildren={2}
           childNamePrefix={[
             {
-              endPoint: "barcode-scanner",
-              name: "Scan Barcode",
+              endPoint: "add-new-product",
+              name: "Add Product",
             },
             {
-              endPoint: "add-new-product",
-              name: "Add New Product",
+              endPoint: "barcode-scanner",
+              name: "Scan Barcode",
             },
           ]}
         />
@@ -93,29 +95,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           linkName={"Scan Barcode"}
         />
 
+        {/* <div className="m-2 w-full border-b-8 border-dotted"></div> */}
         <ReusableButton
           name={"Logout"}
           type={"button"}
           onClick={handleLogout}
-          style={
-            "border border-black p-1 rounded-2xl text-xs font-bold text-center w-full bg-transparent transition-all hover:bg-sky-400/40"
+          className={
+            "w-full rounded-2xl border border-slate-50/30 bg-transparent p-1 text-center text-xs  font-bold shadow-md transition-all"
           }
-        />
-
-        <ReusableLink
-          visibility="not-sr-only md:sr-only"
-          endPoint={"add-new-product"}
-          linkName={"Add New Product"}
-        />
-        <ReusableLink
-          visibility="not-sr-only md:sr-only"
-          endPoint={"add-new-product"}
-          linkName={"Add New Product"}
-        />
-        <ReusableLink
-          visibility="not-sr-only md:sr-only"
-          endPoint={"add-new-product"}
-          linkName={"Add New Product"}
         />
       </aside>
 

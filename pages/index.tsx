@@ -30,9 +30,9 @@ export default function Home({ data }: any): JSX.Element {
         <title>{"Home |" + (data?.roles ?? "Hi")}</title>
       </Head>
       <Layout data={data}>
-        <div className="text-md flex h-full w-full items-center justify-center font-extrabold">
-          <InitialPage />
-        </div>
+        {/* <div className="text-md flex h-full w-full items-center justify-center font-extrabold"> */}
+        <InitialPage />
+        {/* </div> */}
       </Layout>
     </>
   );

@@ -53,14 +53,16 @@ export default function Layout({
   // }, []);
 
   return (
-    <div className="">
+    <div className="bg-gradient-to-b from-cyan-300 to-blue-500">
       <Header
         data={data}
         headerBg={headerBg}
         headerTxt={headerTxt}
         headerSky={headerSky}
       />
-      <main className="">{children}</main>
+      <main className="flex flex-wrap items-center justify-center font-sans">
+        {children}
+      </main>
       <Footer footerSky={footerSky} />
     </div>
   );

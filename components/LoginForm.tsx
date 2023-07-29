@@ -3,6 +3,10 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import logo from "@/public/assets/ProStockV2.png";
 import ReusableButton from "./Parts/ReusableButton";
+import ReusableInput from "./Parts/ReusableInput";
+import { LiaUser } from "react-icons/lia";
+import { BiKey } from "react-icons/bi";
+import Toast from "./Parts/Toast";
 
 interface Auth {
   username: string;
@@ -15,15 +19,14 @@ interface StateActionData {
 }
 // { setData, setShow }: StateActionData
 export default function LoginForm() {
-  const [data, setData] = useState("");
-
   const router = useRouter();
+  const [message, setMessage] = useState<string>("");
+  const [isShow, setIsShow] = useState<boolean>(false);
   const [auth, setAuth] = useState<Auth>({
     username: "",
     password: "",
   });
 
-  const [btnStyle, setBtnStyle] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,25 +47,23 @@ export default function LoginForm() {
         body: requestBody,
       });
       const json = await response.json();
-      // console.log(json);
       switch (response.status) {
         case 200:
-          setData(json.message);
           router.push("/");
           localStorage.setItem("authenticated", "true");
-
+          // setMessage(json?.message);
+          setIsShow(false);
           break;
         case 401:
-          console.log(json.message);
-          setData(json.message);
+          console.log(json?.message);
+          setMessage(json?.message);
+          setIsShow(true);
           break;
         case 404:
           console.log(json.message);
-          setData(json.message);
           break;
         case 505:
           console.log(json.message);
-          setData(json.message);
           break;
       }
     } catch (error: unknown | any) {
@@ -76,77 +77,70 @@ export default function LoginForm() {
       // setShow(true);
     }
   };
-  const inputStyle =
-    "ring-1 ring-black px-6 py-4 rounded-sm bg-transparent border border-slate-900 text-black md:px-[3.5em] md:text-center w-full";
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShow(false);
+    }, 1500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isShow]);
 
   return (
-    <form
-      className="relative flex h-full w-fit flex-col items-center justify-center rounded-2xl font-bold shadow-2xl drop-shadow-2xl md:flex-row-reverse"
-      onSubmit={handleLogin}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        e.key === "Enter" && setBtnStyle("bg-slate-100 text-black");
-      }}
-      onKeyUp={(e: React.KeyboardEvent) => {
-        e.key === "Enter" && setBtnStyle("");
-      }}>
-      <div className="relative flex h-full flex-col items-center justify-center gap-4 md:p-20">
-        <h1 className="[ h-10 w-full text-center">Log in</h1>
-        <div className="flex w-full flex-col items-center justify-center gap-2">
-          <label htmlFor="username" className="w-full text-sm">
-            Username
+    <>
+      <form
+        onSubmit={handleLogin}
+        className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg">
+        <div className="relative flex h-full w-full items-center justify-center rounded-full border bg-white/20 backdrop-blur">
+          <label
+            htmlFor="username"
+            className="flex items-center justify-center rounded-full bg-white p-4">
+            <LiaUser className="h-full w-full" />
           </label>
-          <input
-            required
+          <ReusableInput
             id="username"
-            type="text"
-            placeholder="username"
             value={auth.username}
-            onChange={(e) =>
-              setAuth((prevAuth) => {
-                return {
-                  ...prevAuth,
-                  username: e.target.value,
-                };
-              })
-            }
-            className={inputStyle}
+            placeholder="User Name"
+            type="text"
+            onChange={(value: string) => {
+              setAuth({
+                ...auth,
+                username: value,
+              });
+            }}
+            className="h-full w-full appearance-none bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
-
-        <div className="flex flex-col items-center justify-center gap-2">
-          <label htmlFor="password" className=" w-full text-sm">
-            Password
+        <div className="relative  flex h-full w-full items-center justify-center rounded-full border bg-white/20 backdrop-blur">
+          <label
+            htmlFor="password"
+            className="flex items-center justify-center rounded-full bg-white p-4">
+            <BiKey className="h-full w-full" />
           </label>
-          <input
-            required
+          <ReusableInput
             id="password"
+            value={auth?.password}
+            placeholder="Password"
             type="password"
-            placeholder="password"
-            value={auth.password}
-            onChange={(e) =>
-              setAuth((prevAuth) => {
-                return {
-                  ...prevAuth,
-                  password: e.target.value,
-                };
-              })
-            }
-            className={inputStyle}
+            onChange={(value: string) => {
+              setAuth({
+                ...auth,
+                password: value,
+              });
+            }}
+            className="h-full w-full appearance-none bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
 
-        <ReusableButton name={"Log in"} type={"submit"} isLoading={isLoading} />
-      </div>
-      <div className="flex h-full w-full flex-col items-center justify-center rounded-b-2xl bg-sky-300 md:gap-4 md:rounded-l-2xl md:rounded-br-none">
-        <Image
-          src={logo}
-          alt="RPG LOGO"
-          className="h-24 w-24 transition-all md:h-36 md:w-36"
+        <ReusableButton
+          name={"LOGIN"}
+          isLoading={isLoading}
+          type="submit"
+          className="flex h-full w-full items-center justify-center self-end rounded-full border border-white/50 bg-white p-2 transition-all md:w-28"
         />
-        <p className="text-md break-words p-5 text-center md:p-1">
-          Welcome to our Warehouse Management System. Let&apos;s get started!
-        </p>
-      </div>
-    </form>
+      </form>
+      <Toast data={message} isShow={isShow} />
+    </>
   );
 }
