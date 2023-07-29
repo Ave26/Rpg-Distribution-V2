@@ -1,6 +1,9 @@
 import { GetResult } from "@prisma/client/runtime/library";
 import prisma from ".";
 
+// inbound
+// if the user has encountered a damage bin marked it as damged
+
 export async function scanBarcode(
   barcodeId: string,
   purchaseOrder: string,
@@ -9,7 +12,10 @@ export async function scanBarcode(
   quality: string
 ) {
   let message;
+  console.log(quality);
   try {
+    // let Data;
+
     const product = await prisma.products.findUnique({
       where: {
         barcodeId,
@@ -19,90 +25,90 @@ export async function scanBarcode(
     if (product === null) {
       return { message: "Product Not found | coming from the scan server" };
     } else {
-      const categories = await prisma.categories.findFirst({
-        where: {
-          category: product?.category,
-        },
-      });
-
-      const racks = await prisma.racks.findFirst({
-        where: {
-          categoriesId: categories?.id,
-        },
-      });
-
-      const bins = await prisma.bin.findMany({
-        where: {
-          racksId: racks?.id,
-        },
-        include: {
-          assignment: true,
-        },
-      });
-
-      for (const bin of bins) {
-        const availableBin = await prisma.bin.findFirst({
-          // food
+      if (quality === "Good") {
+        const categories = await prisma.categories.findFirst({
           where: {
-            id: bin.id,
-            isAvailable: true,
-            assignment: {
-              every: {
-                productId: {
-                  equals: product?.id,
-                },
-                expirationDate: {
-                  equals: expirationDate,
-                },
-              },
-            },
+            category: product?.category,
           },
         });
-        //food
-        if (availableBin) {
-          // Found a bin with the same expirationDate in its assignments
-          // Create a new assignment
-          const newAssignment = await prisma.assignment.create({
-            data: {
-              productId: product?.id,
-              binId: availableBin?.id,
-              boxSize,
-              purchaseOrder,
-              expirationDate,
+
+        const racks = await prisma.racks.findFirst({
+          where: {
+            categoriesId: categories?.id,
+          },
+        });
+
+        const bins = await prisma.bin.findMany({
+          where: {
+            racksId: racks?.id,
+          },
+          include: {
+            assignment: true,
+          },
+        });
+
+        for (const bin of bins) {
+          const availableBin = await prisma.bin.findFirst({
+            where: {
+              id: bin.id,
+              isAvailable: true,
+              assignment: {
+                every: {
+                  productId: {
+                    equals: product?.id,
+                  },
+                  expirationDate: {
+                    equals: expirationDate,
+                  },
+                },
+              },
             },
           });
 
-          const TotalAssignedProduct = await prisma.assignment.count({
-            where: {
-              binId: bin?.id,
-            },
-          });
-          const capacity = Number(bin?.capacity);
-          if (TotalAssignedProduct >= capacity) {
-            await prisma.bin.update({
-              where: {
-                id: bin?.id,
-              },
+          if (availableBin) {
+            // Found a bin with the same expirationDate in its assignments
+            // Create a new assignment
+            await prisma.assignment.create({
               data: {
-                isAvailable: false,
+                productId: product?.id,
+                binId: availableBin?.id,
+                boxSize,
+                purchaseOrder,
+                expirationDate,
               },
             });
-          }
 
-          console.log(`Created new assignment with ID: ${newAssignment.id}`);
-          break; // Break the loop since the assignment is created
+            const TotalAssignedProduct = await prisma.assignment.count({
+              where: {
+                binId: bin?.id,
+              },
+            });
+            const capacity = Number(bin?.capacity);
+            if (TotalAssignedProduct >= capacity) {
+              await prisma.bin.update({
+                where: {
+                  id: bin?.id,
+                },
+                data: {
+                  isAvailable: false,
+                },
+              });
+            }
+
+            return { message: `Product Added ${TotalAssignedProduct}` };
+          }
         }
       }
 
       // TODO: ADD THE SEPARATION OF DIFFERENT BARCODE ID AND DEPENDS IF IT IS THE SAME VARIANTS
 
-      return {
-        // categories,
-        message: `Product Added ${"TotalAssignedProduct"}`,
-        // TotalAssignedProduct,
-        // capacity,
-        // sortedProduct,
-      };
+      // return {
+      //   // categories,
+      //   Data,
+      //   // TotalAssignedProduct,
+      //   // capacity,
+      //   // sortedProduct,
+      // };
     }
   } catch (error) {
     return { error };
@@ -187,18 +193,26 @@ function setMethod(category: string) {
   }
 }
 
-// WE MAY NEED TO ESTABLISH MANUAL AND AUTOMATED FOR BARCODE SCANNER
-// manual:
-//   Allows the user to manually select on what bin it wanted to choose
-//   Allows the use to manually select what quantity it wanted to set
+// InBound
+/*
+  WE MAY NEED TO ESTABLISH MANUAL AND AUTOMATED FOR BARCODE SCANNER
+  manual:
+    Allows the user to manually select on what bin it wanted to choose
+    Allows the user to manually select what quantity it wanted to set
 
-// Automated:
-//   Automatically set the bin based on the category and set what method it
-//   will choose (FEFO, LIFO and FIFO) to deal with product management
-//   Automatically insert a product into a bin
+  Automated:
+    Automatically set the bin based on the category and set what method it
+    will choose (FEFO, LIFO and FIFO) to deal with product management
+    Automatically insert a product into a bin
 
-// need to improve
-// what if the product has been inserted to the wrong been and the been
-// automatically set the capacity
+  need to improve
+  what if the product has been inserted to the wrong been and the been
+  automatically set the capacity
 
-// answer: create a set capacity button
+  answer: create a set capacity button
+*/
+// Outbound
+/*
+  For Instance we need to take order
+     - 
+*/

@@ -64,8 +64,8 @@ export default function ReusableDropDownMenu({
         />
         <h1 className="fond-bold m-2 w-fit text-[82%]">{initialName}</h1>
         <RiArrowDropDownLine
-          size={20}
-          className={`h-fit w-fit border border-black transition-all ${
+          size={30}
+          className={`h-fit w-fit transition-all ${
             isDropDown ? "rotate-0" : "rotate-90"
           } `}
         />

@@ -92,7 +92,7 @@ export default function LoginForm() {
       <form
         onSubmit={handleLogin}
         className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg">
-        <div className="relative flex h-full w-full items-center justify-center rounded-full border bg-white/20 backdrop-blur">
+        <div className="relative flex h-full w-full items-center justify-center  rounded-full border bg-white/20 pr-2 backdrop-blur">
           <label
             htmlFor="username"
             className="flex items-center justify-center rounded-full bg-white p-4">
@@ -109,10 +109,10 @@ export default function LoginForm() {
                 username: value,
               });
             }}
-            className="h-full w-full appearance-none bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
+            className="h-full w-full appearance-none rounded-full bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
-        <div className="relative  flex h-full w-full items-center justify-center rounded-full border bg-white/20 backdrop-blur">
+        <div className="relative flex h-full w-full items-center justify-center rounded-full border bg-white/20 pr-2  backdrop-blur">
           <label
             htmlFor="password"
             className="flex items-center justify-center rounded-full bg-white p-4">
@@ -129,7 +129,7 @@ export default function LoginForm() {
                 password: value,
               });
             }}
-            className="h-full w-full appearance-none bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
+            className="h-full w-full appearance-none rounded-full bg-transparent px-4 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
 
@@ -137,7 +137,7 @@ export default function LoginForm() {
           name={"LOGIN"}
           isLoading={isLoading}
           type="submit"
-          className="flex h-full w-full items-center justify-center self-end rounded-full border border-white/50 bg-white p-2 transition-all md:w-28"
+          className="flex h-full w-full items-center justify-center self-end rounded-full border border-white/50 bg-white px-4 transition-all md:w-28"
         />
       </form>
       <Toast data={message} isShow={isShow} />
