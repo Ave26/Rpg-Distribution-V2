@@ -68,6 +68,8 @@ model bin {
   isAvailable Boolean      @default(true)
   capacity    Int
   shelfLevel  Int
+  isSeleted   Boolean?     @default(false) // outbound
+  status      String? // outbound
   assignment  assignment[]
   racks       racks?       @relation(fields: [racksId], references: [id])
   racksId     String?      @db.ObjectId

@@ -109,6 +109,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           endPoint={"acc-management"}
           linkName={"Account Management"}
         />
+        <ReusableLink
+          endPoint={"delivery-management"}
+          linkName={"Delivery Management"}
+        />
 
         {/* <div className="m-2 w-full border-b-8 border-dotted"></div> */}
         <ReusableButton
