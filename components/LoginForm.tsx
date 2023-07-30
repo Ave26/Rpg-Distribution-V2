@@ -13,11 +13,30 @@ interface Auth {
   password: string;
 }
 
+interface Data {
+  authenticated: boolean;
+  message: string;
+  user: User;
+}
+
+interface User {
+  additional_Info: AdditionInfo;
+  id: string;
+  roles: string;
+  username: string;
+}
+
+interface AdditionInfo {
+  Dob: string;
+  Phone_Number: number;
+  email: string;
+}
+
 interface StateActionData {
   setData: React.Dispatch<SetStateAction<ReactNode>>;
   setShow: React.Dispatch<SetStateAction<boolean>>;
 }
-// { setData, setShow }: StateActionData
+
 export default function LoginForm() {
   const router = useRouter();
   const [message, setMessage] = useState<string>("");
@@ -45,11 +64,13 @@ export default function LoginForm() {
         },
         body: requestBody,
       });
-      const json = await response.json();
+      const json: Data = await response.json();
       switch (response.status) {
         case 200:
+          json?.authenticated && router.push("/dashboard/barcode-scanner");
+
           setIsShow(false);
-          router.push("/");
+
           break;
         case 401:
           console.log(json?.message);
