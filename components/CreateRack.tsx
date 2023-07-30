@@ -59,6 +59,7 @@ function CreateRack() {
       onSubmit={handleCreateRack}
       className="flex flex-col flex-wrap items-center justify-center gap-2 p-3">
       <ReusableInput
+        disableLabel={true}
         name="Rack Category"
         value={rackCategory}
         onChange={function (value: any): void {
@@ -67,6 +68,7 @@ function CreateRack() {
       />
       <h1></h1>
       <ReusableInput
+        disableLabel={true}
         name="Rack Name"
         value={rackName}
         onChange={function (value: any): void {
@@ -75,6 +77,7 @@ function CreateRack() {
       />
       <ReusableInput
         min={0}
+        disableLabel={true}
         name="Number of Bins"
         value={numberOfBins}
         type="number"
@@ -84,6 +87,7 @@ function CreateRack() {
       />
       <ReusableInput
         min={0}
+        disableLabel={true}
         name="Shelf Level"
         value={shelfLevel}
         type="number"

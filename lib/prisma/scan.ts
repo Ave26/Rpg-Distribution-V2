@@ -3,6 +3,36 @@ import prisma from ".";
 
 // inbound
 // if the user has encountered a damage bin marked it as damged
+interface Assignment {
+  id: string;
+  dateReceive: Date | null;
+  purchaseOrder: string;
+  expirationDate: Date | null;
+  boxSize: string | null;
+  isDamage: boolean | null;
+  productId: string | null;
+  binId: string | null;
+  usersId: string | null;
+  damageBinId: string | null;
+}
+
+interface Bin {
+  id: string;
+  isAvailable: boolean;
+  capacity: number;
+  shelfLevel: number;
+  assignment: Assignment[];
+}
+
+interface Product {
+  id: string;
+  barcodeId: string;
+  category: string | null;
+  image: string | null;
+  price: number | null;
+  productName: string;
+  sku: string | null;
+}
 
 export async function scanBarcode(
   barcodeId: string,
@@ -23,7 +53,7 @@ export async function scanBarcode(
     });
 
     if (product === null) {
-      return { message: "Product Not found | coming from the scan server" };
+      return { message: "Product Not found | coming from the server" };
     } else {
       if (quality === "Good") {
         const categories = await prisma.categories.findFirst({
@@ -31,7 +61,7 @@ export async function scanBarcode(
             category: product?.category,
           },
         });
-
+        console.log(categories);
         const racks = await prisma.racks.findFirst({
           where: {
             categoriesId: categories?.id,
@@ -48,22 +78,15 @@ export async function scanBarcode(
         });
 
         for (const bin of bins) {
-          const availableBin = await prisma.bin.findFirst({
-            where: {
-              id: bin.id,
-              isAvailable: true,
-              assignment: {
-                every: {
-                  productId: {
-                    equals: product?.id,
-                  },
-                  expirationDate: {
-                    equals: expirationDate,
-                  },
-                },
-              },
-            },
-          });
+          const { dateReceive } = setTime();
+
+          const { availableBin } = await setMethod(
+            String(categories?.category),
+            bin,
+            product,
+            expirationDate,
+            dateReceive
+          );
 
           if (availableBin) {
             // Found a bin with the same expirationDate in its assignments
@@ -71,8 +94,9 @@ export async function scanBarcode(
             await prisma.assignment.create({
               data: {
                 productId: product?.id,
-                binId: availableBin?.id,
+                binId: String(availableBin?.id),
                 boxSize,
+                dateReceive,
                 purchaseOrder,
                 expirationDate,
               },
@@ -83,6 +107,7 @@ export async function scanBarcode(
                 binId: bin?.id,
               },
             });
+
             const capacity = Number(bin?.capacity);
             if (TotalAssignedProduct >= capacity) {
               await prisma.bin.update({
@@ -140,13 +165,32 @@ function calculateDateBasedOnExpirationDate(items: any) {
   };
 }
 
+function setTime() {
+  let dateReceive = new Date();
+
+  // Set the time component to zero
+  dateReceive.setUTCHours(0);
+  dateReceive.setUTCMinutes(0);
+  dateReceive.setUTCSeconds(0);
+  dateReceive.setUTCMilliseconds(0);
+
+  // Format the date without time zone offset in local time
+  dateReceive.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  return { dateReceive };
+}
+
 const items = [
   { expirationDate: "2023-08-15", name: "Item 1" },
   { expirationDate: "2023-07-30", name: "Item 2" },
   { expirationDate: "2023-08-05", name: "Item 3" },
 ];
 
-function setCapacity(boxSize: string) {
+function setCapacity(boxSize: string, bin: Bin, product: Product) {
   let capacity = 0;
   switch (boxSize) {
     case "Small":
@@ -174,23 +218,66 @@ function setCapacity(boxSize: string) {
 // We may need to take care of the FEFO, LIFO and FIFO depending on
 // what category
 
-function setMethod(category: string) {
+async function setMethod(
+  category: string,
+  bin: Bin,
+  product: Product,
+  expirationDate: Date,
+  dateReceive: Date
+) {
   // prototype
+  let availableBin;
+  console.log(category);
   switch (category) {
     case "Food":
       console.log("FEFO Method");
+
+      availableBin = await prisma.bin.findFirst({
+        where: {
+          id: bin?.id,
+          isAvailable: true,
+          assignment: {
+            every: {
+              productId: {
+                equals: product?.id,
+              },
+              expirationDate: {
+                equals: expirationDate,
+              },
+            },
+          },
+        },
+      });
+
       break;
     case "Laundry":
-      console.log("LIFO METHOD");
-      break;
     case "Cleaning":
       console.log("FIFO Method");
+
+      availableBin = await prisma.bin.findFirst({
+        where: {
+          id: bin?.id,
+          isAvailable: true,
+          assignment: {
+            every: {
+              productId: {
+                equals: product?.id,
+              },
+              dateReceive: {
+                equals: dateReceive,
+              },
+            },
+          },
+        },
+      });
+
       break;
 
     default:
-      console.log("Everyone needs hug");
+      console.log("No Categories Found");
       break;
   }
+  return { availableBin };
 }
 
 // InBound

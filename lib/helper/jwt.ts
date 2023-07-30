@@ -16,7 +16,10 @@ export const verifyJwt = async (req: NextApiRequest) => {
   console.log(`Token: ${token}`);
 
   try {
-    const verifiedToken: any = verify(token, String(process.env.JWT_SECRET));
+    const verifiedToken: string | JwtPayload = verify(
+      token,
+      String(process.env.JWT_SECRET)
+    );
     return { verifiedToken };
   } catch (error) {
     return { error };

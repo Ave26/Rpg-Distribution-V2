@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-wrap items-center justify-center md:flex-nowrap md:items-center md:justify-center">
+    <div className="flex h-full w-full flex-wrap items-center justify-center md:flex-nowrap">
       <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
         <ReusableDropDownMenu
           initialName={"Manage Products"}
@@ -84,15 +84,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             },
           ]}
         />
-        <ReusableLink
-          endPoint={"acc-management"}
-          linkName={"Account Management"}
-        />
 
         <ReusableLink
           visibility="not-sr-only md:sr-only"
           endPoint={"barcode-scanner"}
           linkName={"Scan Barcode"}
+        />
+        <ReusableLink
+          visibility="not-sr-only md:sr-only"
+          endPoint={"add-new-product"}
+          linkName={"Add New Product"}
+        />
+        <ReusableLink
+          visibility=""
+          endPoint={"picking-and-packing"}
+          linkName={"Picking And Packing"}
+        />
+        <ReusableLink
+          visibility=""
+          endPoint={"pallete-location"}
+          linkName={"Pallete Location"}
+        />
+        <ReusableLink
+          endPoint={"acc-management"}
+          linkName={"Account Management"}
         />
 
         {/* <div className="m-2 w-full border-b-8 border-dotted"></div> */}
@@ -106,7 +121,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       </aside>
 
-      <main className="flex h-full w-full items-center justify-center">
+      <main className="flex h-full w-full flex-col flex-nowrap items-center justify-center">
         {children}
       </main>
     </div>

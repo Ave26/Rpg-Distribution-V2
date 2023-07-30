@@ -96,7 +96,6 @@ export default function ScanBarcode({
 
   return (
     <div className="flex h-full w-full items-center justify-center font-bold transition-all">
-      <label></label>
       <ReusableInput
         autoFocus
         disableLabel={true}

@@ -4,12 +4,13 @@ import ReusableButton from "@/components/Parts/ReusableButton";
 
 import CreateRack from "@/components/CreateRack";
 import UpdateRack from "@/components/UpdateRack";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
 export default function PalleteLocation({ data: dta }: any) {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Layout data={dta}>
+    <>
       <section className="h-full w-full font-bold">
         <div className="flex flex-row items-center justify-center gap-2 p-3">
           <ReusableButton name={"Create Rack"} onClick={() => setOpen(false)} />
@@ -17,6 +18,14 @@ export default function PalleteLocation({ data: dta }: any) {
         </div>
         {!open ? <CreateRack /> : <UpdateRack />}
       </section>
-    </Layout>
+    </>
   );
 }
+
+PalleteLocation.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

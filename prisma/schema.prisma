@@ -75,7 +75,7 @@ model bin {
 
 model assignment {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive    String?
+  dateReceive    DateTime?
   purchaseOrder  String
   expirationDate DateTime?
   boxSize        String?

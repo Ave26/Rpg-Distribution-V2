@@ -40,7 +40,7 @@ function BarcodeScanner(): JSX.Element {
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   const [racks, setRacks] = useState<ShelfLevel[] | undefined>(undefined);
 
-  async function findRacks() {
+  async function findRacks(abortController: AbortController) {
     try {
       const response = await fetch("/api/racks/find", {
         method: "POST",
@@ -50,6 +50,7 @@ function BarcodeScanner(): JSX.Element {
         body: JSON.stringify({
           barcodeId,
         }),
+        signal: abortController.signal,
       });
 
       const json = await response.json();
@@ -67,82 +68,77 @@ function BarcodeScanner(): JSX.Element {
   }
 
   useEffect(() => {
-    findRacks();
-    return () => void {};
+    const abortController = new AbortController();
+    findRacks(abortController);
+    return () => {
+      abortController.abort();
+    };
   }, [barcodeId]);
 
-  // console.log(racks);
   return (
-    <div className="h-full w-full">
-      {/* flex h-full w-full flex-col items-center justify-center break-all */}
+    <form className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
       <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
-      <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50 md:gap-1 md:py-1">
-        <ScanBarcode
-          barcodeId={barcodeId}
-          setBarcodeId={setBarcodeId}
-          purchaseOrder={purchaseOrder}
-          boxSize={boxSize}
-          expirationDate={expirationDate}
-          quality={quality}
-          quantity={quantity}
-          isManual={isManual}
-        />
+      <ScanBarcode
+        barcodeId={barcodeId}
+        setBarcodeId={setBarcodeId}
+        purchaseOrder={purchaseOrder}
+        boxSize={boxSize}
+        expirationDate={expirationDate}
+        quality={quality}
+        quantity={quantity}
+        isManual={isManual}
+      />
 
-        <ReusableInput
-          name="Purchase Order:"
-          value={purchaseOrder}
-          disableLabel={true}
-          onChange={(value: any) => {
-            setPurchaseOrder(value);
+      <ReusableInput
+        name="Purchase Order:"
+        value={purchaseOrder}
+        disableLabel={true}
+        onChange={(value: any) => {
+          setPurchaseOrder(value);
+        }}
+      />
+
+      <div className="flex h-full w-full flex-col  items-start justify-center gap-2  font-bold">
+        <label htmlFor={"boxSize"}>Select Box Size</label>
+        <select
+          id="boxSize"
+          value={boxSize}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+            setBoxSize(e.target.value);
           }}
-        />
-        <div className="flex h-full w-full flex-col flex-wrap items-start justify-center gap-2 font-bold">
-          <label htmlFor={"boxSize"}>Select Box Size</label>
-          <select
-            id="boxSize"
-            value={boxSize}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-              setBoxSize(e.target.value);
-            }}
-            className="h-full w-full break-all rounded-xl border border-gray-500 p-3
+          className="h-full w-full break-all rounded-xl border border-gray-500 p-3
             transition-all">
-            <option value="Select" className="font-bold">
-              Select...
-            </option>
-            {arraySize.map((value, index) => {
-              return (
-                <option key={index} className="font-ball">
-                  {value}
-                </option>
-              );
-            })}
-          </select>
-        </div>
+          <option value="Select" className="font-bold">
+            Select...
+          </option>
+          {arraySize.map((value, index) => {
+            return (
+              <option key={index} className="font-ball">
+                {value}
+              </option>
+            );
+          })}
+        </select>
+      </div>
 
-        <ReusableInput
-          type="date"
-          disableLabel={true}
-          name="Batch Number"
-          value={expirationDate}
-          onChange={(value: any) => {
-            setExpirationDate(value);
-          }}
-        />
+      <ReusableInput
+        type="date"
+        disableLabel={true}
+        name="Batch Number"
+        value={expirationDate}
+        onChange={(value: any) => {
+          setExpirationDate(value);
+        }}
+      />
 
-        <Toggle
-          setIsToggle={setIsToggle}
-          isToggle={isToggle}
-          setQuality={setQuality}
-          quality={quality}
-        />
-
-        <ProductImage barcodeId={barcodeId} />
-
-        {isManual && (
-          <ReusableButton name={"Find"} type={"submit"}></ReusableButton>
-        )}
-      </form>
-    </div>
+      <Toggle
+        setIsToggle={setIsToggle}
+        isToggle={isToggle}
+        setQuality={setQuality}
+        quality={quality}
+      />
+      <ProductImage barcodeId={barcodeId} />
+    </form>
   );
 }
 

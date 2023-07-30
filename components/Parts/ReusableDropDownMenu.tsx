@@ -33,8 +33,8 @@ export default function ReusableDropDownMenu({
         <Link
           href={`/dashboard/${childName?.endPoint}`}
           key={i}
-          className="h-full w-full animate-emerge px-3 text-start hover:text-sky-500">
-          {childName?.name}
+          className="h-full w-full animate-emerge px-3 text-start focus:text-emerald-700 hover:text-sky-500">
+          - {childName?.name}
         </Link>
       );
     }

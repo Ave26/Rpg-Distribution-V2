@@ -127,8 +127,8 @@ const AddNewProduct = ({}): JSX.Element => {
     <>
       <form
         onSubmit={handleAddProduct}
-        className="flex h-full w-full flex-col items-center justify-center gap-3 p-2">
-        <div className="grid grid-flow-row grid-cols-3 gap-2">
+        className="flex h-screen w-full flex-col  gap-2 p-4 hover:overflow-y-auto">
+        <div className="flex flex-col flex-wrap items-start justify-center px-10 py-5">
           <ReusableInput
             value={barcodeId}
             disableLabel={true}
@@ -168,26 +168,25 @@ const AddNewProduct = ({}): JSX.Element => {
               setSku(value);
             }}
           />
-          <div className="flex items-end justify-center">
-            <select
-              className="h-fit w-full rounded-lg border border-black p-2 outline-none"
-              value={category}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setCategory(e.target.value)
-              }>
-              <option>Select Rack Category</option>s
-              {categories.map((value, index) => {
-                return (
-                  <option key={index} value={value} className="h-full w-full">
-                    {value}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+
+          <select
+            className="my-5 h-fit w-full rounded-lg border border-black p-2 outline-none"
+            value={category}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setCategory(e.target.value)
+            }>
+            <option>Select Rack Category</option>s
+            {categories.map((value, index) => {
+              return (
+                <option key={index} value={value} className="h-full w-full">
+                  {value}
+                </option>
+              );
+            })}
+          </select>
         </div>
 
-        <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
+        <div className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 px-10">
           <input
             type="file"
             accept="image/jpg, image/jpeg, image/png"
@@ -218,7 +217,7 @@ const AddNewProduct = ({}): JSX.Element => {
             />
           </div>
 
-          <div className="relative flex w-full flex-wrap items-center justify-center gap-2 px-10 py-5">
+          <div className="flex h-fit w-full flex-col items-center justify-center gap-2 p-2">
             <ReusableButton
               name={"Add Now"}
               type="submit"
