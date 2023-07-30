@@ -3,6 +3,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest } from "next/server";
 
+interface Token {
+  id: string;
+  roles: string;
+  iat: number;
+  exp: number;
+}
+
 export const createJwt = (user: any) => {
   const { id, roles } = user;
   const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
@@ -16,7 +23,7 @@ export const verifyJwt = async (req: NextApiRequest) => {
   console.log(`Token: ${token}`);
 
   try {
-    const verifiedToken: string | JwtPayload = verify(
+    const verifiedToken: Token | string | JwtPayload = verify(
       token,
       String(process.env.JWT_SECRET)
     );
