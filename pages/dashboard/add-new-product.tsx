@@ -70,7 +70,6 @@ const AddNewProduct = ({}): JSX.Element => {
         setMsg(json?.message);
 
         setIsLoading(false);
-        setBarcodeId("");
         setCategory("Select Rack Category");
         setProductName("");
         setPrice(0);

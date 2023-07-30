@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import prisma from "./index";
 
 type AdditionalInfo = {
@@ -52,7 +53,7 @@ export const findUser = async (username: string) => {
   }
 };
 
-export const findUserBasedOnId = async (id: string) => {
+export const findUserBasedOnId = async (id: string | undefined) => {
   try {
     // Check if user already exists
     const user = await prisma.users.findUnique({

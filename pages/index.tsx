@@ -16,7 +16,8 @@ interface TokenProps {
 export default function Home({ data }: any): JSX.Element {
   const router = useRouter();
 
-  if (data?.isLogin) {
+  if (data?.isLogin && data?.roles === "Admin") {
+    console.log(data?.roles);
     router.push("/dashboard/barcode-scanner");
   }
 

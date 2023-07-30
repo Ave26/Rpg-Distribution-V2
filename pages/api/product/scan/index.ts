@@ -8,11 +8,11 @@ const middleware =
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { verifiedToken, error }: any = await verifyJwt(req);
-
+      console.log(verifiedToken?.id);
       if (error) {
         return res.status(403).json({
           isAuthenticated: false,
-          message: "Need to be authenticated",
+          message: "Failed To Authenticate",
         });
       }
 

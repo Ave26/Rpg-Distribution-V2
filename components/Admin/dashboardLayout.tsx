@@ -48,9 +48,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       });
 
       const json = await response.json();
-      console.log(json);
 
       if (response.status === 401) {
+        console.log(json);
         return router.push("/");
       }
     } catch (error) {

@@ -69,7 +69,9 @@ function BarcodeScanner(): JSX.Element {
 
   useEffect(() => {
     const abortController = new AbortController();
-    findRacks(abortController);
+    if (barcodeId != null) {
+      findRacks(abortController);
+    }
     return () => {
       abortController.abort();
     };
