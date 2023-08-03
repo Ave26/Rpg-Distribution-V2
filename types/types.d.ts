@@ -48,4 +48,34 @@ interface InputType {
   expiry?: Date;
 }
 
-export { Product, ProductList, Count, InputType };
+interface Racks {
+  _id: string;
+  name: string;
+  isAvailable: boolean;
+  categoriesId: string;
+  bin: Bin[];
+}
+
+interface Bin {
+  _id: string;
+  isAvailable: boolean;
+  capacity: number;
+  shelfLevel: number;
+  row: number;
+  racksId: string | null;
+  assignment: Assignment[];
+  _count?: {
+    assignment: number;
+  };
+}
+interface Assignment {
+  _id: string;
+  dateReceive: Date;
+  purchaseOrder: string;
+  expirationDate: Date;
+  boxSize: string;
+  productId: string;
+  binId: string;
+}
+
+export { Product, ProductList, Count, InputType, Racks, Bin };

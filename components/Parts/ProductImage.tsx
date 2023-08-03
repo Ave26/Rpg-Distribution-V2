@@ -22,7 +22,7 @@ export default function ProductImage({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSubmit() {
-    if (barcodeId?.length === 12) {
+    if (barcodeId?.length === 14) {
       try {
         const response = await fetch("/api/product/find", {
           method: "POST",

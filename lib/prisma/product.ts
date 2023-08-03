@@ -72,7 +72,6 @@ export const findProduct = async (barcodeId: string) => {
 };
 
 export const addNewProduct = async (
-  // this will create new product
   barcodeId: string,
   category: string,
   image: string,

@@ -30,7 +30,8 @@ export default function ScanBarcode({
   const [binId, setBinId] = useState<string>("");
   const [count, setCount] = useState<number>(0);
   const [capacity, setCapacity] = useState<number>(0);
-
+  const [binIndex, setBinIndex] = useState<number>(0);
+  const [shelfLevel, setShelfLevel] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -62,6 +63,8 @@ export default function ScanBarcode({
     }
 
     if (response.status === 200 || response.status === 405) {
+      setBinIndex(json?.row);
+      setShelfLevel(json?.shelfLevel);
       console.log(json?.message);
       setMessage(json?.message);
       setIsShow(true);
@@ -125,6 +128,9 @@ export default function ScanBarcode({
         </div>
       ) : (
         <div className="h-24 w-28 p-1 transition-all">
+          <h1 className="text-center">
+            Bin: {binIndex} - {shelfLevel}
+          </h1>
           <div
             className={`${
               count >= capacity &&

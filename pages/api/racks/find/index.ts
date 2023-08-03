@@ -1,11 +1,10 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findCategory } from "@/lib/prisma/racks";
+import { findBin } from "@/lib/prisma/racks";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
   (handler: NextApiHandler) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log("middleware working properly");
     try {
       const { verifiedToken, error }: any = await verifyJwt(req);
 
@@ -35,12 +34,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (req.method) {
     case "POST":
-      const { data } = await findCategory();
-      if (!data) {
+      const racks = await findBin(barcodeId);
+
+      if (!racks) {
         return res.status(404).json({
           message: "No record",
         });
       }
+
+      return res.status(200).json(racks);
     case "GET":
 
     default:

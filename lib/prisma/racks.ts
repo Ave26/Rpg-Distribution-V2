@@ -26,7 +26,7 @@ export async function setUpRack(
       const createdRack = await prisma.racks.create({
         data: {
           name: rackName,
-          categoriesId: categories.id,
+          categoriesId: categories?.id,
         },
       });
 
@@ -74,7 +74,7 @@ async function set_shelfLevel_and_capacity(
   for (let i = 0; i < numberOfBins; i++) {
     const shelfNumber =
       i % shelfLevel === 0 ? 1 : Number((i % Number(shelfLevel)) + 1);
-
+    const row = Math.floor(i / shelfLevel) + 1;
     const capacity = getBinCapacity(shelfLevel);
     const binCapacity = Array.isArray(capacity)
       ? Number(capacity[i % Number(capacity.length)])
@@ -84,6 +84,7 @@ async function set_shelfLevel_and_capacity(
       racksId: rack?.id,
       capacity: Number(binCapacity),
       shelfLevel: shelfNumber,
+      row,
     });
   }
 
@@ -111,16 +112,37 @@ function getBinCapacity(shelfLevel: number): number[] | number | number {
   }
 }
 
-export async function findCategory() {
-  const data = await prisma.categories.findMany({
-    include: {
-      racks: {
-        include: {
-          bin: true,
-        },
-      },
+export async function findBin(barcodeId: string) {
+  const product = await prisma.products.findUnique({
+    where: {
+      barcodeId,
     },
   });
 
-  return { data };
+  if (product) {
+    const categories = await prisma.categories.findFirst({
+      where: {
+        category: product?.category,
+      },
+    });
+
+    const racks = await prisma.racks.findFirst({
+      where: {
+        categoriesId: categories?.id,
+      },
+      include: {
+        bin: {
+          include: {
+            _count: {
+              select: {
+                assignment: true,
+              },
+            },
+            assignment: true,
+          },
+        },
+      },
+    });
+    return racks;
+  }
 }

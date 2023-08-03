@@ -68,6 +68,7 @@ model bin {
   isAvailable Boolean      @default(true)
   capacity    Int
   shelfLevel  Int
+  row         Int
   isSeleted   Boolean?     @default(false) // outbound
   status      String? // outbound
   assignment  assignment[]

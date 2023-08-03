@@ -44,8 +44,6 @@ export async function scanBarcode(
   let message;
   console.log(quality);
   try {
-    // let Data;
-
     const product = await prisma.products.findUnique({
       where: {
         barcodeId,
@@ -61,7 +59,7 @@ export async function scanBarcode(
             category: product?.category,
           },
         });
-        console.log(categories);
+        console.log({ model: "Category Model", categories });
         const racks = await prisma.racks.findFirst({
           where: {
             categoriesId: categories?.id,
@@ -109,35 +107,46 @@ export async function scanBarcode(
             });
 
             const capacity = Number(bin?.capacity);
+            const binId = bin?.id;
             if (TotalAssignedProduct >= capacity) {
               await prisma.bin.update({
                 where: {
-                  id: bin?.id,
+                  id: binId,
                 },
                 data: {
                   isAvailable: false,
                 },
               });
             }
+            const row = availableBin?.row;
+            console.log(row);
+            const shelfLevel = availableBin?.shelfLevel;
+            console.log(shelfLevel);
 
-            return { message: `Product Added ${TotalAssignedProduct}` };
+            return {
+              message: `Product Added ${TotalAssignedProduct}`,
+              TotalAssignedProduct,
+              capacity,
+              row,
+              shelfLevel,
+            };
           }
         }
       }
-
-      // TODO: ADD THE SEPARATION OF DIFFERENT BARCODE ID AND DEPENDS IF IT IS THE SAME VARIANTS
-
-      // return {
-      //   // categories,
-      //   Data,
-      //   // TotalAssignedProduct,
-      //   // capacity,
-      //   // sortedProduct,
-      // };
     }
   } catch (error) {
     return { error };
   }
+}
+
+async function findManyBins(racksId: string, binId: string) {
+  const bins = await prisma.bin.findMany({
+    where: {
+      // id: binId,
+      racksId: racksId,
+    },
+  });
+  return { bins };
 }
 
 function calculateDateBasedOnExpirationDate(items: any) {
