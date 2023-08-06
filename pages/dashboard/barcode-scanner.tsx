@@ -15,7 +15,9 @@ function BarcodeScanner(): JSX.Element {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
   const [boxSize, setBoxSize] = useState<string>("");
-  const [expirationDate, setExpirationDate] = useState<Date | null>(null);
+  const [expirationDate, setExpirationDate] = useState<Date | string | null>(
+    ""
+  );
   const [quality, setQuality] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
   const arraySize: string[] = ["Small", "Medium", "Large"];

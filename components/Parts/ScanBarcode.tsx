@@ -9,7 +9,7 @@ interface Barcode {
   setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
   purchaseOrder: string;
   boxSize: string;
-  expirationDate: Date | null;
+  expirationDate: Date | null | string;
   quality: string;
   quantity: number;
   isManual?: boolean;
