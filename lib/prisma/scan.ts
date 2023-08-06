@@ -119,9 +119,7 @@ export async function scanBarcode(
               });
             }
             const row = availableBin?.row;
-            console.log(row);
             const shelfLevel = availableBin?.shelfLevel;
-            console.log(shelfLevel);
 
             return {
               message: `Product Added ${TotalAssignedProduct}`,

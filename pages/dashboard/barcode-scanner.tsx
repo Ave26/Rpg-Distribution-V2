@@ -24,6 +24,24 @@ function BarcodeScanner(): JSX.Element {
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   const [racks, setRacks] = useState<Racks[] | undefined>(undefined);
 
+  useEffect(() => {
+    const source = new EventSource("/api/socket");
+    source.onmessage = (event) => {
+      console.log(event?.data);
+    };
+
+    source.onerror = (event) => {
+      console.error(event);
+    };
+
+    return () => {
+      if (source) {
+        source.close();
+        console.log("SSE connection closed on component unmount");
+      }
+    };
+  }, []);
+
   return (
     <form className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
       <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
@@ -88,7 +106,7 @@ function BarcodeScanner(): JSX.Element {
       />
       <ProductImage barcodeId={barcodeId} />
 
-      <BinLocation barcodeId={barcodeId} />
+      {/* <BinLocation barcodeId={barcodeId} /> */}
     </form>
   );
 }
