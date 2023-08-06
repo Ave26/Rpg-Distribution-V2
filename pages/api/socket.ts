@@ -31,7 +31,7 @@ const middleware =
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
   // res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -47,6 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log("SSE connection started");
   const interval = setInterval(() => {
     sendEvent(users);
+    console.log(users);
   }, 5000);
 
   // Send a test message to indicate SSE is open
