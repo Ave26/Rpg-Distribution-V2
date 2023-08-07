@@ -60,7 +60,7 @@ export default function Products({}: {
     "/api/public-products",
     fetcher,
     {
-      refreshInterval: 10000,
+      refreshInterval: 3000,
     }
   );
 

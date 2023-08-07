@@ -8,8 +8,6 @@ import Toggle from "@/components/Parts/Toggle";
 import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-import io from "Socket.IO-client";
-let socket;
 
 function BarcodeScanner(): JSX.Element {
   const [barcodeId, setBarcodeId] = useState<string>("");

@@ -14,10 +14,6 @@ interface TokenProps {
   exp: number;
 }
 
-/* 
-  TODO: The Roles must read when it is mounted
-*/
-
 export default function Home({ data }: any): JSX.Element {
   const router = useRouter();
 
