@@ -5,6 +5,7 @@ import Head from "next/head";
 
 import InitialPage from "@/components/InitialPage";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 interface TokenProps {
   id: string;
@@ -20,9 +21,14 @@ interface TokenProps {
 export default function Home({ data }: any): JSX.Element {
   const router = useRouter();
 
-  if (data?.isLogin) {
-    router.push("/dashboard/barcode-scanner");
-  }
+  useEffect(() => {
+    if (data?.isLogin) {
+      router.push("/dashboard/barcode-scanner");
+    }
+    return () => {
+      router.push("/");
+    };
+  }, [data?.isLogin]);
 
   return (
     <>
