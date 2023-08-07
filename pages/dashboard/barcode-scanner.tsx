@@ -1,15 +1,15 @@
 import Layout from "@/components/layout";
 import React, { ReactElement, useEffect, useState } from "react";
 import { Racks } from "@/types/types";
-import ReusableButton from "@/components/Parts/ReusableButton";
+
 import ReusableInput from "@/components/Parts/ReusableInput";
 import ProductImage from "@/components/Parts/ProductImage";
 import Toggle from "@/components/Parts/Toggle";
 import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
-import ViewRacks from "@/components/ViewRacks";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-import BinLocation from "@/components/BinLocation";
+import io from "Socket.IO-client";
+let socket;
 
 function BarcodeScanner(): JSX.Element {
   const [barcodeId, setBarcodeId] = useState<string>("");
@@ -25,24 +25,6 @@ function BarcodeScanner(): JSX.Element {
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   const [racks, setRacks] = useState<Racks[] | undefined>(undefined);
-
-  useEffect(() => {
-    const source = new EventSource("/api/socket");
-    source.onmessage = (event) => {
-      console.log(event?.data);
-    };
-
-    source.onerror = (event) => {
-      console.error(event);
-    };
-
-    return () => {
-      if (source) {
-        source.close();
-        console.log("SSE connection closed on component unmount");
-      }
-    };
-  }, []);
 
   return (
     <form className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">

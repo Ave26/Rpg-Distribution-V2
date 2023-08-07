@@ -7,6 +7,7 @@ import { findPublicProducts } from "@/lib/prisma/product";
 import { NextApiRequest } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
 import noImg from "@/public/assets/products/noProductDisplay.png";
+import useSWR from "swr";
 interface DATA {
   barcodeId?: string;
   category?: string;
@@ -15,37 +16,60 @@ interface DATA {
   productName?: string;
 }
 
-export default function Products({
-  products,
-  error,
-  data,
-}: {
+interface Products {
+  id: string;
+  barcodeId: string;
+  category: string;
+  image: string;
+  price: number;
+  productName: string;
+  sku: null;
+}
+
+export default function Products({}: {
   data: any;
   products: DATA[];
   error: unknown;
 }) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>("");
 
-  // const filteredData = data
-  //   .filter(({ productName }) => {
-  //     return (
-  //       productName.charAt(0).toLocaleLowerCase() ===
-  //       searchInput.charAt(0).toLocaleLowerCase()
-  //     );
-  //   })
-  //   .filter(({ productName }) => {
-  //     return productName
-  //       .toLocaleLowerCase()
-  //       .includes(searchInput.toLocaleLowerCase());
+  // async function getProduct() {
+  //   const response = await fetch("/api/public-products", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
   //   });
+  //   const json = await response.json();
+
+  //   console.log(json);
+  // }
+
+  const fetcher = async (url: string) => {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
+  const { data: products, isLoading } = useSWR(
+    "/api/public-products",
+    fetcher,
+    {
+      refreshInterval: 10000,
+    }
+  );
 
   return (
     <>
       <Head>
         <title>Products</title>
       </Head>
-      <Layout data={data}>
+      <Layout>
         <section className="h-full w-full font-bold">
           <div className="flex h-full w-full items-center justify-center">
             {isLoading ? (
@@ -54,7 +78,7 @@ export default function Products({
               </div>
             ) : (
               <div className="flex flex-col flex-wrap items-center justify-center gap-2 p-5 transition-all md:flex-row">
-                {products.map((value, index) => {
+                {products?.map((value: Products, index: number) => {
                   return (
                     <div
                       className="flex flex-col items-center justify-center gap-3 shadow-lg"
@@ -84,34 +108,3 @@ export default function Products({
     </>
   );
 }
-
-export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const { products, error } = await findPublicProducts();
-  const { verifiedToken }: any = await verifyJwt(req);
-  let data = {};
-  console.log(verifiedToken);
-  if (verifiedToken) {
-    data = {
-      isLogin: true,
-      verifiedToken,
-    };
-  } else {
-    data = {
-      isLogin: false,
-    };
-  }
-  if (error) {
-    return {
-      props: {
-        error,
-      },
-    };
-  }
-
-  return {
-    props: {
-      products,
-      data,
-    },
-  };
-};

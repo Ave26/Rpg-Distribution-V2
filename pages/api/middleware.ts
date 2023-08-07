@@ -1,6 +1,5 @@
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import {} from "./socket";
 
 export default async function middleware(handler: NextApiHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
