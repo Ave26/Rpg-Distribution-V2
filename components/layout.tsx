@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import { useRouter } from "next/router";
 
 // fetch
 import useSWR from "swr";
@@ -18,6 +19,16 @@ interface LayoutProps {
   footerSky?: string;
 }
 
+interface Auth {
+  authenticated: boolean;
+  verifiedToken: {
+    id: string;
+    roles: string;
+    iat: string;
+    exp: string;
+  };
+}
+
 interface Dta {
   authenticated: boolean;
   data: {
@@ -30,18 +41,51 @@ interface Dta {
 
 export default function Layout({
   children,
-  data,
+  // data,
   headerBg,
   headerTxt,
   headerSky,
   footerSky,
 }: LayoutProps) {
-  const [dta, setDta] = useState<Dta | null>(null);
+  const router = useRouter();
+  const [authenticate, setAuthenticate] = useState<boolean>(false);
+
+  // async function checkAuth(abort: AbortController) {
+  //   console.log("useEffect triggered");
+
+  //   try {
+  //     const response = await fetch("/api/authentication", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       signal: abort.signal,
+  //     });
+  //     const json = await response.json();
+  //     setAuthenticate(json?.authenticate);
+  //     console.log(json);
+
+  //     if (response.status === 200) {
+  //       console.log("user is logged in");
+  //     } else if (response.status === 403) {
+  //       console.log("user is not authenticated");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   const abort = new AbortController();
+  //   checkAuth(abort);
+  //   return () => {
+  //     abort.abort;
+  //   };
+  // }, []);
 
   return (
-    <div className="bg-gradient-to-b from-cyan-300 to-blue-500">
+    <div className="bg-gradient-to-b from-cyan-300 to-blue-500 transition-all md:mx-10 lg:mx-20">
       <Header
-        data={data}
+        authenticate={authenticate}
         headerBg={headerBg}
         headerTxt={headerTxt}
         headerSky={headerSky}

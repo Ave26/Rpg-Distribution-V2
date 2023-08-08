@@ -36,7 +36,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
-  // check if the user has login and authenticated
   const verifyUser = async (abortController: AbortController) => {
     try {
       const response = await fetch("/api/user", {
@@ -54,7 +53,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         return router.push("/");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request Aborted");
     }
   };
 
