@@ -146,3 +146,12 @@ export async function findBin(barcodeId: string) {
     return racks;
   }
 }
+
+export async function findAllBin() {
+  try {
+    const bins = await prisma.bin.findMany({});
+    return { bins };
+  } catch (error) {
+    return { error };
+  }
+}

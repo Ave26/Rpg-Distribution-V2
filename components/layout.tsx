@@ -83,7 +83,9 @@ export default function Layout({
   // }, []);
 
   return (
-    <div className="bg-gradient-to-b from-cyan-300 to-blue-500 transition-all md:mx-10 lg:mx-20">
+    <div
+      className="transition-all
+    ">
       <Header
         authenticate={authenticate}
         headerBg={headerBg}

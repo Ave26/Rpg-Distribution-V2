@@ -33,18 +33,6 @@ export default function Products({}: {
 }) {
   const [searchInput, setSearchInput] = useState<string>("");
 
-  // async function getProduct() {
-  //   const response = await fetch("/api/public-products", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   const json = await response.json();
-
-  //   console.log(json);
-  // }
-
   const fetcher = async (url: string) => {
     const response = await fetch(url);
 

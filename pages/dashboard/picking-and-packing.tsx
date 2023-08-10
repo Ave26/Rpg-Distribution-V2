@@ -3,17 +3,35 @@ import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import ReusableButton from "@/components/Parts/ReusableButton";
-
-/*
-  FIND ALL THE BINS BASED ON THE BARCODE
-
-*/
+import useSWR from "swr";
+import Head from "next/head";
+import BinsLayout from "@/components/BinsLayout";
 
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
 
+  const fetcher = async (url: string) => {
+    const response = await fetch(url, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
+  const { data, isLoading } = useSWR("/api/racks/find", fetcher, {
+    refreshInterval: 1500,
+  });
+  console.log(data);
   return (
     <>
+      <Head>
+        <title>{"Dashboard | Picking And Packing"}</title>
+      </Head>
       <div className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
         Pick and pack is a term for warehouse work that involves picking the
         correct type and number of items from shelves and packing them
@@ -32,6 +50,7 @@ export default function PickingAndPacking() {
             <h1>sku: sku-sample</h1>
             <h1>Quantity: 1000</h1>
           </ReusableButton> */}
+          <BinsLayout />
           <button className="flex h-[5vh] w-full flex-row items-start justify-between overflow-hidden border border-black p-2 transition-all hover:h-[10vh]">
             <h1>Barcode Id: 12334455667</h1>
             <h1>sku: sku-sample</h1>

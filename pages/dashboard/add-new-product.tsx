@@ -13,6 +13,7 @@ import noImg from "../../public/assets/products/noProductDisplay.png";
 import Toast from "@/components/Parts/Toast";
 import { stringify } from "querystring";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
+import Head from "next/head";
 interface NewProduct {
   barcodeId: string;
   productName: string;
@@ -124,9 +125,12 @@ const AddNewProduct = ({}): JSX.Element => {
 
   return (
     <>
+      <Head>
+        <title>{"Dashboard | Add Product"}</title>
+      </Head>
       <form
         onSubmit={handleAddProduct}
-        className="flex h-screen w-full flex-col  gap-2 p-4 hover:overflow-y-auto">
+        className="flex h-screen w-full flex-col  gap-2 p-4">
         <div className="flex flex-col flex-wrap items-start justify-center px-10 py-5">
           <ReusableInput
             value={barcodeId}

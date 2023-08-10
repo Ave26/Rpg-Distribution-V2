@@ -7,7 +7,7 @@ interface HomeProps {}
 const InitialPage: FC<HomeProps> = ({}) => {
   return (
     <>
-      <section className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all border py-28 font-sans text-white">
+      <section className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all border bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white">
         <div className="relative h-28 w-28 rounded-lg bg-white/30 p-5 backdrop-blur-sm">
           <div className="h-full w-full rotate-45 rounded-lg bg-white"></div>
         </div>

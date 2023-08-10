@@ -3,7 +3,6 @@ import Head from "next/head";
 
 import InitialPage from "@/components/InitialPage";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiRequest } from "next";
 
@@ -32,7 +31,9 @@ export default function Home({ data }: HomeProps) {
 
   return (
     <>
-      <Head>{/* <title>{"Home |" + (data?.roles ?? "Hi")}</title> */}</Head>
+      <Head>
+        <title>{"Home |" + (data?.verifiedToken?.roles ?? "Hi")}</title>
+      </Head>
       <Layout>
         <InitialPage />
       </Layout>

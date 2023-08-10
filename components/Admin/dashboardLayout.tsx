@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-wrap items-center justify-center md:flex-nowrap">
+    <div className="flex h-full w-full flex-wrap items-center justify-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
       <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
         <ReusableDropDownMenu
           initialName={"Manage Products"}
@@ -124,7 +124,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       </aside>
 
-      <main className="flex h-full w-full flex-col flex-nowrap items-center justify-center">
+      <main className="flex h-full w-full flex-col flex-nowrap items-center justify-center overflow-y-auto">
         {children}
       </main>
     </div>
