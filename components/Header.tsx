@@ -67,13 +67,14 @@ export default function Header({
   //     setAuthenticated(false);
   //   }
   // }, [authenticated]);
-
+  console.log(authenticate);
+  const linkHref: string = authenticate === true ? "/dashboard" : "/";
   return (
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky} select-none`}>
-          <Link href={"/"} passHref>
+          <Link href={linkHref} passHref>
             <Image
               priority
               src={ProStockV2}

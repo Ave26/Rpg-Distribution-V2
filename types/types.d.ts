@@ -17,10 +17,11 @@ export { type AdditionalInfo, type Data };
 interface Product {
   id: string;
   barcodeId: string;
-  img: string;
+  category: string;
+  image: string;
+  price: number;
   productName: string;
-  productLists: ProductList[];
-  _count: Count;
+  sku: string;
 }
 
 interface Count {
@@ -49,7 +50,7 @@ interface InputType {
 }
 
 interface Racks {
-  _id: string;
+  id: string; // _id
   name: string;
   isAvailable: boolean;
   categoriesId: string;
@@ -57,25 +58,29 @@ interface Racks {
 }
 
 interface Bin {
-  _id: string;
+  id: string;
   isAvailable: boolean;
   capacity: number;
   shelfLevel: number;
   row: number;
-  racksId: string | null;
+  isSeleted: boolean;
+  status: null;
+  racksId: string;
   assignment: Assignment[];
-  _count?: {
-    assignment: number;
-  };
 }
+
 interface Assignment {
-  _id: string;
+  id: string;
   dateReceive: Date;
   purchaseOrder: string;
   expirationDate: Date;
   boxSize: string;
+  isDamage: null;
   productId: string;
   binId: string;
+  usersId: null;
+  damageBinId: null;
+  products: Product[];
 }
 
-export { Product, ProductList, Count, InputType, Racks, Bin };
+export { Product, ProductList, Count, InputType, Racks, Bin, Assignment };

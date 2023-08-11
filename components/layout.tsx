@@ -50,38 +50,44 @@ export default function Layout({
   const router = useRouter();
   const [authenticate, setAuthenticate] = useState<boolean>(false);
 
-  // async function checkAuth(abort: AbortController) {
-  //   console.log("useEffect triggered");
+  async function checkAuth(abort: AbortController) {
+    console.log("useEffect triggered");
 
-  //   try {
-  //     const response = await fetch("/api/authentication", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       signal: abort.signal,
-  //     });
-  //     const json = await response.json();
-  //     setAuthenticate(json?.authenticate);
-  //     console.log(json);
+    try {
+      const response = await fetch("/api/authentication", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: abort.signal,
+      });
+      const json = await response.json();
+      setAuthenticate(json?.authenticate);
+      if (json?.authenticate) {
+      } else {
+      }
+      console.log(json);
 
-  //     if (response.status === 200) {
-  //       console.log("user is logged in");
-  //     } else if (response.status === 403) {
-  //       console.log("user is not authenticated");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+      if (response.status === 200) {
+        console.log("user is logged in");
+      } else if (response.status === 403) {
+        console.log("user is not authenticated");
+      }
+      if (json?.authenticate === false) {
+        return router.push("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // useEffect(() => {
-  //   const abort = new AbortController();
-  //   checkAuth(abort);
-  //   return () => {
-  //     abort.abort;
-  //   };
-  // }, []);
-
+  useEffect(() => {
+    const abort = new AbortController();
+    checkAuth(abort);
+    return () => {
+      abort.abort;
+    };
+  }, []);
+  console.log(authenticate);
   return (
     <div
       className="transition-all

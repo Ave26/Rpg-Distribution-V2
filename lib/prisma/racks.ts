@@ -149,7 +149,15 @@ export async function findBin(barcodeId: string) {
 
 export async function findAllBin() {
   try {
-    const bins = await prisma.bin.findMany({});
+    const bins = await prisma.bin.findMany({
+      include: {
+        assignment: {
+          include: {
+            products: true,
+          },
+        },
+      },
+    });
     return { bins };
   } catch (error) {
     return { error };

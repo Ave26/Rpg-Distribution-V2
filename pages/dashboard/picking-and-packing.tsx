@@ -9,7 +9,7 @@ import BinsLayout from "@/components/BinsLayout";
 
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
-
+  const [bins, setBins] = useState<any[]>([]);
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",
@@ -20,13 +20,16 @@ export default function PickingAndPacking() {
     }
 
     const data = await response.json();
+    setBins(data);
     return data;
   };
 
-  const { data, isLoading } = useSWR("/api/racks/find", fetcher, {
-    refreshInterval: 1500,
+  const { isLoading, error } = useSWR("/api/racks/find", fetcher, {
+    refreshInterval: 500,
   });
-  console.log(data);
+
+  if (error) return "Oops, something went wrong...";
+
   return (
     <>
       <Head>
@@ -50,7 +53,8 @@ export default function PickingAndPacking() {
             <h1>sku: sku-sample</h1>
             <h1>Quantity: 1000</h1>
           </ReusableButton> */}
-          <BinsLayout />
+          <BinsLayout bins={bins} />
+
           <button className="flex h-[5vh] w-full flex-row items-start justify-between overflow-hidden border border-black p-2 transition-all hover:h-[10vh]">
             <h1>Barcode Id: 12334455667</h1>
             <h1>sku: sku-sample</h1>
