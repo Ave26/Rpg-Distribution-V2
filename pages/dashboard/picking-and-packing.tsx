@@ -25,7 +25,7 @@ export default function PickingAndPacking() {
   };
 
   const { isLoading, error } = useSWR("/api/racks/find", fetcher, {
-    refreshInterval: 500,
+    refreshInterval: 1500,
   });
 
   if (error) return "Oops, something went wrong...";
@@ -47,7 +47,7 @@ export default function PickingAndPacking() {
           }}
           className="appearance-none border-none p-2 outline-none focus:ring focus:ring-emerald-600 "
         />
-        <div className="flex h-1/2 w-full flex-wrap items-center justify-start  gap-2 overflow-y-auto  rounded-2xl border border-black p-5">
+        <div className="flex h-1/2 w-full flex-wrap items-center justify-start  gap-2 overflow-y-auto  rounded-sm border border-black p-5">
           {/* <ReusableButton className="flex h-[5vh] w-full flex-row items-start justify-between overflow-hidden border border-black p-2 transition-all hover:h-[10vh]">
             <h1>Barcode Id: 12334455667</h1>
             <h1>sku: sku-sample</h1>
@@ -55,11 +55,11 @@ export default function PickingAndPacking() {
           </ReusableButton> */}
           <BinsLayout bins={bins} />
 
-          <button className="flex h-[5vh] w-full flex-row items-start justify-between overflow-hidden border border-black p-2 transition-all hover:h-[10vh]">
+          {/* <button className="flex h-[5vh] w-full flex-row items-start justify-between overflow-hidden border border-black p-2 transition-all hover:h-[10vh]">
             <h1>Barcode Id: 12334455667</h1>
             <h1>sku: sku-sample</h1>
             <h1>Quantity: 1000</h1>
-          </button>
+          </button> */}
         </div>
         <div className="h-40 w-40 border border-black"></div>
       </div>

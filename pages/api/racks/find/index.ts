@@ -44,10 +44,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       return res.status(200).json(racks);
     case "GET":
-      console.log("GET TRIGGERED");
+      // console.log("GET TRIGGERED");
       const { bins, error } = await findAllBin();
       if (!bins || error) {
-        return res.status(500).json({
+        return res.status(401).json({
           message: "Oops, something went wrong",
         });
       }

@@ -151,6 +151,17 @@ export async function findAllBin() {
   try {
     const bins = await prisma.bin.findMany({
       include: {
+        _count: {
+          select: {
+            assignment: true,
+          },
+        },
+        racks: {
+          include: {
+            categories: true,
+          },
+        },
+
         assignment: {
           include: {
             products: true,
@@ -158,6 +169,14 @@ export async function findAllBin() {
         },
       },
     });
+
+    // console.log(
+    //   bins?.map((bin) => {
+    //     return bin.assignment.map((value) => {
+    //       return value?.products?.productName;
+    //     });
+    //   })
+    // );
     return { bins };
   } catch (error) {
     return { error };

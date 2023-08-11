@@ -24,29 +24,35 @@ interface Product {
   sku: string;
 }
 
-interface Count {
-  productLists: number;
-}
+// interface Count {
+//   productLists: number;
+// }
 
-interface ProductList {
-  id: string;
-  quantity: null;
-  dateRecieve: Date;
-  expirationDate: string;
-  price: number;
-  sku: string;
-  poId: string;
-  status: string;
-  paletteLocation: string;
-  productType: string;
-  userId: null;
-  productDetailsId: string;
-}
+// interface ProductList {
+//   id: string;
+//   quantity: null;
+//   dateRecieve: Date;
+//   expirationDate: string;
+//   price: number;
+//   sku: string;
+//   poId: string;
+//   status: string;
+//   paletteLocation: string;
+//   productType: string;
+//   userId: null;
+//   productDetailsId: string;
+// }
 
 interface InputType {
   barcodeId: string;
   quantity: number;
   expiry?: Date;
+}
+
+interface Categories {
+  id: string;
+  category: string;
+  capacity: number;
 }
 
 interface Racks {
@@ -83,4 +89,13 @@ interface Assignment {
   products: Product[];
 }
 
-export { Product, ProductList, Count, InputType, Racks, Bin, Assignment };
+export {
+  Product,
+  ProductList,
+  Count,
+  InputType,
+  Categories,
+  Racks,
+  Bin,
+  Assignment,
+};
