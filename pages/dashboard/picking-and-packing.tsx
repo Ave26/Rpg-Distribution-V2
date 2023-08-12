@@ -3,13 +3,15 @@ import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import ReusableButton from "@/components/Parts/ReusableButton";
-import useSWR from "swr";
+import useSWR from "swr"; // cache
 import Head from "next/head";
 import BinsLayout from "@/components/BinsLayout";
 
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
   const [bins, setBins] = useState<any[]>([]);
+
+  
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",

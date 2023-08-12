@@ -87,7 +87,6 @@ export default function Layout({
       abort.abort;
     };
   }, []);
-  console.log(authenticate);
   return (
     <div
       className="transition-all

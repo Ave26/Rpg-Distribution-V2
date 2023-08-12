@@ -3,9 +3,9 @@ import Head from "next/head";
 import Layout from "@/components/layout";
 import Loading from "@/components/Parts/Loading";
 import Image from "next/image";
-import { findPublicProducts } from "@/lib/prisma/product";
-import { NextApiRequest } from "next";
-import { verifyJwt } from "@/lib/helper/jwt";
+// import { findPublicProducts } from "@/lib/prisma/product";
+// import { NextApiRequest } from "next";
+// import { verifyJwt } from "@/lib/helper/jwt";
 import noImg from "@/public/assets/products/noProductDisplay.png";
 import useSWR from "swr";
 interface DATA {
@@ -82,6 +82,7 @@ export default function Products({}: {
                       <div className="flex w-full flex-col items-start justify-center p-2">
                         <strong>
                           <h1 className="text-xs">{value?.productName}</h1>
+                          <h1 className="text-xs">{value?.category}</h1>
                           <h1 className="text-xs">{value?.category}</h1>
                         </strong>
                       </div>

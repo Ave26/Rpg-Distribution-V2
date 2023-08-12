@@ -44,7 +44,10 @@ function BinsLayout({ bins }: BinsProps) {
         return (
           <h1 key={bin?.id} className="bg-white p-4 shadow-sm">
             <div>Quantity: {Number(bin?._count.assignment)}</div>
-            <div>Quantity: {String(bin?.racks?.categories.category)}</div>
+            <div>
+              Product Category: {String(bin?.racks?.categories.category)}
+            </div>
+            {/* <div>Product Name: {String(bin?.)}</div> */}
             {/* <div>
               Quantity:{" "}
               {String(
@@ -59,5 +62,10 @@ function BinsLayout({ bins }: BinsProps) {
     </div>
   );
 }
+/**
+ * Product Name
+ * SKU
+ * Quanity
+ */
 
 export default BinsLayout;
