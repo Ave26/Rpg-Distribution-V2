@@ -14,7 +14,7 @@ interface Data extends AdditionalInfo {
 export { type AdditionalInfo, type Data };
 
 // ----------------------THIS IS FOR THE PRODUCT TYPES
-interface Product {
+interface Products {
   id: string;
   barcodeId: string;
   category: string;
@@ -86,11 +86,11 @@ interface Assignment {
   binId: string;
   usersId: null;
   damageBinId: null;
-  products: Product[];
+  products: Products[];
 }
 
 export {
-  Product,
+  Products,
   ProductList,
   Count,
   InputType,

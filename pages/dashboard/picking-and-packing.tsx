@@ -11,7 +11,6 @@ export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
   const [bins, setBins] = useState<any[]>([]);
 
-  
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",

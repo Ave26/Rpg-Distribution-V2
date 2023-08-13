@@ -132,6 +132,9 @@ export async function findBin(barcodeId: string) {
       },
       include: {
         bin: {
+          where: {
+            isSeleted: false,
+          },
           include: {
             _count: {
               select: {
@@ -143,6 +146,7 @@ export async function findBin(barcodeId: string) {
         },
       },
     });
+
     return racks;
   }
 }
@@ -170,13 +174,14 @@ export async function findAllBin() {
       },
     });
 
-    // console.log(
-    //   bins?.map((bin) => {
-    //     return bin.assignment.map((value) => {
-    //       return value?.products?.productName;
-    //     });
-    //   })
-    // );
+    console.log(
+      bins.map((bin) => {
+        return bin?.assignment?.map((product) => {
+          console.log(bin);
+          return product?.products?.productName;
+        });
+      })
+    );
     return { bins };
   } catch (error) {
     return { error };

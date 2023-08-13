@@ -1,5 +1,5 @@
 import React from "react";
-import { Product, Categories } from "@/types/types";
+import { Categories } from "@/types/types";
 import { categories } from "@prisma/client";
 interface Bin {
   id: string;
@@ -30,7 +30,17 @@ interface Assignment {
   binId: string;
   usersId: null;
   damageBinId: null;
-  products: Product;
+  products: products;
+}
+
+interface products {
+  id: string;
+  barcodeId: string;
+  category: string;
+  image: string;
+  price: number;
+  productName: string;
+  sku: string;
 }
 
 interface BinsProps {
@@ -39,7 +49,7 @@ interface BinsProps {
 
 function BinsLayout({ bins }: BinsProps) {
   return (
-    <div className="bg-transparentshadow-slate-900 flex h-fit w-full flex-col gap-4 p-2">
+    <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
       {bins.map((bin: Bin) => {
         return (
           <h1 key={bin?.id} className="bg-white p-4 shadow-sm">
@@ -47,15 +57,20 @@ function BinsLayout({ bins }: BinsProps) {
             <div>
               Product Category: {String(bin?.racks?.categories.category)}
             </div>
-            {/* <div>Product Name: {String(bin?.)}</div> */}
-            {/* <div>
-              Quantity:{" "}
-              {String(
-                bin?.assignment?.map((value) => {
-                  return <div>{value.products?.}</div>;
-                })
-              )}
-            </div> */}
+            <div>
+              {`Product Name: ${
+                bin?.assignment?.map((assign) => {
+                  return assign?.products?.productName;
+                })[0]
+              }`}
+            </div>
+            <div>
+              {`Product Name: ${
+                bin?.assignment?.map((assign) => {
+                  return assign?.products?.sku;
+                })[0]
+              }`}
+            </div>
           </h1>
         );
       })}
