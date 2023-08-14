@@ -54,10 +54,6 @@ export default function PickingAndPacking() {
     if (barcode) {
       findBinByBarcode();
     }
-    return () => {
-      // console.log("clean");
-      findBinByBarcode();
-    };
   }, [barcode]);
 
   return (
@@ -76,15 +72,24 @@ export default function PickingAndPacking() {
             event.preventDefault();
             findBinByBarcode();
           }}
-          className="flex items-center justify-center border border-black">
-          <ReusableInput
-            name="Barcode Id"
-            value={barcode}
-            onChange={(value: string) => {
-              setBarcode(value);
-            }}
-            className="appearance-none border-none p-2 outline-none focus:ring focus:ring-emerald-600 "
-          />
+          className="flex items-center justify-center gap-2">
+          <div className="flex flex-row items-center justify-center gap-2 bg-white">
+            <ReusableInput
+              name="Barcode Id"
+              value={barcode}
+              onChange={(value: string) => {
+                setBarcode(value);
+              }}
+              className="appearance-none border-none p-2 outline-none focus:ring focus:ring-emerald-600 "
+            />
+            <button
+              onClick={() => {
+                setBarcode("");
+              }}
+              className="m-2 h-full w-full bg-transparent">
+              X
+            </button>
+          </div>
           <ReusableButton name={"Search"} />
         </form>
         <div className="flex h-1/2 w-full flex-wrap items-start justify-start  gap-2 overflow-y-auto  rounded-sm border border-black p-5">
