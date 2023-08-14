@@ -50,10 +50,6 @@ export default function PickingAndPacking() {
     return setFiltrateBin(filteredBins_and_assignment);
   }
 
-  useEffect(() => {
-    findBinByBarcode();
-  }, [barcode]);
-
   return (
     <>
       <Head>
