@@ -171,7 +171,15 @@ export async function findAllBin() {
 
         assignment: {
           include: {
-            products: true,
+            products: {
+              select: {
+                productName: true,
+                category: true,
+                sku: true,
+                barcodeId: true,
+                price: true,
+              },
+            },
           },
         },
       },
