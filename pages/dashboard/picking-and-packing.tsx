@@ -51,9 +51,7 @@ export default function PickingAndPacking() {
   }
 
   useEffect(() => {
-    if (barcode) {
-      findBinByBarcode();
-    }
+    findBinByBarcode();
   }, [barcode]);
 
   return (
