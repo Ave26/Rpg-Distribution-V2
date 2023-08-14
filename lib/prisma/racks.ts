@@ -146,7 +146,6 @@ export async function findBin(barcodeId: string) {
         },
       },
     });
-
     return racks;
   }
 }
@@ -162,7 +161,11 @@ export async function findAllBin() {
         },
         racks: {
           include: {
-            categories: true,
+            categories: {
+              include: {
+                racks: true,
+              },
+            },
           },
         },
 
@@ -174,14 +177,6 @@ export async function findAllBin() {
       },
     });
 
-    console.log(
-      bins.map((bin) => {
-        return bin?.assignment?.map((product) => {
-          console.log(bin);
-          return product?.products?.productName;
-        });
-      })
-    );
     return { bins };
   } catch (error) {
     return { error };

@@ -86,7 +86,7 @@ interface Assignment {
   binId: string;
   usersId: null;
   damageBinId: null;
-  products: Products[];
+  products: Products;
 }
 
 export {

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Categories } from "@/types/types";
-import { categories } from "@prisma/client";
+
 interface Bin {
   id: string;
   isAvailable: boolean;
@@ -13,10 +13,16 @@ interface Bin {
   _count: {
     assignment: Assignment[];
   };
-  racks: {
-    categories: categories;
-  };
+  racks: Racks;
   assignment: Assignment[];
+}
+
+interface Racks {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+  categoriesId: string;
+  categories: Categories;
 }
 
 interface Assignment {
@@ -45,33 +51,46 @@ interface products {
 
 interface BinsProps {
   bins: Bin[];
+
+  barcode: string;
 }
 
-function BinsLayout({ bins }: BinsProps) {
+function BinsLayout({ bins, barcode }: BinsProps) {
   return (
     <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
-      {bins.map((bin: Bin) => {
+      {bins?.map((bin: Bin) => {
         return (
-          <h1 key={bin?.id} className="bg-white p-4 shadow-sm">
-            <div>Quantity: {Number(bin?._count.assignment)}</div>
-            <div>
-              Product Category: {String(bin?.racks?.categories.category)}
-            </div>
-            <div>
+          <button
+            key={bin?.id}
+            className="cursor-pointer bg-white p-4 text-start font-bold shadow-sm">
+            <h1>Quantity: {Number(bin?._count.assignment)}</h1>
+            <h1>Product Category: {String(bin?.racks?.categories.category)}</h1>
+            <h1>
               {`Product Name: ${
                 bin?.assignment?.map((assign) => {
                   return assign?.products?.productName;
                 })[0]
               }`}
-            </div>
-            <div>
-              {`Product Name: ${
+            </h1>
+            <h1>
+              {`Product SKU: ${
                 bin?.assignment?.map((assign) => {
                   return assign?.products?.sku;
                 })[0]
               }`}
-            </div>
-          </h1>
+            </h1>
+            <h1>
+              {`Price: ${
+                bin?.assignment?.map((assign) => {
+                  return Number(assign?.products?.price);
+                })[0]
+              }`}
+            </h1>
+            <h1>
+              Bin: {bin?.racks?.name}
+              {bin?.row} - {bin?.shelfLevel}
+            </h1>
+          </button>
         );
       })}
     </div>
