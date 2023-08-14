@@ -37,7 +37,10 @@ export default function PickingAndPacking() {
     refreshInterval: 1500,
   });
 
-  if (error) return "Oops, something went wrong...";
+  if (error) {
+    console.log(error);
+    return "Oops, something went wrong...";
+  }
 
   async function findBinByBarcode() {
     const filteredBins_and_assignment = bins?.filter((bin: Bin) =>
