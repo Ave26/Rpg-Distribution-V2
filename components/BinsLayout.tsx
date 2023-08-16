@@ -1,69 +1,70 @@
 import React, { useEffect, useState } from "react";
-import { Categories } from "@/types/types";
+import { Bin } from "@/types/inventory";
 
-interface Bin {
-  id: string;
-  isAvailable: boolean;
-  capacity: number;
-  shelfLevel: number;
-  row: number;
-  isSeleted: boolean;
-  status: null;
-  racksId: string;
-  _count: {
-    assignment: Assignment[];
-  };
-  racks: Racks;
-  assignment: Assignment[];
-}
+// interface Bin {
+//   id: string;
+//   isAvailable: boolean;
+//   capacity: number;
+//   shelfLevel: number;
+//   row: number;
+//   isSeleted: boolean;
+//   status: null;
+//   racksId: string;
+//   _count: {
+//     assignment: Assignment[];
+//   };
+//   racks: Racks;
+//   assignment: Assignment[];
+// }
 
-interface Racks {
-  id: string;
-  name: string;
-  isAvailable: boolean;
-  categoriesId: string;
-  categories: Categories;
-}
+// interface Racks {
+//   id: string;
+//   name: string;
+//   isAvailable: boolean;
+//   categoriesId: string;
+//   categories: Categories;
+// }
 
-interface Assignment {
-  id: string;
-  dateReceive: Date;
-  purchaseOrder: string;
-  expirationDate: Date;
-  boxSize: string;
-  isDamage: null;
-  productId: string;
-  binId: string;
-  usersId: null;
-  damageBinId: null;
-  products: products;
-}
+// interface Assignment {
+//   id: string;
+//   dateReceive: Date;
+//   purchaseOrder: string;
+//   expirationDate: Date;
+//   boxSize: string;
+//   isDamage: null;
+//   productId: string;
+//   binId: string;
+//   usersId: null;
+//   damageBinId: null;
+//   products: products;
+// }
 
-interface products {
-  id: string;
-  barcodeId: string;
-  category: string;
-  image: string;
-  price: number;
-  productName: string;
-  sku: string;
-}
+// interface products {
+//   id: string;
+//   barcodeId: string;
+//   category: string;
+//   image: string;
+//   price: number;
+//   productName: string;
+//   sku: string;
+// }
 
 interface BinsProps {
-  bins: Bin[];
-
-  barcode: string;
+  bins?: Bin[] | undefined;
 }
 
-function BinsLayout({ bins, barcode }: BinsProps) {
+function BinsLayout({ bins }: BinsProps) {
   return (
     <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
       {bins?.map((bin: Bin) => {
         return (
           <button
+            onClick={() => {
+              console.log(bin);
+            }}
             key={bin?.id}
             className="cursor-pointer bg-white p-4 text-start font-bold shadow-sm">
-            <h1>Quantity: {Number(bin?._count.assignment)}</h1>
+            <h1>Quantity: {Number(bin?._count?.assignment)}</h1>
             <h1>Product Category: {String(bin?.racks?.categories.category)}</h1>
             <h1>
               {`Product Name: ${

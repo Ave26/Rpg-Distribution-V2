@@ -161,11 +161,7 @@ export async function findAllBin() {
         },
         racks: {
           include: {
-            categories: {
-              include: {
-                racks: true,
-              },
-            },
+            categories: true,
           },
         },
 

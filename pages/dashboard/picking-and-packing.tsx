@@ -1,13 +1,13 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-import ReusableInput from "@/components/Parts/ReusableInput";
-import ReusableButton from "@/components/Parts/ReusableButton";
 import useSWR from "swr"; // cache
 import Head from "next/head";
 import BinsLayout from "@/components/BinsLayout";
 import Loading from "@/components/Parts/Loading";
-import { Bin } from "@/types/types";
+import { Bin } from "@/types/inventory";
+import Search from "@/components/Parts/Search";
+import InputField from "@/components/Parts/InputField";
 
 const fetcher = async (url: string) => {
   const response = await fetch(url, {
@@ -19,8 +19,8 @@ const fetcher = async (url: string) => {
   }
 
   const data = await response.json();
-  const ValuedBin = data?.filter((bin: Bin) => {
-    return bin.assignment.length > 0;
+  const ValuedBin: Bin[] = data?.filter((bin: Bin) => {
+    return Number(bin?.assignment?.length) > 0;
   });
 
   return ValuedBin;
@@ -28,7 +28,9 @@ const fetcher = async (url: string) => {
 
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
-  const [filtrateBin, setFiltrateBin] = useState<[]>([]);
+  const [quantity, setQuantity] = useState<number>(0);
+  const [filtrateBin, setFiltrateBin] = useState<Bin[] | undefined>(undefined);
+
   const {
     isLoading,
     error,
@@ -42,16 +44,53 @@ export default function PickingAndPacking() {
     return "Oops, something went wrong...";
   }
 
-  async function findBinByBarcode() {
-    const filteredBins_and_assignment = bins?.filter((bin: Bin) =>
-      bin.assignment.some(
-        (assignmentGroup) => assignmentGroup.products.barcodeId === barcode
-      )
-    );
+  const findBinByBarcode = () => {
+    try {
+      const filteredBins_and_assignment = bins?.filter((bin: Bin) => {
+        return bin.assignment.every(
+          (assignmentGroup) => assignmentGroup.products.barcodeId === barcode
+        );
+      });
 
-    // console.log(filteredBins_and_assignment);
-    return setFiltrateBin(filteredBins_and_assignment);
-  }
+      if (
+        filteredBins_and_assignment?.map((bin) =>
+          bin?.assignment?.every(
+            (assign) => assign?.products?.barcodeId === barcode
+          )
+        )
+      ) {
+        return setFiltrateBin(filteredBins_and_assignment);
+      }
+
+      return setFiltrateBin(bins);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    filtrateBin?.map((bin) =>
+      bin?.assignment?.every(
+        (assign) => assign?.products?.barcodeId !== barcode
+      )
+    ) && setFiltrateBin(bins);
+  }, [barcode]);
+
+  /*
+    REQUEST: BARCODE ID, QUANTITY ORDER
+    THOSE CARDS SHOULD BE SELECTABLE IN ORDER TO TAKE THE ID OF THE BIN
+    - BIN ID
+    - THE BIN ID WILL NOT BE SHOW AFTER SELECTED BASED ON THE QUANTITY
+      - IF ASSIGNMENT QUANTITY > QUANTITY THEN IT WILL CALL A FUNCTION
+      - FUNCTION -> NEGATE OR SUBTRACT THE ASSIGNMENT QUANTITY - QUANTITY AND WILL BE SHOWN
+      - OTHERWISE IT WILL NOT BE SHOWN
+
+
+      IN THE DATABASE I NEED ORDER LIST
+
+      ACTIONS: 
+      UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
+   */
 
   return (
     <>
@@ -59,46 +98,31 @@ export default function PickingAndPacking() {
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
       <div className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
-        <p>
-          Pick and pack is a term for warehouse work that involves picking the
-          correct type and number of items from shelves and packing them
-          efficiently for shipping.
-        </p>
-        <form
-          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            findBinByBarcode();
-          }}
-          className="flex items-center justify-center gap-2">
-          <div className="flex flex-row items-center justify-center gap-2 bg-white">
-            <ReusableInput
-              name="Barcode Id"
-              value={barcode}
-              onChange={(value: string) => {
-                setBarcode(value);
-              }}
-              className="appearance-none border-none p-2 outline-none focus:ring focus:ring-emerald-600 "
-            />
-            <button
-              onClick={() => {
-                setBarcode("");
-              }}
-              className="m-2 h-full w-full bg-transparent">
-              X
-            </button>
-          </div>
-          <ReusableButton name={"Search"} />
-        </form>
+        <div className="flex items-center justify-start gap-2">
+          <Search
+            inputProps={{
+              inputValue: barcode,
+              setInputValue: setBarcode,
+              handleSearchInput: findBinByBarcode,
+            }}
+            personaleEffects={{ placeholder: "Search Barcode", maxLength: 14 }}
+          />
+          <InputField
+            personalEffects={{
+              placeholder: "Quantity",
+              type: "number",
+              min: 0,
+            }}
+            inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
+          />
+        </div>
         <div className="flex h-1/2 w-full flex-wrap items-start justify-start  gap-2 overflow-y-auto  rounded-sm border border-black p-5">
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">
               <Loading />
             </div>
           ) : (
-            <BinsLayout
-              bins={Number(filtrateBin.length) === 0 ? bins : filtrateBin}
-              barcode={barcode}
-            />
+            <BinsLayout bins={filtrateBin} />
           )}
         </div>
         <div className="h-40 w-40 border border-black"></div>

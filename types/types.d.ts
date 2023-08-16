@@ -72,7 +72,11 @@ interface Bin {
   isSeleted: boolean;
   status: null;
   racksId: string;
-  assignment: Assignment[];
+  _count?: {
+    assignment?: Assignment[];
+  };
+  racks?: Racks;
+  assignment?: Assignment[];
 }
 
 interface Assignment {
@@ -87,6 +91,59 @@ interface Assignment {
   usersId: null;
   damageBinId: null;
   products: Products;
+}
+
+interface Bin {
+  id: string;
+  isAvailable: boolean;
+  capacity: number;
+  shelfLevel: number;
+  row: number;
+  isSeleted: boolean;
+  status: null;
+  racksId: string;
+  _count?: {
+    assignment: Assignment[];
+  };
+  racks: Racks;
+  assignment: Assignment[];
+}
+
+interface Racks {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+  categoriesId: string;
+  categories: Categories;
+}
+
+interface Assignment {
+  id: string;
+  dateReceive: Date;
+  purchaseOrder: string;
+  expirationDate: Date;
+  boxSize: string;
+  isDamage: null;
+  productId: string;
+  binId: string;
+  usersId: null;
+  damageBinId: null;
+  products: products;
+}
+
+interface products {
+  id: string;
+  barcodeId: string;
+  category: string;
+  image: string;
+  price: number;
+  productName: string;
+  sku: string;
+}
+
+interface BinsProps {
+  bins?: Bin[] | undefined;
+  barcode: string;
 }
 
 export {
