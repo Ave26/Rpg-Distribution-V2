@@ -51,7 +51,7 @@ export default function PickingAndPacking() {
           (assignmentGroup) => assignmentGroup.products.barcodeId === barcode
         );
       });
-
+      console.log(filteredBins_and_assignment);
       if (
         filteredBins_and_assignment?.map((bin) =>
           bin?.assignment?.every(
@@ -61,8 +61,6 @@ export default function PickingAndPacking() {
       ) {
         return setFiltrateBin(filteredBins_and_assignment);
       }
-
-      return setFiltrateBin(bins);
     } catch (error) {
       console.log(error);
     }
@@ -122,7 +120,7 @@ export default function PickingAndPacking() {
               <Loading />
             </div>
           ) : (
-            <BinsLayout bins={filtrateBin} />
+            <BinsLayout bins={filtrateBin ? filtrateBin : bins} />
           )}
         </div>
         <div className="h-40 w-40 border border-black"></div>
