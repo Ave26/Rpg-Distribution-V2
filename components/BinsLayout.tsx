@@ -3,23 +3,35 @@ import { Bin } from "@/types/inventory";
 
 interface BinsProps {
   bins?: Bin[] | undefined;
-  buttonProps: ButtonEventProps;
 }
 
-interface ButtonEventProps {
-  binId: string;
-  setBinId: React.Dispatch<React.SetStateAction<string>>;
-}
+function BinsLayout({ bins }: BinsProps) {
+  async function selectBin(binId: string) {
+    // ability to select the bin and update it into selected
+    try {
+      const response = await fetch("/api/bin/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          binId,
+        }),
+      });
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-function BinsLayout({ bins, buttonProps }: BinsProps) {
   return (
     <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
       {bins?.map((bin: Bin) => {
         return (
           <button
             onClick={() => {
-              console.log(bin?.id);
-              buttonProps?.setBinId(bin?.id);
+              selectBin(bin?.id);
             }}
             key={bin?.id}
             className="cursor-pointer bg-white p-4 text-start font-bold shadow-sm">

@@ -8,6 +8,7 @@ import Loading from "@/components/Parts/Loading";
 import { Bin } from "@/types/inventory";
 import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
+import { findBin } from "@/lib/prisma/racks";
 
 const fetcher = async (url: string) => {
   const response = await fetch(url, {
@@ -96,30 +97,6 @@ export default function PickingAndPacking() {
       UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
    */
 
-  async function selectBin() {
-    // ability to select the bin and update it into selected
-    try {
-      const response = await fetch("/api/bin/find", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          binId,
-        }),
-      });
-      const json = await response.json();
-      console.log(json);
-      console.log(json);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    selectBin();
-  }, [binId]);
-
   return (
     <>
       <Head>
@@ -150,10 +127,7 @@ export default function PickingAndPacking() {
               <Loading />
             </div>
           ) : (
-            <BinsLayout
-              bins={filtrateBin ? filtrateBin : bins}
-              buttonProps={{ binId: binId, setBinId: setBinId }}
-            />
+            <BinsLayout bins={filtrateBin ? filtrateBin : bins} />
           )}
         </div>
         <div className="h-40 w-40 border border-black"></div>
