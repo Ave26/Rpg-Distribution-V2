@@ -5,6 +5,8 @@ import InitialPage from "@/components/InitialPage";
 import { useRouter } from "next/router";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiRequest } from "next";
+import { useContext } from "react";
+import { useMyContext } from "@/components/contexts/AuthenticationContext";
 
 interface TokenProps {
   id: string;
@@ -24,17 +26,18 @@ interface HomeProps {
 
 export default function Home({ data }: HomeProps) {
   const router = useRouter();
-
+  const { globalState, updateGlobalState } = useMyContext();
   if (data.authenticated === true) {
     router.push("/dashboard/barcode-scanner");
   }
-
+  console.log(globalState);
   return (
     <>
       <Head>
         <title>{"Home |" + (data?.verifiedToken?.roles ?? "Hi")}</title>
       </Head>
       <Layout>
+        {/* <h1>sdsds{globalState}</h1>  */}
         <InitialPage />
       </Layout>
     </>

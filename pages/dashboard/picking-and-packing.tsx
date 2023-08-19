@@ -29,6 +29,7 @@ const fetcher = async (url: string) => {
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
+  const [binId, setBinId] = useState<string>("");
   const [filtrateBin, setFiltrateBin] = useState<Bin[] | undefined>(undefined);
 
   const {
@@ -83,12 +84,41 @@ export default function PickingAndPacking() {
       - FUNCTION -> NEGATE OR SUBTRACT THE ASSIGNMENT QUANTITY - QUANTITY AND WILL BE SHOWN
       - OTHERWISE IT WILL NOT BE SHOWN
 
+        fetch bin id and update the selected bin
+
+        if (binid.selected || bindId.)
+
+
 
       IN THE DATABASE I NEED ORDER LIST
 
       ACTIONS: 
       UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
    */
+
+  async function selectBin() {
+    // ability to select the bin and update it into selected
+    try {
+      const response = await fetch("/api/bin/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          binId,
+        }),
+      });
+      const json = await response.json();
+      console.log(json);
+      console.log(json);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    selectBin();
+  }, [binId]);
 
   return (
     <>
@@ -120,7 +150,10 @@ export default function PickingAndPacking() {
               <Loading />
             </div>
           ) : (
-            <BinsLayout bins={filtrateBin ? filtrateBin : bins} />
+            <BinsLayout
+              bins={filtrateBin ? filtrateBin : bins}
+              buttonProps={{ binId: binId, setBinId: setBinId }}
+            />
           )}
         </div>
         <div className="h-40 w-40 border border-black"></div>

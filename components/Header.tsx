@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
+import { useMyContext } from "./contexts/AuthenticationContext";
+import { AuthProps } from "@/types/authTypes";
 
 interface HeaderProps {
-  authenticate?: boolean;
   error?: unknown;
   headerBg?: string;
   headerSky?: string;
@@ -15,13 +16,13 @@ interface HeaderProps {
 }
 
 export default function Header({
-  authenticate,
   error,
   headerBg = "bg-[#0b8acb] transition-all",
   headerSky = "bg-transparent",
   headerTxt,
 }: HeaderProps) {
   const router = useRouter();
+  const { globalState, updateGlobalState } = useMyContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -59,22 +60,15 @@ export default function Header({
     setIsOpen((prevState) => !prevState);
   };
 
-  // useEffect(() => {
-  //   const isAuth = localStorage.getItem("authenticated") === "true";
-  //   setAuthenticated(isAuth);
-
-  //   if (!isAuth || isAuth === undefined) {
-  //     setAuthenticated(false);
-  //   }
-  // }, [authenticated]);
-  console.log(authenticate);
-  const linkHref: string = authenticate === true ? "/dashboard" : "/";
+  console.log("headers:", globalState);
+  const linkHref: string =
+    globalState?.authenticated === true ? "/dashboard/barcode-scanner" : "/";
   return (
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky} select-none`}>
-          <Link href={linkHref} passHref>
+          <Link href={`${linkHref}`}>
             <Image
               priority
               src={ProStockV2}

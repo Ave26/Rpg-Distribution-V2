@@ -1,5 +1,6 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findAllBin, findBin } from "@/lib/prisma/racks";
+import { findBin } from "@/lib/prisma/racks";
+import { findAllBin } from "@/lib/prisma/bin";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =

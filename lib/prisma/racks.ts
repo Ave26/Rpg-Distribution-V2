@@ -150,39 +150,39 @@ export async function findBin(barcodeId: string) {
   }
 }
 
-export async function findAllBin() {
-  try {
-    const bins = await prisma.bin.findMany({
-      include: {
-        _count: {
-          select: {
-            assignment: true,
-          },
-        },
-        racks: {
-          include: {
-            categories: true,
-          },
-        },
+// export async function findAllBin() {
+//   try {
+//     const bins = await prisma.bin.findMany({
+//       include: {
+//         _count: {
+//           select: {
+//             assignment: true,
+//           },
+//         },
+//         racks: {
+//           include: {
+//             categories: true,
+//           },
+//         },
 
-        assignment: {
-          include: {
-            products: {
-              select: {
-                productName: true,
-                category: true,
-                sku: true,
-                barcodeId: true,
-                price: true,
-              },
-            },
-          },
-        },
-      },
-    });
+//         assignment: {
+//           include: {
+//             products: {
+//               select: {
+//                 productName: true,
+//                 category: true,
+//                 sku: true,
+//                 barcodeId: true,
+//                 price: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     });
 
-    return { bins };
-  } catch (error) {
-    return { error };
-  }
-}
+//     return { bins };
+//   } catch (error) {
+//     return { error };
+//   }
+// }

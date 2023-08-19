@@ -5,6 +5,9 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import AccountManagement from "@/public/assets/dashBoardIcons/AccountManagement.png";
+import useSWR from "swr";
+import { AuthProps } from "@/types/authTypes";
+import { useMyContext } from "../contexts/AuthenticationContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -12,6 +15,18 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
+  const { updateGlobalState } = useMyContext();
+  const fetcher = async (url: string) => {
+    const response = await fetch(url, {
+      method: "GET",
+    });
+    const data = await response.json();
+    updateGlobalState(data);
+    if (data?.authenticated === false || !data?.authenticated) router.push("/");
+    return data;
+  };
+
+  useSWR("/api/authentication", fetcher);
   const handleLogout = async () => {
     console.log("click");
     try {
@@ -35,36 +50,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       console.log(error);
     }
   };
-
-  const verifyUser = async (abortController: AbortController) => {
-    try {
-      const response = await fetch("/api/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        signal: abortController.signal,
-      });
-
-      const json = await response.json();
-
-      if (response.status === 401) {
-        console.log(json);
-        return router.push("/");
-      }
-    } catch (error) {
-      console.log("Request Aborted");
-    }
-  };
-
-  useEffect(() => {
-    console.log("checking user data...");
-    const abortController = new AbortController();
-    verifyUser(abortController);
-    return () => {
-      abortController.abort();
-    };
-  }, []);
 
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">

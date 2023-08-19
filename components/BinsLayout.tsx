@@ -1,66 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Bin } from "@/types/inventory";
 
-// interface Bin {
-//   id: string;
-//   isAvailable: boolean;
-//   capacity: number;
-//   shelfLevel: number;
-//   row: number;
-//   isSeleted: boolean;
-//   status: null;
-//   racksId: string;
-//   _count: {
-//     assignment: Assignment[];
-//   };
-//   racks: Racks;
-//   assignment: Assignment[];
-// }
-
-// interface Racks {
-//   id: string;
-//   name: string;
-//   isAvailable: boolean;
-//   categoriesId: string;
-//   categories: Categories;
-// }
-
-// interface Assignment {
-//   id: string;
-//   dateReceive: Date;
-//   purchaseOrder: string;
-//   expirationDate: Date;
-//   boxSize: string;
-//   isDamage: null;
-//   productId: string;
-//   binId: string;
-//   usersId: null;
-//   damageBinId: null;
-//   products: products;
-// }
-
-// interface products {
-//   id: string;
-//   barcodeId: string;
-//   category: string;
-//   image: string;
-//   price: number;
-//   productName: string;
-//   sku: string;
-// }
-
 interface BinsProps {
   bins?: Bin[] | undefined;
+  buttonProps: ButtonEventProps;
 }
 
-function BinsLayout({ bins }: BinsProps) {
+interface ButtonEventProps {
+  binId: string;
+  setBinId: React.Dispatch<React.SetStateAction<string>>;
+}
+
+function BinsLayout({ bins, buttonProps }: BinsProps) {
   return (
     <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
       {bins?.map((bin: Bin) => {
         return (
           <button
             onClick={() => {
-              console.log(bin);
+              console.log(bin?.id);
+              buttonProps?.setBinId(bin?.id);
             }}
             key={bin?.id}
             className="cursor-pointer bg-white p-4 text-start font-bold shadow-sm">
