@@ -67,13 +67,13 @@ export default function PickingAndPacking() {
     }
   };
 
-  useEffect(() => {
-    filtrateBin?.map((bin) =>
-      bin?.assignment?.every(
-        (assign) => assign?.products?.barcodeId !== barcode
-      )
-    ) && setFiltrateBin(bins);
-  }, [barcode]);
+  // useEffect(() => {
+  //   filtrateBin?.map((bin) =>
+  //     bin?.assignment?.every(
+  //       (assign) => assign?.products?.barcodeId !== barcode
+  //     )
+  //   ) && setFiltrateBin(bins);
+  // }, [barcode]);
 
   /*
     REQUEST: BARCODE ID, QUANTITY ORDER

@@ -60,7 +60,7 @@ export default function Header({
     setIsOpen((prevState) => !prevState);
   };
 
-  console.log("headers:", globalState);
+  // console.log("headers:", globalState);
   const linkHref: string =
     globalState?.authenticated === true ? "/dashboard/barcode-scanner" : "/";
   return (
@@ -68,7 +68,7 @@ export default function Header({
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit ${headerSky} select-none`}>
-          <Link href={`${linkHref}`}>
+          <Link href={`${linkHref}`} passHref>
             <Image
               priority
               src={ProStockV2}
