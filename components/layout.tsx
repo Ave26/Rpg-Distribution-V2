@@ -5,28 +5,36 @@ import Footer from "./Footer";
 import { useRouter } from "next/router";
 
 // fetch
-import React, { useEffect, useState, useContext, createContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  createContext,
+  ReactNode,
+} from "react";
 import { useMyContext } from "./contexts/AuthenticationContext";
 import useSWR from "swr";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  error?: unknown | any;
-  data?: any;
-  headerBg?: string;
-  headerTxt?: string;
-  headerSky?: string;
-  footerSky?: string;
-}
+// interface LayoutProps {
+//   children: React.ReactNode;
+//   error?: unknown | any;
+//   data?: any;
+//   headerBg?: string;
+//   headerTxt?: string;
+//   headerSky?: string;
+//   footerSky?: string;
+// }
 
-export default function Layout({
-  children,
-  // data,
-  headerBg,
-  headerTxt,
-  headerSky,
-  footerSky,
-}: LayoutProps) {
+// {
+//   children,
+//   // data,
+//   headerBg,
+//   headerTxt,
+//   headerSky,
+//   footerSky,
+// }: LayoutProps
+
+export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { updateGlobalState } = useMyContext();
 
@@ -45,11 +53,13 @@ export default function Layout({
     <div
       className="transition-all
     ">
-      <Header headerBg={headerBg} headerTxt={headerTxt} headerSky={headerSky} />
+      {/* headerBg={headerBg} headerTxt={headerTxt} headerSky={headerSky} */}
+      <Header />
       <main className="flex flex-wrap items-center justify-center font-sans">
         {children}
       </main>
-      <Footer footerSky={footerSky} />
+      {/* footerSky={footerSky} */}
+      <Footer />
     </div>
   );
 }

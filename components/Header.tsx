@@ -8,19 +8,21 @@ import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 import { useMyContext } from "./contexts/AuthenticationContext";
 import { AuthProps } from "@/types/authTypes";
 
-interface HeaderProps {
-  error?: unknown;
-  headerBg?: string;
-  headerSky?: string;
-  headerTxt?: string;
-}
+// interface HeaderProps {
+//   error?: unknown;
+//   headerBg?: string;
+//   headerSky?: string;
+//   headerTxt?: string;
+// }
 
-export default function Header({
-  error,
-  headerBg = "bg-[#0b8acb] transition-all",
-  headerSky = "bg-transparent",
-  headerTxt,
-}: HeaderProps) {
+// {
+//   error,
+//   headerBg = "bg-[#0b8acb] transition-all",
+//   headerSky = "bg-transparent",
+//   headerTxt,
+// }: HeaderProps
+
+export default function Header() {
   const router = useRouter();
   const { globalState, updateGlobalState } = useMyContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -67,7 +69,7 @@ export default function Header({
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
-        <div className={`h-fit w-fit ${headerSky} select-none`}>
+        <div className={`h-fit w-fit  select-none`}>
           <Link href={`${linkHref}`} passHref>
             <Image
               priority
@@ -95,12 +97,12 @@ export default function Header({
         }`}>
         <Link
           href={"/products"}
-          className={`${headerTxt} whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
+          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
           Product Catalog
         </Link>
         <Link
           href={"/about"}
-          className={`${headerTxt} whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
+          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
           About Us
         </Link>
       </nav>

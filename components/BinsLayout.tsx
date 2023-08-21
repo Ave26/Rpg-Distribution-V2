@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Bin } from "@/types/inventory";
+import Loading from "./Parts/Loading";
 
 interface BinsProps {
   bins?: Bin[] | undefined;
+  isLoading: boolean;
 }
 
-function BinsLayout({ bins }: BinsProps) {
+function BinsLayout({ bins, isLoading }: BinsProps) {
+  const titles = [
+    "Quantity",
+    "Product Category",
+    "Product Name",
+    "Product SKU",
+    "Price",
+    "Bin",
+    "Selected",
+  ];
   async function selectBin(binId: string) {
-    // ability to select the bin and update it into selected
+    // ability to select the bin and update it into selected and send also the quantity
     try {
       const response = await fetch("/api/bin/find", {
         method: "POST",
@@ -26,45 +37,73 @@ function BinsLayout({ bins }: BinsProps) {
   }
 
   return (
-    <div className="flex h-fit w-full flex-col gap-4 bg-transparent p-2 shadow-slate-900 ">
-      {bins?.map((bin: Bin) => {
-        return (
-          <button
-            onClick={() => {
-              selectBin(bin?.id);
-            }}
-            key={bin?.id}
-            className="cursor-pointer bg-white p-4 text-start font-bold shadow-sm">
-            <h1>Quantity: {Number(bin?._count?.assignment)}</h1>
-            <h1>Product Category: {String(bin?.racks?.categories.category)}</h1>
-            <h1>
-              {`Product Name: ${
-                bin?.assignment?.map((assign) => {
-                  return assign?.products?.productName;
-                })[0]
-              }`}
-            </h1>
-            <h1>
-              {`Product SKU: ${
-                bin?.assignment?.map((assign) => {
-                  return assign?.products?.sku;
-                })[0]
-              }`}
-            </h1>
-            <h1>
-              {`Price: ${
-                bin?.assignment?.map((assign) => {
-                  return Number(assign?.products?.price);
-                })[0]
-              }`}
-            </h1>
-            <h1>
-              Bin: {bin?.racks?.name}
-              {bin?.row} - {bin?.shelfLevel}
-            </h1>
-          </button>
-        );
-      })}
+    <div className="relative h-80 overflow-y-auto bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+      <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead className=" bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            {titles.map((title, index) => {
+              return (
+                <th
+                  scope="col"
+                  key={index}
+                  className={`px-6 py-3 ${
+                    (index === 0 && "rounded-l-lg") ||
+                    (index === 6 && "rounded-r-lg")
+                  }`}>
+                  {title}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+
+        <tbody>
+          {bins?.map((bin) => {
+            return (
+              <tr
+                key={bin?.id}
+                className="border-green h-10 cursor-pointer bg-white dark:bg-gray-800">
+                <td className="px-6 py-4">{Number(bin?._count?.assignment)}</td>
+
+                <td className="px-6 py-4">
+                  {String(bin?.racks?.categories?.category)}
+                </td>
+                <td className="px-6 py-4">
+                  {
+                    bin?.assignment?.map((assign) => {
+                      return assign?.products?.productName;
+                    })[0]
+                  }
+                </td>
+                <td className="px-6 py-4">
+                  {
+                    bin?.assignment?.map((assign) => {
+                      return assign?.products?.price;
+                    })[0]
+                  }
+                </td>
+                <td className="px-6 py-4">
+                  {bin?.assignment?.map((assign) => assign?.products?.price)[0]}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
+                </td>
+                <td className="px-6 py-4">{Boolean(bin?.isSeleted)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+
+        {/* <tfoot>
+          <tr className="font-semibold text-gray-900 dark:text-white">
+            <th scope="row" className="px-6 py-3 text-base">
+              Total
+            </th>
+            <td className="px-6 py-3">3</td>
+            <td className="px-6 py-3">21,000</td>
+          </tr>
+        </tfoot> */}
+      </table>
     </div>
   );
 }

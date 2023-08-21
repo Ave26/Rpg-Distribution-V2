@@ -8,7 +8,10 @@ import Loading from "@/components/Parts/Loading";
 import { Bin } from "@/types/inventory";
 import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
-import { findBin } from "@/lib/prisma/racks";
+
+/**
+ Need to get only the necesssary if there is no barcode the response back the whole data
+ */
 
 const fetcher = async (url: string) => {
   const response = await fetch(url, {
@@ -54,27 +57,12 @@ export default function PickingAndPacking() {
         );
       });
       console.log(filteredBins_and_assignment);
-      if (
-        filteredBins_and_assignment?.map((bin) =>
-          bin?.assignment?.every(
-            (assign) => assign?.products?.barcodeId === barcode
-          )
-        )
-      ) {
-        return setFiltrateBin(filteredBins_and_assignment);
-      }
+
+      return setFiltrateBin(filteredBins_and_assignment);
     } catch (error) {
       console.log(error);
     }
   };
-
-  // useEffect(() => {
-  //   filtrateBin?.map((bin) =>
-  //     bin?.assignment?.every(
-  //       (assign) => assign?.products?.barcodeId !== barcode
-  //     )
-  //   ) && setFiltrateBin(bins);
-  // }, [barcode]);
 
   /*
     REQUEST: BARCODE ID, QUANTITY ORDER
@@ -97,13 +85,16 @@ export default function PickingAndPacking() {
       UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
    */
 
+  useEffect(() => {
+    findBinByBarcode();
+  }, [barcode]);
   return (
     <>
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <div className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
-        <div className="flex items-center justify-start gap-2">
+      <div className="flex h-screen w-full flex-col gap-2 p-4 md:flex-row ">
+        <div className="flex flex-col items-center justify-start gap-2">
           <Search
             inputProps={{
               inputValue: barcode,
@@ -120,17 +111,37 @@ export default function PickingAndPacking() {
             }}
             inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
           />
+          <InputField
+            personalEffects={{
+              placeholder: "Testing",
+              type: "Date",
+              min: 0,
+            }}
+            inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
+          />
         </div>
-        <div className="flex h-1/2 w-full flex-wrap items-start justify-start  gap-2 overflow-y-auto  rounded-sm border border-black p-5">
-          {isLoading ? (
-            <div className="flex h-full w-full items-center justify-center">
-              <Loading />
-            </div>
-          ) : (
-            <BinsLayout bins={filtrateBin ? filtrateBin : bins} />
-          )}
-        </div>
-        <div className="h-40 w-40 border border-black"></div>
+
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <BinsLayout
+            isLoading={isLoading}
+            bins={filtrateBin?.length === 0 ? bins : filtrateBin}
+          />
+        )}
+        <button
+          type="button"
+          className="not-sr-only inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-blue-300 hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700 md:sr-only">
+          <svg
+            className="mr-2 h-3.5 w-3.5"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 18 21">
+            <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
+          </svg>
+          Confirm
+        </button>
       </div>
     </>
   );

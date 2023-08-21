@@ -37,7 +37,6 @@ export default function Home({ data }: HomeProps) {
         <title>{"Home |" + (data?.verifiedToken?.roles ?? "Hi")}</title>
       </Head>
       <Layout>
-        {/* <h1>sdsds{globalState}</h1>  */}
         <InitialPage />
       </Layout>
     </>
