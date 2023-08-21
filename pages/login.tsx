@@ -32,10 +32,7 @@ export default function Login() {
       <Head>
         <title>Login</title>
       </Head>
-      <Layout
-        data={data}
-        headerBg="bg-white transition-all"
-        footerSky="bg-sky-300">
+      <Layout>
         <section className="flex h-screen items-center justify-center p-2 font-sans md:h-screen md:justify-center">
           <LoginForm />
           {show && <Toast data={data} />}

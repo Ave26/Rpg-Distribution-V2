@@ -1,23 +1,35 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { updateSelectedBin } from "@/lib/prisma/bin";
+import {
+  findBinByBarcode,
+  updateSelectedBin,
+  findAllBin,
+} from "@/lib/prisma/bin";
+import { authMiddleware } from "../authMiddleware";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { binId } = req.body;
-  switch (req.method) {
-    case "POST":
-      try {
-        // update the selected bin
-        const { message } = await updateSelectedBin(binId);
-        return res.status(200).json(message);
-      } catch (error) {
-        return res.json(error);
-      }
+export async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { barcodeId } = req.body;
+  console.log(barcodeId);
+  if (!barcodeId) {
+    console.log("find All Bin triggered");
+    const { bins, error } = await findAllBin();
 
-    default:
-      res.send(`${req.method} is not allows`);
-      break;
+    if (!bins || error) {
+      return res.status(500).json({
+        message: "Oops! something went wrong" + error,
+      });
+    }
+
+    return res.status(200).json(bins);
+  } else {
+    const { bins, error } = await findBinByBarcode(barcodeId);
+
+    if (!bins || error) {
+      return res.status(500).json({
+        message: "Oops! something went wrong" + error,
+      });
+    }
+    return res.status(200).json(bins);
   }
 }
+
+export default authMiddleware(handler);

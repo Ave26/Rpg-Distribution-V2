@@ -1,5 +1,5 @@
 interface InputProps {
-  inputValue: string | number;
+  inputValue: string | number | date;
   setInputValue: React.Dispatch<React.SetStateAction<anyr>>;
 }
 

@@ -9,45 +9,48 @@ import { Bin } from "@/types/inventory";
 import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
 
-/**
- Need to get only the necesssary if there is no barcode the response back the whole data
- */
-
-const fetcher = async (url: string) => {
-  const response = await fetch(url, {
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  const data = await response.json();
-  const ValuedBin: Bin[] = data?.filter((bin: Bin) => {
-    return Number(bin?.assignment?.length) > 0;
-  });
-
-  return ValuedBin;
-};
-
 export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [binId, setBinId] = useState<string>("");
   const [filtrateBin, setFiltrateBin] = useState<Bin[] | undefined>(undefined);
+
+  const fetcher = async (url: string) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        barcodeId: barcode,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    const ValuedBin: Bin[] = data?.filter((bin: Bin) => {
+      return Number(bin?.assignment?.length) > 0;
+    });
+
+    return ValuedBin;
+  };
 
   const {
     isLoading,
     error,
     data: bins,
-  } = useSWR("/api/racks/find", fetcher, {
+  } = useSWR("/api/bin/find", fetcher, {
     refreshInterval: 1500,
   });
 
-  if (error) {
-    console.log(error);
-    return "Oops, something went wrong...";
-  }
+  // if (error) {
+  //   console.log(error);
+  //   return <h1>"Oops, something went wrong..."</h1>;
+  // }
 
   const findBinByBarcode = () => {
     try {
@@ -78,6 +81,9 @@ export default function PickingAndPacking() {
         if (binid.selected || bindId.)
 
 
+   
+      Need to get only the necesssary if there is no barcode the response back the whole data
+ 
 
       IN THE DATABASE I NEED ORDER LIST
 
@@ -85,16 +91,13 @@ export default function PickingAndPacking() {
       UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
    */
 
-  useEffect(() => {
-    findBinByBarcode();
-  }, [barcode]);
   return (
     <>
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
       <div className="flex h-screen w-full flex-col gap-2 p-4 md:flex-row ">
-        <div className="flex flex-col items-center justify-start gap-2">
+        <div className="flex h-fit  w-fit flex-col items-start justify-start gap-2 transition-all md:items-center">
           <Search
             inputProps={{
               inputValue: barcode,
@@ -115,20 +118,18 @@ export default function PickingAndPacking() {
             personalEffects={{
               placeholder: "Testing",
               type: "Date",
-              min: 0,
             }}
-            inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
+            inputProps={{ inputValue: date, setInputValue: setDate }}
           />
         </div>
+        <div className="flex h-80 w-full items-center justify-center border border-black">
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <BinsLayout isLoading={isLoading} bins={bins} />
+          )}
+        </div>
 
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <BinsLayout
-            isLoading={isLoading}
-            bins={filtrateBin?.length === 0 ? bins : filtrateBin}
-          />
-        )}
         <button
           type="button"
           className="not-sr-only inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-blue-300 hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700 md:sr-only">

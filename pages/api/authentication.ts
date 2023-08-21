@@ -7,14 +7,14 @@ export default async function authentication(
 ) {
   try {
     const { verifiedToken, error }: any = await verifyJwt(req);
-    if (!verifiedToken || error) {
+
+    if (error) {
       return res.status(403).json({
         authenticated: false,
-        error,
+        message: error,
       });
     }
-    console.log(verifiedToken, error);
-    return res.status(200).json({
+    return res.json({
       authenticated: true,
       verifiedToken,
     });

@@ -20,7 +20,7 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
   async function selectBin(binId: string) {
     // ability to select the bin and update it into selected and send also the quantity
     try {
-      const response = await fetch("/api/bin/find", {
+      const response = await fetch("/api/bin/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,7 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
   }
 
   return (
-    <div className="relative h-80 overflow-y-auto bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+    <div className="relative h-80 w-full overflow-y-auto border bg-gray-100 text-gray-700 transition-all dark:bg-gray-700 dark:text-gray-400">
       <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
         <thead className=" bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -58,13 +58,12 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
         </thead>
 
         <tbody>
-          {bins?.map((bin) => {
+          {bins?.map((bin, index) => {
             return (
               <tr
-                key={bin?.id}
+                key={index}
                 className="border-green h-10 cursor-pointer bg-white dark:bg-gray-800">
                 <td className="px-6 py-4">{Number(bin?._count?.assignment)}</td>
-
                 <td className="px-6 py-4">
                   {String(bin?.racks?.categories?.category)}
                 </td>
