@@ -41,31 +41,11 @@ export default function PickingAndPacking() {
 
   const {
     isLoading,
-    error,
     data: bins,
+    mutate,
   } = useSWR("/api/bin/find", fetcher, {
     refreshInterval: 1500,
   });
-
-  // if (error) {
-  //   console.log(error);
-  //   return <h1>"Oops, something went wrong..."</h1>;
-  // }
-
-  const findBinByBarcode = () => {
-    try {
-      const filteredBins_and_assignment = bins?.filter((bin: Bin) => {
-        return bin.assignment.every(
-          (assignmentGroup) => assignmentGroup.products.barcodeId === barcode
-        );
-      });
-      console.log(filteredBins_and_assignment);
-
-      return setFiltrateBin(filteredBins_and_assignment);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   /*
     REQUEST: BARCODE ID, QUANTITY ORDER
@@ -102,7 +82,7 @@ export default function PickingAndPacking() {
             inputProps={{
               inputValue: barcode,
               setInputValue: setBarcode,
-              handleSearchInput: findBinByBarcode,
+              handleSearchInput: () => mutate(),
             }}
             personaleEffects={{ placeholder: "Search Barcode", maxLength: 14 }}
           />
