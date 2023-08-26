@@ -67,6 +67,14 @@ export default function PickingAndPacking() {
 
       IN THE DATABASE I NEED ORDER LIST
 
+
+      NOTE: The user will only see what he selected and they can cancel it at
+      any time
+
+      the other user will not see the selected data
+      
+
+
       ACTIONS: 
       UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
    */
@@ -76,8 +84,8 @@ export default function PickingAndPacking() {
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <div className="flex h-screen w-full flex-col gap-2 p-4 md:flex-row ">
-        <div className="flex h-fit  w-fit flex-col items-start justify-start gap-2 transition-all md:items-center">
+      <div className="flex h-full w-full flex-col gap-2 p-2 md:h-screen md:flex-row">
+        <div className="borde-white flex h-full w-full flex-col gap-2 md:justify-start">
           <Search
             inputProps={{
               inputValue: barcode,
@@ -102,13 +110,13 @@ export default function PickingAndPacking() {
             inputProps={{ inputValue: date, setInputValue: setDate }}
           />
         </div>
-        <div className="flex h-80 w-full items-center justify-center border border-black">
-          {isLoading ? (
-            <Loading />
-          ) : (
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div className="">
             <BinsLayout isLoading={isLoading} bins={bins} />
-          )}
-        </div>
+          </div>
+        )}
 
         <button
           type="button"

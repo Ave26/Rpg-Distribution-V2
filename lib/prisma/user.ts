@@ -53,6 +53,23 @@ export const findUser = async (username: string) => {
   }
 };
 
+export const findUserFilterPassword = async (username: string) => {
+  try {
+    const filteredUser = await prisma.users.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+        roles: true,
+      },
+    });
+    return { filteredUser };
+  } catch (error) {
+    return { error };
+  }
+};
+
 export const findUserBasedOnId = async (id: string | undefined) => {
   try {
     // Check if user already exists

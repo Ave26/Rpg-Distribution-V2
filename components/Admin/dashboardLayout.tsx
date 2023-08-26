@@ -15,18 +15,8 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
-  const { updateGlobalState } = useMyContext();
-  const fetcher = async (url: string) => {
-    const response = await fetch(url, {
-      method: "GET",
-    });
-    const data = await response.json();
-    updateGlobalState(data);
-    if (data?.authenticated === false || !data?.authenticated) router.push("/");
-    return data;
-  };
+  const { globalState } = useMyContext();
 
-  useSWR("/api/authentication", fetcher);
   const handleLogout = async () => {
     console.log("click");
     try {
@@ -51,9 +41,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
+  console.log(globalState?.verifiedToken?.roles);
   return (
-    <div className="flex h-full w-full flex-wrap items-center justify-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
-      <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
+    <div className="flex h-full w-full flex-wrap items-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
+      <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto break-words p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
         <ReusableDropDownMenu
           initialName={"Manage Products"}
           numberOfChildren={2}
@@ -89,16 +80,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           endPoint={"pallete-location"}
           linkName={"Pallete Location"}
         />
-        <ReusableLink
-          endPoint={"acc-management"}
-          linkName={"Account Management"}
-        />
+        {globalState?.verifiedToken?.roles === "Admin" && (
+          <ReusableLink
+            endPoint={"acc-management"}
+            linkName={"Account Management"}
+          />
+        )}
         <ReusableLink
           endPoint={"delivery-management"}
           linkName={"Delivery Management"}
         />
 
-        {/* <div className="m-2 w-full border-b-8 border-dotted"></div> */}
         <ReusableButton
           name={"Logout"}
           type={"button"}
@@ -109,9 +101,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       </aside>
 
-      <main className="flex h-full w-full flex-col flex-nowrap items-center justify-center overflow-y-auto">
-        {children}
-      </main>
+      <main className="relativeh-full w-full">{children}</main>
     </div>
   );
 }

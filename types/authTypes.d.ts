@@ -1,11 +1,13 @@
 interface AuthProps {
   authenticated?: boolean;
-  verifiedToken?: {
-    id?: string;
-    roles?: string;
-    iat?: number;
-    exp?: number;
-  };
+  verifiedToken?: VerifyToken;
 }
 
-export { AuthProps };
+interface VerifyToken {
+  id?: string;
+  roles?: string;
+  iat?: number;
+  exp?: number;
+}
+
+export { AuthProps, VerifyToken };

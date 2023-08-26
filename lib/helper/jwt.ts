@@ -1,5 +1,6 @@
 import { sign, verify, decode, JwtPayload } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
+import { VerifyToken } from "@/types/authTypes";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest } from "next/server";
 
@@ -10,7 +11,12 @@ interface Token {
   exp: number;
 }
 
-export const createJwt = (user: any) => {
+interface UserTypes {
+  id: string;
+  roles: string;
+}
+
+export const createJwt = (user: UserTypes) => {
   const { id, roles } = user;
   const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
     expiresIn: "5h",
@@ -19,11 +25,12 @@ export const createJwt = (user: any) => {
 };
 
 export const verifyJwt = async (req: NextApiRequest) => {
-  const token: any = req?.cookies?.token;
+  const token: string | undefined = req?.cookies?.token;
   console.log(`Token: ${token}`);
 
   try {
-    const verifiedToken: any = verify(token, String(process.env.JWT_SECRET));
+    const verifiedToken = verify(String(token), String(process.env.JWT_SECRET));
+
     return { verifiedToken };
   } catch (error) {
     return { error };

@@ -4,45 +4,22 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { useRouter } from "next/router";
 
-// fetch
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  createContext,
-  ReactNode,
-} from "react";
+import React, { ReactNode } from "react";
 import { useMyContext } from "./contexts/AuthenticationContext";
 import useSWR from "swr";
-
-// interface LayoutProps {
-//   children: React.ReactNode;
-//   error?: unknown | any;
-//   data?: any;
-//   headerBg?: string;
-//   headerTxt?: string;
-//   headerSky?: string;
-//   footerSky?: string;
-// }
-
-// {
-//   children,
-//   // data,
-//   headerBg,
-//   headerTxt,
-//   headerSky,
-//   footerSky,
-// }: LayoutProps
+import { AuthProps } from "@/types/authTypes";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { updateGlobalState } = useMyContext();
+  const { updateGlobalState, globalState } = useMyContext();
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",
     });
-    const data = await response.json();
+    const data: AuthProps = await response.json();
+    if (data?.authenticated === false || !data?.authenticated) router.push("/");
+    console.log("GlobalState:", globalState);
     updateGlobalState(data);
     return data;
   };
@@ -55,7 +32,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     ">
       {/* headerBg={headerBg} headerTxt={headerTxt} headerSky={headerSky} */}
       <Header />
-      <main className="flex flex-wrap items-center justify-center font-sans">
+      <main className="flex h-full w-full flex-wrap items-center justify-center font-sans">
         {children}
       </main>
       {/* footerSky={footerSky} */}

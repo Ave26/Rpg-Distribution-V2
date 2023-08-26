@@ -16,7 +16,7 @@ export default function Toggle({
   useEffect(() => {
     isToggle ? setQuality("Damage") : setQuality("Good");
   }, [isToggle]);
-  console.log(isToggle);
+  // console.log(isToggle);
   return (
     <div className="flex w-full flex-wrap items-center justify-start p-2">
       <label className="relative inline-flex cursor-pointer items-center">

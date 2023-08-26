@@ -1,12 +1,20 @@
 // authMiddleware.ts
 import { verifyJwt } from "@/lib/helper/jwt";
+import { VerifyToken } from "@/types/authTypes";
+import { JwtPayload } from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 export const authMiddleware =
-  (handler: NextApiHandler) =>
+  (
+    handler: (
+      req: NextApiRequest,
+      res: NextApiResponse,
+      verifiedToken: string | JwtPayload | undefined
+    ) => Promise<void>
+  ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      const { verifiedToken, error }: any = await verifyJwt(req);
+      const { verifiedToken, error } = await verifyJwt(req);
 
       if (error) {
         return res.status(403).json({
@@ -16,7 +24,7 @@ export const authMiddleware =
       }
 
       if (verifiedToken) {
-        return handler(req, res);
+        return handler(req, res, verifiedToken);
       }
     } catch (error) {
       return res.send(error);

@@ -25,11 +25,8 @@ interface HomeProps {
 }
 
 export default function Home({ data }: HomeProps) {
-  const router = useRouter();
-  const { globalState, updateGlobalState } = useMyContext();
-  if (data.authenticated === true) {
-    router.push("/dashboard/barcode-scanner");
-  }
+  const { globalState } = useMyContext();
+
   console.log(globalState);
   return (
     <>
@@ -43,22 +40,22 @@ export default function Home({ data }: HomeProps) {
   );
 }
 
-export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const { verifiedToken } = await verifyJwt(req);
-  let data = {};
-  if (verifiedToken) {
-    data = {
-      authenticated: true,
-      verifiedToken,
-    };
-  } else {
-    data = {
-      authenticated: false,
-    };
-  }
-  return {
-    props: {
-      data,
-    },
-  };
-};
+// export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
+//   const { verifiedToken } = await verifyJwt(req);
+//   let data = {};
+//   if (verifiedToken) {
+//     data = {
+//       authenticated: true,
+//       verifiedToken,
+//     };
+//   } else {
+//     data = {
+//       authenticated: false,
+//     };
+//   }
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// };

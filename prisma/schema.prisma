@@ -13,6 +13,17 @@ type UsersAdditionalInfo {
   email        String
 }
 
+enum UserRole {
+  Admin
+  Staff
+}
+
+enum SupplyLevelStatus {
+  Normal
+  Low
+  Critical
+}
+
 model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
@@ -20,6 +31,7 @@ model users {
   roles           String              @default("staff")
   username        String              @unique(map: "username_1")
   assignment      assignment[]
+  binLogs         binLogs[]
 }
 
 model products {
@@ -64,16 +76,28 @@ model racks {
 }
 
 model bin {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable Boolean      @default(true)
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable Boolean            @default(true)
   capacity    Int
   shelfLevel  Int
   row         Int
-  isSeleted   Boolean?     @default(false) // outbound
-  status      String? // outbound
+  isSelected  Boolean?           @default(false)
+  status      SupplyLevelStatus?
+  racks       racks?             @relation(fields: [racksId], references: [id])
+  racksId     String?            @db.ObjectId
   assignment  assignment[]
-  racks       racks?       @relation(fields: [racksId], references: [id])
-  racksId     String?      @db.ObjectId
+  binLogs     binLogs[]
+}
+
+// need to create selected bin to log the bin id and user logs
+
+model binLogs {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  isSelected Boolean
+  bin        bin?    @relation(fields: [binId], references: [id])
+  binId      String? @db.ObjectId
+  users      users   @relation(fields: [usersId], references: [id])
+  usersId    String  @db.ObjectId
 }
 
 model assignment {
@@ -83,6 +107,7 @@ model assignment {
   expirationDate DateTime?
   boxSize        String?
   isDamage       Boolean?
+  isMarked       Boolean?
   products       products?  @relation(fields: [productId], references: [id])
   productId      String?    @db.ObjectId
   bin            bin?       @relation(fields: [binId], references: [id])

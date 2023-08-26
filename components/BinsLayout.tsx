@@ -37,16 +37,16 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
   }
 
   return (
-    <div className="relative h-80 w-full overflow-y-auto border bg-gray-100 text-gray-700 transition-all dark:bg-gray-700 dark:text-gray-400">
-      <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-        <thead className=" bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+    <div className="h-full w-full overflow-y-auto md:h-fit md:max-h-96 md:max-w-3xl">
+      <table className="text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead className="w-full bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             {titles.map((title, index) => {
               return (
                 <th
                   scope="col"
                   key={index}
-                  className={`px-6 py-3 ${
+                  className={`px-6 py-3 md:py-7 ${
                     (index === 0 && "rounded-l-lg") ||
                     (index === 6 && "rounded-r-lg")
                   }`}>
@@ -61,8 +61,13 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
           {bins?.map((bin, index) => {
             return (
               <tr
+                onClick={() => console.log(bin?.id)}
                 key={index}
-                className="border-green h-10 cursor-pointer bg-white dark:bg-gray-800">
+                className={`${
+                  bin?.isSeleted
+                    ? "bg-white dark:bg-green-700"
+                    : "bg-white dark:bg-gray-800"
+                }  h-10 cursor-pointer `}>
                 <td className="px-6 py-4">{Number(bin?._count?.assignment)}</td>
                 <td className="px-6 py-4">
                   {String(bin?.racks?.categories?.category)}
@@ -87,7 +92,7 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
                 <td className="whitespace-nowrap px-6 py-4">
                   {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
                 </td>
-                <td className="px-6 py-4">{Boolean(bin?.isSeleted)}</td>
+                <td className="px-6 py-4">{String(bin?.isSeleted)}</td>
               </tr>
             );
           })}
@@ -106,10 +111,5 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
     </div>
   );
 }
-/**
- * Product Name
- * SKU
- * Quanity
- */
 
 export default BinsLayout;

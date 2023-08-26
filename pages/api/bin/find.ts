@@ -8,7 +8,6 @@ import { authMiddleware } from "../authMiddleware";
 
 export async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { barcodeId } = req.body;
-  console.log(barcodeId);
   if (!barcodeId) {
     console.log("find All Bin triggered");
     const { bins, error } = await findAllBin();

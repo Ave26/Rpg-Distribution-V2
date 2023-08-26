@@ -1,19 +1,21 @@
+import { AuthProps } from "@/types/authTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface MyContextType {
-  globalState: any;
-  updateGlobalState: (newValue: string) => void;
+  globalState: AuthProps | undefined | null;
+  updateGlobalState: (newValue: AuthProps) => void;
 }
 
 const MyContext = createContext<MyContextType | undefined>(undefined);
 
 export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [globalState, setGlobalState] = useState<string>("initialState");
+  const [globalState, setGlobalState] = useState<AuthProps | undefined>(
+    undefined
+  );
 
-  const updateGlobalState = (newValue: string) => {
+  const updateGlobalState = (newValue: AuthProps) => {
     setGlobalState(newValue);
   };
-  console.log("GlobalState:", globalState);
   return (
     <MyContext.Provider value={{ globalState, updateGlobalState }}>
       {children}

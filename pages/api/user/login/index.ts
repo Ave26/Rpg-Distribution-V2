@@ -1,9 +1,13 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-
+import { User } from "@/types/userTypes";
 import { createJwt, verifyJwt } from "@/lib/helper/jwt";
 import { comparePassword } from "@/lib/helper/bcrypt";
 import { createCookie } from "@/lib/helper/cookie";
-import { findUser, findUserBasedOnId } from "@/lib/prisma/user";
+import {
+  findUser,
+  findUserBasedOnId,
+  findUserFilterPassword,
+} from "@/lib/prisma/user";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("allow", ["POST", "DELETE", "GET"]);
@@ -17,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
       try {
-        const { user, error }: any = await findUser(username);
+        const { user } = await findUser(username);
         if (!user) {
           return res.status(401).json({
             message: "Invalid Credentials",
@@ -32,11 +36,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         // Remove the password field from the user object
-        delete user.password;
+        // delete user.password;
+        const { filteredUser } = await findUserFilterPassword(user.username);
 
-        const token = createJwt(user);
+        const token = createJwt(filteredUser);
         createCookie(token, res);
-        console.log(user.password);
+
         return res.status(200).json({
           authenticated: true,
           message: "login succesfully",
