@@ -1,6 +1,9 @@
 import { NextApiResponse } from "next";
 
-export const createCookie = (token: string, response: NextApiResponse) => {
+export const createCookie = (
+  token: string | undefined,
+  response: NextApiResponse
+) => {
   return response.setHeader(
     "Set-Cookie",
     `token=${token}; Max-Age=${5 * 3600}; Path=/; HttpOnly; SameSite=strict`

@@ -16,12 +16,14 @@ interface UserTypes {
   roles: string;
 }
 
-export const createJwt = (user: UserTypes) => {
-  const { id, roles } = user;
-  const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
-    expiresIn: "5h",
-  });
-  return token;
+export const createJwt = (user: UserTypes | null | undefined) => {
+  if (user) {
+    const { id, roles } = user;
+    const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
+      expiresIn: "5h",
+    });
+    return token;
+  }
 };
 
 export const verifyJwt = async (req: NextApiRequest) => {
