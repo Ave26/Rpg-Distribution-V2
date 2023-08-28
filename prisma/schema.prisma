@@ -24,6 +24,12 @@ enum SupplyLevelStatus {
   Critical
 }
 
+enum OutboundFlow {
+  Queuing
+  OnDeliver
+  Delivered
+}
+
 model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
@@ -32,18 +38,23 @@ model users {
   username        String              @unique(map: "username_1")
   assignment      assignment[]
   binLogs         binLogs[]
+  OutBoundLog     OutBoundLog?        @relation(fields: [outBoundLogId], references: [id])
+  outBoundLogId   String?             @db.ObjectId
 }
 
 model products {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  barcodeId   String       @unique
-  category    String?
-  image       String?
-  price       Float?
-  productName String
-  sku         String?
-  variations  variations[]
-  assigment   assignment[]
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  barcodeId         String             @unique
+  category          String?
+  image             String?
+  price             Float?
+  productName       String
+  sku               String?
+  supplyLevelStatus SupplyLevelStatus?
+  variations        variations[]
+  assigment         assignment[]
+  OutBoundLog       OutBoundLog?       @relation(fields: [outBoundLogId], references: [id])
+  outBoundLogId     String?            @db.ObjectId
 }
 
 model variations {
@@ -89,8 +100,6 @@ model bin {
   binLogs     binLogs[]
 }
 
-// need to create selected bin to log the bin id and user logs
-
 model binLogs {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
   isSelected Boolean
@@ -107,7 +116,7 @@ model assignment {
   expirationDate DateTime?
   boxSize        String?
   isDamage       Boolean?
-  isMarked       Boolean?
+  isMarked       Boolean?   @default(false)
   products       products?  @relation(fields: [productId], references: [id])
   productId      String?    @db.ObjectId
   bin            bin?       @relation(fields: [binId], references: [id])
@@ -116,6 +125,13 @@ model assignment {
   usersId        String?    @db.ObjectId
   damageBin      damageBin? @relation(fields: [damageBinId], references: [id])
   damageBinId    String?    @db.ObjectId
+}
+
+model OutBoundLog {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  outboundFlow OutboundFlow?
+  product      products[]
+  users        users[]
 }
 
 model damageBin {

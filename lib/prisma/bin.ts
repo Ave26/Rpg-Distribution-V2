@@ -1,3 +1,4 @@
+import { equal } from "assert";
 import prisma from ".";
 
 export async function findBinByBarcode(barcodeId: string) {
@@ -122,30 +123,33 @@ export async function updateSelectedBin(binId: string) {
 }
 
 interface Prams {
-  binId?: string;
+  selectedBins?: string[];
   quantity?: number;
   userId?: string;
 }
+
 export async function selectAndUpdateBinByQuantity(params: Prams) {
-  const { binId, quantity, userId } = params;
+  const { selectedBins, quantity, userId } = params;
   try {
     // Quantity to be mark on the selected bin
     const quantityTobeMark = 2000;
     // markedAssignement.all -> updateSelectedBin
-    const selectedBin = await prisma.bin.findUnique({
+    const binIds = [
+      "64cbb95437f82bfa13fb3423",
+      "64cbb95437f82bfa13fb3424",
+      "64d85d5dde3c3ba032dea61c",
+    ];
+    // I want to find a list bins
+
+    const selectedBins = await prisma.bin.findMany({
       where: {
-        id: binId,
-      },
-      include: {
-        _count: {
-          select: {
-            assignment: true,
-          },
-        },
+        OR: binIds.map((id) => ({
+          id: { equals: id },
+        })),
       },
     });
+    console.log(selectedBins);
 
-    console.log(selectedBin);
     // who selected it // after selected the bin : it will update the logs
     /**
      * - I want to find the bin that is being selected
@@ -163,6 +167,45 @@ export async function selectAndUpdateBinByQuantity(params: Prams) {
 export async function eliminator(binId: string, quantity: string) {
   quantity = quantity + 2000;
   // I have the marked the assignments
+}
+
+export async function selectBin(binId: string) {
+  try {
+    const bin = await prisma.bin.findUnique({
+      where: {
+        id: binId,
+      },
+    });
+
+    const newSelectedBin = !bin?.isSelected;
+    const selectedBin = await prisma.bin.update({
+      where: {
+        id: binId,
+      },
+      data: {
+        isSelected: newSelectedBin,
+      },
+    });
+
+    // setTimeout(async () => {
+    //   const updatedBin = await prisma.bin.update({
+    //     where: {
+    //       id: binId,
+    //     },
+    //     data: {
+    //       isSelected: false,
+    //     },
+    //   });
+    //   console.log(
+    //     "isSelected set back to false after 5 seconds for bin:",
+    //     updatedBin.id
+    //   );
+    // }, 5000); // 5000 milliseconds = 5 seconds
+
+    return { selectedBin };
+  } catch (error) {
+    return { error };
+  }
 }
 
 /**

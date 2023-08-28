@@ -8,13 +8,12 @@ import Loading from "@/components/Parts/Loading";
 import { Bin } from "@/types/inventory";
 import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
+import ReusableButton from "@/components/Parts/ReusableButton";
 
 export default function PickingAndPacking() {
+  const [childActionTriggered, setChildActionTriggered] = useState(false);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [binId, setBinId] = useState<string>("");
-  const [filtrateBin, setFiltrateBin] = useState<Bin[] | undefined>(undefined);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -47,45 +46,45 @@ export default function PickingAndPacking() {
     refreshInterval: 1500,
   });
 
-  /*
-    REQUEST: BARCODE ID, QUANTITY ORDER
-    THOSE CARDS SHOULD BE SELECTABLE IN ORDER TO TAKE THE ID OF THE BIN
-    - BIN ID
-    - THE BIN ID WILL NOT BE SHOW AFTER SELECTED BASED ON THE QUANTITY
-      - IF ASSIGNMENT QUANTITY > QUANTITY THEN IT WILL CALL A FUNCTION
-      - FUNCTION -> NEGATE OR SUBTRACT THE ASSIGNMENT QUANTITY - QUANTITY AND WILL BE SHOWN
-      - OTHERWISE IT WILL NOT BE SHOWN
+  // useEffect(() => {
+  //   const THRESHOLD = 15;
+  //   let markedCount = 0;
+  //   if (bins) {
+  //     for (const bin of bins) {
+  //       if (markedCount >= THRESHOLD) {
+  //         break; // If threshold is met, stop iterating
+  //       }
 
-        fetch bin id and update the selected bin
+  //       for (const assignedProduct of bin?.assignment) {
+  //         if (!assignedProduct?.isMarked) {
+  //           assignedProduct.isMarked = true;
+  //           markedCount++;
+  //           if (markedCount >= THRESHOLD) {
+  //             break; // If threshold is met, stop marking products
+  //           }
+  //         } else {
+  //           assignedProduct.isMarked = false;
+  //         }
+  //         // console.log(markedCount);
+  //         // console.log(bins.map((bin) => bin._count && bin.assignment));
+  //       }
 
-        if (binid.selected || bindId.)
+  //       console.log(bin.assignment);
+  //     }
+  //   }
+  // }, [quantity]);
 
-
-   
-      Need to get only the necesssary if there is no barcode the response back the whole data
- 
-
-      IN THE DATABASE I NEED ORDER LIST
-
-
-      NOTE: The user will only see what he selected and they can cancel it at
-      any time
-
-      the other user will not see the selected data
-      
-
-
-      ACTIONS: 
-      UPDATE, CREATE OR MOVE TO DIFFERENT COLLECTION
-   */
+  function setActionTrigger() {
+    setChildActionTriggered(true);
+  }
 
   return (
     <>
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <div className="flex h-full w-full flex-col gap-2 p-2 md:h-screen md:flex-row">
-        <div className="borde-white flex h-full w-full flex-col gap-2 md:justify-start">
+      <div className="flex h-full w-full flex-wrap gap-2 overflow-y-auto border border-black p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
+        <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
             inputProps={{
               inputValue: barcode,
@@ -102,35 +101,30 @@ export default function PickingAndPacking() {
             }}
             inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
           />
-          <InputField
-            personalEffects={{
-              placeholder: "Testing",
-              type: "Date",
-            }}
-            inputProps={{ inputValue: date, setInputValue: setDate }}
+
+          <ReusableButton
+            name={"Confirm Request"}
+            className="rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
+            // isLoading
+            onClick={setActionTrigger}
+            type={"button"}
           />
         </div>
         {isLoading ? (
-          <Loading />
-        ) : (
-          <div className="">
-            <BinsLayout isLoading={isLoading} bins={bins} />
+          <div className="flex h-full w-full max-w-3xl items-center justify-center border md:max-h-96">
+            <Loading />
           </div>
+        ) : (
+          <BinsLayout
+            isLoading={isLoading}
+            dataManipulator={{
+              bins,
+              handleMutation: () => mutate(),
+            }}
+            actionTriggered={childActionTriggered}
+            request={{ barcodeId: barcode, quantity }}
+          />
         )}
-
-        <button
-          type="button"
-          className="not-sr-only inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-blue-300 hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700 md:sr-only">
-          <svg
-            className="mr-2 h-3.5 w-3.5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 18 21">
-            <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
-          </svg>
-          Confirm
-        </button>
       </div>
     </>
   );

@@ -1,13 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { Bin } from "@/types/inventory";
+import React, { SetStateAction, use, useEffect, useState } from "react";
+import { Bin, Assignment } from "@/types/inventory";
 import Loading from "./Parts/Loading";
+import { clear } from "console";
 
 interface BinsProps {
-  bins?: Bin[] | undefined;
+  dataManipulator?: BinsType;
   isLoading: boolean;
+  request: RequestProps;
+  actionTriggered: boolean;
 }
 
-function BinsLayout({ bins, isLoading }: BinsProps) {
+interface BinsType {
+  bins?: Bin[] | undefined;
+  handleMutation: () => void;
+}
+
+interface RequestProps {
+  quantity: number;
+  barcodeId: string;
+}
+
+interface SelectedBinsType {
+  binId: string;
+  isCovered: boolean;
+}
+
+function BinsLayout({
+  dataManipulator,
+  isLoading,
+  request,
+  actionTriggered,
+}: BinsProps) {
+  const [selectedBins, setSelectedBins] = useState<string[]>([]);
+  const [coveredBins, setCoverdBins] = useState<String[]>([]);
+
   const titles = [
     "Quantity",
     "Product Category",
@@ -15,31 +41,59 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
     "Product SKU",
     "Price",
     "Bin",
-    "Selected",
   ];
-  async function selectBin(binId: string) {
-    // ability to select the bin and update it into selected and send also the quantity
-    try {
-      const response = await fetch("/api/bin/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          binId,
-        }),
-      });
-      const json = await response.json();
-      console.log(json);
-    } catch (error) {
-      console.log(error);
+
+  function selectBin(binId: string) {
+    if (selectedBins.includes(binId)) {
+      setSelectedBins(selectedBins.filter((id) => id !== binId));
+    } else {
+      setSelectedBins([...selectedBins, binId]);
     }
   }
 
+  function setSelectedBin() {
+    console.log("selected bin has been requested");
+  }
+
+  useEffect(() => {
+    if (actionTriggered) {
+      setSelectedBin();
+    }
+  }, [actionTriggered]);
+
+  console.log(selectedBins);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const threshold = request.quantity;
+      let negatedThreshold = threshold;
+      const coveredBin = [];
+
+      const bins = dataManipulator?.bins;
+      if (bins) {
+        for (let bin of bins) {
+          const binCount = bin._count.assignment;
+          console.log("bin count:", binCount);
+          if (negatedThreshold <= 0) {
+            break;
+          }
+          negatedThreshold -= binCount;
+          coveredBin.push(bin?.id);
+          console.log("negated:", negatedThreshold);
+        }
+        console.log("cover bin id:", JSON.stringify(coveredBin));
+        setCoverdBins(coveredBin); // Update the state with the final value
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [request.quantity]);
+
   return (
-    <div className="h-full w-full overflow-y-auto md:h-fit md:max-h-96 md:max-w-3xl">
-      <table className="text-left text-sm text-gray-500 dark:text-gray-400">
-        <thead className="w-full bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+    <div className="h-full w-full select-none overflow-y-auto rounded-t-md  md:h-96 md:max-h-96 md:min-w-0 md:max-w-[45em]">
+      <table className="rounded-t-md  text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             {titles.map((title, index) => {
               return (
@@ -47,8 +101,8 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
                   scope="col"
                   key={index}
                   className={`px-6 py-3 md:py-7 ${
-                    (index === 0 && "rounded-l-lg") ||
-                    (index === 6 && "rounded-r-lg")
+                    (index === 0 && "rounded-tl-md") ||
+                    (index === 5 && "rounded-tr-md")
                   }`}>
                   {title}
                 </th>
@@ -56,18 +110,25 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
             })}
           </tr>
         </thead>
-
         <tbody>
-          {bins?.map((bin, index) => {
+          {dataManipulator?.bins?.map((bin: Bin, index) => {
             return (
               <tr
-                onClick={() => console.log(bin?.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(bin?.id);
+                  selectBin(bin?.id);
+                }}
                 key={index}
-                className={`${
-                  bin?.isSeleted
-                    ? "bg-white dark:bg-green-700"
-                    : "bg-white dark:bg-gray-800"
-                }  h-10 cursor-pointer `}>
+                className={`text-white transition-all ${
+                  coveredBins.includes(bin?.id)
+                    ? "ring-2 ring-inset ring-white transition-all delay-100"
+                    : "ring-none"
+                } ${
+                  selectedBins.includes(bin?.id)
+                    ? "bg-emerald-500"
+                    : "bg-gray-800"
+                }`}>
                 <td className="px-6 py-4">{Number(bin?._count?.assignment)}</td>
                 <td className="px-6 py-4">
                   {String(bin?.racks?.categories?.category)}
@@ -92,7 +153,7 @@ function BinsLayout({ bins, isLoading }: BinsProps) {
                 <td className="whitespace-nowrap px-6 py-4">
                   {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
                 </td>
-                <td className="px-6 py-4">{String(bin?.isSeleted)}</td>
+                {/* <td className="px-6 py-4">{String(bin?.isSeleted)}</td> */}
               </tr>
             );
           })}

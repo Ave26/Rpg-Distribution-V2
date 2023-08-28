@@ -30,6 +30,7 @@ export interface Assignment {
   expirationDate: string | Date | null;
   boxSize: string;
   isDamage: boolean | null;
+  isMarked: boolean;
   productId: string;
   binId: string;
   usersId: string | null;
@@ -43,7 +44,7 @@ export interface Bin {
   capacity: number;
   shelfLevel: number;
   row: number;
-  isSeleted: boolean;
+  isSelected: boolean;
   status: string | null;
   racksId: string;
   racks: Rack;
