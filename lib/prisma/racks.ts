@@ -133,7 +133,7 @@ export async function findBin(barcodeId: string) {
       include: {
         bin: {
           where: {
-            isSeleted: false,
+            isSelected: false,
           },
           include: {
             _count: {
