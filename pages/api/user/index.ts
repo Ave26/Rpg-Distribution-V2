@@ -12,9 +12,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  if (verifiedToken) {
+  if (verifiedToken && typeof verifiedToken === "object") {
     try {
-      const { user, error } = await findUserBasedOnId(verifiedToken);
+      const { user, error } = await findUserBasedOnId(verifiedToken?.id);
       if (error) {
         return res.send(error);
       }
