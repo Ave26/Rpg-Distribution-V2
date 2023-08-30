@@ -8,7 +8,6 @@ interface BinsProps {
   isLoading: boolean;
   request: RequestTypes;
   setRequest: SetRequestTypes;
-  actionTriggered: boolean;
 }
 
 interface BinsType {
@@ -17,13 +16,13 @@ interface BinsType {
 }
 
 interface SetRequestTypes {
-  setSelectedBins: React.Dispatch<SetStateAction<string[]>>;
+  setSelectedBinIds: React.Dispatch<SetStateAction<string[]>>;
 }
 
 interface RequestTypes {
   quantity: number;
   barcodeId: string;
-  selectedBins: string[];
+  selectedBinIds: string[];
 }
 
 interface SelectedBinsType {
@@ -35,12 +34,11 @@ function BinsLayout({
   dataManipulator,
   isLoading,
   request,
-  actionTriggered,
   setRequest,
 }: BinsProps) {
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
-  const { setSelectedBins } = setRequest;
-  const { selectedBins } = request;
+  const { setSelectedBinIds } = setRequest;
+  const { selectedBinIds } = request;
   const titles = [
     "Quantity",
     "Product Category",
@@ -51,22 +49,12 @@ function BinsLayout({
   ];
 
   function selectBin(binId: string) {
-    if (selectedBins.includes(binId)) {
-      setSelectedBins(selectedBins.filter((id) => id !== binId));
+    if (selectedBinIds.includes(binId)) {
+      setSelectedBinIds(selectedBinIds.filter((id) => id !== binId));
     } else {
-      setSelectedBins([...selectedBins, binId]);
+      setSelectedBinIds([...selectedBinIds, binId]);
     }
   }
-
-  function setSelectedBin() {
-    console.log("selected bin has been requested");
-  }
-
-  useEffect(() => {
-    if (actionTriggered) {
-      setSelectedBin();
-    }
-  }, [actionTriggered]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -131,7 +119,7 @@ function BinsLayout({
                     ? "ring-2 ring-inset ring-white transition-all delay-100"
                     : "ring-none"
                 } ${
-                  selectedBins.includes(bin?.id)
+                  selectedBinIds.includes(bin?.id)
                     ? "bg-emerald-500"
                     : "bg-gray-800"
                 }`}>

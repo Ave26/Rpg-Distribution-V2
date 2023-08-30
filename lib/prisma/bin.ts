@@ -98,7 +98,7 @@ export async function findAllBin() {
         },
       },
     });
-    console.log(bins);
+    // console.log(bins);
     return { bins };
   } catch (error) {
     return { error };
@@ -207,6 +207,8 @@ export async function selectBin(binId: string) {
     return { error };
   }
 }
+
+export async function markAssignmentByBins() {}
 
 /**
  Create an function that can eliminate germs 

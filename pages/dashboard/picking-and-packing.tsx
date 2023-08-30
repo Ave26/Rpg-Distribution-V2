@@ -11,11 +11,10 @@ import InputField from "@/components/Parts/InputField";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
 export default function PickingAndPacking() {
-  const [childActionTriggered, setChildActionTriggered] = useState(false);
-  const [selectedBins, setSelectedBins] = useState<string[]>([]);
+  const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
+  const [isMarking, isSetMarking] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
-  console.log(selectedBins);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -44,7 +43,7 @@ export default function PickingAndPacking() {
     isLoading,
     data: bins,
     mutate,
-  } = useSWR("/api/bin/find", fetcher, {
+  } = useSWR("/api/bins/find", fetcher, {
     refreshInterval: 1500,
   });
 
@@ -76,9 +75,33 @@ export default function PickingAndPacking() {
   //   }
   // }, [quantity]);
 
-  function setActionTrigger() {
-    setChildActionTriggered(true);
+  async function sendRequest() {
+    console.log("request running");
+    isSetMarking(true);
+    try {
+      const response = await fetch("/api/bins/update", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+
+        body: JSON.stringify({
+          barcodeId: barcode,
+          quantity,
+          selectedBinIds,
+        }),
+      });
+      const data = await response.json();
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isSetMarking(false);
+    }
   }
+
+  console.log(selectedBinIds);
 
   return (
     <>
@@ -105,12 +128,18 @@ export default function PickingAndPacking() {
           />
 
           <ReusableButton
-            name={"Confirm Request"}
-            className="rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
-            // isLoading
-            onClick={setActionTrigger}
-            type={"button"}
+            name={"Clear Selected Bins"}
+            className="flex items-center justify-center rounded-lg border border-black bg-transparent p-2 text-center text-base font-medium text-black hover:shadow-lg dark:bg-transparent dark:active:bg-pink-700"
+            onClick={() => {
+              setSelectedBinIds([]);
+            }}
           />
+          <button
+            type={"submit"}
+            onClick={sendRequest}
+            className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800">
+            {isMarking ? <Loading /> : "Confirm Request"}
+          </button>
         </div>
         {isLoading ? (
           <div className="flex h-full w-full max-w-3xl items-center justify-center border md:max-h-96">
@@ -123,9 +152,8 @@ export default function PickingAndPacking() {
               bins,
               handleMutation: () => mutate(),
             }}
-            actionTriggered={childActionTriggered}
-            setRequest={{ setSelectedBins }}
-            request={{ barcodeId: barcode, quantity, selectedBins }}
+            setRequest={{ setSelectedBinIds }}
+            request={{ barcodeId: barcode, quantity, selectedBinIds }}
           />
         )}
       </div>

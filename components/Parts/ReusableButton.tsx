@@ -1,7 +1,7 @@
 import React from "react";
 import Loading from "./Loading";
 interface ReusableButtonProps {
-  type?: any;
+  type?: "button" | "submit" | "reset" | undefined;
   name: string;
   className?: string;
   isLoading?: boolean;
