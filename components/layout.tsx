@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import { useRouter } from "next/router";
 
 import React, { ReactNode } from "react";
-import { useMyContext } from "./contexts/AuthenticationContext";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
 

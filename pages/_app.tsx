@@ -1,4 +1,4 @@
-import { MyProvider } from "@/components/contexts/AuthenticationContext";
+import { MyProvider } from "@/contexts/AuthenticationContext";
 import Layout from "@/components/layout";
 import "@/styles/globals.css";
 import { NextPage } from "next";

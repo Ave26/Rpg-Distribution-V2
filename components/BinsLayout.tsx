@@ -6,7 +6,8 @@ import { clear } from "console";
 interface BinsProps {
   dataManipulator?: BinsType;
   isLoading: boolean;
-  request: RequestProps;
+  request: RequestTypes;
+  setRequest: SetRequestTypes;
   actionTriggered: boolean;
 }
 
@@ -15,9 +16,14 @@ interface BinsType {
   handleMutation: () => void;
 }
 
-interface RequestProps {
+interface SetRequestTypes {
+  setSelectedBins: React.Dispatch<SetStateAction<string[]>>;
+}
+
+interface RequestTypes {
   quantity: number;
   barcodeId: string;
+  selectedBins: string[];
 }
 
 interface SelectedBinsType {
@@ -30,10 +36,11 @@ function BinsLayout({
   isLoading,
   request,
   actionTriggered,
+  setRequest,
 }: BinsProps) {
-  const [selectedBins, setSelectedBins] = useState<string[]>([]);
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
-
+  const { setSelectedBins } = setRequest;
+  const { selectedBins } = request;
   const titles = [
     "Quantity",
     "Product Category",
@@ -61,7 +68,6 @@ function BinsLayout({
     }
   }, [actionTriggered]);
 
-  console.log(selectedBins);
   useEffect(() => {
     const timer = setTimeout(() => {
       const threshold = request.quantity;

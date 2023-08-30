@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import AccountManagement from "@/public/assets/dashBoardIcons/AccountManagement.png";
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
-import { useMyContext } from "../contexts/AuthenticationContext";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

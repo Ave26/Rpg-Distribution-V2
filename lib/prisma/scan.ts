@@ -66,7 +66,7 @@ export async function scanBarcode(
           },
         });
 
-        const bins = await prisma.bin.findMany({
+        const bins = await prisma.bins.findMany({
           where: {
             racksId: racks?.id,
           },
@@ -109,7 +109,7 @@ export async function scanBarcode(
             const capacity = Number(bin?.capacity);
             const binId = bin?.id;
             if (TotalAssignedProduct >= capacity) {
-              await prisma.bin.update({
+              await prisma.bins.update({
                 where: {
                   id: binId,
                 },
@@ -138,7 +138,7 @@ export async function scanBarcode(
 }
 
 async function findManyBins(racksId: string, binId: string) {
-  const bins = await prisma.bin.findMany({
+  const bins = await prisma.bins.findMany({
     where: {
       // id: binId,
       racksId: racksId,
@@ -239,7 +239,7 @@ async function setMethod(
     case "Food":
       console.log("FEFO Method");
 
-      availableBin = await prisma.bin.findFirst({
+      availableBin = await prisma.bins.findFirst({
         where: {
           id: bin?.id,
           isAvailable: true,
@@ -261,7 +261,7 @@ async function setMethod(
     case "Cleaning":
       console.log("FIFO Method");
 
-      availableBin = await prisma.bin.findFirst({
+      availableBin = await prisma.bins.findFirst({
         where: {
           id: bin?.id,
           isAvailable: true,

@@ -88,7 +88,7 @@ async function set_shelfLevel_and_capacity(
     });
   }
 
-  const newBin = await prisma.bin.createMany({
+  const newBin = await prisma.bins.createMany({
     data: binData,
   });
 

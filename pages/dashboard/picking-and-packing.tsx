@@ -12,8 +12,10 @@ import ReusableButton from "@/components/Parts/ReusableButton";
 
 export default function PickingAndPacking() {
   const [childActionTriggered, setChildActionTriggered] = useState(false);
+  const [selectedBins, setSelectedBins] = useState<string[]>([]);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
+  console.log(selectedBins);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -122,7 +124,8 @@ export default function PickingAndPacking() {
               handleMutation: () => mutate(),
             }}
             actionTriggered={childActionTriggered}
-            request={{ barcodeId: barcode, quantity }}
+            setRequest={{ setSelectedBins }}
+            request={{ barcodeId: barcode, quantity, selectedBins }}
           />
         )}
       </div>

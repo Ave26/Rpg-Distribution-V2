@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiRequest } from "next";
 import { useContext } from "react";
-import { useMyContext } from "@/components/contexts/AuthenticationContext";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 
 interface TokenProps {
   id: string;

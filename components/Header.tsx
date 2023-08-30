@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
-import { useMyContext } from "./contexts/AuthenticationContext";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 import { AuthProps } from "@/types/authTypes";
 
 // interface HeaderProps {

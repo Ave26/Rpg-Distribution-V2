@@ -58,9 +58,9 @@ export default function ScanBarcode({
     setIsFetch(false);
     const json = await response.json();
 
-    if (json?.isAuthenticated === false) {
-      router.push("/login");
-    }
+    // if (json?.isAuthenticated === false) {
+    //   router.push("/login");
+    // }
 
     if (response.status === 200 || response.status === 405) {
       setBinIndex(json?.row);

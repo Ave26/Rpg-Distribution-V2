@@ -81,12 +81,12 @@ model racks {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   name         String      @unique
   isAvailable  Boolean     @default(true)
-  bin          bin[]
+  bin          bins[]
   categories   categories? @relation(fields: [categoriesId], references: [id])
   categoriesId String?     @db.ObjectId
 }
 
-model bin {
+model bins {
   id          String             @id @default(auto()) @map("_id") @db.ObjectId
   isAvailable Boolean            @default(true)
   capacity    Int
@@ -103,7 +103,7 @@ model bin {
 model binLogs {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
   isSelected Boolean
-  bin        bin?    @relation(fields: [binId], references: [id])
+  bin        bins?   @relation(fields: [binId], references: [id])
   binId      String? @db.ObjectId
   users      users   @relation(fields: [usersId], references: [id])
   usersId    String  @db.ObjectId
@@ -119,7 +119,7 @@ model assignment {
   isMarked       Boolean?   @default(false)
   products       products?  @relation(fields: [productId], references: [id])
   productId      String?    @db.ObjectId
-  bin            bin?       @relation(fields: [binId], references: [id])
+  bin            bins?      @relation(fields: [binId], references: [id])
   binId          String?    @db.ObjectId
   users          users?     @relation(fields: [usersId], references: [id])
   usersId        String?    @db.ObjectId

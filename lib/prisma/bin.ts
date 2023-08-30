@@ -13,7 +13,7 @@ export async function findBinByBarcode(barcodeId: string) {
 
      */
 
-    const bins = await prisma.bin.findMany({
+    const bins = await prisma.bins.findMany({
       where: {
         assignment: {
           some: {
@@ -60,7 +60,7 @@ export async function findBinByBarcode(barcodeId: string) {
 
 export async function findAllBin() {
   try {
-    const bins = await prisma.bin.findMany({
+    const bins = await prisma.bins.findMany({
       where: {
         assignment: {
           some: {
@@ -98,7 +98,7 @@ export async function findAllBin() {
         },
       },
     });
-
+    console.log(bins);
     return { bins };
   } catch (error) {
     return { error };
@@ -107,7 +107,7 @@ export async function findAllBin() {
 
 export async function updateSelectedBin(binId: string) {
   try {
-    await prisma.bin.update({
+    await prisma.bins.update({
       where: {
         id: binId,
       },
@@ -141,7 +141,7 @@ export async function selectAndUpdateBinByQuantity(params: Prams) {
     ];
     // I want to find a list bins
 
-    const selectedBins = await prisma.bin.findMany({
+    const selectedBins = await prisma.bins.findMany({
       where: {
         OR: binIds.map((id) => ({
           id: { equals: id },
@@ -171,14 +171,14 @@ export async function eliminator(binId: string, quantity: string) {
 
 export async function selectBin(binId: string) {
   try {
-    const bin = await prisma.bin.findUnique({
+    const bin = await prisma.bins.findUnique({
       where: {
         id: binId,
       },
     });
 
     const newSelectedBin = !bin?.isSelected;
-    const selectedBin = await prisma.bin.update({
+    const selectedBin = await prisma.bins.update({
       where: {
         id: binId,
       },
