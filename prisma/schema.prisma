@@ -30,6 +30,14 @@ enum OutboundFlow {
   Delivered
 }
 
+enum Category {
+  Food
+  Laundry
+  Cosmetics
+  Sanitary
+  Cleaning
+}
+
 model users {
   id              String              @id @default(auto()) @map("_id") @db.ObjectId
   additional_Info UsersAdditionalInfo @map("additional Info")
@@ -45,7 +53,7 @@ model users {
 model products {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   barcodeId         String             @unique
-  category          String?
+  category          Category
   image             String?
   price             Float?
   productName       String

@@ -64,7 +64,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (!data) {
           return res.status(404).json({
-            message: "Something went wrong, please try again!",
+            message: "Oops!, Category not found",
           });
         }
 

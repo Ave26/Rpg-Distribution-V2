@@ -30,7 +30,7 @@ function BarcodeScanner(): JSX.Element {
       <Head>
         <title>{"Dashboard | Scan Barcode"}</title>
       </Head>
-      <form className="flex h-screen w-full flex-col gap-2 p-4">
+      <form className="flex h-full w-full flex-col gap-2 p-4">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
         <ScanBarcode
           barcodeId={barcodeId}

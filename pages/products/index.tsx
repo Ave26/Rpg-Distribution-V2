@@ -81,9 +81,13 @@ export default function Products({}: {
                       />
                       <div className="flex w-full flex-col items-start justify-center p-2">
                         <strong>
-                          <h1 className="text-xs">{value?.productName}</h1>
-                          <h1 className="text-xs">{value?.category}</h1>
-                          <h1 className="text-xs">{value?.category}</h1>
+                          <h1 className="text-md text-sky-600 ">
+                            {value?.productName}
+                          </h1>
+                          <h1 className="ml-1 text-xs">{value?.category}</h1>
+                          <h1 className="ml-1 text-xs">
+                            &#8369; {value?.price}
+                          </h1>
                         </strong>
                       </div>
                     </div>

@@ -86,7 +86,6 @@ export const addNewProduct = async (
         barcodeId,
       },
     });
-    // await findMaxQuantityPerBin(barcodeId)
 
     if (findProduct) {
       return { findProduct };

@@ -3,16 +3,6 @@ import prisma from ".";
 
 export async function findBinByBarcode(barcodeId: string) {
   try {
-    // I want just return bins that has some of the assignment barcode id
-
-    /**
-       - The bin will only display the selected bin if the use was the one
-       who selected it otherwise the selected bin will not appear to a different
-       use unless it has data
-
-
-     */
-
     const bins = await prisma.bins.findMany({
       where: {
         assignment: {
@@ -26,7 +16,11 @@ export async function findBinByBarcode(barcodeId: string) {
       include: {
         _count: {
           select: {
-            assignment: true,
+            assignment: {
+              where: {
+                isMarked: false,
+              },
+            },
           },
         },
         assignment: {
@@ -72,7 +66,11 @@ export async function findAllBin() {
       include: {
         _count: {
           select: {
-            assignment: true,
+            assignment: {
+              where: {
+                isMarked: false,
+              },
+            },
           },
         },
         assignment: {
@@ -208,7 +206,55 @@ export async function selectBin(binId: string) {
   }
 }
 
-export async function markAssignmentByBins() {}
+export async function markAssignmentByBins(
+  barcodeId: string,
+  quantity: number,
+  selectedBinIds: string[]
+) {
+  // it tells the system that it needs to be mark the assignments
+
+  let threshold: number = quantity;
+  const pickedBins = await prisma.bins.findMany({
+    where: {
+      id: {
+        in: selectedBinIds,
+      },
+    },
+    include: {
+      assignment: true,
+    },
+  });
+
+  const assignmentIdsToUpdate = [];
+  for (let bin of pickedBins) {
+    for (let assignment of bin?.assignment) {
+      if (threshold > 0) {
+        assignmentIdsToUpdate.push(assignment?.id);
+        threshold--;
+        console.log(
+          "threshold",
+          threshold,
+          "marked Assignment",
+          assignment.isMarked
+        );
+      } else {
+        break;
+      }
+    }
+  }
+
+  const markedAssignments = await prisma.assignment.updateMany({
+    where: {
+      id: {
+        in: assignmentIdsToUpdate,
+      },
+    },
+    data: {
+      isMarked: true,
+    },
+  });
+  return { markedAssignments };
+}
 
 /**
  Create an function that can eliminate germs 

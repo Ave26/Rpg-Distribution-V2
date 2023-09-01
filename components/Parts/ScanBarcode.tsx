@@ -58,10 +58,6 @@ export default function ScanBarcode({
     setIsFetch(false);
     const json = await response.json();
 
-    // if (json?.isAuthenticated === false) {
-    //   router.push("/login");
-    // }
-
     if (response.status === 200 || response.status === 405) {
       setBinIndex(json?.row);
       setShelfLevel(json?.shelfLevel);
@@ -95,7 +91,7 @@ export default function ScanBarcode({
     return () => {
       clearTimeout(timer);
     };
-  }, [isShow, barcodeId]);
+  }, [isShow]);
 
   return (
     <div className="flex h-full w-full items-center justify-center font-bold transition-all">

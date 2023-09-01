@@ -130,7 +130,7 @@ const AddNewProduct = ({}): JSX.Element => {
       </Head>
       <form
         onSubmit={handleAddProduct}
-        className="flex h-screen w-full flex-col  gap-2 p-4">
+        className="flex h-full w-full flex-col gap-2  p-4 md:h-screen">
         <div className="flex flex-col flex-wrap items-start justify-center px-10 py-5">
           <ReusableInput
             value={barcodeId}

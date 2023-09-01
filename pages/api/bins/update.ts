@@ -6,8 +6,6 @@ import {
   markAssignmentByBins,
 } from "@/lib/prisma/bin";
 import { JwtPayload } from "jsonwebtoken";
-import { VerifyToken } from "@/types/authTypes";
-import { error } from "console";
 
 export async function handler(
   req: NextApiRequest,
@@ -26,24 +24,16 @@ export async function handler(
           userId = verifiedToken.id; // Assign the userId from the token
         }
 
-        // await markAssignmentByBins();
+        const { markedAssignments } = await markAssignmentByBins(
+          barcodeId,
+          quantity,
+          selectedBinIds
+        );
 
-        // const { selectedBin, error } = await selectBin(binId);
-        // if (error) {
-        //   return res.status(500).json({
-        //     message: "Oops... there was an error problem",
-        //   });
-        // }
-        // await selectAndUpdateBinByQuantity({
-        //   selectedBins,
-        //   quantity,
-        //   userId,
-        // });
-
-        // return res.status(200).json(message);
-        // return res.send(userId);
         console.log(userId);
-        return res.status(200).json({ barcodeId, quantity, selectedBinIds });
+        return res
+          .status(200)
+          .json({ markedAssignments, messsage: "Assignments has been marked" });
       } catch (error) {
         return res.json(error);
       }

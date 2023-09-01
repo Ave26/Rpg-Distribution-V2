@@ -11,7 +11,7 @@ export async function setUpRack(
       category: rackCategory,
     },
   });
-
+  console.log(rackCategory, rackName, numberOfBins, shelfLevel);
   if (categories) {
     const rack = await prisma.racks.findFirst({
       where: {

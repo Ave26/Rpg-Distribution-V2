@@ -1,8 +1,5 @@
-import { GetResult } from "@prisma/client/runtime/library";
 import prisma from ".";
 
-// inbound
-// if the user has encountered a damage bin marked it as damged
 interface Assignment {
   id: string;
   dateReceive: Date | null;
@@ -41,8 +38,6 @@ export async function scanBarcode(
   expirationDate: Date,
   quality: string
 ) {
-  let message;
-  console.log(quality);
   try {
     const product = await prisma.products.findUnique({
       where: {
@@ -50,7 +45,7 @@ export async function scanBarcode(
       },
     });
 
-    if (product === null) {
+    if (!product) {
       return { message: "Product Not found | coming from the server" };
     } else {
       if (quality === "Good") {
@@ -87,8 +82,6 @@ export async function scanBarcode(
           );
 
           if (availableBin) {
-            // Found a bin with the same expirationDate in its assignments
-            // Create a new assignment
             await prisma.assignment.create({
               data: {
                 productId: product?.id,
@@ -103,11 +96,13 @@ export async function scanBarcode(
             const TotalAssignedProduct = await prisma.assignment.count({
               where: {
                 binId: bin?.id,
+                isMarked: false,
               },
             });
 
             const capacity = Number(bin?.capacity);
             const binId = bin?.id;
+
             if (TotalAssignedProduct >= capacity) {
               await prisma.bins.update({
                 where: {
@@ -118,6 +113,7 @@ export async function scanBarcode(
                 },
               });
             }
+
             const row = availableBin?.row;
             const shelfLevel = availableBin?.shelfLevel;
 

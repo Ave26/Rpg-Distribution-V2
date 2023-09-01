@@ -95,7 +95,7 @@ function CreateRack() {
           setShelfLevel(value);
         }}
       />
-      <ReusableButton type="button" name="Save" isLoading={isLoading} />
+      <ReusableButton type="submit" name="Save" isLoading={isLoading} />
       <Toast isShow={isShow} data={data} />
     </form>
   );
