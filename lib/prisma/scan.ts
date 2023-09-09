@@ -254,6 +254,8 @@ async function setMethod(
 
       break;
     case "Laundry":
+    case "Cosmetics":
+    case "Sanitary":
     case "Cleaning":
       console.log("FIFO Method");
 
@@ -282,27 +284,3 @@ async function setMethod(
   }
   return { availableBin };
 }
-
-// InBound
-/*
-  WE MAY NEED TO ESTABLISH MANUAL AND AUTOMATED FOR BARCODE SCANNER
-  manual:
-    Allows the user to manually select on what bin it wanted to choose
-    Allows the user to manually select what quantity it wanted to set
-
-  Automated:
-    Automatically set the bin based on the category and set what method it
-    will choose (FEFO, LIFO and FIFO) to deal with product management
-    Automatically insert a product into a bin
-
-  need to improve
-  what if the product has been inserted to the wrong been and the been
-  automatically set the capacity
-
-  answer: create a set capacity button
-*/
-// Outbound
-/*
-  For Instance we need to take order
-     - 
-*/

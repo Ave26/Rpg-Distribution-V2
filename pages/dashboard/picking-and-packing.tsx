@@ -1,7 +1,7 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-import useSWR from "swr"; // cache
+import useSWR from "swr";
 import Head from "next/head";
 import BinsLayout from "@/components/BinsLayout";
 import Loading from "@/components/Parts/Loading";
@@ -10,11 +10,32 @@ import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
+interface ProductEntryTypes {
+  BinId: string[];
+  BarcodeId: string;
+  productName: string;
+  sku: string;
+  Quantity: number;
+  totalPrice: number;
+  expirationDate: Date[];
+}
+
 export default function PickingAndPacking() {
   const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
   const [isMarking, isSetMarking] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
+  const [productEntery, setProductEntry] = useState<ProductEntryTypes[]>([
+    // { id: "1" },
+    // { id: "2" },
+    // { id: "3" },
+    // { id: "4" },
+    // { id: "5" },
+    // { id: "6" },
+    // { id: "7" },
+    // { id: "8" },
+    // { id: "9" },
+  ]);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -47,34 +68,6 @@ export default function PickingAndPacking() {
     refreshInterval: 1500,
   });
 
-  // useEffect(() => {
-  //   const THRESHOLD = 15;
-  //   let markedCount = 0;
-  //   if (bins) {
-  //     for (const bin of bins) {
-  //       if (markedCount >= THRESHOLD) {
-  //         break; // If threshold is met, stop iterating
-  //       }
-
-  //       for (const assignedProduct of bin?.assignment) {
-  //         if (!assignedProduct?.isMarked) {
-  //           assignedProduct.isMarked = true;
-  //           markedCount++;
-  //           if (markedCount >= THRESHOLD) {
-  //             break; // If threshold is met, stop marking products
-  //           }
-  //         } else {
-  //           assignedProduct.isMarked = false;
-  //         }
-  //         // console.log(markedCount);
-  //         // console.log(bins.map((bin) => bin._count && bin.assignment));
-  //       }
-
-  //       console.log(bin.assignment);
-  //     }
-  //   }
-  // }, [quantity]);
-
   async function sendRequest() {
     console.log("request running");
     isSetMarking(true);
@@ -101,14 +94,28 @@ export default function PickingAndPacking() {
     }
   }
 
-  console.log(selectedBinIds);
+  useEffect(() => {
+    if (selectedBinIds.length > 0) {
+      const beforeUnloadListener = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = "Escape this shiit?";
+      };
+
+      window.addEventListener("beforeunload", beforeUnloadListener);
+
+      return () => {
+        window.removeEventListener("beforeunload", beforeUnloadListener);
+      };
+    }
+  }, [selectedBinIds]);
 
   return (
     <>
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <div className="flex h-full w-full flex-wrap gap-2 overflow-y-auto border border-black p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
+
+      <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
         <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
             inputProps={{
@@ -134,27 +141,51 @@ export default function PickingAndPacking() {
               setSelectedBinIds([]);
             }}
           />
-          <button
+
+          <ReusableButton
             type={"submit"}
+            isLoading={isMarking}
+            name={"Add to cart"}
+            // onClick={() => console.log("add to cart")}
             onClick={sendRequest}
-            className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800">
-            {isMarking ? <Loading /> : "Confirm Request"}
-          </button>
+            className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
+          />
         </div>
         {isLoading ? (
           <div className="flex h-full w-full max-w-3xl items-center justify-center border md:max-h-96">
             <Loading />
           </div>
         ) : (
-          <BinsLayout
-            isLoading={isLoading}
-            dataManipulator={{
-              bins,
-              handleMutation: () => mutate(),
-            }}
-            setRequest={{ setSelectedBinIds }}
-            request={{ barcodeId: barcode, quantity, selectedBinIds }}
-          />
+          <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
+            <BinsLayout
+              isLoading={isLoading}
+              dataManipulator={{
+                bins,
+                handleMutation: () => mutate(),
+              }}
+              setRequest={{ setSelectedBinIds }}
+              request={{ barcodeId: barcode, quantity, selectedBinIds }}
+            />
+            <div className="h-[17em] w-full overflow-y-auto border border-black md:w-[45em]">
+              {productEntery.map((entry) => (
+                <span className="relative my-2 flex h-1/4 w-full items-center justify-center gap-2">
+                  <h1 className="flex h-full w-full items-center justify-center border text-center">
+                    {/* Name of product: {entry.id} */}
+                  </h1>
+                  <button className="h-full w-1/12 border">x</button>
+                </span>
+              ))}
+            </div>
+            <div className="flex items-center justify-center">
+              <ReusableButton
+                type={"submit"}
+                isLoading={isMarking}
+                name={"Confirm and Print report"}
+                // onClick={sendRequest}
+                className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
+              />
+            </div>
+          </div>
         )}
       </div>
     </>

@@ -23,6 +23,7 @@ export async function findBinByBarcode(barcodeId: string) {
             },
           },
         },
+
         assignment: {
           select: {
             products: {
@@ -34,6 +35,7 @@ export async function findBinByBarcode(barcodeId: string) {
             },
           },
         },
+
         racks: {
           select: {
             name: true,
@@ -46,7 +48,13 @@ export async function findBinByBarcode(barcodeId: string) {
         },
       },
     });
-    return { bins };
+
+    const binThatHasCount = bins.forEach((bin) => {
+      return Number(bin._count.assignment) > 0;
+    });
+
+    console.log(binThatHasCount);
+    return { binThatHasCount };
   } catch (error) {
     return { error };
   }
@@ -74,6 +82,9 @@ export async function findAllBin() {
           },
         },
         assignment: {
+          where: {
+            isMarked: false,
+          },
           select: {
             products: {
               select: {
@@ -96,8 +107,13 @@ export async function findAllBin() {
         },
       },
     });
-    // console.log(bins);
-    return { bins };
+
+    const binThatHasCount = bins.filter((bin) => {
+      return Number(bin._count.assignment) > 0;
+    });
+
+    console.log(binThatHasCount);
+    return { binThatHasCount };
   } catch (error) {
     return { error };
   }

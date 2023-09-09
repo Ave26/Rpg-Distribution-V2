@@ -10,7 +10,7 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { barcodeId } = req.body;
   if (!barcodeId) {
     console.log("find All Bin triggered");
-    const { bins, error } = await findAllBin();
+    const { binThatHasCount: bins, error } = await findAllBin();
 
     if (!bins || error) {
       return res.status(500).json({
@@ -20,7 +20,7 @@ export async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json(bins);
   } else {
-    const { bins, error } = await findBinByBarcode(barcodeId);
+    const { binThatHasCount: bins, error } = await findBinByBarcode(barcodeId);
 
     if (!bins || error) {
       return res.status(500).json({

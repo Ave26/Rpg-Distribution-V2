@@ -85,7 +85,7 @@ function BinsLayout({
   }, [request.quantity]);
 
   return (
-    <div className="h-full w-full select-none overflow-y-auto rounded-t-md  md:h-96 md:max-h-96 md:min-w-0 md:max-w-[45em]">
+    <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em] md:max-h-[25em] md:min-w-0 md:max-w-[45em]">
       <table className="rounded-t-md  text-left text-sm text-gray-500 dark:text-gray-400">
         <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>

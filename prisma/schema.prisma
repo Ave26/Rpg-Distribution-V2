@@ -26,7 +26,7 @@ enum SupplyLevelStatus {
 
 enum OutboundFlow {
   Queuing
-  OnDeliver
+  OutForDelivery
   Delivered
 }
 
@@ -75,8 +75,6 @@ model variations {
   products    products? @relation(fields: [productsId], references: [id])
   productsId  String?   @db.ObjectId
 }
-
-// one to many relationsShip
 
 model categories {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
