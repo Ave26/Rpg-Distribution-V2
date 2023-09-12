@@ -157,8 +157,10 @@ export default function PickingAndPacking() {
               request={{ barcodeId: barcode, quantity, selectedBinIds }}
             />
             <div className="h-[17em] w-full overflow-y-auto border border-black md:w-[45em]">
-              {productEntery.map((entry) => (
-                <span className="relative my-2 flex h-1/4 w-full items-center justify-center gap-2">
+              {productEntery.map((entry, index) => (
+                <span
+                  key={index}
+                  className="relative my-2 flex h-1/4 w-full items-center justify-center gap-2">
                   <h1 className="flex h-full w-full items-center justify-center border text-center">
                     {/* Name of product: {entry.id} */}
                   </h1>
