@@ -15,6 +15,12 @@ export async function handler(
   const { barcodeId, quantity, selectedBinIds } = req.body;
 
   console.log(barcodeId, quantity, selectedBinIds);
+  if (!quantity || !selectedBinIds) {
+    return res.status(500).json({
+      message: "Please complete field",
+    });
+  }
+
   switch (req.method) {
     case "POST":
       try {
@@ -31,9 +37,12 @@ export async function handler(
         );
 
         console.log(userId);
-        return res
-          .status(200)
-          .json({ markedAssignments, messsage: "Assignments has been marked" });
+        return markedAssignments
+          ? res.status(200).json({
+              markedAssignments,
+              messsage: "Assignments has been marked",
+            })
+          : console.log("Problem persists");
       } catch (error) {
         return res.json(error);
       }

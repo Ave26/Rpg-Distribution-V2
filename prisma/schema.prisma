@@ -39,15 +39,36 @@ enum Category {
 }
 
 model users {
-  id              String              @id @default(auto()) @map("_id") @db.ObjectId
-  additional_Info UsersAdditionalInfo @map("additional Info")
-  password        String              @unique(map: "password_1")
-  roles           String              @default("staff")
-  username        String              @unique(map: "username_1")
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  additional_Info    UsersAdditionalInfo  @map("additional Info")
+  password           String               @unique(map: "password_1")
+  roles              String               @default("staff")
+  username           String               @unique(map: "username_1")
+  assignment         assignment[]
+  binLogs            binLogs[]
+  OutBoundLog        OutBoundLog?         @relation(fields: [outBoundLogId], references: [id])
+  outBoundLogId      String?              @db.ObjectId
+  transactionRecords transactionRecords[]
+}
+
+model orderedProducts {
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  selectedBins         bins[]
+  transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
+  transactionRecordsId String?             @db.ObjectId
+}
+
+model transactionRecords {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  status          OutboundFlow
+  orderDate       DateTime?
+  totalItems      Int
+  totalQuantity   Int
+  totalAmount     Int
+  orderedProducts orderedProducts[]
+  users           users?            @relation(fields: [userId], references: [id])
+  userId          String            @db.ObjectId
   assignment      assignment[]
-  binLogs         binLogs[]
-  OutBoundLog     OutBoundLog?        @relation(fields: [outBoundLogId], references: [id])
-  outBoundLogId   String?             @db.ObjectId
 }
 
 model products {
@@ -93,17 +114,19 @@ model racks {
 }
 
 model bins {
-  id          String             @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable Boolean            @default(true)
-  capacity    Int
-  shelfLevel  Int
-  row         Int
-  isSelected  Boolean?           @default(false)
-  status      SupplyLevelStatus?
-  racks       racks?             @relation(fields: [racksId], references: [id])
-  racksId     String?            @db.ObjectId
-  assignment  assignment[]
-  binLogs     binLogs[]
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable       Boolean            @default(true)
+  capacity          Int
+  shelfLevel        Int
+  row               Int
+  isSelected        Boolean?           @default(false)
+  status            SupplyLevelStatus?
+  racks             racks?             @relation(fields: [racksId], references: [id])
+  racksId           String?            @db.ObjectId
+  assignment        assignment[]
+  binLogs           binLogs[]
+  orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
+  orderedProductsId String?            @db.ObjectId
 }
 
 model binLogs {
@@ -116,21 +139,23 @@ model binLogs {
 }
 
 model assignment {
-  id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive    DateTime?
-  purchaseOrder  String
-  expirationDate DateTime?
-  boxSize        String?
-  isDamage       Boolean?
-  isMarked       Boolean?   @default(false)
-  products       products?  @relation(fields: [productId], references: [id])
-  productId      String?    @db.ObjectId
-  bin            bins?      @relation(fields: [binId], references: [id])
-  binId          String?    @db.ObjectId
-  users          users?     @relation(fields: [usersId], references: [id])
-  usersId        String?    @db.ObjectId
-  damageBin      damageBin? @relation(fields: [damageBinId], references: [id])
-  damageBinId    String?    @db.ObjectId
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  dateReceive          DateTime?
+  purchaseOrder        String
+  expirationDate       DateTime?
+  boxSize              String?
+  isDamage             Boolean?
+  isMarked             Boolean?            @default(false)
+  products             products?           @relation(fields: [productId], references: [id])
+  productId            String?             @db.ObjectId
+  bin                  bins?               @relation(fields: [binId], references: [id])
+  binId                String?             @db.ObjectId
+  users                users?              @relation(fields: [usersId], references: [id])
+  usersId              String?             @db.ObjectId
+  damageBin            damageBin?          @relation(fields: [damageBinId], references: [id])
+  damageBinId          String?             @db.ObjectId
+  transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
+  transactionRecordsId String?             @db.ObjectId
 }
 
 model OutBoundLog {

@@ -133,41 +133,6 @@ export async function scanBarcode(
   }
 }
 
-async function findManyBins(racksId: string, binId: string) {
-  const bins = await prisma.bins.findMany({
-    where: {
-      // id: binId,
-      racksId: racksId,
-    },
-  });
-  return { bins };
-}
-
-function calculateDateBasedOnExpirationDate(items: any) {
-  items.sort(
-    (a: { expirationDate: string }, b: { expirationDate: string }) =>
-      new Date(a.expirationDate).getTime() -
-      new Date(b.expirationDate).getTime()
-  );
-
-  const firstItem = items[0];
-
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-
-  const expirationDate = new Date(firstItem.expirationDate);
-  expirationDate.setHours(0, 0, 0, 0);
-
-  const timeDiff = expirationDate.getTime() - currentDate.getTime();
-  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-  return {
-    calculatedDate: currentDate.toISOString().split("T")[0], // Change format as needed
-    firstItem: firstItem,
-    daysUntilExpiration: daysDiff,
-  };
-}
-
 function setTime() {
   let dateReceive = new Date();
 
@@ -187,40 +152,6 @@ function setTime() {
   return { dateReceive };
 }
 
-const items = [
-  { expirationDate: "2023-08-15", name: "Item 1" },
-  { expirationDate: "2023-07-30", name: "Item 2" },
-  { expirationDate: "2023-08-05", name: "Item 3" },
-];
-
-function setCapacity(boxSize: string, bin: Bin, product: Product) {
-  let capacity = 0;
-  switch (boxSize) {
-    case "Small":
-      capacity = 20;
-      break;
-    case "Medium":
-      capacity = 15;
-      break;
-    case "Large":
-      capacity = 10;
-      break;
-    default:
-      break;
-  }
-
-  return { capacity };
-}
-
-// Need to vary depending on the quality of the product
-// for instance the product is good then make sure to scan and
-// push it to the bin base on Category otherwise push it to damage bay
-
-// DAMAGE TYPES: receiving, inside and outside
-
-// We may need to take care of the FEFO, LIFO and FIFO depending on
-// what category
-
 async function setMethod(
   category: string,
   bin: Bin,
@@ -228,7 +159,6 @@ async function setMethod(
   expirationDate: Date,
   dateReceive: Date
 ) {
-  // prototype
   let availableBin;
   console.log(category);
   switch (category) {
@@ -284,3 +214,66 @@ async function setMethod(
   }
   return { availableBin };
 }
+
+// async function findManyBins(racksId: string, binId: string) {
+//   const bins = await prisma.bins.findMany({
+//     where: {
+//       // id: binId,
+//       racksId: racksId,
+//     },
+//   });
+//   return { bins };
+// }
+
+// function calculateDateBasedOnExpirationDate(items: any) {
+//   items.sort(
+//     (a: { expirationDate: string }, b: { expirationDate: string }) =>
+//       new Date(a.expirationDate).getTime() -
+//       new Date(b.expirationDate).getTime()
+//   );
+
+//   const firstItem = items[0];
+
+//   const currentDate = new Date();
+//   currentDate.setHours(0, 0, 0, 0);
+
+//   const expirationDate = new Date(firstItem.expirationDate);
+//   expirationDate.setHours(0, 0, 0, 0);
+
+//   const timeDiff = expirationDate.getTime() - currentDate.getTime();
+//   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+//   return {
+//     calculatedDate: currentDate.toISOString().split("T")[0], // Change format as needed
+//     firstItem: firstItem,
+//     daysUntilExpiration: daysDiff,
+//   };
+// }
+
+// function setCapacity(boxSize: string, bin: Bin, product: Product) {
+//   let capacity = 0;
+//   switch (boxSize) {
+//     case "Small":
+//       capacity = 20;
+//       break;
+//     case "Medium":
+//       capacity = 15;
+//       break;
+//     case "Large":
+//       capacity = 10;
+//       break;
+//     default:
+//       break;
+//   }
+
+//   return { capacity };
+// }
+
+// Need to vary depending on the quality of the product
+// for instance the product is good then make sure to scan and
+// push it to the bin base on Category otherwise push it to damage bay
+
+// DAMAGE TYPES: receiving, inside and outside
+
+// We may need to take care of the FEFO, LIFO and FIFO depending on
+// what category

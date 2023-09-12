@@ -2,10 +2,6 @@ import Layout from "@/components/layout";
 import Head from "next/head";
 
 import InitialPage from "@/components/InitialPage";
-import { useRouter } from "next/router";
-import { verifyJwt } from "@/lib/helper/jwt";
-import { NextApiRequest } from "next";
-import { useContext } from "react";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 
 interface TokenProps {
@@ -39,23 +35,3 @@ export default function Home({ data }: HomeProps) {
     </>
   );
 }
-
-// export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-//   const { verifiedToken } = await verifyJwt(req);
-//   let data = {};
-//   if (verifiedToken) {
-//     data = {
-//       authenticated: true,
-//       verifiedToken,
-//     };
-//   } else {
-//     data = {
-//       authenticated: false,
-//     };
-//   }
-//   return {
-//     props: {
-//       data,
-//     },
-//   };
-// };

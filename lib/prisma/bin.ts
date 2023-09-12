@@ -112,7 +112,6 @@ export async function findAllBin() {
       return Number(bin._count.assignment) > 0;
     });
 
-    console.log(binThatHasCount);
     return { binThatHasCount };
   } catch (error) {
     return { error };
@@ -227,8 +226,6 @@ export async function markAssignmentByBins(
   quantity: number,
   selectedBinIds: string[]
 ) {
-  // it tells the system that it needs to be mark the assignments
-
   let threshold: number = quantity;
   const pickedBins = await prisma.bins.findMany({
     where: {
@@ -237,7 +234,11 @@ export async function markAssignmentByBins(
       },
     },
     include: {
-      assignment: true,
+      assignment: {
+        where: {
+          isMarked: false,
+        },
+      },
     },
   });
 

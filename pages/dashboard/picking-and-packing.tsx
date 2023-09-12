@@ -25,17 +25,7 @@ export default function PickingAndPacking() {
   const [isMarking, isSetMarking] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
-  const [productEntery, setProductEntry] = useState<ProductEntryTypes[]>([
-    // { id: "1" },
-    // { id: "2" },
-    // { id: "3" },
-    // { id: "4" },
-    // { id: "5" },
-    // { id: "6" },
-    // { id: "7" },
-    // { id: "8" },
-    // { id: "9" },
-  ]);
+  const [productEntery, setProductEntry] = useState<ProductEntryTypes[]>([]);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -69,7 +59,6 @@ export default function PickingAndPacking() {
   });
 
   async function sendRequest() {
-    console.log("request running");
     isSetMarking(true);
     try {
       const response = await fetch("/api/bins/update", {
@@ -85,7 +74,7 @@ export default function PickingAndPacking() {
         }),
       });
       const data = await response.json();
-
+      if (response.status === 2000) mutate();
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -146,8 +135,9 @@ export default function PickingAndPacking() {
             type={"submit"}
             isLoading={isMarking}
             name={"Add to cart"}
-            // onClick={() => console.log("add to cart")}
-            onClick={sendRequest}
+            onClick={() => {
+              console.log("add to cart");
+            }}
             className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
           />
         </div>
@@ -181,7 +171,6 @@ export default function PickingAndPacking() {
                 type={"submit"}
                 isLoading={isMarking}
                 name={"Confirm and Print report"}
-                // onClick={sendRequest}
                 className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
               />
             </div>

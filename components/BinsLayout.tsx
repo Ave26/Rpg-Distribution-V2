@@ -147,7 +147,6 @@ function BinsLayout({
                 <td className="whitespace-nowrap px-6 py-4">
                   {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
                 </td>
-                {/* <td className="px-6 py-4">{String(bin?.isSeleted)}</td> */}
               </tr>
             );
           })}
