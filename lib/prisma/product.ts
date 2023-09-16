@@ -1,3 +1,4 @@
+import { Category } from "@prisma/client";
 import prisma from ".";
 
 export const findPublicProducts = async () => {
@@ -73,7 +74,7 @@ export const findProduct = async (barcodeId: string) => {
 
 export const addNewProduct = async (
   barcodeId: string,
-  category: string,
+  category: Category,
   image: string,
   price: number,
   productName: string,
