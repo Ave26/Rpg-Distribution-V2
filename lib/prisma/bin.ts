@@ -2,6 +2,7 @@ import { equal } from "assert";
 import prisma from ".";
 
 export async function findBinByBarcode(barcodeId: string) {
+  console.log(barcodeId);
   try {
     const bins = await prisma.bins.findMany({
       where: {
@@ -24,18 +25,18 @@ export async function findBinByBarcode(barcodeId: string) {
           },
         },
 
-        // assignment: {
-        //   select: {
-        //     products: {
-        //       select: {
-        //         barcodeId: true,
-        //         productName: true,
-        //         sku: true,
-        //         price: true,
-        //       },
-        //     },
-        //   },
-        // },
+        assignment: {
+          select: {
+            products: {
+              select: {
+                barcodeId: true,
+                productName: true,
+                sku: true,
+                price: true,
+              },
+            },
+          },
+        },
 
         racks: {
           select: {
@@ -50,9 +51,9 @@ export async function findBinByBarcode(barcodeId: string) {
       },
     });
 
-    const binThatHasCount = bins.forEach((bin) => {
-      return Number(bin._count.assignment) > 0;
-    });
+    const binThatHasCount = bins.filter(
+      (bin) => Number(bin._count.assignment) > 0
+    );
 
     console.log(binThatHasCount);
     return { binThatHasCount };

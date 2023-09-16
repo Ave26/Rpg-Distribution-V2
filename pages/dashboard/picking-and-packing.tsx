@@ -14,9 +14,6 @@ import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
 
 export default function PickingAndPacking() {
-  // let Entries: EntriesTypes[] = new Array();
-  // console.log(Entries);
-
   const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
   const [isMarking, isSetMarking] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
