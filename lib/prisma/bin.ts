@@ -24,18 +24,18 @@ export async function findBinByBarcode(barcodeId: string) {
           },
         },
 
-        assignment: {
-          select: {
-            products: {
-              select: {
-                barcodeId: true,
-                productName: true,
-                sku: true,
-                price: true,
-              },
-            },
-          },
-        },
+        // assignment: {
+        //   select: {
+        //     products: {
+        //       select: {
+        //         barcodeId: true,
+        //         productName: true,
+        //         sku: true,
+        //         price: true,
+        //       },
+        //     },
+        //   },
+        // },
 
         racks: {
           select: {
