@@ -14,15 +14,15 @@ export async function findBinByBarcode(barcodeId: string) {
         },
       },
       include: {
-        _count: {
-          select: {
-            assignment: {
-              where: {
-                isMarked: false,
-              },
-            },
-          },
-        },
+        // _count: {
+        //   select: {
+        //     assignment: {
+        //       where: {
+        //         isMarked: false,
+        //       },
+        //     },
+        //   },
+        // },
 
         assignment: {
           select: {
@@ -50,9 +50,10 @@ export async function findBinByBarcode(barcodeId: string) {
       },
     });
 
-    const binThatHasCount = bins.filter(
-      (bin) => Number(bin._count.assignment) > 0
-    );
+    const binThatHasCount = bins;
+    // .filter(
+    //   (bin) => Number(bin._count.assignment) > 0
+    // );
 
     console.log(binThatHasCount);
     return { binThatHasCount };
@@ -73,15 +74,15 @@ export async function findAllBin() {
       },
 
       include: {
-        _count: {
-          select: {
-            assignment: {
-              where: {
-                isMarked: false,
-              },
-            },
-          },
-        },
+        // _count: {
+        //   select: {
+        //     assignment: {
+        //       where: {
+        //         isMarked: false,
+        //       },
+        //     },
+        //   },
+        // },
         assignment: {
           where: {
             isMarked: false,
@@ -110,9 +111,10 @@ export async function findAllBin() {
       },
     });
 
-    const binThatHasCount = bins.filter((bin) => {
-      return Number(bin._count.assignment) > 0;
-    });
+    const binThatHasCount = bins;
+    // .filter((bin) => {
+    //   return Number(bin._count.assignment) > 0;
+    // });
 
     return { binThatHasCount };
   } catch (error) {
