@@ -22,14 +22,6 @@ export async function findBinByBarcode(barcodeId: string) {
               },
             },
           },
-
-          // select: {
-          //   assignment: {
-          //     where: {
-          //       isMarked: false,
-          //     },
-          //   },
-          // },
         },
 
         assignment: {
