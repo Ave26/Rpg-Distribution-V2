@@ -28,6 +28,7 @@ export async function findBinByBarcode(barcodeId: string) {
           select: {
             products: {
               select: {
+                barcodeId: true,
                 productName: true,
                 sku: true,
                 price: true,
@@ -88,6 +89,7 @@ export async function findAllBin() {
           select: {
             products: {
               select: {
+                barcodeId: true,
                 productName: true,
                 sku: true,
                 price: true,

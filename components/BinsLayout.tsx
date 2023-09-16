@@ -1,13 +1,13 @@
-import React, { SetStateAction, use, useEffect, useState } from "react";
-import { Bin, Assignment } from "@/types/inventory";
-import Loading from "./Parts/Loading";
-import { clear } from "console";
+import React, { SetStateAction, useEffect, useState } from "react";
+import { Bin } from "@/types/inventory";
+import { EntriesTypes, dataEntriesTypes } from "@/types/binEntries";
 
 interface BinsProps {
   dataManipulator?: BinsType;
   isLoading: boolean;
   request: RequestTypes;
   setRequest: SetRequestTypes;
+  dataEntries: dataEntriesTypes;
 }
 
 interface BinsType {
@@ -25,18 +25,15 @@ interface RequestTypes {
   selectedBinIds: string[];
 }
 
-interface SelectedBinsType {
-  binId: string;
-  isCovered: boolean;
-}
-
-function BinsLayout({
+export default function BinsLayout({
   dataManipulator,
   isLoading,
   request,
   setRequest,
+  dataEntries,
 }: BinsProps) {
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
+  const { productEntry, setProductEntry } = dataEntries;
   const { setSelectedBinIds } = setRequest;
   const { selectedBinIds } = request;
   const titles = [
@@ -48,13 +45,52 @@ function BinsLayout({
     "Bin",
   ];
 
-  function selectBin(binId: string) {
-    if (selectedBinIds.includes(binId)) {
-      setSelectedBinIds(selectedBinIds.filter((id) => id !== binId));
+  // function selectBin(binId: string) {
+  //   if (selectedBinIds.includes(binId)) {
+  //     setSelectedBinIds(selectedBinIds.filter((id) => id !== binId));
+  //   } else {
+  //     setSelectedBinIds([...selectedBinIds, binId]);
+  //   }
+  // }
+
+  function selectEntry(bin: Bin) {
+    const { totalQuantity, productName, barcodeId, binId } =
+      take_only_the_necessary_value(bin);
+
+    const isExisted =
+      productEntry?.find(
+        (existingEntry) => existingEntry.barcodeId === barcodeId
+      ) !== undefined;
+
+    let newEntry: EntriesTypes = {
+      totalQuantity,
+      productName,
+      barcodeId,
+      binIdsEntries: [binId],
+    };
+
+    if (isExisted) {
+      setProductEntry(
+        productEntry.map((entry) => {
+          return entry.barcodeId === barcodeId &&
+            !entry.binIdsEntries.includes(binId)
+            ? { ...entry, binIdsEntries: [...entry.binIdsEntries, binId] }
+            : entry;
+        })
+      );
     } else {
-      setSelectedBinIds([...selectedBinIds, binId]);
+      productEntry && setProductEntry([...productEntry, newEntry]);
     }
   }
+
+  const take_only_the_necessary_value = (bin: Bin) => {
+    const totalQuantity = bin._count.assignment;
+    const productName = bin.assignment[0].products.productName;
+    const barcodeId = bin.assignment[0].products.barcodeId;
+    const binId = bin.id;
+
+    return { totalQuantity, productName, barcodeId, binId };
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,7 +102,7 @@ function BinsLayout({
       if (bins) {
         for (let bin of bins) {
           const binCount = bin._count.assignment;
-          console.log("bin count:", binCount);
+          // console.log("bin count:", binCount);
           if (negatedThreshold <= 0) {
             break;
           }
@@ -74,7 +110,7 @@ function BinsLayout({
           coveredBin.push(bin?.id);
           console.log("negated:", negatedThreshold);
         }
-        console.log("cover bin id:", JSON.stringify(coveredBin));
+        // console.log("cover bin id:", JSON.stringify(coveredBin));
         setCoverdBins(coveredBin); // Update the state with the final value
       }
     }, 500);
@@ -110,8 +146,8 @@ function BinsLayout({
               <tr
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log(bin?.id);
-                  selectBin(bin?.id);
+                  selectEntry(bin);
+                  // selectBin(bin?.id);
                 }}
                 key={index}
                 className={`text-white transition-all ${
@@ -166,4 +202,20 @@ function BinsLayout({
   );
 }
 
-export default BinsLayout;
+/**
+  type BucketEntryTypes = {
+    totalQuantity: number,
+    binIdEntries: string[]
+  }
+ */
+
+// SELECTED BINS
+
+// IT WILL GO TO THE PLACEHOLDER
+// IF THE BINIDS ARE THESAME IT WILL MERGE OTHERWISE
+// IT WILL PUSH OR CREATE A NEW ENTRY
+
+// PER NEW ENTRY QUANTITY WILL BE BASED ON THE USER'S
+// INPUT
+
+// BODY OF ENTRY {QUANTITY: NUMBER, BINID: [1,2,3]}

@@ -33,15 +33,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         const auth = localStorage.setItem("authenticated", "false");
         if (!Boolean(auth)) {
           // setIsAuthenticated(false);
+
           router.push("/");
         }
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      console.log(globalState?.verifiedToken?.roles);
     }
   };
 
-  console.log(globalState?.verifiedToken?.roles);
   return (
     <div className="flex h-full w-full flex-wrap items-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
       <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto break-words p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">

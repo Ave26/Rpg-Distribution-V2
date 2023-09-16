@@ -1,32 +1,28 @@
 import React, { ReactElement, useState, useEffect } from "react";
-import Layout from "@/components/layout";
-import DashboardLayout from "@/components/Admin/dashboardLayout";
 import useSWR from "swr";
 import Head from "next/head";
+import Layout from "@/components/layout";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 import BinsLayout from "@/components/BinsLayout";
 import Loading from "@/components/Parts/Loading";
-import { Bin } from "@/types/inventory";
 import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
-interface ProductEntryTypes {
-  BinId: string[];
-  BarcodeId: string;
-  productName: string;
-  sku: string;
-  Quantity: number;
-  totalPrice: number;
-  expirationDate: Date[];
-}
+// Types
+import { EntriesTypes } from "@/types/binEntries";
+import { Bin } from "@/types/inventory";
 
 export default function PickingAndPacking() {
+  // let Entries: EntriesTypes[] = new Array();
+  // console.log(Entries);
+
   const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
   const [isMarking, isSetMarking] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
-  const [productEntery, setProductEntry] = useState<ProductEntryTypes[]>([]);
-
+  const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
+  console.log(productEntry);
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "POST",
@@ -154,15 +150,20 @@ export default function PickingAndPacking() {
                 handleMutation: () => mutate(),
               }}
               setRequest={{ setSelectedBinIds }}
-              request={{ barcodeId: barcode, quantity, selectedBinIds }}
+              request={{
+                barcodeId: barcode,
+                quantity,
+                selectedBinIds,
+              }}
+              dataEntries={{ productEntry, setProductEntry }}
             />
             <div className="h-[17em] w-full overflow-y-auto border border-black md:w-[45em]">
-              {productEntery.map((entry, index) => (
+              {productEntry?.map((entry, index) => (
                 <span
-                  key={index}
+                  key={entry.barcodeId}
                   className="relative my-2 flex h-1/4 w-full items-center justify-center gap-2">
                   <h1 className="flex h-full w-full items-center justify-center border text-center">
-                    {/* Name of product: {entry.id} */}
+                    Name of product: {entry.productName}
                   </h1>
                   <button className="h-full w-1/12 border">x</button>
                 </span>
