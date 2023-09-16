@@ -1,4 +1,3 @@
-import { equal } from "assert";
 import prisma from ".";
 
 export async function findBinByBarcode(barcodeId: string) {

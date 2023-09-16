@@ -145,7 +145,7 @@ model assignment {
   expirationDate       DateTime?
   boxSize              String?
   isDamage             Boolean?
-  isMarked             Boolean?            @default(false)
+  isMarked             Boolean             @default(false)
   products             products?           @relation(fields: [productId], references: [id])
   productId            String?             @db.ObjectId
   bin                  bins?               @relation(fields: [binId], references: [id])
