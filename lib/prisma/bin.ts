@@ -14,15 +14,15 @@ export async function findBinByBarcode(barcodeId: string) {
         },
       },
       include: {
-        // _count: {
-        //   select: {
-        //     assignment: {
-        //       where: {
-        //         isMarked: false,
-        //       },
-        //     },
-        //   },
-        // },
+        _count: {
+          select: {
+            assignment: {
+              where: {
+                isMarked: false,
+              },
+            },
+          },
+        },
 
         assignment: {
           select: {
@@ -74,15 +74,15 @@ export async function findAllBin() {
       },
 
       include: {
-        // _count: {
-        //   select: {
-        //     assignment: {
-        //       where: {
-        //         isMarked: false,
-        //       },
-        //     },
-        //   },
-        // },
+        _count: {
+          select: {
+            assignment: {
+              where: {
+                isMarked: false,
+              },
+            },
+          },
+        },
         assignment: {
           where: {
             isMarked: false,

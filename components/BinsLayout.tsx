@@ -71,12 +71,11 @@ export default function BinsLayout({
 
     if (isExisted) {
       setProductEntry(
-        productEntry.map((entry) => {
-          return entry.barcodeId === barcodeId &&
-            !entry.binIdsEntries.includes(binId)
+        productEntry.map((entry) =>
+          entry.barcodeId === barcodeId && !entry.binIdsEntries.includes(binId)
             ? { ...entry, binIdsEntries: [...entry.binIdsEntries, binId] }
-            : entry;
-        })
+            : entry
+        )
       );
     } else {
       productEntry && setProductEntry([...productEntry, newEntry]);
@@ -101,7 +100,7 @@ export default function BinsLayout({
       const bins = dataManipulator?.bins;
       if (bins) {
         for (let bin of bins) {
-          const binCount = bin._count.assignment;
+          const binCount = bin._count?.assignment;
           // console.log("bin count:", binCount);
           if (negatedThreshold <= 0) {
             break;

@@ -20,6 +20,7 @@ export default function PickingAndPacking() {
   const [quantity, setQuantity] = useState<number>(0);
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
   console.log(productEntry);
+
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "POST",
