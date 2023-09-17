@@ -200,21 +200,3 @@ export default function BinsLayout({
     </div>
   );
 }
-
-/**
-  type BucketEntryTypes = {
-    totalQuantity: number,
-    binIdEntries: string[]
-  }
- */
-
-// SELECTED BINS
-
-// IT WILL GO TO THE PLACEHOLDER
-// IF THE BINIDS ARE THESAME IT WILL MERGE OTHERWISE
-// IT WILL PUSH OR CREATE A NEW ENTRY
-
-// PER NEW ENTRY QUANTITY WILL BE BASED ON THE USER'S
-// INPUT
-
-// BODY OF ENTRY {QUANTITY: NUMBER, BINID: [1,2,3]}

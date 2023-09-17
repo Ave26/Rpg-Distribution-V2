@@ -19,7 +19,7 @@ export default function PickingAndPacking() {
   const [barcode, setBarcode] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
-  console.log(productEntry);
+  const [isAnimate, setIsAnimate] = useState(false);
 
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
@@ -155,15 +155,24 @@ export default function PickingAndPacking() {
               }}
               dataEntries={{ productEntry, setProductEntry }}
             />
-            <div className="h-[17em] w-full overflow-y-auto border border-black md:w-[45em]">
+            <div className="border-slate h-[17em] w-full overflow-y-auto border border-black p-2 md:w-[45em]">
               {productEntry?.map((entry, index) => (
                 <span
                   key={entry.barcodeId}
-                  className="relative my-2 flex h-1/4 w-full items-center justify-center gap-2">
-                  <h1 className="flex h-full w-full items-center justify-center border text-center">
+                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 `}>
+                  <h1 className="flex h-full w-full items-center justify-center border border-slate-100/50 text-center">
                     Name of product: {entry.productName}
                   </h1>
-                  <button className="h-full w-1/12 border">x</button>
+                  <button
+                    className="h-full w-1/12 border border-slate-100/50"
+                    onClick={() => {
+                      const updatedProductEntry = [...productEntry];
+                      updatedProductEntry.splice(index, 1);
+                      setProductEntry(updatedProductEntry);
+                      setIsAnimate(true);
+                    }}>
+                    x
+                  </button>
                 </span>
               ))}
             </div>
