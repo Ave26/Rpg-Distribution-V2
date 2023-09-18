@@ -1,6 +1,7 @@
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useReducer, useState } from "react";
 import { Bin } from "@/types/inventory";
 import { EntriesTypes, dataEntriesTypes } from "@/types/binEntries";
+import Toast from "./Parts/Toast";
 
 interface BinsProps {
   dataManipulator?: BinsType;
@@ -21,9 +22,14 @@ interface SetRequestTypes {
 
 interface RequestTypes {
   quantity: number;
-  barcodeId: string;
+  barcodeId: string | null;
   selectedBinIds: string[];
 }
+
+type ToastTypes = {
+  message: string;
+  isShow: boolean;
+};
 
 export default function BinsLayout({
   dataManipulator,
@@ -34,8 +40,21 @@ export default function BinsLayout({
 }: BinsProps) {
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
   const { productEntry, setProductEntry } = dataEntries;
-  const { setSelectedBinIds } = setRequest;
-  const { selectedBinIds } = request;
+  const [toast, setToast] = useState<ToastTypes>({
+    isShow: false,
+    message: "",
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setToast({ ...toast, isShow: false });
+    }, 2500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [toast.isShow]);
+
   const titles = [
     "Quantity",
     "Product Category",
@@ -45,16 +64,28 @@ export default function BinsLayout({
     "Bin",
   ];
 
-  // function selectBin(binId: string) {
-  //   if (selectedBinIds.includes(binId)) {
-  //     setSelectedBinIds(selectedBinIds.filter((id) => id !== binId));
-  //   } else {
-  //     setSelectedBinIds([...selectedBinIds, binId]);
-  //   }
-  // }
-
   function selectEntry(bin: Bin) {
-    const { totalQuantity, productName, barcodeId, binId } =
+    if (!request.quantity || !request.barcodeId) {
+      console.log("U need to have a requested quantity");
+      return setToast({
+        isShow: true,
+        message: "Quantity undefined",
+      });
+    }
+    const bins = dataManipulator?.bins;
+    let totalProductQuantity: number = 0;
+    if (bins) {
+      for (let i = 0; i < Number(bins?.length); i++) {
+        totalProductQuantity += Number(bins[i]?._count.assignment);
+      }
+    }
+
+    if (request.quantity > totalProductQuantity) {
+      setToast({ isShow: true, message: "Action Denied" });
+      return console.log("Requested Quantity Exceeded");
+    }
+
+    const { productCount, productName, barcodeId, binId } =
       take_only_the_necessary_value(bin);
 
     const isExisted =
@@ -63,7 +94,7 @@ export default function BinsLayout({
       ) !== undefined;
 
     let newEntry: EntriesTypes = {
-      totalQuantity,
+      totalQuantity: request.quantity,
       productName,
       barcodeId,
       binIdsEntries: [binId],
@@ -82,13 +113,14 @@ export default function BinsLayout({
     }
   }
 
+  console.log(productEntry);
   const take_only_the_necessary_value = (bin: Bin) => {
-    const totalQuantity = bin._count.assignment;
+    const productCount = bin._count.assignment;
     const productName = bin.assignment[0].products.productName;
     const barcodeId = bin.assignment[0].products.barcodeId;
     const binId = bin.id;
 
-    return { totalQuantity, productName, barcodeId, binId };
+    return { productCount, productName, barcodeId, binId };
   };
 
   useEffect(() => {
@@ -98,7 +130,19 @@ export default function BinsLayout({
       const coveredBin = [];
 
       const bins = dataManipulator?.bins;
-      if (bins) {
+      if (bins && request.barcodeId) {
+        let totalProductQuantity: number = 0;
+        for (let i = 0; i < bins.length; i++) {
+          totalProductQuantity += bins[i]._count.assignment;
+        }
+
+        if (request.quantity > totalProductQuantity) {
+          setToast({ isShow: true, message: "Requested Quantity Exceeded" });
+          return console.log("Requested Quantity Exceeded");
+        }
+
+        console.log("Number:", totalProductQuantity);
+
         for (let bin of bins) {
           const binCount = bin._count?.assignment;
           // console.log("bin count:", binCount);
@@ -110,7 +154,7 @@ export default function BinsLayout({
           console.log("negated:", negatedThreshold);
         }
         // console.log("cover bin id:", JSON.stringify(coveredBin));
-        setCoverdBins(coveredBin); // Update the state with the final value
+        setCoverdBins(coveredBin);
       }
     }, 500);
 
@@ -120,74 +164,83 @@ export default function BinsLayout({
   }, [request.quantity]);
 
   return (
-    <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em] md:max-h-[25em] md:min-w-0 md:max-w-[45em]">
-      <table className="rounded-t-md  text-left text-sm text-gray-500 dark:text-gray-400">
-        <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            {titles.map((title, index) => {
+    <>
+      <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em] md:max-h-[25em] md:min-w-0 md:max-w-[45em]">
+        <table className="rounded-t-md text-left text-sm text-gray-500 dark:text-gray-400">
+          <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              {titles.map((title, index) => {
+                return (
+                  <th
+                    scope="col"
+                    key={index}
+                    className={`px-6 py-3 md:py-7 ${
+                      (index === 0 && "rounded-tl-md") ||
+                      (index === 5 && "rounded-tr-md")
+                    }`}>
+                    {title}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {dataManipulator?.bins?.map((bin: Bin, index) => {
               return (
-                <th
-                  scope="col"
+                <tr
+                  onClick={(e) => {
+                    e.preventDefault();
+                    selectEntry(bin);
+                    // selectBin(bin?.id);
+                  }}
                   key={index}
-                  className={`px-6 py-3 md:py-7 ${
-                    (index === 0 && "rounded-tl-md") ||
-                    (index === 5 && "rounded-tr-md")
+                  className={`text-white transition-all ${
+                    coveredBins.includes(bin?.id)
+                      ? "ring-2 ring-inset ring-white transition-all delay-100"
+                      : "ring-none"
+                  } ${
+                    productEntry?.find((value) =>
+                      value.binIdsEntries.includes(bin.id)
+                    )
+                      ? "bg-emerald-500"
+                      : "bg-gray-800"
                   }`}>
-                  {title}
-                </th>
+                  <td className="px-6 py-4">
+                    {Number(bin?._count?.assignment)}
+                  </td>
+                  <td className="px-6 py-4">
+                    {String(bin?.racks?.categories?.category)}
+                  </td>
+                  <td className="px-6 py-4">
+                    {
+                      bin?.assignment?.map((assign) => {
+                        return assign?.products?.productName;
+                      })[0]
+                    }
+                  </td>
+                  <td className="px-6 py-4">
+                    {
+                      bin?.assignment?.map((assign) => {
+                        return assign?.products?.price;
+                      })[0]
+                    }
+                  </td>
+                  <td className="px-6 py-4">
+                    {
+                      bin?.assignment?.map(
+                        (assign) => assign?.products?.price
+                      )[0]
+                    }
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
+                  </td>
+                </tr>
               );
             })}
-          </tr>
-        </thead>
-        <tbody>
-          {dataManipulator?.bins?.map((bin: Bin, index) => {
-            return (
-              <tr
-                onClick={(e) => {
-                  e.preventDefault();
-                  selectEntry(bin);
-                  // selectBin(bin?.id);
-                }}
-                key={index}
-                className={`text-white transition-all ${
-                  coveredBins.includes(bin?.id)
-                    ? "ring-2 ring-inset ring-white transition-all delay-100"
-                    : "ring-none"
-                } ${
-                  selectedBinIds.includes(bin?.id)
-                    ? "bg-emerald-500"
-                    : "bg-gray-800"
-                }`}>
-                <td className="px-6 py-4">{Number(bin?._count?.assignment)}</td>
-                <td className="px-6 py-4">
-                  {String(bin?.racks?.categories?.category)}
-                </td>
-                <td className="px-6 py-4">
-                  {
-                    bin?.assignment?.map((assign) => {
-                      return assign?.products?.productName;
-                    })[0]
-                  }
-                </td>
-                <td className="px-6 py-4">
-                  {
-                    bin?.assignment?.map((assign) => {
-                      return assign?.products?.price;
-                    })[0]
-                  }
-                </td>
-                <td className="px-6 py-4">
-                  {bin?.assignment?.map((assign) => assign?.products?.price)[0]}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
+          </tbody>
 
-        {/* <tfoot>
+          {/* <tfoot>
           <tr className="font-semibold text-gray-900 dark:text-white">
             <th scope="row" className="px-6 py-3 text-base">
               Total
@@ -196,7 +249,9 @@ export default function BinsLayout({
             <td className="px-6 py-3">21,000</td>
           </tr>
         </tfoot> */}
-      </table>
-    </div>
+        </table>
+      </div>
+      <Toast data={toast.message} isShow={toast.isShow} />
+    </>
   );
 }

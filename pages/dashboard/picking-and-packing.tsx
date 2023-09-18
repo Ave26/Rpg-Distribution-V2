@@ -78,19 +78,35 @@ export default function PickingAndPacking() {
   }
 
   useEffect(() => {
-    if (selectedBinIds.length > 0) {
-      const beforeUnloadListener = (e: BeforeUnloadEvent) => {
-        e.preventDefault();
-        e.returnValue = "Escape this shiit?";
-      };
+    if (productEntry) {
+      if (productEntry?.length > 0) {
+        const beforeUnloadListener = (e: BeforeUnloadEvent) => {
+          e.preventDefault();
+          e.returnValue = "Escape this shit?";
+        };
 
-      window.addEventListener("beforeunload", beforeUnloadListener);
+        window.addEventListener("beforeunload", beforeUnloadListener);
 
-      return () => {
-        window.removeEventListener("beforeunload", beforeUnloadListener);
-      };
+        return () => {
+          window.removeEventListener("beforeunload", beforeUnloadListener);
+        };
+      }
     }
-  }, [selectedBinIds]);
+  }, [productEntry]);
+
+  async function makeReport() {
+    try {
+      const response = await fetch("/api/outbound/make-report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productEntry: productEntry }),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -121,7 +137,7 @@ export default function PickingAndPacking() {
             name={"Clear Selected Bins"}
             className="flex items-center justify-center rounded-lg border border-black bg-transparent p-2 text-center text-base font-medium text-black hover:shadow-lg dark:bg-transparent dark:active:bg-pink-700"
             onClick={() => {
-              setSelectedBinIds([]);
+              setProductEntry([]);
             }}
           />
 
@@ -155,16 +171,28 @@ export default function PickingAndPacking() {
               }}
               dataEntries={{ productEntry, setProductEntry }}
             />
-            <div className="border-slate h-[17em] w-full overflow-y-auto border border-black p-2 md:w-[45em]">
+            <div className="border-slate relative h-[17em] w-full overflow-y-auto border border-black p-2 md:w-[45em]">
               {productEntry?.map((entry, index) => (
                 <span
                   key={entry.barcodeId}
-                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 `}>
-                  <h1 className="flex h-full w-full items-center justify-center border border-slate-100/50 text-center">
-                    Name of product: {entry.productName}
-                  </h1>
+                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 text-white`}>
+                  <div className="flex h-full w-full flex-row items-center justify-between rounded-lg border border-slate-100/50 p-2 text-center">
+                    <div className="flex flex-col items-start">
+                      <h1>
+                        <strong>{entry.productName}</strong>
+                      </h1>
+
+                      <p>
+                        Covered Bin Count: {Number(entry.binIdsEntries.length)}
+                      </p>
+                    </div>
+
+                    <div className="flex rounded-lg border bg-slate-100/30 px-4 py-2 text-white">
+                      {entry.totalQuantity}
+                    </div>
+                  </div>
                   <button
-                    className="h-full w-1/12 border border-slate-100/50"
+                    className="h-full w-1/12 rounded-lg border border-slate-100/50"
                     onClick={() => {
                       const updatedProductEntry = [...productEntry];
                       updatedProductEntry.splice(index, 1);
@@ -181,6 +209,7 @@ export default function PickingAndPacking() {
                 type={"submit"}
                 isLoading={isMarking}
                 name={"Confirm and Print report"}
+                onClick={makeReport}
                 className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
               />
             </div>
