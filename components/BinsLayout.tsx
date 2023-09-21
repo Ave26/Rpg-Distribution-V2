@@ -64,46 +64,29 @@ export default function BinsLayout({
     "Bin",
   ];
 
-  function selectEntry(bin: Bin) {
+  async function selectEntry(bin: Bin) {
     if (!request.quantity || !request.barcodeId) {
-      console.log("U need to have a requested quantity");
+      console.log("You need to have a requested quantity");
       return setToast({
         isShow: true,
         message: "Quantity undefined",
       });
     }
-    const bins = dataManipulator?.bins;
-    let totalProductQuantity: number = 0;
-    if (bins) {
-      for (let i = 0; i < Number(bins?.length); i++) {
-        totalProductQuantity += Number(bins[i]?._count.assignment);
-      }
-    }
 
-    if (request.quantity > totalProductQuantity) {
-      setToast({ isShow: true, message: "Action Denied" });
-      return console.log("Requested Quantity Exceeded");
-    }
-
-    const { productCount, productName, barcodeId, binId } =
-      take_only_the_necessary_value(bin);
+    get_total_product_quantity();
+    const quantity = Number(request?.quantity);
+    const { newEntry, binId } = take_only_the_necessary_value(bin, quantity);
 
     const isExisted =
       productEntry?.find(
-        (existingEntry) => existingEntry.barcodeId === barcodeId
+        (existingEntry) => existingEntry.barcodeId === newEntry.barcodeId
       ) !== undefined;
-
-    let newEntry: EntriesTypes = {
-      totalQuantity: request.quantity,
-      productName,
-      barcodeId,
-      binIdsEntries: [binId],
-    };
 
     if (isExisted) {
       setProductEntry(
         productEntry.map((entry) =>
-          entry.barcodeId === barcodeId && !entry.binIdsEntries.includes(binId)
+          entry.barcodeId === newEntry.barcodeId &&
+          !entry.binIdsEntries.includes(binId)
             ? { ...entry, binIdsEntries: [...entry.binIdsEntries, binId] }
             : entry
         )
@@ -114,13 +97,46 @@ export default function BinsLayout({
   }
 
   console.log(productEntry);
-  const take_only_the_necessary_value = (bin: Bin) => {
-    const productCount = bin._count.assignment;
-    const productName = bin.assignment[0].products.productName;
-    const barcodeId = bin.assignment[0].products.barcodeId;
+  const take_only_the_necessary_value = (bin: Bin, quantity: number) => {
+    const productName = bin.assignment[0]?.products.productName;
+    const barcodeId = bin.assignment[0]?.products.barcodeId;
+    const expiryDate = bin.assignment[0]?.expirationDate;
+    const price = bin.assignment[0]?.products.price;
+    const sku = bin.assignment[0]?.products.sku;
     const binId = bin.id;
 
-    return { productCount, productName, barcodeId, binId };
+    let newEntry: EntriesTypes = {
+      totalQuantity: Number(quantity),
+      productName,
+      barcodeId,
+      sku,
+      expiryDate,
+      price,
+      binIdsEntries: [binId],
+    };
+
+    return {
+      newEntry,
+      binId,
+    };
+  };
+
+  const get_total_product_quantity = () => {
+    const bins = dataManipulator?.bins;
+    let totalProductQuantity: number = 0;
+    if (bins) {
+      for (let i = 0; i < Number(bins?.length); i++) {
+        const productCount = Number(bins[i]?._count.assignment);
+        totalProductQuantity += productCount;
+      }
+    }
+
+    if (request.quantity > totalProductQuantity) {
+      setToast({ isShow: true, message: "Action Denied" });
+      return console.log("Requested Quantity Exceeded");
+    }
+
+    return totalProductQuantity;
   };
 
   useEffect(() => {
@@ -153,7 +169,7 @@ export default function BinsLayout({
           coveredBin.push(bin?.id);
           console.log("negated:", negatedThreshold);
         }
-        // console.log("cover bin id:", JSON.stringify(coveredBin));
+
         setCoverdBins(coveredBin);
       }
     }, 500);

@@ -15,8 +15,9 @@ import { Bin } from "@/types/inventory";
 
 export default function PickingAndPacking() {
   const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
-  const [isMarking, isSetMarking] = useState<boolean>(false);
-  const [barcode, setBarcode] = useState<string>("");
+  const [isMarking, isSetMarking] = useState(false);
+  const [barcode, setBarcode] = useState("");
+  const [clientName, setClientName] = useState("");
   const [quantity, setQuantity] = useState<number>(0);
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
   const [isAnimate, setIsAnimate] = useState(false);
@@ -101,7 +102,7 @@ export default function PickingAndPacking() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productEntry: productEntry }),
+        body: JSON.stringify({ productEntry }),
       });
     } catch (error) {
       console.log(error);
@@ -139,16 +140,6 @@ export default function PickingAndPacking() {
             onClick={() => {
               setProductEntry([]);
             }}
-          />
-
-          <ReusableButton
-            type={"submit"}
-            isLoading={isMarking}
-            name={"Add to cart"}
-            onClick={() => {
-              console.log("add to cart");
-            }}
-            className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
           />
         </div>
         {isLoading ? (

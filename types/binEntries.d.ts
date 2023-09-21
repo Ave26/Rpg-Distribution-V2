@@ -2,6 +2,9 @@ type EntriesTypes = {
   totalQuantity: number;
   productName: string;
   barcodeId: string;
+  expiryDate: date;
+  sku: string;
+  price: number;
   binIdsEntries: string[];
 };
 

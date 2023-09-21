@@ -1,7 +1,7 @@
 import prisma from ".";
 
 export async function findBinByBarcode(barcodeId: string) {
-  console.log(barcodeId);
+  // console.log(barcodeId);
   try {
     const bins = await prisma.bins.findMany({
       where: {
@@ -26,6 +26,8 @@ export async function findBinByBarcode(barcodeId: string) {
 
         assignment: {
           select: {
+            expirationDate: true,
+            dateReceive: true,
             products: {
               select: {
                 barcodeId: true,
@@ -55,7 +57,7 @@ export async function findBinByBarcode(barcodeId: string) {
     //   (bin) => Number(bin._count.assignment) > 0
     // );
 
-    console.log(binThatHasCount);
+    // console.log(binThatHasCount);
     return { binThatHasCount };
   } catch (error) {
     return { error };
@@ -88,6 +90,8 @@ export async function findAllBin() {
             isMarked: false,
           },
           select: {
+            expirationDate: true,
+            dateReceive: true,
             products: {
               select: {
                 barcodeId: true,

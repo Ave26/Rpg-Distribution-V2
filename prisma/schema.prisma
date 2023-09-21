@@ -48,6 +48,8 @@ model users {
   binLogs            binLogs[]
   OutBoundLog        OutBoundLog?         @relation(fields: [outBoundLogId], references: [id])
   outBoundLogId      String?              @db.ObjectId
+  orderReportId      String?              @db.ObjectId
+  orderReport        OrderReport[]
   transactionRecords transactionRecords[]
 }
 
@@ -127,6 +129,7 @@ model bins {
   binLogs           binLogs[]
   orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
   orderedProductsId String?            @db.ObjectId
+  OrderReport       OrderReport[]
 }
 
 model binLogs {
@@ -156,6 +159,37 @@ model assignment {
   damageBinId          String?             @db.ObjectId
   transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
   transactionRecordsId String?             @db.ObjectId
+}
+
+model OrderReport {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  totalQuantity Int?
+  productName   String?
+  barcodeId     String?
+  expiryDate    DateTime?
+  sku           String?
+  price         Int?
+  bins          bins?     @relation(fields: [binId], references: [id])
+  binId         String?   @db.ObjectId
+  users         users?    @relation(fields: [usersId], references: [id])
+  usersId       String?   @db.ObjectId
+}
+
+type productOrdered {
+  totalQuantity Int
+  productName   String
+  barcodeId     String
+  expiryDate    DateTime
+  sku           String
+  price         Int
+  binIdsEntries String[]
+}
+
+model orders {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  clientName     String
+  dateCreated    DateTime
+  productOrdered productOrdered[]
 }
 
 model OutBoundLog {
