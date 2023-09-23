@@ -75,8 +75,8 @@ export default function ScanBarcode({
         onChange={(value: string) => {
           setIsFetch(true);
           setBarcodeId(value);
-          if (value.length > 12) {
-            setBarcodeId(value.slice(12));
+          if (value.length > 13) {
+            setBarcodeId(value.slice(13));
           }
         }}
       />
