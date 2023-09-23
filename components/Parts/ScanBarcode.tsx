@@ -6,28 +6,37 @@ import Loading from "./Loading";
 
 interface Barcode {
   barcodeId: string;
-  isManual?: boolean;
+  setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
   purchaseOrder: string;
   boxSize: string;
-  expirationDate: string;
-  setBarcodeId: React.Dispatch<React.SetStateAction<string>>;
+  expirationDate: Date | null | string;
+  quality: string;
+  quantity: number;
+  isManual?: boolean;
 }
 
 export default function ScanBarcode({
   barcodeId,
   setBarcodeId,
-  isManual,
   purchaseOrder,
   boxSize,
   expirationDate,
+  quality,
+  quantity,
+  isManual,
 }: Barcode): JSX.Element {
   const router = useRouter();
   const [isFetch, setIsFetch] = useState<boolean>(false);
   const [binId, setBinId] = useState<string>("");
   const [count, setCount] = useState<number>(0);
   const [capacity, setCapacity] = useState<number>(0);
-
+  const [binIndex, setBinIndex] = useState<number>(0);
+  const [shelfLevel, setShelfLevel] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
   async function assignProduct() {
     setIsLoading(true);
@@ -38,18 +47,26 @@ export default function ScanBarcode({
       },
       body: JSON.stringify({
         barcodeId,
+        purchaseOrder,
+        boxSize,
         expirationDate,
+        quality,
+        quantity,
       }),
     });
     setIsLoading(false);
     setIsFetch(false);
     const json = await response.json();
 
-    if (json?.isAuthenticated === false) {
-      router.push("/login");
+    if (response.status === 200 || response.status === 405) {
+      setBinIndex(json?.row);
+      setShelfLevel(json?.shelfLevel);
+      console.log(json?.message);
+      setMessage(json?.message);
+      setIsShow(true);
     }
-    console.log(json?.message, json?.binId);
-    setCount(json?.count);
+    console.log(json);
+    setCount(json?.TotalAssignedProduct);
     setCapacity(json?.capacity);
     setBinId(json?.binId);
     try {
@@ -67,43 +84,59 @@ export default function ScanBarcode({
     }
   }, [isFetch]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShow(false);
+    }, 2100);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isShow]);
+
   return (
-    <div className="flex h-full w-full items-center justify-center gap-2 font-bold">
+    <div className="flex h-full w-full items-center justify-center font-bold transition-all">
       <ReusableInput
+        autoFocus
+        disableLabel={true}
         name="Barcode Id:"
         value={barcodeId}
         onChange={(value: string) => {
-          setIsFetch(true);
           setBarcodeId(value);
-          if (value.length > 13) {
-            setBarcodeId(value.slice(13));
+          if (value.length > 14) {
+            setBarcodeId(value.slice(14));
+          } else if (value.length === 14) {
+            setIsFetch(true);
           }
         }}
       />
       {isManual ? (
-        <div className="transition-all">
+        <div className="p-2 transition-all">
           <ReusableInput
+            min={0}
+            placeholder={""}
             type="number"
             name="Quantity"
-            value={count}
-            onChange={(value: any) => {
+            value={quantity}
+            onChange={(value: number) => {
               setCount(value);
             }}
           />
         </div>
       ) : (
-        <div className="h-24 w-28 p-4 transition-all">
+        <div className="h-24 w-28 p-1 transition-all">
+          <h1 className="text-center">
+            Bin: {binIndex} - {shelfLevel}
+          </h1>
           <div
             className={`${
-              count > 0 &&
-              capacity > 0 &&
-              count === capacity &&
-              "border-none bg-pink-400 shadow-lg transition-all"
-            } flex h-full w-full items-center justify-center rounded-lg border border-black transition-all`}>
+              count >= capacity &&
+              "border-none bg-pink-400/70 shadow-lg transition-all"
+            } flex h-full w-full items-center justify-center rounded-lg border border-black bg-pink-400/30 transition-all`}>
             {isLoading ? <Loading /> : `${count ?? 0} / ${capacity ?? 0}`}
           </div>
         </div>
       )}
+      <Toast data={message} isShow={isShow} />
     </div>
   );
 }

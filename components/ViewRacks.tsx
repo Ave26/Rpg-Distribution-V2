@@ -1,33 +1,61 @@
 // this is intended to keep track where the product will be placed in automatic Mode
 import React, { useState } from "react";
 
-function ViewRacks({ isOpenRack }: { isOpenRack: boolean }): JSX.Element {
+interface ViewRacksProps {
+  isOpenRack: boolean;
+  racks?: ShelfLevel[];
+}
+
+interface ShelfLevel {
+  id: string;
+  level: number;
+  capacity: boolean;
+  racksId: string;
+  bin: Bin[];
+}
+
+interface Bin {
+  id: string;
+  isAvailable: boolean;
+  binSection: null;
+  capacity: number;
+  racksId: null;
+  shelfLevelId: string;
+}
+
+function ViewRacks({ isOpenRack, racks }: ViewRacksProps): JSX.Element {
   const [rackName, setRackName] = useState<string>("Rack Name");
   const [style, setStyle] = useState("");
-  const array = [
-    [6, 12, 18, 24, 30, 36],
-    [5, 11, 17, 23, 29, 35],
-    [4, 10, 16, 22, 28, 34],
-    [3, 9, 15, 21, 27, 33],
-    [2, 8, 14, 20, 26, 32],
-    [1, 7, 13, 19, 25, 31],
-  ];
 
   return (
-    <div
-      className={`h-full break-all rounded-lg bg-cyan-500 p-2 text-xs shadow-lg shadow-cyan-500/50 md:text-sm`}>
-      <h1 className="text-white">{rackName}</h1>
-      {array.map((row, rowIndex) => (
-        <div className="grid grid-cols-6 gap-2 " key={rowIndex}>
-          {row.map((item, colIndex) => (
+    <div className="flex h-full w-60 flex-col items-center justify-center border">
+      {racks
+        ?.map((value, index) => {
+          return (
             <div
-              className="m-1 flex items-center justify-center rounded-sm bg-white p-2 shadow-lg"
-              key={colIndex}>
-              {item}
+              key={value?.id}
+              className="grid h-full w-full grid-flow-col gap-2 border">
+              {value.bin.map((v, i) => {
+                return (
+                  <div key={value?.id} className="h-full w-full border">
+                    {value?.level}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setRackName(v.id);
+                        console.log(v?.id);
+                      }}
+                      key={v.id}
+                      className="h-full w-full cursor-pointer rounded-md border border-black text-center hover:bg-cyan-500/30">
+                      {`A${i + 1}-${index + 1}`}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      ))}
+          );
+        })
+        .reverse()}
     </div>
   );
 }

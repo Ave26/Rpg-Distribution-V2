@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import Toast from "@/components/Parts/Toast";
 import ReusableInput from "@/components/Parts/ReusableInput";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
+import ReusableButton from "@/components/Parts/ReusableButton";
 
-export default function AccountManagement() {
+const AccountManagement = (): JSX.Element => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cPassword, setCPassword] = useState<string>("");
@@ -24,17 +26,17 @@ export default function AccountManagement() {
     },
   });
 
-  const [show, setShow] = useState<boolean>(false);
+  const [isShow, setIsShow] = useState<boolean>(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShow(false);
+      setIsShow(false);
     }, 2000);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [show]);
+  }, [isShow]);
 
   const handleRegister = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,6 +51,7 @@ export default function AccountManagement() {
       });
 
       const json = await response.json();
+      setIsShow(true);
       console.log(json);
       setData(json?.message);
       setIsLoading(false);
@@ -67,11 +70,12 @@ export default function AccountManagement() {
   };
 
   return (
-    <Layout>
-      <form action="" onSubmit={handleRegister} className="p-4 lg:px-96 ">
-        <div className="flex h-screen w-full grid-flow-col grid-rows-3 flex-col items-center justify-center p-2 md:grid md:gap-4 md:py-40">
+    <>
+      <form onSubmit={handleRegister} className="h-full w-full p-2">
+        <div className="flex h-full w-full grid-flow-col grid-rows-3 flex-col items-center justify-center p-2 md:grid md:gap-4">
           <ReusableInput
             value={username}
+            disableLabel={true}
             autoComplete="off"
             id="registerUsername"
             name="Username"
@@ -80,6 +84,7 @@ export default function AccountManagement() {
           />
           <ReusableInput
             value={password}
+            disableLabel={true}
             autoComplete="off"
             name="Password"
             type="password"
@@ -87,6 +92,7 @@ export default function AccountManagement() {
           />
           <ReusableInput
             value={cPassword}
+            disableLabel={true}
             autoComplete="off"
             name="Confirm Password"
             type="password"
@@ -94,6 +100,7 @@ export default function AccountManagement() {
           />
           <ReusableInput
             value={dob}
+            disableLabel={true}
             autoComplete="off"
             name="Date of Birth"
             type="date"
@@ -101,6 +108,7 @@ export default function AccountManagement() {
           />
           <ReusableInput
             value={phoneNum}
+            disableLabel={true}
             autoComplete="off"
             name="Phone Number"
             type="text"
@@ -108,14 +116,22 @@ export default function AccountManagement() {
           />
           <ReusableInput
             value={email}
+            disableLabel={true}
             autoComplete="off"
             name="Email"
             type="email"
             onChange={(value: any) => setEmail(value)}
           />
         </div>
+        <div className="flex h-full w-full items-center justify-center">
+          <ReusableButton
+            name={"Submit"}
+            type="submit"
+            className="w-fit rounded-md border px-10 py-2 font-semibold"
+          />
+        </div>
 
-        <button
+        {/* <button
           type="submit"
           className="inline-flex h-20 w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700">
           {isLoading ? (
@@ -138,9 +154,19 @@ export default function AccountManagement() {
           ) : (
             "Save"
           )}
-        </button>
+        </button> */}
       </form>
-      <Toast data={data} />
+      <Toast data={data} isShow={isShow} />
+    </>
+  );
+};
+
+export default AccountManagement;
+
+AccountManagement.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
     </Layout>
   );
-}
+};

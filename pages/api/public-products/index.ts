@@ -8,7 +8,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET":
       const { products, error } = await findPublicProducts();
-      console.log(products);
       try {
         if (error) {
           return res.send(error);

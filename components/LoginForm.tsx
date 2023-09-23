@@ -2,13 +2,34 @@ import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import logo from "@/public/assets/ProStockV2.png";
-// types
-import useSWR from "swr";
+import ReusableButton from "./Parts/ReusableButton";
 import ReusableInput from "./Parts/ReusableInput";
+import { LiaUser } from "react-icons/lia";
+import { BiKey } from "react-icons/bi";
+import Toast from "./Parts/Toast";
 
 interface Auth {
   username: string;
   password: string;
+}
+
+interface Data {
+  authenticated: boolean;
+  message: string;
+  user: User;
+}
+
+interface User {
+  additional_Info: AdditionInfo;
+  id: string;
+  roles: string;
+  username: string;
+}
+
+interface AdditionInfo {
+  Dob: string;
+  Phone_Number: number;
+  email: string;
 }
 
 interface StateActionData {
@@ -16,19 +37,19 @@ interface StateActionData {
   setShow: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export default function LoginForm({ setData, setShow }: StateActionData) {
+export default function LoginForm() {
   const router = useRouter();
+  const [message, setMessage] = useState<string>("");
+  const [isShow, setIsShow] = useState<boolean>(false);
   const [auth, setAuth] = useState<Auth>({
     username: "",
     password: "",
   });
 
-  const [btnStyle, setBtnStyle] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("click");
 
     const requestBody = JSON.stringify({
       username: auth.username,
@@ -43,26 +64,24 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
         },
         body: requestBody,
       });
-      const json = await response.json();
-      // console.log(json);
+      const json: Data = await response.json();
       switch (response.status) {
         case 200:
-          setData(json.message);
-          router.push("/");
-          localStorage.setItem("authenticated", "true");
+          json?.authenticated && router.push("/dashboard/barcode-scanner");
+
+          setIsShow(false);
 
           break;
         case 401:
-          console.log(json.message);
-          setData(json.message);
+          console.log(json?.message);
+          setMessage(json?.message);
+          setIsShow(true);
           break;
         case 404:
           console.log(json.message);
-          setData(json.message);
           break;
         case 505:
           console.log(json.message);
-          setData(json.message);
           break;
       }
     } catch (error: unknown | any) {
@@ -73,102 +92,72 @@ export default function LoginForm({ setData, setShow }: StateActionData) {
         password: "",
       });
       setIsLoading(false);
-      setShow(true);
     }
   };
-  const inputStyle =
-    "ring-1 ring-black px-6 py-4 rounded-sm bg-transparent border border-slate-900 text-black md:px-[3.5em] md:text-center w-full";
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShow(false);
+    }, 1500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isShow]);
 
   return (
-    <form
-      className="relative flex h-full w-fit flex-col items-center justify-center rounded-2xl font-bold shadow-2xl drop-shadow-2xl md:flex-row-reverse"
-      onSubmit={handleLogin}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        e.key === "Enter" && setBtnStyle("bg-slate-100 text-black");
-      }}
-      onKeyUp={(e: React.KeyboardEvent) => {
-        e.key === "Enter" && setBtnStyle("");
-      }}>
-      <div className="relative flex h-full flex-col items-center justify-center gap-4 md:p-20">
-        <h1 className="[ h-10 w-full text-center">Log in</h1>
-        <div className="flex w-full flex-col items-center justify-center gap-2">
-          <label htmlFor="username" className="w-full text-sm">
-            Username
+    <>
+      <form
+        onSubmit={handleLogin}
+        className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg">
+        <div className="relative flex h-full w-full items-center justify-center  gap-1 rounded-full border bg-white/20 pr-2 backdrop-blur">
+          <label
+            htmlFor="username"
+            className="flex items-center justify-center rounded-full bg-white p-4">
+            <LiaUser className="h-full w-full" />
           </label>
-          <input
-            required
+          <ReusableInput
             id="username"
-            type="text"
-            placeholder="username"
             value={auth.username}
-            onChange={(e) =>
-              setAuth((prevAuth) => {
-                return {
-                  ...prevAuth,
-                  username: e.target.value,
-                };
-              })
-            }
-            className={inputStyle}
+            placeholder="User Name"
+            type="text"
+            onChange={(value: string) => {
+              setAuth({
+                ...auth,
+                username: value,
+              });
+            }}
+            className="h-full w-full appearance-none rounded-r-full bg-transparent px-2 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
-
-        <div className="flex flex-col items-center justify-center gap-2">
-          <label htmlFor="password" className=" w-full text-sm">
-            Password
+        <div className="relative flex h-full w-full items-center justify-center gap-1 rounded-full border bg-white/20  pr-2 backdrop-blur">
+          <label
+            htmlFor="password"
+            className="flex items-center justify-center rounded-full bg-white p-4">
+            <BiKey className="h-full w-full" />
           </label>
-          <input
-            required
+          <ReusableInput
             id="password"
+            value={auth?.password}
+            placeholder="Password"
             type="password"
-            placeholder="password"
-            value={auth.password}
-            onChange={(e) =>
-              setAuth((prevAuth) => {
-                return {
-                  ...prevAuth,
-                  password: e.target.value,
-                };
-              })
-            }
-            className={inputStyle}
+            onChange={(value: string) => {
+              setAuth({
+                ...auth,
+                password: value,
+              });
+            }}
+            className="h-full w-full appearance-none rounded-r-full bg-transparent px-2 text-start text-black placeholder-slate-600/60 outline-none"
           />
         </div>
 
-        <button
+        <ReusableButton
+          name={"LOGIN"}
+          isLoading={isLoading}
           type="submit"
-          className="mr-2 inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4 focus:ring-blue-300 hover:bg-blue-800 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700">
-          {isLoading && (
-            <svg
-              aria-hidden="true"
-              role="status"
-              className="mr-3 inline h-4 w-4 animate-spin text-white"
-              viewBox="0 0 100 101"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"
-              />
-              <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"
-              />
-            </svg>
-          )}
-          {isLoading ? "Loading..." : "Login"}
-        </button>
-      </div>
-      <div className="flex h-full w-full flex-col items-center justify-center rounded-b-2xl bg-sky-300 md:gap-4 md:rounded-l-2xl md:rounded-br-none">
-        <Image
-          src={logo}
-          alt="RPG LOGO"
-          className="h-24 w-24 transition-all md:h-36 md:w-36"
+          className="flex h-full w-full items-center justify-center self-end rounded-full border border-white/50 bg-white p-2 transition-all md:w-28"
         />
-        <p className="text-md break-words p-5 text-center md:p-1">
-          Welcome to our Warehouse Management System. Let&apos;s get started!
-        </p>
-      </div>
-    </form>
+      </form>
+      <Toast data={message} isShow={isShow} />
+    </>
   );
 }

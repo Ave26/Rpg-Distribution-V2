@@ -1,3 +1,4 @@
+import { Category } from "@prisma/client";
 import prisma from ".";
 
 export const findPublicProducts = async () => {
@@ -47,16 +48,7 @@ export const findProductBaseOnName = async (productName: string) => {
 
 export const findManyProduct = async () => {
   try {
-    const product = await prisma.products.findMany({
-      include: {
-        _count: {
-          select: {
-            productLists: true,
-          },
-        },
-        productLists: true,
-      },
-    });
+    const product = await prisma.products.findMany({});
     return { product };
   } catch (error) {
     return { error };
@@ -81,12 +73,12 @@ export const findProduct = async (barcodeId: string) => {
 };
 
 export const addNewProduct = async (
-  // this will create new product
   barcodeId: string,
-  category: string,
+  category: Category,
   image: string,
   price: number,
-  productName: string
+  productName: string,
+  sku: string
 ) => {
   console.log(barcodeId, category, image, price, productName, "prisma");
   try {
@@ -95,7 +87,6 @@ export const addNewProduct = async (
         barcodeId,
       },
     });
-    // await findMaxQuantityPerBin(barcodeId)
 
     if (findProduct) {
       return { findProduct };
@@ -107,6 +98,7 @@ export const addNewProduct = async (
           image,
           price,
           productName,
+          sku,
         },
       });
       return { newProduct };

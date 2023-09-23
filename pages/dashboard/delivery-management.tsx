@@ -1,5 +1,6 @@
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 import Layout from "@/components/layout";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, ReactElement } from "react";
 
 type LocationEntry = {
   latitude: number;
@@ -183,8 +184,8 @@ const Geolocation = () => {
   }, [latitude, longitude]);
 
   return (
-    <Layout>
-      <div className="container mx-auto mt-10 px-4">
+    <>
+      <div className="flex h-screen w-full flex-col gap-2 p-4 hover:overflow-y-auto">
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold">Delivery Tracking</h1>
           {!isTracking ? (
@@ -277,8 +278,16 @@ const Geolocation = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
 export default Geolocation;
+
+Geolocation.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

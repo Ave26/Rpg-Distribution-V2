@@ -1,100 +1,110 @@
 import Layout from "@/components/layout";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
+import { Racks } from "@/types/types";
 
-import ReusableButton from "@/components/Parts/ReusableButton";
 import ReusableInput from "@/components/Parts/ReusableInput";
 import ProductImage from "@/components/Parts/ProductImage";
 import Toggle from "@/components/Parts/Toggle";
 import ScanBarcode from "@/components/Parts/ScanBarcode";
 import OperationalToggle from "@/components/Parts/OperationalToggle";
-import ViewRacks from "@/components/ViewRacks";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
+import Head from "next/head";
 
-function BarcodeScanner() {
+function BarcodeScanner(): JSX.Element {
   const [barcodeId, setBarcodeId] = useState<string>("");
   const [purchaseOrder, setPurchaseOrder] = useState<string>("");
-  const [boxSize, setBoxSize] = useState<string>("thisi");
+  const [boxSize, setBoxSize] = useState<string>("");
+  const [expirationDate, setExpirationDate] = useState<Date | string | null>(
+    ""
+  );
+  const [quality, setQuality] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(0);
   const arraySize: string[] = ["Small", "Medium", "Large"];
-  const [expirationDate, setExpirationDate] = useState<string>("");
   const [isToggle, setIsToggle] = useState<boolean>(false);
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
-
-  // kailangan naka base na sa expiry and category
+  const [racks, setRacks] = useState<Racks[] | undefined>(undefined);
 
   return (
-    <Layout>
-      <div className="break-all  p-5 font-bold ">
+    <>
+      <Head>
+        <title>{"Dashboard | Scan Barcode"}</title>
+      </Head>
+      <form className="flex h-full w-full flex-col gap-2 p-4">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
-        <form className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 rounded-lg bg-blue-500 bg-transparent p-4 shadow-2xl shadow-blue-500/50">
-          <ScanBarcode
-            barcodeId={barcodeId}
-            setBarcodeId={setBarcodeId}
-            isManual={isManual}
-            purchaseOrder={purchaseOrder}
-            boxSize={boxSize}
-            expirationDate={expirationDate}
-          />
+        <ScanBarcode
+          barcodeId={barcodeId}
+          setBarcodeId={setBarcodeId}
+          purchaseOrder={purchaseOrder}
+          boxSize={boxSize}
+          expirationDate={expirationDate}
+          quality={quality}
+          quantity={quantity}
+          isManual={isManual}
+        />
 
-          <ReusableInput
-            name="Purchase Order:"
-            value={purchaseOrder}
-            onChange={(value: any) => {
-              setPurchaseOrder(value);
+        <ReusableInput
+          name="Purchase Order:"
+          value={purchaseOrder}
+          disableLabel={true}
+          onChange={(value: any) => {
+            setPurchaseOrder(value);
+          }}
+        />
+
+        <div className="flex h-full w-full flex-col  items-start justify-center gap-2  font-bold">
+          <label htmlFor={"boxSize"}>Select Box Size</label>
+          <select
+            id="boxSize"
+            value={boxSize}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              setBoxSize(e.target.value);
             }}
-          />
-          <div className="flex w-full flex-col flex-wrap items-start justify-center gap-2">
-            <label htmlFor={"boxSize"}>Select Box Size</label>
-            <select
-              id="boxSize"
-              value={boxSize}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setBoxSize(e.target.value);
-              }}
-              className="w-full break-all rounded-xl border border-gray-500 p-3
+            className="h-full w-full break-all rounded-xl border border-gray-500 p-3
             transition-all">
-              <option value="Select" className="font-bold">
-                Select...
-              </option>
-              {arraySize.map((value, index) => {
-                return (
-                  <option key={index} className="font-ball">
-                    {value}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
+            <option value="Select" className="font-bold">
+              Select...
+            </option>
+            {arraySize.map((value, index) => {
+              return (
+                <option key={index} className="font-ball">
+                  {value}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-          <ReusableInput
-            type="date"
-            name="Expiration Date"
-            value={expirationDate}
-            onChange={(value: any) => {
-              setExpirationDate(value);
-            }}
-          />
+        <ReusableInput
+          type="date"
+          disableLabel={true}
+          name="Batch Number"
+          value={expirationDate}
+          onChange={(value: any) => {
+            setExpirationDate(value);
+          }}
+        />
 
-          <Toggle setIsToggle={setIsToggle} isToggle={isToggle} />
-          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 md:flex-row">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIsOpenRack((prevState) => !prevState);
-              }}
-              className="absolute">
-              Open Rack
-            </button>
-            <ProductImage barcodeId={barcodeId} />
-            <ViewRacks isOpenRack={isOpenRack} />
-          </div>
+        <Toggle
+          setIsToggle={setIsToggle}
+          isToggle={isToggle}
+          setQuality={setQuality}
+          quality={quality}
+        />
+        <ProductImage barcodeId={barcodeId} />
 
-          {isManual && (
-            <ReusableButton name={"Find"} type={"submit"}></ReusableButton>
-          )}
-        </form>
-      </div>
-    </Layout>
+        {/* <BinLocation barcodeId={barcodeId} /> */}
+      </form>
+    </>
   );
 }
 
 export default BarcodeScanner;
+
+BarcodeScanner.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

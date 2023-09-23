@@ -11,7 +11,7 @@ export default function About({ data }: any) {
       <Head>
         <title>About Us | MyCompany</title>
       </Head>
-      <Layout data={data}>
+      <Layout>
         <div className="flex flex-col items-center justify-center rounded-md border-black bg-white shadow-md lg:flex-row">
           <div className="p-10 lg:w-[50%]">
             <Image src={aboutus} alt="About Us" className="h-full w-full" />

@@ -22,7 +22,7 @@ export default function ProductImage({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSubmit() {
-    if (barcodeId?.length === 12) {
+    if (barcodeId?.length === 14) {
       try {
         const response = await fetch("/api/product/find", {
           method: "POST",
@@ -69,8 +69,7 @@ export default function ProductImage({
   }, [isShow]);
 
   return (
-    <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 border p-3">
-      View Product Image
+    <div className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-2 border p-4">
       {isLoading ? (
         <Loading />
       ) : (
@@ -78,12 +77,11 @@ export default function ProductImage({
           priority
           alt="Product Image"
           src={productImage || noImage}
-          className="h-full w-full object-contain md:h-56 md:w-56"
+          className="object-contain md:h-40 md:w-40"
           width={0}
           height={0}
         />
       )}
-      <Toast data={message} isShow={isShow} />
     </div>
   );
 }

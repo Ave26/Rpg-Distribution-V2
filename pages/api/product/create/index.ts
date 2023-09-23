@@ -25,13 +25,21 @@ const middleware =
   };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { barcodeId, category, image, price, productName, quantity } = req.body;
+  const { barcodeId, category, image, price, productName, quantity, sku } =
+    req.body;
   switch (req.method) {
     case "POST":
       try {
-        if (!barcodeId || !category || !image || !price || !productName) {
+        if (
+          !barcodeId ||
+          !category ||
+          !image ||
+          !price ||
+          !productName ||
+          !sku
+        ) {
           return res.json({
-            message: "Please complete the fields",
+            message: "Incomplete Field",
           });
         }
 
@@ -42,7 +50,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           category,
           image,
           Number(price),
-          productName
+          productName,
+          sku
         );
 
         if (findProduct) {

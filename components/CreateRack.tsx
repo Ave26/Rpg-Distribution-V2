@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ReusableInput from "./Parts/ReusableInput";
 import ReusableButton from "./Parts/ReusableButton";
+import Toast from "./Parts/Toast";
 
 function CreateRack() {
-  const [category, setCategory] = useState<String>("");
-  const [rack, setRack] = useState<String>("");
-  const [capacity, setCapacity] = useState<number>(0);
-  const [rackLevel, setRackLevel] = useState<number>(0);
+  const [rackCategory, setRackCategory] = useState<String>("");
+  const [rackName, setRackName] = useState<String>("");
+  const [numberOfBins, setNumberOfBins] = useState<number>(0);
+  const [shelfLevel, setShelfLevel] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>("");
   const [isShow, setIsShow] = useState<boolean>(false);
@@ -31,8 +32,10 @@ function CreateRack() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          category,
-          rack,
+          rackCategory,
+          rackName,
+          numberOfBins,
+          shelfLevel,
         }),
       });
       const json = await response.json();
@@ -45,7 +48,9 @@ function CreateRack() {
 
       setIsLoading(false);
     } finally {
-      setRack("");
+      setRackName("");
+      setNumberOfBins(0);
+      setShelfLevel(0);
     }
   };
 
@@ -54,38 +59,44 @@ function CreateRack() {
       onSubmit={handleCreateRack}
       className="flex flex-col flex-wrap items-center justify-center gap-2 p-3">
       <ReusableInput
+        disableLabel={true}
         name="Rack Category"
-        value={category}
+        value={rackCategory}
         onChange={function (value: any): void {
-          setCategory(value);
+          setRackCategory(value);
         }}
       />
       <h1></h1>
       <ReusableInput
-        name="Name"
-        value={rack}
+        disableLabel={true}
+        name="Rack Name"
+        value={rackName}
         onChange={function (value: any): void {
-          setRack(value);
+          setRackName(value);
         }}
       />
       <ReusableInput
-        name="Capacity"
-        value={capacity}
+        min={0}
+        disableLabel={true}
+        name="Number of Bins"
+        value={numberOfBins}
         type="number"
         onChange={(value: number) => {
-          setCapacity(value);
+          setNumberOfBins(value);
         }}
       />
       <ReusableInput
-        name="Level"
-        value={rackLevel}
+        min={0}
+        disableLabel={true}
+        name="Shelf Level"
+        value={shelfLevel}
         type="number"
         onChange={(value: number) => {
-          setRackLevel(value);
+          setShelfLevel(value);
         }}
       />
-      <ReusableButton type="click" name="Save" isLoading={isLoading} />
-      {/* <Toast isShow={isShow} data={data} /> */}
+      <ReusableButton type="submit" name="Save" isLoading={isLoading} />
+      <Toast isShow={isShow} data={data} />
     </form>
   );
 }

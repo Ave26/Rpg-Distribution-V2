@@ -1,11 +1,11 @@
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findCategory } from "@/lib/prisma/scan";
+import { findBin } from "@/lib/prisma/racks";
+import { findAllBin } from "@/lib/prisma/bin";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const middleware =
   (handler: NextApiHandler) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log("middleware working properly");
     try {
       const { verifiedToken, error }: any = await verifyJwt(req);
 
@@ -26,13 +26,34 @@ const middleware =
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { barcodeId, rackName } = req.body;
+
   switch (req.method) {
     case "POST":
-      console.log(barcodeId, rackName);
-      const { data } = await findCategory(barcodeId, rackName);
-      return res.status(200).json(data);
+      if (!barcodeId) {
+        return res.status(404).json({
+          message: "Filled Incomplete",
+        });
+      }
 
+      const racks = await findBin(barcodeId);
+
+      if (!racks) {
+        return res.status(404).json({
+          message: "No record",
+        });
+      }
+
+      return res.status(200).json(racks);
     case "GET":
+      // console.log("GET TRIGGERED");
+      const { binThatHasCount: bins, error } = await findAllBin();
+      if (!bins || error) {
+        return res.status(401).json({
+          message: "Oops, something went wrong",
+        });
+      }
+
+      return res.status(200).json(bins);
 
     default:
       return res.send(`Method ${req.method} is not available`);

@@ -1,19 +1,16 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import ReusableButton from "@/components/Parts/ReusableButton";
-import ReusableInput from "@/components/Parts/ReusableInput";
-import Toast from "@/components/Parts/Toast";
-import { NextApiRequest, NextPage } from "next";
-import { verifyJwt } from "@/lib/helper/jwt";
-import Header from "@/components/Header";
+
 import CreateRack from "@/components/CreateRack";
 import UpdateRack from "@/components/UpdateRack";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
 export default function PalleteLocation({ data: dta }: any) {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Layout data={dta}>
+    <>
       <section className="h-full w-full font-bold">
         <div className="flex flex-row items-center justify-center gap-2 p-3">
           <ReusableButton name={"Create Rack"} onClick={() => setOpen(false)} />
@@ -21,6 +18,14 @@ export default function PalleteLocation({ data: dta }: any) {
         </div>
         {!open ? <CreateRack /> : <UpdateRack />}
       </section>
-    </Layout>
+    </>
   );
 }
+
+PalleteLocation.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

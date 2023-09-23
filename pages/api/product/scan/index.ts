@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { verifyJwt } from "@/lib/helper/jwt";
-import { findCategory, scanBarcode } from "@/lib/prisma/scan";
+import { scanBarcode } from "@/lib/prisma/scan";
 import prisma from "@/lib/prisma";
 
 const middleware =
@@ -8,11 +8,11 @@ const middleware =
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { verifiedToken, error }: any = await verifyJwt(req);
-
+      console.log(verifiedToken?.id);
       if (error) {
         return res.status(403).json({
           isAuthenticated: false,
-          message: "Need to be authenticated",
+          message: "Failed To Authenticate",
         });
       }
 
@@ -27,43 +27,44 @@ const middleware =
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     barcodeId,
-    expirationDate,
     purchaseOrder,
-    boxValue,
-    quantity,
-    binId,
+    boxSize,
+    expirationDate,
     quality,
+    // quantity,
+    // binId,
   } = req.body;
 
   if (
     !barcodeId ||
-    !expirationDate
-    // !purchaseOrder ||
-    // !boxValue ||
-    // !binId ||
-    // !quality
+    !purchaseOrder ||
+    !boxSize ||
+    !expirationDate ||
+    !quality
+    // !quantity ||
+    // !binId
   ) {
     return res.status(405).json({
       message: "Incomplete Field",
     });
   }
 
+  console.log(req.body);
+
   switch (req.method) {
     case "POST":
       try {
         const data = await scanBarcode(
           barcodeId,
-          boxValue,
-          expirationDate,
-          Number(quantity),
-          binId,
           purchaseOrder,
+          boxSize,
+          new Date(expirationDate),
           quality
         );
 
         if (!data) {
           return res.status(404).json({
-            message: "Something went wrong, please try again!",
+            message: "Oops!, Category not found",
           });
         }
 

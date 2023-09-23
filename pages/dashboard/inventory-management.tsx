@@ -81,7 +81,7 @@ export default function InventoryManageMent() {
                 </tr>
               </thead>
               <tbody>
-                {data.map((product: any) => {
+                {data?.map((product: any) => {
                   return (
                     <tr
                       key={product.id}
