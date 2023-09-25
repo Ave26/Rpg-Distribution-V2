@@ -1,62 +1,62 @@
-import { verifyJwt } from "@/lib/helper/jwt";
-import { findBin } from "@/lib/prisma/racks";
-import { findAllBin } from "@/lib/prisma/bin";
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+// import { verifyJwt } from "@/lib/helper/jwt";
+// import { findBin } from "@/lib/prisma/racks";
 
-const middleware =
-  (handler: NextApiHandler) =>
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    try {
-      const { verifiedToken, error }: any = await verifyJwt(req);
+// import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
-      if (error) {
-        return res.status(403).json({
-          authenticated: false,
-          message: error,
-        });
-      }
+// const middleware =
+//   (handler: NextApiHandler) =>
+//   async (req: NextApiRequest, res: NextApiResponse) => {
+//     try {
+//       const { verifiedToken, error }: any = await verifyJwt(req);
 
-      if (verifiedToken) {
-        return handler(req, res);
-      }
-    } catch (error) {
-      return res.send(error);
-    }
-  };
+//       if (error) {
+//         return res.status(403).json({
+//           authenticated: false,
+//           message: error,
+//         });
+//       }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { barcodeId, rackName } = req.body;
+//       if (verifiedToken) {
+//         return handler(req, res);
+//       }
+//     } catch (error) {
+//       return res.send(error);
+//     }
+//   };
 
-  switch (req.method) {
-    case "POST":
-      if (!barcodeId) {
-        return res.status(404).json({
-          message: "Filled Incomplete",
-        });
-      }
+// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+//   const { barcodeId, rackName } = req.body;
 
-      const racks = await findBin(barcodeId);
+//   switch (req.method) {
+//     case "POST":
+//       if (!barcodeId) {
+//         return res.status(404).json({
+//           message: "Filled Incomplete",
+//         });
+//       }
 
-      if (!racks) {
-        return res.status(404).json({
-          message: "No record",
-        });
-      }
+//       const racks = await findBin(barcodeId);
 
-      return res.status(200).json(racks);
-    case "GET":
-      // console.log("GET TRIGGERED");
-      const { binThatHasCount: bins, error } = await findAllBin();
-      if (!bins || error) {
-        return res.status(401).json({
-          message: "Oops, something went wrong",
-        });
-      }
+//       if (!racks) {
+//         return res.status(404).json({
+//           message: "No record",
+//         });
+//       }
 
-      return res.status(200).json(bins);
+//       return res.status(200).json(racks);
+//     case "GET":
+//       // console.log("GET TRIGGERED");
+//       const { binThatHasCount: bins, error } = await findAllBin();
+//       if (!bins || error) {
+//         return res.status(401).json({
+//           message: "Oops, something went wrong",
+//         });
+//       }
 
-    default:
-      return res.send(`Method ${req.method} is not available`);
-  }
-};
-export default middleware(handler);
+//       return res.status(200).json(bins);
+
+//     default:
+//       return res.send(`Method ${req.method} is not available`);
+//   }
+// };
+// export default middleware(handler);
