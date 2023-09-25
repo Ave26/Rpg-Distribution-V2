@@ -1,6 +1,16 @@
+type TFormData = {
+  barcodeId: string;
+  truck: string;
+  destination: string;
+  productName: string;
+  clientName: string;
+  quantity: number;
+};
+
 interface InputProps {
   inputValue: string | number | date;
-  setInputValue: React.Dispatch<React.SetStateAction<anyr>>;
+  setInputValue: React.Dispatch<React.SetStateAction<TData>>;
+  // setInputValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface PersonalEffects {
@@ -9,4 +19,4 @@ interface PersonalEffects {
   min?: number;
 }
 
-export { InputProps, PersonalEffects };
+export { InputProps, PersonalEffects, TFormData };

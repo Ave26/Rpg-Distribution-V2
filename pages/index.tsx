@@ -23,7 +23,7 @@ interface HomeProps {
 export default function Home({ data }: HomeProps) {
   const { globalState } = useMyContext();
 
-  console.log(globalState);
+  // console.log(globalState);
   return (
     <>
       <Head>

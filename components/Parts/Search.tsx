@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { InputProps } from "@/types/inputTypes";
+import { InputProps, TFormData } from "@/types/inputTypes";
 
 interface SearchProps {
   personaleEffects?: PersonalEffectProps;
-  inputProps?: Input;
-}
-
-interface Input extends InputProps {
-  handleSearchInput: () => void;
+  formData: TFormData;
+  handleSearch: () => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface PersonalEffectProps {
@@ -15,16 +13,20 @@ interface PersonalEffectProps {
   maxLength?: number;
 }
 
-function Search({ personaleEffects, inputProps }: SearchProps) {
+function Search({
+  personaleEffects,
+  formData,
+  handleChange,
+  handleSearch,
+}: SearchProps) {
   return (
     <div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           console.log("search triggered");
-          if (inputProps?.handleSearchInput) {
-            inputProps.handleSearchInput(); // Call the function directly
-          }
+
+          handleSearch();
         }}
         className="font-semibold">
         <label
@@ -52,11 +54,10 @@ function Search({ personaleEffects, inputProps }: SearchProps) {
           <input
             type="search"
             id="default-search"
-            value={inputProps?.inputValue}
+            name="barcodeId"
+            value={formData.barcodeId || formData.productName}
             {...personaleEffects}
-            onChange={(e) => {
-              inputProps?.setInputValue(e.target.value);
-            }}
+            onChange={handleChange}
             className="block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             required
           />

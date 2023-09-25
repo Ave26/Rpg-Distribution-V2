@@ -9,74 +9,57 @@ import Search from "@/components/Parts/Search";
 import InputField from "@/components/Parts/InputField";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
-// Types
 import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
+import { TFormData } from "@/types/inputTypes";
 
 export default function PickingAndPacking() {
-  const [selectedBinIds, setSelectedBinIds] = useState<string[]>([]);
-  const [isMarking, isSetMarking] = useState(false);
-  const [barcode, setBarcode] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [quantity, setQuantity] = useState<number>(0);
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
+  const [hasLoading, setHasLoading] = useState(false);
   const [isAnimate, setIsAnimate] = useState(false);
+  const [formData, setFormData] = useState<TFormData>({
+    barcodeId: "",
+    truck: "",
+    destination: "",
+    clientName: "",
+    productName: "",
+    quantity: 0,
+  });
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData, // Spread the existing state
+      [name]: value, // Update the specific field
+    });
+  }
   const fetcher = async (url: string) => {
+    const { barcodeId } = formData;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        barcodeId: barcode,
+        searchSomething: barcodeId,
       }),
     });
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-
-    const data = await response.json();
-    const ValuedBin: Bin[] = data?.filter((bin: Bin) => {
-      return Number(bin?.assignment?.length) > 0;
-    });
-
-    return ValuedBin;
+    const data: Bin[] = await response.json();
+    return data;
   };
 
   const {
     isLoading,
     data: bins,
     mutate,
-  } = useSWR("/api/bins/find", fetcher, {
+  } = useSWR(`/api/bins/search`, fetcher, {
     refreshInterval: 1500,
   });
-
-  async function sendRequest() {
-    isSetMarking(true);
-    try {
-      const response = await fetch("/api/bins/update", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-
-        body: JSON.stringify({
-          barcodeId: barcode,
-          quantity,
-          selectedBinIds,
-        }),
-      });
-      const data = await response.json();
-      if (response.status === 2000) mutate();
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      isSetMarking(false);
-    }
-  }
 
   useEffect(() => {
     if (productEntry) {
@@ -96,18 +79,35 @@ export default function PickingAndPacking() {
   }, [productEntry]);
 
   async function makeReport() {
+    setHasLoading(true);
     try {
       const response = await fetch("/api/outbound/make-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productEntry }),
+        body: JSON.stringify({ productEntry, formData }),
       });
+      const reports = await response.json();
+      console.log(reports);
     } catch (error) {
       console.log(error);
+    } finally {
+      setHasLoading(false);
+      setProductEntry([]);
+      setFormData({
+        barcodeId: "",
+        truck: "",
+        destination: "",
+        clientName: "",
+        productName: "",
+        quantity: 0,
+      });
     }
   }
+
+  const inputStyle =
+    "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
 
   return (
     <>
@@ -118,20 +118,45 @@ export default function PickingAndPacking() {
       <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
         <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
-            inputProps={{
-              inputValue: barcode,
-              setInputValue: setBarcode,
-              handleSearchInput: () => mutate(),
-            }}
+            formData={formData}
+            handleChange={handleChange}
+            handleSearch={() => mutate()}
             personaleEffects={{ placeholder: "Search Barcode", maxLength: 14 }}
           />
-          <InputField
-            personalEffects={{
-              placeholder: "Quantity",
-              type: "number",
-              min: 0,
-            }}
-            inputProps={{ inputValue: quantity, setInputValue: setQuantity }}
+
+          <input
+            min={0}
+            type="number"
+            name="quantity"
+            placeholder="Quantity"
+            onChange={handleChange}
+            value={formData.quantity}
+            className={inputStyle}
+          />
+
+          <input
+            type="text"
+            name="clientName"
+            placeholder="Client Name"
+            onChange={handleChange}
+            value={formData.clientName}
+            className={inputStyle}
+          />
+          <input
+            type="text"
+            name="truck"
+            placeholder="Truck"
+            onChange={handleChange}
+            value={formData.truck}
+            className={inputStyle}
+          />
+          <input
+            type="text"
+            name="destination"
+            placeholder="Destination"
+            onChange={handleChange}
+            value={formData.destination}
+            className={inputStyle}
           />
 
           <ReusableButton
@@ -149,18 +174,10 @@ export default function PickingAndPacking() {
         ) : (
           <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
             <BinsLayout
-              isLoading={isLoading}
-              dataManipulator={{
-                bins,
-                handleMutation: () => mutate(),
-              }}
-              setRequest={{ setSelectedBinIds }}
-              request={{
-                barcodeId: barcode,
-                quantity,
-                selectedBinIds,
-              }}
+              bins={bins}
               dataEntries={{ productEntry, setProductEntry }}
+              formData={formData}
+              setFormData={setFormData}
             />
             <div className="border-slate relative h-[17em] w-full overflow-y-auto border border-black p-2 md:w-[45em]">
               {productEntry?.map((entry, index) => (
@@ -198,7 +215,7 @@ export default function PickingAndPacking() {
             <div className="flex items-center justify-center">
               <ReusableButton
                 type={"submit"}
-                isLoading={isMarking}
+                isLoading={hasLoading}
                 name={"Confirm and Print report"}
                 onClick={makeReport}
                 className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"

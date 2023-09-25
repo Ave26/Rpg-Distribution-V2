@@ -1,64 +1,93 @@
 import prisma from ".";
 
-export async function findBinByBarcode(barcodeId: string) {
-  // console.log(barcodeId);
+// export async function findBinByBarcode(barcodeId: string) {
+//   // console.log(barcodeId);
+//   try {
+//     const bins = await prisma.bins.findMany({
+//       where: {
+//         assignment: {
+//           some: {
+//             products: {
+//               barcodeId,
+//             },
+//           },
+//         },
+//       },
+//       include: {
+//         _count: {
+//           select: {
+//             assignment: {
+//               where: {
+//                 isMarked: false,
+//               },
+//             },
+//           },
+//         },
+
+//         assignment: {
+//           select: {
+//             expirationDate: true,
+//             dateReceive: true,
+//             products: {
+//               select: {
+//                 barcodeId: true,
+//                 productName: true,
+//                 sku: true,
+//                 price: true,
+//               },
+//             },
+//           },
+//         },
+
+//         racks: {
+//           select: {
+//             name: true,
+//             categories: {
+//               select: {
+//                 category: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     });
+
+//     const binThatHasCount = bins;
+//     // .filter(
+//     //   (bin) => Number(bin._count.assignment) > 0
+//     // );
+
+//     // console.log(binThatHasCount);
+//     return { binThatHasCount };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
+export async function findBinsByUniqueIds(
+  barcodeId: string,
+  productName: string
+) {
   try {
     const bins = await prisma.bins.findMany({
       where: {
-        assignment: {
+        assignedProducts: {
           some: {
             products: {
-              barcodeId,
-            },
-          },
-        },
-      },
-      include: {
-        _count: {
-          select: {
-            assignment: {
-              where: {
-                isMarked: false,
-              },
-            },
-          },
-        },
-
-        assignment: {
-          select: {
-            expirationDate: true,
-            dateReceive: true,
-            products: {
-              select: {
-                barcodeId: true,
-                productName: true,
-                sku: true,
-                price: true,
-              },
-            },
-          },
-        },
-
-        racks: {
-          select: {
-            name: true,
-            categories: {
-              select: {
-                category: true,
-              },
+              OR: [
+                {
+                  productName,
+                },
+                {
+                  barcodeId,
+                },
+              ],
             },
           },
         },
       },
     });
-
-    const binThatHasCount = bins;
-    // .filter(
-    //   (bin) => Number(bin._count.assignment) > 0
-    // );
-
-    // console.log(binThatHasCount);
-    return { binThatHasCount };
+    console.log(bins);
+    return { bins };
   } catch (error) {
     return { error };
   }
@@ -68,7 +97,7 @@ export async function findAllBin() {
   try {
     const bins = await prisma.bins.findMany({
       where: {
-        assignment: {
+        assignedProducts: {
           some: {
             products: {},
           },
@@ -76,15 +105,15 @@ export async function findAllBin() {
       },
 
       include: {
-        _count: {
-          select: {
-            assignment: {
-              where: {
-                isMarked: false,
-              },
-            },
-          },
-        },
+        // _count: {
+        //   select: {
+        //     assignment: {
+        //       where: {
+        //         isMarked: false,
+        //       },
+        //     },
+        //   },
+        // },
         assignment: {
           where: {
             isMarked: false,

@@ -1,4 +1,4 @@
-type EntriesTypes = {
+interface EntriesTypes {
   totalQuantity: number;
   productName: string;
   barcodeId: string;
@@ -6,7 +6,7 @@ type EntriesTypes = {
   sku: string;
   price: number;
   binIdsEntries: string[];
-};
+}
 
 type SetEntriesTypes = React.Dispatch<
   React.SetStateAction<EntriesTypes[] | null>

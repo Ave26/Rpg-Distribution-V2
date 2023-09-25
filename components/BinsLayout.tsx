@@ -1,29 +1,29 @@
 import React, { SetStateAction, useEffect, useReducer, useState } from "react";
 import { Bin } from "@/types/inventory";
+import { bins, assignedProducts } from "@prisma/client";
 import { EntriesTypes, dataEntriesTypes } from "@/types/binEntries";
 import Toast from "./Parts/Toast";
+import {
+  getProductTotalQuantity,
+  getRequiredBinData,
+} from "@/helper/_componentHelpers";
+import { TFormData } from "@/types/inputTypes";
 
 interface BinsProps {
-  dataManipulator?: BinsType;
-  isLoading: boolean;
-  request: RequestTypes;
-  setRequest: SetRequestTypes;
+  isLoading?: boolean;
+  bins: Bin[] | undefined;
   dataEntries: dataEntriesTypes;
-}
-
-interface BinsType {
-  bins?: Bin[] | undefined;
-  handleMutation: () => void;
+  formData: TFormData;
+  setFormData: React.Dispatch<React.SetStateAction<TFormData>>;
 }
 
 interface SetRequestTypes {
-  setSelectedBinIds: React.Dispatch<SetStateAction<string[]>>;
+  setQuantity: React.Dispatch<SetStateAction<number>>;
 }
 
 interface RequestTypes {
   quantity: number;
   barcodeId: string | null;
-  selectedBinIds: string[];
 }
 
 type ToastTypes = {
@@ -32,18 +32,28 @@ type ToastTypes = {
 };
 
 export default function BinsLayout({
-  dataManipulator,
+  bins,
   isLoading,
-  request,
-  setRequest,
   dataEntries,
+  formData,
+  setFormData,
 }: BinsProps) {
+  // PROBLEM NEED TO MAKE THE BINS NOT A FUNCTION
+
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
   const { productEntry, setProductEntry } = dataEntries;
   const [toast, setToast] = useState<ToastTypes>({
     isShow: false,
     message: "",
   });
+  const titles = [
+    "Quantity",
+    "Product Category",
+    "Product Name",
+    "Product SKU",
+    "Price",
+    "Bin",
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,28 +65,19 @@ export default function BinsLayout({
     };
   }, [toast.isShow]);
 
-  const titles = [
-    "Quantity",
-    "Product Category",
-    "Product Name",
-    "Product SKU",
-    "Price",
-    "Bin",
-  ];
-
   async function selectEntry(bin: Bin) {
-    if (!request.quantity || !request.barcodeId) {
-      console.log("You need to have a requested quantity");
+    const { barcodeId, clientName, destination, productName, quantity, truck } =
+      formData;
+    if (!barcodeId || !quantity) {
+      console.log("Incomplete Field");
       return setToast({
         isShow: true,
-        message: "Quantity undefined",
+        message: "Incomplete Field",
       });
     }
-
-    get_total_product_quantity();
-    const quantity = Number(request?.quantity);
-    const { newEntry, binId } = take_only_the_necessary_value(bin, quantity);
-
+    bins ? getProductTotalQuantity(bins, formData.quantity, setToast) : null;
+    // const quantity = Number(formData?.quantity);
+    const { newEntry, binId } = getRequiredBinData(bin, quantity);
     const isExisted =
       productEntry?.find(
         (existingEntry) => existingEntry.barcodeId === newEntry.barcodeId
@@ -91,68 +92,25 @@ export default function BinsLayout({
             : entry
         )
       );
+      setFormData({ ...formData, quantity: 0 });
     } else {
       productEntry && setProductEntry([...productEntry, newEntry]);
     }
   }
 
-  console.log(productEntry);
-  const take_only_the_necessary_value = (bin: Bin, quantity: number) => {
-    const productName = bin.assignment[0]?.products.productName;
-    const barcodeId = bin.assignment[0]?.products.barcodeId;
-    const expiryDate = bin.assignment[0]?.expirationDate;
-    const price = bin.assignment[0]?.products.price;
-    const sku = bin.assignment[0]?.products.sku;
-    const binId = bin.id;
-
-    let newEntry: EntriesTypes = {
-      totalQuantity: Number(quantity),
-      productName,
-      barcodeId,
-      sku,
-      expiryDate,
-      price,
-      binIdsEntries: [binId],
-    };
-
-    return {
-      newEntry,
-      binId,
-    };
-  };
-
-  const get_total_product_quantity = () => {
-    const bins = dataManipulator?.bins;
-    let totalProductQuantity: number = 0;
-    if (bins) {
-      for (let i = 0; i < Number(bins?.length); i++) {
-        const productCount = Number(bins[i]?._count.assignment);
-        totalProductQuantity += productCount;
-      }
-    }
-
-    if (request.quantity > totalProductQuantity) {
-      setToast({ isShow: true, message: "Action Denied" });
-      return console.log("Requested Quantity Exceeded");
-    }
-
-    return totalProductQuantity;
-  };
-
   useEffect(() => {
     const timer = setTimeout(() => {
-      const threshold = request.quantity;
+      const threshold = formData.quantity;
       let negatedThreshold = threshold;
       const coveredBin = [];
 
-      const bins = dataManipulator?.bins;
-      if (bins && request.barcodeId) {
+      if (bins && formData.barcodeId) {
         let totalProductQuantity: number = 0;
         for (let i = 0; i < bins.length; i++) {
-          totalProductQuantity += bins[i]._count.assignment;
+          totalProductQuantity += bins[i]._count.assignedProducts;
         }
 
-        if (request.quantity > totalProductQuantity) {
+        if (formData.quantity > totalProductQuantity) {
           setToast({ isShow: true, message: "Requested Quantity Exceeded" });
           return console.log("Requested Quantity Exceeded");
         }
@@ -160,8 +118,7 @@ export default function BinsLayout({
         console.log("Number:", totalProductQuantity);
 
         for (let bin of bins) {
-          const binCount = bin._count?.assignment;
-          // console.log("bin count:", binCount);
+          const binCount = bin._count?.assignedProducts;
           if (negatedThreshold <= 0) {
             break;
           }
@@ -177,7 +134,7 @@ export default function BinsLayout({
     return () => {
       clearTimeout(timer);
     };
-  }, [request.quantity]);
+  }, [formData.quantity]);
 
   return (
     <>
@@ -201,52 +158,55 @@ export default function BinsLayout({
             </tr>
           </thead>
           <tbody>
-            {dataManipulator?.bins?.map((bin: Bin, index) => {
+            {bins?.map((bin: Bin, index) => {
               return (
                 <tr
                   onClick={(e) => {
                     e.preventDefault();
                     selectEntry(bin);
-                    // selectBin(bin?.id);
                   }}
                   key={index}
                   className={`text-white transition-all ${
                     coveredBins.includes(bin?.id)
                       ? "ring-2 ring-inset ring-white transition-all delay-100"
                       : "ring-none"
-                  } ${
-                    productEntry?.find((value) =>
-                      value.binIdsEntries.includes(bin.id)
-                    )
-                      ? "bg-emerald-500"
-                      : "bg-gray-800"
-                  }`}>
+                  } 
+                  
+                  
+                    ${
+                      productEntry?.find((value) =>
+                        value.binIdsEntries.includes(bin.id)
+                      )
+                        ? "bg-emerald-500"
+                        : "bg-gray-800"
+                    }
+                  `}>
                   <td className="px-6 py-4">
-                    {Number(bin?._count?.assignment)}
+                    {Number(bin?._count.assignedProducts)}
                   </td>
                   <td className="px-6 py-4">
                     {String(bin?.racks?.categories?.category)}
                   </td>
                   <td className="px-6 py-4">
                     {
-                      bin?.assignment?.map((assign) => {
+                      bin?.assignedProducts?.map((assign) => {
                         return assign?.products?.productName;
                       })[0]
                     }
                   </td>
                   <td className="px-6 py-4">
                     {
-                      bin?.assignment?.map((assign) => {
-                        return assign?.products?.price;
+                      bin?.assignedProducts?.map((assign) => {
+                        return Number(assign?.products?.price);
                       })[0]
                     }
                   </td>
                   <td className="px-6 py-4">
-                    {
-                      bin?.assignment?.map(
+                    {/* {
+                      bin?.assignedProducts?.map(
                         (assign) => assign?.products?.price
                       )[0]
-                    }
+                    } */}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}

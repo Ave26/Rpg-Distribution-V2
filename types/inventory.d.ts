@@ -23,7 +23,7 @@ export interface Rack {
   bin: Bin[];
 }
 
-export interface Assignment {
+export interface assignedProducts {
   id: string;
   dateReceive: string | Date | null;
   purchaseOrder: string;
@@ -48,9 +48,9 @@ export interface Bin {
   status: string | null;
   racksId: string;
   racks: Rack;
-  assignment: Assignment[];
+  assignedProducts: assignedProducts[];
   _count: {
-    assignment: number;
+    assignedProducts: number;
   };
 }
 

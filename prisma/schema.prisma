@@ -24,7 +24,8 @@ enum SupplyLevelStatus {
   Critical
 }
 
-enum OutboundFlow {
+enum productStatus {
+  default
   Queuing
   OutForDelivery
   Delivered
@@ -44,33 +45,21 @@ model users {
   password           String               @unique(map: "password_1")
   roles              String               @default("staff")
   username           String               @unique(map: "username_1")
-  assignment         assignment[]
-  binLogs            binLogs[]
-  OutBoundLog        OutBoundLog?         @relation(fields: [outBoundLogId], references: [id])
-  outBoundLogId      String?              @db.ObjectId
   orderReportId      String?              @db.ObjectId
-  orderReport        OrderReport[]
   transactionRecords transactionRecords[]
-}
-
-model orderedProducts {
-  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
-  selectedBins         bins[]
-  transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
-  transactionRecordsId String?             @db.ObjectId
+  assignedProducts   assignedProducts[]
+  orders             orders[]
 }
 
 model transactionRecords {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  status          OutboundFlow
-  orderDate       DateTime?
-  totalItems      Int
-  totalQuantity   Int
-  totalAmount     Int
-  orderedProducts orderedProducts[]
-  users           users?            @relation(fields: [userId], references: [id])
-  userId          String            @db.ObjectId
-  assignment      assignment[]
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  orderDate        DateTime?
+  totalItems       Int
+  totalQuantity    Int
+  totalAmount      Int
+  users            users?             @relation(fields: [userId], references: [id])
+  userId           String             @db.ObjectId
+  assignedProducts assignedProducts[]
 }
 
 model products {
@@ -83,9 +72,7 @@ model products {
   sku               String?
   supplyLevelStatus SupplyLevelStatus?
   variations        variations[]
-  assigment         assignment[]
-  OutBoundLog       OutBoundLog?       @relation(fields: [outBoundLogId], references: [id])
-  outBoundLogId     String?            @db.ObjectId
+  assignedProducts  assignedProducts[]
 }
 
 model variations {
@@ -116,39 +103,26 @@ model racks {
 }
 
 model bins {
-  id                String             @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable       Boolean            @default(true)
-  capacity          Int
-  shelfLevel        Int
-  row               Int
-  isSelected        Boolean?           @default(false)
-  status            SupplyLevelStatus?
-  racks             racks?             @relation(fields: [racksId], references: [id])
-  racksId           String?            @db.ObjectId
-  assignment        assignment[]
-  binLogs           binLogs[]
-  orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
-  orderedProductsId String?            @db.ObjectId
-  OrderReport       OrderReport[]
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable      Boolean            @default(true)
+  capacity         Int
+  shelfLevel       Int
+  row              Int
+  isSelected       Boolean?           @default(false)
+  status           SupplyLevelStatus?
+  racks            racks?             @relation(fields: [racksId], references: [id])
+  racksId          String?            @db.ObjectId
+  assignedProducts assignedProducts[]
 }
 
-model binLogs {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  isSelected Boolean
-  bin        bins?   @relation(fields: [binId], references: [id])
-  binId      String? @db.ObjectId
-  users      users   @relation(fields: [usersId], references: [id])
-  usersId    String  @db.ObjectId
-}
-
-model assignment {
+model assignedProducts {
   id                   String              @id @default(auto()) @map("_id") @db.ObjectId
   dateReceive          DateTime?
   purchaseOrder        String
   expirationDate       DateTime?
   boxSize              String?
   isDamage             Boolean?
-  isMarked             Boolean             @default(false)
+  status               productStatus       @default(default)
   products             products?           @relation(fields: [productId], references: [id])
   productId            String?             @db.ObjectId
   bin                  bins?               @relation(fields: [binId], references: [id])
@@ -159,20 +133,6 @@ model assignment {
   damageBinId          String?             @db.ObjectId
   transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
   transactionRecordsId String?             @db.ObjectId
-}
-
-model OrderReport {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  totalQuantity Int?
-  productName   String?
-  barcodeId     String?
-  expiryDate    DateTime?
-  sku           String?
-  price         Int?
-  bins          bins?     @relation(fields: [binId], references: [id])
-  binId         String?   @db.ObjectId
-  users         users?    @relation(fields: [usersId], references: [id])
-  usersId       String?   @db.ObjectId
 }
 
 type productOrdered {
@@ -189,17 +149,26 @@ model orders {
   id             String           @id @default(auto()) @map("_id") @db.ObjectId
   clientName     String
   dateCreated    DateTime
+  truck          String
+  destination    String
   productOrdered productOrdered[]
+  users          users?           @relation(fields: [usersId], references: [id])
+  usersId        String?          @db.ObjectId
 }
 
-model OutBoundLog {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  outboundFlow OutboundFlow?
-  product      products[]
-  users        users[]
+enum TruckAvailability {
+  available
+  forRepair
+  outForDelivery
+}
+
+model trucks {
+  id     String            @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  status TruckAvailability
 }
 
 model damageBin {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  assignment assignment[]
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  assignedProducts assignedProducts[]
 }

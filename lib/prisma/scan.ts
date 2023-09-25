@@ -1,35 +1,36 @@
 import prisma from ".";
+import { bins, products } from "@prisma/client";
 
-interface Assignment {
-  id: string;
-  dateReceive: Date | null;
-  purchaseOrder: string;
-  expirationDate: Date | null;
-  boxSize: string | null;
-  isDamage: boolean | null;
-  productId: string | null;
-  binId: string | null;
-  usersId: string | null;
-  damageBinId: string | null;
-}
+// interface assignedProduct {
+//   id: string;
+//   dateReceive: Date | null;
+//   purchaseOrder: string;
+//   expirationDate: Date | null;
+//   boxSize: string | null;
+//   isDamage: boolean | null;
+//   productId: string | null;
+//   binId: string | null;
+//   usersId: string | null;
+//   damageBinId: string | null;
+// }
 
-interface Bin {
-  id: string;
-  isAvailable: boolean;
-  capacity: number;
-  shelfLevel: number;
-  assignment: Assignment[];
-}
+// interface Bin {
+//   id: string;
+//   isAvailable: boolean;
+//   capacity: number;
+//   shelfLevel: number;
+//   assignedProduct: assignedProduct[];
+// }
 
-interface Product {
-  id: string;
-  barcodeId: string;
-  category: string | null;
-  image: string | null;
-  price: number | null;
-  productName: string;
-  sku: string | null;
-}
+// interface Product {
+//   id: string;
+//   barcodeId: string;
+//   category: string | null;
+//   image: string | null;
+//   price: number | null;
+//   productName: string;
+//   sku: string | null;
+// }
 
 export async function scanBarcode(
   barcodeId: string,
@@ -46,7 +47,7 @@ export async function scanBarcode(
     });
 
     if (!product) {
-      return { message: "Product Not found | coming from the server" };
+      return { message: "Product Not found" };
     } else {
       if (quality === "Good") {
         const categories = await prisma.categories.findFirst({
@@ -66,7 +67,7 @@ export async function scanBarcode(
             racksId: racks?.id,
           },
           include: {
-            assignment: true,
+            assignedProducts: true,
           },
         });
 
@@ -82,7 +83,7 @@ export async function scanBarcode(
           );
 
           if (availableBin) {
-            await prisma.assignment.create({
+            await prisma.assignedProducts.create({
               data: {
                 productId: product?.id,
                 binId: String(availableBin?.id),
@@ -93,10 +94,10 @@ export async function scanBarcode(
               },
             });
 
-            const TotalAssignedProduct = await prisma.assignment.count({
+            const TotalAssignedProduct = await prisma.assignedProducts.count({
               where: {
                 binId: bin?.id,
-                isMarked: false,
+                status: "default",
               },
             });
 
@@ -154,8 +155,8 @@ function setTime() {
 
 async function setMethod(
   category: string,
-  bin: Bin,
-  product: Product,
+  bin: bins,
+  product: products,
   expirationDate: Date,
   dateReceive: Date
 ) {
@@ -169,7 +170,7 @@ async function setMethod(
         where: {
           id: bin?.id,
           isAvailable: true,
-          assignment: {
+          assignedProducts: {
             every: {
               productId: {
                 equals: product?.id,
@@ -193,7 +194,7 @@ async function setMethod(
         where: {
           id: bin?.id,
           isAvailable: true,
-          assignment: {
+          assignedProducts: {
             every: {
               productId: {
                 equals: product?.id,
@@ -214,66 +215,3 @@ async function setMethod(
   }
   return { availableBin };
 }
-
-// async function findManyBins(racksId: string, binId: string) {
-//   const bins = await prisma.bins.findMany({
-//     where: {
-//       // id: binId,
-//       racksId: racksId,
-//     },
-//   });
-//   return { bins };
-// }
-
-// function calculateDateBasedOnExpirationDate(items: any) {
-//   items.sort(
-//     (a: { expirationDate: string }, b: { expirationDate: string }) =>
-//       new Date(a.expirationDate).getTime() -
-//       new Date(b.expirationDate).getTime()
-//   );
-
-//   const firstItem = items[0];
-
-//   const currentDate = new Date();
-//   currentDate.setHours(0, 0, 0, 0);
-
-//   const expirationDate = new Date(firstItem.expirationDate);
-//   expirationDate.setHours(0, 0, 0, 0);
-
-//   const timeDiff = expirationDate.getTime() - currentDate.getTime();
-//   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-//   return {
-//     calculatedDate: currentDate.toISOString().split("T")[0], // Change format as needed
-//     firstItem: firstItem,
-//     daysUntilExpiration: daysDiff,
-//   };
-// }
-
-// function setCapacity(boxSize: string, bin: Bin, product: Product) {
-//   let capacity = 0;
-//   switch (boxSize) {
-//     case "Small":
-//       capacity = 20;
-//       break;
-//     case "Medium":
-//       capacity = 15;
-//       break;
-//     case "Large":
-//       capacity = 10;
-//       break;
-//     default:
-//       break;
-//   }
-
-//   return { capacity };
-// }
-
-// Need to vary depending on the quality of the product
-// for instance the product is good then make sure to scan and
-// push it to the bin base on Category otherwise push it to damage bay
-
-// DAMAGE TYPES: receiving, inside and outside
-
-// We may need to take care of the FEFO, LIFO and FIFO depending on
-// what category
