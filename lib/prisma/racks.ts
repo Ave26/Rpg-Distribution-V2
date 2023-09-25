@@ -138,10 +138,10 @@ export async function findBin(barcodeId: string) {
           include: {
             _count: {
               select: {
-                assignment: true,
+                assignedProducts: true,
               },
             },
-            assignment: true,
+            assignedProducts: true,
           },
         },
       },
