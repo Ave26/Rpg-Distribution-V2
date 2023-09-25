@@ -93,67 +93,67 @@ export async function findBinsByUniqueIds(
   }
 }
 
-export async function findAllBin() {
-  try {
-    const bins = await prisma.bins.findMany({
-      where: {
-        assignedProducts: {
-          some: {
-            products: {},
-          },
-        },
-      },
+// export async function findAllBin() {
+//   try {
+//     const bins = await prisma.bins.findMany({
+//       where: {
+//         assignedProducts: {
+//           some: {
+//             products: {},
+//           },
+//         },
+//       },
 
-      include: {
-        // _count: {
-        //   select: {
-        //     assignment: {
-        //       where: {
-        //         isMarked: false,
-        //       },
-        //     },
-        //   },
-        // },
-        assignment: {
-          where: {
-            isMarked: false,
-          },
-          select: {
-            expirationDate: true,
-            dateReceive: true,
-            products: {
-              select: {
-                barcodeId: true,
-                productName: true,
-                sku: true,
-                price: true,
-              },
-            },
-          },
-        },
-        racks: {
-          select: {
-            name: true,
-            categories: {
-              select: {
-                category: true,
-              },
-            },
-          },
-        },
-      },
-    });
+//       include: {
+//         // _count: {
+//         //   select: {
+//         //     assignment: {
+//         //       where: {
+//         //         isMarked: false,
+//         //       },
+//         //     },
+//         //   },
+//         // },
+//         assignment: {
+//           where: {
+//             isMarked: false,
+//           },
+//           select: {
+//             expirationDate: true,
+//             dateReceive: true,
+//             products: {
+//               select: {
+//                 barcodeId: true,
+//                 productName: true,
+//                 sku: true,
+//                 price: true,
+//               },
+//             },
+//           },
+//         },
+//         racks: {
+//           select: {
+//             name: true,
+//             categories: {
+//               select: {
+//                 category: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     });
 
-    const binThatHasCount = bins;
-    // .filter((bin) => {
-    //   return Number(bin._count.assignment) > 0;
-    // });
+//     const binThatHasCount = bins;
+//     // .filter((bin) => {
+//     //   return Number(bin._count.assignment) > 0;
+//     // });
 
-    return { binThatHasCount };
-  } catch (error) {
-    return { error };
-  }
-}
+//     return { binThatHasCount };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
 
 export async function updateSelectedBin(binId: string) {
   try {
@@ -258,57 +258,57 @@ export async function selectBin(binId: string) {
   }
 }
 
-export async function markAssignmentByBins(
-  barcodeId: string,
-  quantity: number,
-  selectedBinIds: string[]
-) {
-  let threshold: number = quantity;
-  const pickedBins = await prisma.bins.findMany({
-    where: {
-      id: {
-        in: selectedBinIds,
-      },
-    },
-    include: {
-      assignment: {
-        where: {
-          isMarked: false,
-        },
-      },
-    },
-  });
+// export async function markAssignmentByBins(
+//   barcodeId: string,
+//   quantity: number,
+//   selectedBinIds: string[]
+// ) {
+//   let threshold: number = quantity;
+//   const pickedBins = await prisma.bins.findMany({
+//     where: {
+//       id: {
+//         in: selectedBinIds,
+//       },
+//     },
+//     include: {
+//       assignment: {
+//         where: {
+//           isMarked: false,
+//         },
+//       },
+//     },
+//   });
 
-  const assignmentIdsToUpdate = [];
-  for (let bin of pickedBins) {
-    for (let assignment of bin?.assignment) {
-      if (threshold > 0) {
-        assignmentIdsToUpdate.push(assignment?.id);
-        threshold--;
-        console.log(
-          "threshold",
-          threshold,
-          "marked Assignment",
-          assignment.isMarked
-        );
-      } else {
-        break;
-      }
-    }
-  }
+//   const assignmentIdsToUpdate = [];
+//   for (let bin of pickedBins) {
+//     for (let assignment of bin?.assignment) {
+//       if (threshold > 0) {
+//         assignmentIdsToUpdate.push(assignment?.id);
+//         threshold--;
+//         console.log(
+//           "threshold",
+//           threshold,
+//           "marked Assignment",
+//           assignment.isMarked
+//         );
+//       } else {
+//         break;
+//       }
+//     }
+//   }
 
-  const markedAssignments = await prisma.assignment.updateMany({
-    where: {
-      id: {
-        in: assignmentIdsToUpdate,
-      },
-    },
-    data: {
-      isMarked: true,
-    },
-  });
-  return { markedAssignments };
-}
+//   const markedAssignments = await prisma.assignment.updateMany({
+//     where: {
+//       id: {
+//         in: assignmentIdsToUpdate,
+//       },
+//     },
+//     data: {
+//       isMarked: true,
+//     },
+//   });
+//   return { markedAssignments };
+// }
 
 /**
  Create an function that can eliminate germs 
