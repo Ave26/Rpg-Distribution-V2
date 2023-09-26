@@ -1,37 +1,6 @@
 import prisma from ".";
 import { bins, products } from "@prisma/client";
 
-// interface assignedProduct {
-//   id: string;
-//   dateReceive: Date | null;
-//   purchaseOrder: string;
-//   expirationDate: Date | null;
-//   boxSize: string | null;
-//   isDamage: boolean | null;
-//   productId: string | null;
-//   binId: string | null;
-//   usersId: string | null;
-//   damageBinId: string | null;
-// }
-
-// interface Bin {
-//   id: string;
-//   isAvailable: boolean;
-//   capacity: number;
-//   shelfLevel: number;
-//   assignedProduct: assignedProduct[];
-// }
-
-// interface Product {
-//   id: string;
-//   barcodeId: string;
-//   category: string | null;
-//   image: string | null;
-//   price: number | null;
-//   productName: string;
-//   sku: string | null;
-// }
-
 export async function scanBarcode(
   barcodeId: string,
   purchaseOrder: string,
@@ -97,7 +66,7 @@ export async function scanBarcode(
             const TotalAssignedProduct = await prisma.assignedProducts.count({
               where: {
                 binId: bin?.id,
-                status: "default",
+                status: "default" || "Queuing",
               },
             });
 

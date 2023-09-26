@@ -1,5 +1,6 @@
 import React, { ReactElement, useState, useEffect } from "react";
 import useSWR from "swr";
+import jsPDF from "jspdf";
 import Head from "next/head";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
@@ -12,6 +13,7 @@ import ReusableButton from "@/components/Parts/ReusableButton";
 import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
 import { TFormData } from "@/types/inputTypes";
+import { Orders } from "@/types/ordersTypes";
 
 export default function PickingAndPacking() {
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
@@ -88,7 +90,10 @@ export default function PickingAndPacking() {
         },
         body: JSON.stringify({ productEntry, formData }),
       });
-      const reports = await response.json();
+      const reports: Orders = await response.json();
+      console.log(reports.clientName);
+      await generatePdf(reports);
+
       console.log(reports);
     } catch (error) {
       console.log(error);
@@ -105,6 +110,50 @@ export default function PickingAndPacking() {
       });
     }
   }
+
+  const generatePdf = async (orderReport: Orders | null) => {
+    console.log("generate report executed");
+    console.log(orderReport?.id);
+
+    const doc = new jsPDF();
+
+    // Add "Hello, World!" text to the PDF
+    doc.text(`${orderReport?.clientName}`, 20, 40);
+    doc.text(
+      "--------------------------------------------------------------",
+      10,
+      10
+    );
+    doc.text("                  OUTBOUND ORDER REPORT", 10, 20);
+    doc.text(
+      "--------------------------------------------------------------",
+      10,
+      30
+    );
+
+    doc.text(`Order Date: ${String(orderReport?.dateCreated)}`, 20, 50);
+    doc.text(`Order Number: ${orderReport?.id}`, 20, 60);
+    doc.text(`Prepared by: ${orderReport?.users?.username}`, 20, 70);
+
+    // Populate client information
+    doc.text(
+      "--------------------------------------------------------------",
+      10,
+      100
+    );
+    doc.text("Client Information:", 20, 110);
+    doc.text(
+      "--------------------------------------------------------------",
+      10,
+      120
+    );
+    doc.text(`Client Name: ${orderReport?.clientName}`, 20, 140);
+    doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
+    doc.text(`Contact Phone: 09511219514`, 20, 160);
+    doc.text(`Email: client@gmail.com`, 20, 170);
+
+    doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
+  };
 
   const inputStyle =
     "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";

@@ -1,8 +1,13 @@
 import prisma from ".";
 import { EntriesTypes } from "@/types/binEntries";
 import { setTime } from "@/helper/_helper";
-import { orders, productStatus } from "@prisma/client";
+import {
+  orders as PrismaOrders,
+  productStatus,
+  users as PrismaUsers,
+} from "@prisma/client";
 import { TFormData } from "@/types/inputTypes";
+import { Orders } from "@/types/ordersTypes";
 
 export async function make_log_report(
   orderReport: EntriesTypes[],
@@ -12,7 +17,7 @@ export async function make_log_report(
   try {
     const { date } = setTime();
     const { clientName, destination, truck } = formData;
-    const orders: orders = await prisma.orders.create({
+    const orders: Orders = await prisma.orders.create({
       data: {
         clientName: clientName,
         dateCreated: date,
@@ -20,6 +25,14 @@ export async function make_log_report(
         destination,
         truck,
         productOrdered: orderReport,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
       },
     });
 
@@ -142,7 +155,7 @@ type UpdateData = {
   status: productStatus; // Replace with the actual type from your schema
 };
 
-export async function update_product_status(orders: orders | undefined) {
+export async function update_product_status(orders: Orders | undefined) {
   let updatedProducts;
   try {
     if (orders) {

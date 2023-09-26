@@ -32,7 +32,7 @@ export async function handler(
         );
 
         return orders
-          ? res.status(200).json({ message: "Report Created", orders })
+          ? res.status(200).json(orders)
           : res.status(500).json(error);
       } catch (error) {
         return console.log(error);
