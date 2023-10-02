@@ -67,7 +67,19 @@ export default function LoginForm() {
       const json: Data = await response.json();
       switch (response.status) {
         case 200:
-          json?.authenticated && router.push("/dashboard/barcode-scanner");
+          if (json?.authenticated)
+            switch (json.user.roles) {
+              case "Admin":
+                router.push("/dashboard/log-overview");
+                break;
+
+              case "staff":
+                router.push("/dashboard/barcode-scanner");
+                break;
+
+              default:
+                break;
+            }
 
           setIsShow(false);
 

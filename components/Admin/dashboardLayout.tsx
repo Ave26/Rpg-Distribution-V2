@@ -45,7 +45,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-full w-full flex-wrap items-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
       <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto break-words p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
         <ReusableDropDownMenu
-          initialName={"Manage Products"}
           numberOfChildren={2}
           childNamePrefix={[
             {
@@ -57,8 +56,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               name: "Scan Barcode",
             },
           ]}
+          initialName={"Manage Products"}
         />
-
+        <ReusableLink endPoint={"log-overview"} linkName={"Log Overview"} />
         <ReusableLink
           visibility="not-sr-only md:sr-only"
           endPoint={"barcode-scanner"}
@@ -89,7 +89,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           endPoint={"delivery-management"}
           linkName={"Delivery Management"}
         />
-        <ReusableLink endPoint={"log-overview"} linkName={"Log Overview"} />
 
         <ReusableButton
           name={"Logout"}
