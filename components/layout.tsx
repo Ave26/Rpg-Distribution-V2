@@ -19,7 +19,6 @@ export default function Layout({ children }: { children: ReactNode }) {
     });
     const data: AuthProps = await response.json();
     if (data?.authenticated === false || !data?.authenticated) router.push("/");
-    // console.log("GlobalState:", globalState);
     updateGlobalState(data);
     return data;
   };

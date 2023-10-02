@@ -5,7 +5,7 @@ import ReusableInput from "@/components/Parts/ReusableInput";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
-const AccountManagement = (): JSX.Element => {
+const AccountManagement = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cPassword, setCPassword] = useState<string>("");
@@ -14,7 +14,7 @@ const AccountManagement = (): JSX.Element => {
   const [email, setEmail] = useState<string>("");
   const [data, setData] = useState<string | null>(null);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const requestBody = JSON.stringify({
     username: username,

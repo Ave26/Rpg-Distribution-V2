@@ -6,21 +6,6 @@ import { useRouter } from "next/router";
 
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import { AuthProps } from "@/types/authTypes";
-
-// interface HeaderProps {
-//   error?: unknown;
-//   headerBg?: string;
-//   headerSky?: string;
-//   headerTxt?: string;
-// }
-
-// {
-//   error,
-//   headerBg = "bg-[#0b8acb] transition-all",
-//   headerSky = "bg-transparent",
-//   headerTxt,
-// }: HeaderProps
 
 export default function Header() {
   const router = useRouter();
@@ -64,7 +49,7 @@ export default function Header() {
 
   // console.log("headers:", globalState);
   const linkHref: string =
-    globalState?.authenticated === true ? "/dashboard/barcode-scanner" : "/";
+    globalState?.authenticated === true ? "/dashboard/overview-page" : "/";
   return (
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>

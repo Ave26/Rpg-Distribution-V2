@@ -18,7 +18,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { globalState } = useMyContext();
 
   const handleLogout = async () => {
-    console.log("click");
     try {
       const response = await fetch("/api/user/logout", {
         method: "DELETE",
@@ -32,8 +31,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         console.log(json);
         const auth = localStorage.setItem("authenticated", "false");
         if (!Boolean(auth)) {
-          // setIsAuthenticated(false);
-
           router.push("/");
         }
       }
@@ -92,6 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           endPoint={"delivery-management"}
           linkName={"Delivery Management"}
         />
+        <ReusableLink endPoint={"log-overview"} linkName={"Log Overview"} />
 
         <ReusableButton
           name={"Logout"}
@@ -103,7 +101,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       </aside>
 
-      <main className="relativeh-full w-full">{children}</main>
+      <main className="relative h-full w-full">{children}</main>
     </div>
   );
 }

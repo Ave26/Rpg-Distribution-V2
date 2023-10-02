@@ -7,7 +7,6 @@ import DashboardLayout from "@/components/Admin/dashboardLayout";
 import BinsLayout from "@/components/BinsLayout";
 import Loading from "@/components/Parts/Loading";
 import Search from "@/components/Parts/Search";
-import InputField from "@/components/Parts/InputField";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
 import { EntriesTypes } from "@/types/binEntries";
@@ -91,10 +90,7 @@ export default function PickingAndPacking() {
         body: JSON.stringify({ productEntry, formData }),
       });
       const reports: Orders = await response.json();
-      console.log(reports.clientName);
       await generatePdf(reports);
-
-      console.log(reports);
     } catch (error) {
       console.log(error);
     } finally {
@@ -151,6 +147,37 @@ export default function PickingAndPacking() {
     doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
     doc.text(`Contact Phone: 09511219514`, 20, 160);
     doc.text(`Email: client@gmail.com`, 20, 170);
+
+    // Order Details Section (Using a loop for tabular data)
+    var y = 120; // Set the initial Y-coordinate for the table
+    var columnWidth = 45;
+
+    doc.text("Order Details:", 10, 50);
+    doc.line(10, y + 5, 200, y + 5); // Horizontal line under section title
+
+    // Table headers
+    doc.text("Product Name", 10, y + 15);
+    doc.text("Barcode ID", 10 + columnWidth, y + 15);
+    doc.text("Bin Location", 10 + 2 * columnWidth, y + 15);
+    doc.text("SKU", 10 + 3 * columnWidth, y + 15);
+
+    // Use a loop to add data rows here
+    // Example:
+    // doc.text('[Product Name 1]', 10, y + 30);
+    // doc.text('[Barcode 1]', 10 + columnWidth, y + 30);
+    // doc.text('[Bin 1]', 10 + 2 * columnWidth, y + 30);
+    // doc.text('[SKU 1]', 10 + 3 * columnWidth, y + 30);
+
+    // Continue adding rows in a similar fashion...
+
+    // Order Total
+    doc.text("Order Total: [Total Price for All Items]", 10, y + 120);
+
+    // Notes
+    doc.text("Notes: [Any Additional Notes]", 10, y + 135);
+
+    // Thank you message
+    doc.text("Thank you for choosing [Your Company Name]!", 10, y + 150);
 
     doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
   };
@@ -223,6 +250,7 @@ export default function PickingAndPacking() {
         ) : (
           <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
             <BinsLayout
+              isLoading
               bins={bins}
               dataEntries={{ productEntry, setProductEntry }}
               formData={formData}

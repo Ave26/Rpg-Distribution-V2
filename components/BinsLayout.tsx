@@ -19,11 +19,13 @@ interface BinsProps {
 
 interface SetRequestTypes {
   setQuantity: React.Dispatch<SetStateAction<number>>;
+  setIsLoading: React.Dispatch<SetStateAction<boolean>>;
 }
 
 interface RequestTypes {
   quantity: number;
   barcodeId: string | null;
+  isLoading: boolean;
 }
 
 type ToastTypes = {
@@ -139,38 +141,41 @@ export default function BinsLayout({
   return (
     <>
       <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em] md:max-h-[25em] md:min-w-0 md:max-w-[45em]">
-        <table className="rounded-t-md text-left text-sm text-gray-500 dark:text-gray-400">
-          <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              {titles.map((title, index) => {
+        {isLoading ? (
+          <>loading...</>
+        ) : (
+          <table className="rounded-t-md text-left text-sm text-gray-500 dark:text-gray-400">
+            <thead className="w-full rounded-t-lg bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                {titles.map((title, index) => {
+                  return (
+                    <th
+                      scope="col"
+                      key={index}
+                      className={`px-6 py-3 md:py-7 ${
+                        (index === 0 && "rounded-tl-md") ||
+                        (index === 5 && "rounded-tr-md")
+                      }`}>
+                      {title}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {bins?.map((bin: Bin, index) => {
                 return (
-                  <th
-                    scope="col"
+                  <tr
+                    onClick={(e) => {
+                      e.preventDefault();
+                      selectEntry(bin);
+                    }}
                     key={index}
-                    className={`px-6 py-3 md:py-7 ${
-                      (index === 0 && "rounded-tl-md") ||
-                      (index === 5 && "rounded-tr-md")
-                    }`}>
-                    {title}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {bins?.map((bin: Bin, index) => {
-              return (
-                <tr
-                  onClick={(e) => {
-                    e.preventDefault();
-                    selectEntry(bin);
-                  }}
-                  key={index}
-                  className={`text-white transition-all ${
-                    coveredBins.includes(bin?.id)
-                      ? "ring-2 ring-inset ring-white transition-all delay-100"
-                      : "ring-none"
-                  } 
+                    className={`text-white transition-all ${
+                      coveredBins.includes(bin?.id)
+                        ? "ring-2 ring-inset ring-white transition-all delay-100"
+                        : "ring-none"
+                    } 
                   
                   
                     ${
@@ -181,42 +186,42 @@ export default function BinsLayout({
                         : "bg-gray-800"
                     }
                   `}>
-                  <td className="px-6 py-4">
-                    {Number(bin?._count.assignedProducts)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {String(bin?.racks?.categories?.category)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {
-                      bin?.assignedProducts?.map((assign) => {
-                        return assign?.products?.productName;
-                      })[0]
-                    }
-                  </td>
-                  <td className="px-6 py-4">
-                    {
-                      bin?.assignedProducts?.map((assign) => {
-                        return Number(assign?.products?.price);
-                      })[0]
-                    }
-                  </td>
-                  <td className="px-6 py-4">
-                    {/* {
+                    <td className="px-6 py-4">
+                      {Number(bin?._count.assignedProducts)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {String(bin?.racks?.categories?.category)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {
+                        bin?.assignedProducts?.map((assign) => {
+                          return assign?.products?.productName;
+                        })[0]
+                      }
+                    </td>
+                    <td className="px-6 py-4">
+                      {
+                        bin?.assignedProducts?.map((assign) => {
+                          return Number(assign?.products?.price);
+                        })[0]
+                      }
+                    </td>
+                    <td className="px-6 py-4">
+                      {/* {
                       bin?.assignedProducts?.map(
                         (assign) => assign?.products?.price
                       )[0]
                     } */}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
 
-          {/* <tfoot>
+            {/* <tfoot>
           <tr className="font-semibold text-gray-900 dark:text-white">
             <th scope="row" className="px-6 py-3 text-base">
               Total
@@ -225,7 +230,8 @@ export default function BinsLayout({
             <td className="px-6 py-3">21,000</td>
           </tr>
         </tfoot> */}
-        </table>
+          </table>
+        )}
       </div>
       <Toast data={toast.message} isShow={toast.isShow} />
     </>

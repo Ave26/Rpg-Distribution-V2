@@ -2,7 +2,6 @@ import Layout from "@/components/layout";
 import Head from "next/head";
 
 import InitialPage from "@/components/InitialPage";
-import { useMyContext } from "@/contexts/AuthenticationContext";
 
 interface TokenProps {
   id: string;
@@ -21,9 +20,6 @@ interface HomeProps {
 }
 
 export default function Home({ data }: HomeProps) {
-  const { globalState } = useMyContext();
-
-  // console.log(globalState);
   return (
     <>
       <Head>
