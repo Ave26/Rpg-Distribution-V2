@@ -25,7 +25,7 @@ enum SupplyLevelStatus {
 }
 
 enum productStatus {
-  default
+  Default
   Queuing
   OutForDelivery
   Delivered
@@ -49,6 +49,8 @@ model users {
   transactionRecords transactionRecords[]
   assignedProducts   assignedProducts[]
   orders             orders[]
+  deliveryLogs       deliveryLogs[]
+  trucks             trucks[]
 }
 
 model transactionRecords {
@@ -122,7 +124,7 @@ model assignedProducts {
   expirationDate       DateTime?
   boxSize              String?
   isDamage             Boolean?
-  status               productStatus       @default(default)
+  status               productStatus       @default(Default)
   products             products?           @relation(fields: [productId], references: [id])
   productId            String?             @db.ObjectId
   bin                  bins?               @relation(fields: [binId], references: [id])
@@ -149,23 +151,52 @@ model orders {
   id             String           @id @default(auto()) @map("_id") @db.ObjectId
   clientName     String
   dateCreated    DateTime
-  truck          String
+  trucks         trucks?          @relation(fields: [truckName], references: [name])
+  truckName      String?          @unique
   destination    String
   productOrdered productOrdered[]
   users          users?           @relation(fields: [usersId], references: [id])
   usersId        String?          @db.ObjectId
 }
 
+enum DeliveryStatus {
+  Emergency_Stop
+  Gas_Stop
+}
+
+type coordinates {
+  longitude Float
+  latitude  Float
+}
+
+type DeliveryMessage {
+  timeStamp   DateTime
+  status      DeliveryStatus
+  coordinates coordinates
+  message     String
+}
+
+model deliveryLogs {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  user    users  @relation(fields: [usersId], references: [id])
+  usersId String @db.ObjectId
+
+  deliveryMessage DeliveryMessage
+}
+
 enum TruckAvailability {
-  available
-  forRepair
-  outForDelivery
+  Available
+  ForRepair
+  OutForDelivery
 }
 
 model trucks {
-  id     String            @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  status TruckAvailability
+  id      String            @id @default(auto()) @map("_id") @db.ObjectId
+  name    String            @unique
+  status  TruckAvailability @default(Available)
+  driver  users?            @relation(fields: [usersId], references: [id])
+  usersId String?           @db.ObjectId
+  orders  orders[]
 }
 
 model damageBin {

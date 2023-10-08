@@ -13,8 +13,11 @@ import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
 import { TFormData } from "@/types/inputTypes";
 import { Orders } from "@/types/ordersTypes";
+import { getTrucks } from "@/lib/prisma/trucks";
 
-export default function PickingAndPacking() {
+import { trucks as TTrucks } from "@prisma/client";
+
+export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
   const [hasLoading, setHasLoading] = useState(false);
   const [isAnimate, setIsAnimate] = useState(false);
@@ -27,7 +30,9 @@ export default function PickingAndPacking() {
     quantity: 0,
   });
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) {
     const { name, value } = e.target;
 
     setFormData({
@@ -218,14 +223,17 @@ export default function PickingAndPacking() {
             value={formData.clientName}
             className={inputStyle}
           />
-          <input
-            type="text"
+
+          <select
             name="truck"
-            placeholder="Truck"
-            onChange={handleChange}
             value={formData.truck}
-            className={inputStyle}
-          />
+            onChange={handleChange}
+            className={inputStyle}>
+            {trucks?.map((truck) => {
+              return <option key={truck?.id}>{truck.name}</option>;
+            })}
+          </select>
+
           <input
             type="text"
             name="destination"
@@ -250,7 +258,7 @@ export default function PickingAndPacking() {
         ) : (
           <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
             <BinsLayout
-              isLoading
+              isLoading={isLoading}
               bins={bins}
               dataEntries={{ productEntry, setProductEntry }}
               formData={formData}
@@ -303,6 +311,14 @@ export default function PickingAndPacking() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const { trucks } = await getTrucks();
+
+  return {
+    props: { trucks },
+  };
 }
 
 PickingAndPacking.getLayout = (page: ReactElement) => {

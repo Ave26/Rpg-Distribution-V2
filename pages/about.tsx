@@ -60,7 +60,6 @@ export default function About({ data }: any) {
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   const { verifiedToken }: any = await verifyJwt(req);
   let data = {};
-  console.log(verifiedToken);
   if (verifiedToken) {
     data = {
       isLogin: true,

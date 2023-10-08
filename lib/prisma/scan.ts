@@ -66,7 +66,7 @@ export async function scanBarcode(
             const TotalAssignedProduct = await prisma.assignedProducts.count({
               where: {
                 binId: bin?.id,
-                status: "default" || "Queuing",
+                status: "Default" || "Queuing",
               },
             });
 

@@ -1,3 +1,5 @@
+import { JwtPayload } from "jsonwebtoken";
+
 export const setTime = () => {
   let date = new Date();
 
@@ -15,4 +17,13 @@ export const setTime = () => {
   });
 
   return { date };
+};
+
+export const getId = (verifiedToken: string | JwtPayload | undefined) => {
+  let userId: string = "";
+  if (verifiedToken && typeof verifiedToken === "object") {
+    userId = verifiedToken.id;
+  }
+
+  return { userId };
 };

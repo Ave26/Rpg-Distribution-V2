@@ -38,14 +38,14 @@ export default async function handler(
           select: {
             assignedProducts: {
               where: {
-                status: "default",
+                status: "Default",
               },
             },
           },
         },
         assignedProducts: {
           where: {
-            status: "default",
+            status: "Default",
           },
           select: {
             expirationDate: true,

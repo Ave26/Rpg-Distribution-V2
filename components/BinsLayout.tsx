@@ -40,8 +40,6 @@ export default function BinsLayout({
   formData,
   setFormData,
 }: BinsProps) {
-  // PROBLEM NEED TO MAKE THE BINS NOT A FUNCTION
-
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
   const { productEntry, setProductEntry } = dataEntries;
   const [toast, setToast] = useState<ToastTypes>({
@@ -137,6 +135,10 @@ export default function BinsLayout({
       clearTimeout(timer);
     };
   }, [formData.quantity]);
+
+  if (!bins) {
+    return <>No data</>;
+  }
 
   return (
     <>

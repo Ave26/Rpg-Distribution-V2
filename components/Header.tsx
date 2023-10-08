@@ -49,7 +49,7 @@ export default function Header() {
 
   // console.log("headers:", globalState);
   const linkHref: string =
-    globalState?.authenticated === true ? "/dashboard/overview-page" : "/";
+    globalState?.authenticated === true ? "/dashboard/log-overview" : "/";
   return (
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
