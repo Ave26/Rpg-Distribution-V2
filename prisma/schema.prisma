@@ -13,6 +13,10 @@ type UsersAdditionalInfo {
   email        String
 }
 
+enum StaffRole {
+  Driver
+}
+
 enum UserRole {
   Admin
   Staff
@@ -191,12 +195,12 @@ enum TruckAvailability {
 }
 
 model trucks {
-  id      String            @id @default(auto()) @map("_id") @db.ObjectId
-  name    String            @unique
-  status  TruckAvailability @default(Available)
-  driver  users?            @relation(fields: [usersId], references: [id])
-  usersId String?           @db.ObjectId
-  orders  orders[]
+  id       String            @id @default(auto()) @map("_id") @db.ObjectId
+  name     String            @unique
+  status   TruckAvailability @default(Available)
+  driver   users?            @relation(fields: [driverId], references: [id])
+  driverId String?           @db.ObjectId
+  orders   orders[]
 }
 
 model damageBin {

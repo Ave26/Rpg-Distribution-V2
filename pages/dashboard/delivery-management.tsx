@@ -6,18 +6,29 @@ import { setTime } from "@/helper/_helper";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import VehicleManagement from "@/components/VehicleManagement";
 import DriverUI from "@/components/DriverUI";
-
 import { trucks as TTrucks } from "@prisma/client";
-
 import {
   TCoordinates,
   TDeliveryTrigger,
   TLocationEntry,
 } from "@/types/deliveryTypes";
+
 import { getTrucks } from "@/lib/prisma/trucks";
 
-export default function DeliveryManagement({ trucks }: { trucks: TTrucks[] }) {
+type TDeliveryManagementProps = {
+  trucks: TTrucks[];
+};
+
+export default function DeliveryManagement({
+  trucks,
+}: TDeliveryManagementProps) {
   const { globalState } = useMyContext();
+
+  /* Need to map the component based on the roles  
+    It is posible but the given role must be always true
+
+    and there is some hindrance in passing a props
+  */
 
   const divRef = useRef<HTMLDivElement | null>(null);
   const [locationEntry, setLocationEntry] = useState<TLocationEntry[] | null>(
@@ -87,18 +98,18 @@ export default function DeliveryManagement({ trucks }: { trucks: TTrucks[] }) {
       eg. outForDelivery
       the assigned product will be updated as OutForDelivery
       
+      1. If the delivery has been started then update the truck status to 
+      outForDelivery
 
-
-      
+      if (outforDelivery) {
+        setIsClick(true)
+      } else {
+        setIsClick(false)
+      }
       
       */
     }
   }, [deliveryTrigger.hasStart]);
-
-  const Test = {
-    Admin: VehicleManagement,
-    staff: DriverUI,
-  };
 
   return (
     <section className="relative flex h-screen w-full flex-col gap-9 px-4 py-20">
@@ -133,3 +144,14 @@ DeliveryManagement.getLayout = (page: ReactElement) => {
     </Layout>
   );
 };
+
+/* 
+  When the Start Delivery is Triggered
+    - Update The Truck that has the products in queue
+    - How to know where the product I will going to update
+    const updateSpecificTruck = await prisma.trucks.findMany({
+      where: {
+        
+      }
+    })
+*/

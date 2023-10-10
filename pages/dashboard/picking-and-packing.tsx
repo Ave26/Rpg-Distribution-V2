@@ -23,7 +23,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [isAnimate, setIsAnimate] = useState(false);
   const [formData, setFormData] = useState<TFormData>({
     barcodeId: "",
-    truck: "",
+    truck: trucks[0]?.name,
     destination: "",
     clientName: "",
     productName: "",
@@ -85,6 +85,9 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   }, [productEntry]);
 
   async function makeReport() {
+    if (Number(productEntry?.length) <= 0) {
+      return console.log("do something");
+    }
     setHasLoading(true);
     try {
       const response = await fetch("/api/outbound/make-report", {

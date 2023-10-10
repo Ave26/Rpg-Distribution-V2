@@ -8,3 +8,34 @@ export async function getTrucks() {
     return { e };
   }
 }
+
+export async function getSpecificTrucks() {
+  try {
+    const trucks = await prisma.trucks.findMany({
+      include: {
+        orders: true,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function updateTrucks(id: string, truckName: string) {
+  // const updateSpecificTrucks = await prisma.trucks.update({
+  //   where: {
+  //     id,
+  //   },
+  //   data: {
+  //     status: "OutForDelivery",
+  //   },
+  // });
+
+  // const updateSpecificOrder = prisma.orders.update({
+  //   where: {
+  //     truckName,
+  //   },
+  //   data: {},
+  // });
+  console.log("update trucks triggered");
+}

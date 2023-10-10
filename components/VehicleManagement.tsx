@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   trucks as TTrucks,
   TruckAvailability as TTruckAvailability,
-  TruckAvailability,
+  orders as TOrders,
 } from "@prisma/client";
 import useSWR from "swr";
 
@@ -11,13 +11,23 @@ import useSWR from "swr";
 import { FaBackspace } from "react-icons/fa";
 // COMPONENT
 import Loading from "./Parts/Loading";
+import {
+  TCoordinates,
+  TDeliveryTrigger,
+  TLocationEntry,
+} from "@/types/deliveryTypes";
+
+type TTrucksWithoutUserId = Omit<TTrucks, "driverId">;
+type TTrucksWithOrders = TTrucksWithoutUserId & {
+  orders: TOrders[];
+};
 
 export default function VehicleManagement() {
   const [isClick, setIsClick] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [addTruckOnLoad, setAddTruckOnLoad] = useState(false);
   const [updateTruckOnLoad, setUpdateTruckOnLoad] = useState(false);
-  const [truckData, setTruckData] = useState<TTrucks>({
+  const [truckData, setTruckData] = useState<TTrucksWithoutUserId>({
     id: "",
     name: "",
     status: "Available",
@@ -35,7 +45,7 @@ export default function VehicleManagement() {
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const data: TTrucks[] = await response.json();
+    const data: TTrucksWithOrders[] = await response.json();
     return data;
   };
 
@@ -102,6 +112,30 @@ export default function VehicleManagement() {
                 key={truck?.id}
                 className="flex w-full flex-row justify-between border p-2">
                 <h1 className="p-2 text-center">Name: {truck?.name}</h1>
+                <div className="flex h-full w-1/2  items-center justify-start gap-2 border p-2 text-center font-semibold">
+                  <label htmlFor="Orders" className="">
+                    <p>Carried Products</p>
+                  </label>
+                  <select
+                    name=""
+                    id="Orders"
+                    className="rouned-sm h-full w-full border border-none outline-none transition-all">
+                    {truck?.orders?.map((order: TOrders) => {
+                      return (
+                        <option key={order.id} value="">
+                          {order.productOrdered.flatMap((product) => {
+                            return (
+                              <>
+                                Id: {order.id}, Name: {product.productName},
+                                Quantity: {product.totalQuantity}
+                              </>
+                            );
+                          })}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
                 <h1 className="p-2 text-center">Status: {truck?.status}</h1>
                 <button
                   onClick={async () => {

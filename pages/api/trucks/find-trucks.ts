@@ -12,7 +12,11 @@ async function handler(
   try {
     switch (req.method) {
       case "GET":
-        const trucks = await prisma.trucks.findMany({});
+        const trucks = await prisma.trucks.findMany({
+          include: {
+            orders: true,
+          },
+        });
         const { userId } = getId(verifiedToken);
         return res.status(200).json(trucks);
 
