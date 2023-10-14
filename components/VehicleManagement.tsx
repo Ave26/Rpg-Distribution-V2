@@ -123,7 +123,7 @@ export default function VehicleManagement() {
                     {truck?.orders?.map((order: TOrders) => {
                       return (
                         <option key={order.id} value="">
-                          {order.productOrdered.flatMap((product) => {
+                          {order.productOrdered.map((product) => {
                             return (
                               <>
                                 Id: {order.id}, Name: {product.productName},

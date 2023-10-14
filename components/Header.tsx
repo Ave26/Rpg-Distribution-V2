@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 import { useMyContext } from "@/contexts/AuthenticationContext";
+import { TRole, TRoleToRoutes } from "@/types/roleTypes";
 
 export default function Header() {
   const router = useRouter();
@@ -14,6 +15,18 @@ export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [buttonName, setButtonName] = useState<string>("Login");
+
+  const role: string | undefined = globalState?.verifiedToken?.roles;
+
+  const roleToRoutes: TRoleToRoutes = {
+    // object mapper
+    Admin: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
+    staff: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
+    Driver: [
+      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+    ],
+  };
+  const mapRoutes = roleToRoutes[role as TRole];
 
   const gotoLogin = () => {
     router.push("/login");
@@ -47,22 +60,21 @@ export default function Header() {
     setIsOpen((prevState) => !prevState);
   };
 
-  // console.log("headers:", globalState);
-  const linkHref: string =
-    globalState?.authenticated === true ? "/dashboard/log-overview" : "/";
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-center font-bold dark:bg-white md:px-20 lg:flex-row`}>
+      className={`relative flex h-full w-full flex-col items-center justify-center  font-bold dark:bg-white md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
         <div className={`h-fit w-fit  select-none`}>
-          <Link href={`${linkHref}`} passHref>
-            <Image
-              priority
-              src={ProStockV2}
-              alt="RPG LOGO"
-              className="h-16 w-16 transition-all"
-            />
-          </Link>
+          {mapRoutes?.map((route, index) => (
+            <Link key={index} href={route.path}>
+              <Image
+                priority
+                src={ProStockV2}
+                alt="RPG LOGO"
+                className="h-16 w-16 transition-all"
+              />
+            </Link>
+          ))}
         </div>
         <div className="h-fit ">
           <button onClick={toggleMenu}>

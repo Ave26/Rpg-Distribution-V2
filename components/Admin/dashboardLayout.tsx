@@ -8,14 +8,59 @@ import AccountManagement from "@/public/assets/dashBoardIcons/AccountManagement.
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
 import { useMyContext } from "@/contexts/AuthenticationContext";
+import Link from "next/link";
+import { TRole, TRoleToRoutes } from "@/types/roleTypes";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const router = useRouter();
   const { globalState } = useMyContext();
+  const router = useRouter();
+  const role: string | undefined = globalState?.verifiedToken?.roles;
+
+  const roleToRoutes: TRoleToRoutes = {
+    Admin: [
+      { path: "/dashboard/log-overview", label: "Log Overview" },
+      { path: "/dashboard/add-new-product", label: "Add Product" },
+      { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
+      { path: "/dashboard/pallete-location", label: "Pallete Location" },
+      { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
+      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+      { path: "/dashboard/acc-management", label: "Manage Account" },
+    ],
+    staff: [
+      { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
+      { path: "/dashboard/add-new-product", label: "Add Product" },
+    ],
+    Driver: [
+      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+    ],
+  };
+
+  const mapRoutes = roleToRoutes[role as TRole];
+  const currentPath = router.asPath;
+
+  useEffect(() => {
+    if (mapRoutes) {
+      const isAuthorized = mapRoutes.some(
+        (route) => route.path === currentPath
+      );
+      if (!isAuthorized) {
+        router.push("/unauthorized");
+      }
+    }
+  }, [currentPath, mapRoutes, router]);
+
+  /* if the current path is not equal to the path of current role then proceed to /unauthorized */
+
+  const linkStyle = {
+    select:
+      "rounded-md border  border-transparent bg-[#65CECA] p-2 font-bold hover:border-cyan-400",
+    unSelect:
+      "rounded-md border  border-transparent bg-transparent p-2  font-bold",
+  };
 
   const handleLogout = async () => {
     try {
@@ -42,65 +87,35 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="flex h-full w-full flex-wrap items-center bg-gradient-to-b from-cyan-300 to-blue-500 md:mx-10 md:flex-nowrap lg:mx-20">
-      <aside className="relative flex h-full w-full flex-row items-center gap-2 overflow-hidden overflow-x-auto break-words p-2 text-xs md:h-screen md:w-fit md:flex-col md:items-center md:gap-3 md:overflow-y-auto md:overflow-x-hidden md:p-10 md:dark:bg-white">
-        <ReusableDropDownMenu
-          numberOfChildren={2}
-          childNamePrefix={[
-            {
-              endPoint: "add-new-product",
-              name: "Add Product",
-            },
-            {
-              endPoint: "barcode-scanner",
-              name: "Scan Barcode",
-            },
-          ]}
-          initialName={"Manage Products"}
-        />
-        <ReusableLink endPoint={"log-overview"} linkName={"Log Overview"} />
-        <ReusableLink
-          visibility="not-sr-only md:sr-only"
-          endPoint={"barcode-scanner"}
-          linkName={"Scan Barcode"}
-        />
-        <ReusableLink
-          visibility="not-sr-only md:sr-only"
-          endPoint={"add-new-product"}
-          linkName={"Add New Product"}
-        />
-        <ReusableLink
-          visibility=""
-          endPoint={"picking-and-packing"}
-          linkName={"Picking And Packing"}
-        />
-        <ReusableLink
-          visibility=""
-          endPoint={"pallete-location"}
-          linkName={"Pallete Location"}
-        />
-        {globalState?.verifiedToken?.roles === "Admin" && (
-          <ReusableLink
-            endPoint={"acc-management"}
-            linkName={"Account Management"}
-          />
-        )}
-        <ReusableLink
-          endPoint={"delivery-management"}
-          linkName={"Delivery Management"}
-        />
-
-        <ReusableButton
-          name={"Logout"}
-          type={"button"}
+    <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 md:h-screen md:flex-row  md:overflow-y-hidden">
+      <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-5 md:text-sm">
+        {mapRoutes?.map((route, index) => {
+          return (
+            <Link
+              key={index}
+              href={route.path}
+              className={`h-fit w-fit cursor-pointer select-none whitespace-nowrap text-center transition-all hover:border-cyan-400 ${
+                router.asPath === route.path
+                  ? linkStyle.select
+                  : linkStyle.unSelect
+              }`}>
+              {route.label}
+            </Link>
+          );
+        })}
+        <button
+          type="button"
           onClick={handleLogout}
           className={
-            "w-full rounded-2xl border border-slate-50/30 bg-transparent p-1 text-center text-xs  font-bold shadow-md transition-all"
-          }
-        />
+            "cursor-pointer select-none rounded-md border border-transparent bg-transparent  p-2 font-bold hover:border-cyan-400 "
+          }>
+          Logout
+        </button>
       </aside>
 
-      <main className="relative h-full w-full">{children}</main>
+      <main className="animation-emerge relative h-full w-full">
+        {children}
+      </main>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useRouter } from "next/router";
 import {
   TDeliveryTrigger,
   TLocationEntry,
@@ -32,9 +32,9 @@ function DriverUI({
   // const { data } = useSWR("/api/trucks/find-trucks", fetch, {
   //   refreshInterval: 1500,
   // });
-
+  const router = useRouter();
+  console.log(router.asPath);
   // console.log(data);
-  console.log(DataTransferItem);
   const [truckName, setTruckName] = useState<string>("");
   const [endPoint, setEndpoint] = useState<TCoordinates>({
     latitude: 0,

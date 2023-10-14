@@ -31,9 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     ">
       {/* headerBg={headerBg} headerTxt={headerTxt} headerSky={headerSky} */}
       <Header />
-      <main className="flex h-full w-full flex-wrap items-center justify-center font-sans">
-        {children}
-      </main>
+      <main className="h-full w-full">{children}</main>
       {/* footerSky={footerSky} */}
       <Footer />
     </div>
