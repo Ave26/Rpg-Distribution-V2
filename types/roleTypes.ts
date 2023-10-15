@@ -6,6 +6,6 @@ export type TEndPoints = {
 export type TRoleToRoutes = {
   SuperAdmin: TEndPoints[];
   Admin: TEndPoints[];
-  Staff: TEndPoints[];
-  Driver: TEndPoints[];
+  Staff?: TEndPoints[];
+  Driver?: TEndPoints[];
 };

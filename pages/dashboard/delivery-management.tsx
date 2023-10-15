@@ -19,18 +19,20 @@ type TDeliveryManagementProps = {
   trucks: TTrucks[];
 };
 
+type TRoleComponent = "Admin" | "SuperAdmin" | "Driver";
+
+type TRoleComponentMapper = {
+  SuperAdmin: () => JSX.Element;
+  Admin: () => JSX.Element;
+  Driver: () => JSX.Element;
+};
+
 export default function DeliveryManagement({
   trucks,
 }: TDeliveryManagementProps) {
   const { globalState } = useMyContext();
+  const role = globalState?.verifiedToken?.roles;
 
-  /* Need to map the component based on the roles  
-    It is posible but the given role must be always true
-
-    and there is some hindrance in passing a props
-  */
-
-  const divRef = useRef<HTMLDivElement | null>(null);
   const [locationEntry, setLocationEntry] = useState<TLocationEntry[] | null>(
     null
   );
@@ -59,10 +61,6 @@ export default function DeliveryManagement({
             ? [...prevLocationEntry, newLocationEntry]
             : [newLocationEntry]
         );
-
-        if (divRef.current) {
-          divRef.current.scrollTop = divRef.current.scrollHeight;
-        }
 
         setCoordinates({
           latitude: position.coords.latitude,
@@ -111,20 +109,25 @@ export default function DeliveryManagement({
     }
   }, [deliveryTrigger.hasStart]);
 
+  const roleComponentMapper: TRoleComponentMapper = {
+    SuperAdmin: () => <VehicleManagement />,
+    Admin: () => <VehicleManagement />,
+    Driver: () => (
+      <DriverUI
+        setDeliveryTrigger={setDeliveryTrigger}
+        deliveryTrigger={deliveryTrigger}
+        locationEntry={locationEntry}
+        coordinates={coordinates}
+        trucks={trucks}
+      />
+    ),
+  };
+
   return (
     <section className="relative flex h-screen w-full flex-col gap-9 px-4 py-20">
-      {globalState?.verifiedToken?.roles === "Admin" ? (
-        <VehicleManagement />
-      ) : (
-        <DriverUI
-          setDeliveryTrigger={setDeliveryTrigger}
-          deliveryTrigger={deliveryTrigger}
-          locationEntry={locationEntry}
-          coordinates={coordinates}
-          divRef={divRef}
-          trucks={trucks}
-        />
-      )}
+      {roleComponentMapper[role as TRoleComponent]
+        ? roleComponentMapper[role as TRoleComponent]()
+        : null}
     </section>
   );
 }

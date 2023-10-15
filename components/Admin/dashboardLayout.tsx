@@ -37,6 +37,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     Staff: [
       { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
       { path: "/dashboard/add-new-product", label: "Add Product" },
+      { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
     ],
     Driver: [
       { path: "/dashboard/delivery-management", label: "Manage Delivery" },

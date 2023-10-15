@@ -14,184 +14,27 @@ import { Bin } from "@/types/inventory";
 import { TFormData } from "@/types/inputTypes";
 import { Orders } from "@/types/ordersTypes";
 import { getTrucks } from "@/lib/prisma/trucks";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 
-import { trucks as TTrucks } from "@prisma/client";
+import { trucks as TTrucks, UserRole } from "@prisma/client";
+import AdminUI from "@/components/PickingAndPackingRole/AdminUI";
+import StaffUI from "@/components/PickingAndPackingRole/StaffUI";
+
+type TRole = "SuperAdmin" | "Admin" | "Staff";
+type TRoleToComponents = {
+  SuperAdmin: () => JSX.Element;
+  Admin: () => JSX.Element;
+  Staff: () => JSX.Element;
+};
 
 export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
-  const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
-  const [hasLoading, setHasLoading] = useState(false);
-  const [isAnimate, setIsAnimate] = useState(false);
-  const [formData, setFormData] = useState<TFormData>({
-    barcodeId: "",
-    truck: trucks[0]?.name,
-    destination: "",
-    clientName: "",
-    productName: "",
-    quantity: 0,
-  });
-
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData, // Spread the existing state
-      [name]: value, // Update the specific field
-    });
-  }
-  const fetcher = async (url: string) => {
-    const { barcodeId } = formData;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        searchSomething: barcodeId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data: Bin[] = await response.json();
-    return data;
+  const { globalState } = useMyContext();
+  const role = globalState?.verifiedToken?.roles;
+  const roleToComponents: TRoleToComponents = {
+    SuperAdmin: () => <AdminUI trucks={trucks} />,
+    Admin: () => <AdminUI trucks={trucks} />,
+    Staff: () => <StaffUI />,
   };
-
-  const {
-    isLoading,
-    data: bins,
-    mutate,
-  } = useSWR(`/api/bins/search`, fetcher, {
-    refreshInterval: 1500,
-  });
-
-  useEffect(() => {
-    if (productEntry) {
-      if (productEntry?.length > 0) {
-        const beforeUnloadListener = (e: BeforeUnloadEvent) => {
-          e.preventDefault();
-          e.returnValue = "Escape this shit?";
-        };
-
-        window.addEventListener("beforeunload", beforeUnloadListener);
-
-        return () => {
-          window.removeEventListener("beforeunload", beforeUnloadListener);
-        };
-      }
-    }
-  }, [productEntry]);
-
-  async function makeReport() {
-    if (Number(productEntry?.length) <= 0) {
-      return console.log("do something");
-    }
-    setHasLoading(true);
-    try {
-      const response = await fetch("/api/outbound/make-report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productEntry, formData }),
-      });
-      const reports: Orders = await response.json();
-      await generatePdf(reports);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setHasLoading(false);
-      setProductEntry([]);
-      setFormData({
-        barcodeId: "",
-        truck: "",
-        destination: "",
-        clientName: "",
-        productName: "",
-        quantity: 0,
-      });
-    }
-  }
-
-  const generatePdf = async (orderReport: Orders | null) => {
-    console.log("generate report executed");
-    console.log(orderReport?.id);
-
-    const doc = new jsPDF();
-
-    // Add "Hello, World!" text to the PDF
-    doc.text(`${orderReport?.clientName}`, 20, 40);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      10
-    );
-    doc.text("                  OUTBOUND ORDER REPORT", 10, 20);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      30
-    );
-
-    doc.text(`Order Date: ${String(orderReport?.dateCreated)}`, 20, 50);
-    doc.text(`Order Number: ${orderReport?.id}`, 20, 60);
-    doc.text(`Prepared by: ${orderReport?.users?.username}`, 20, 70);
-
-    // Populate client information
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      100
-    );
-    doc.text("Client Information:", 20, 110);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      120
-    );
-    doc.text(`Client Name: ${orderReport?.clientName}`, 20, 140);
-    doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
-    doc.text(`Contact Phone: 09511219514`, 20, 160);
-    doc.text(`Email: client@gmail.com`, 20, 170);
-
-    // Order Details Section (Using a loop for tabular data)
-    var y = 120; // Set the initial Y-coordinate for the table
-    var columnWidth = 45;
-
-    doc.text("Order Details:", 10, 50);
-    doc.line(10, y + 5, 200, y + 5); // Horizontal line under section title
-
-    // Table headers
-    doc.text("Product Name", 10, y + 15);
-    doc.text("Barcode ID", 10 + columnWidth, y + 15);
-    doc.text("Bin Location", 10 + 2 * columnWidth, y + 15);
-    doc.text("SKU", 10 + 3 * columnWidth, y + 15);
-
-    // Use a loop to add data rows here
-    // Example:
-    // doc.text('[Product Name 1]', 10, y + 30);
-    // doc.text('[Barcode 1]', 10 + columnWidth, y + 30);
-    // doc.text('[Bin 1]', 10 + 2 * columnWidth, y + 30);
-    // doc.text('[SKU 1]', 10 + 3 * columnWidth, y + 30);
-
-    // Continue adding rows in a similar fashion...
-
-    // Order Total
-    doc.text("Order Total: [Total Price for All Items]", 10, y + 120);
-
-    // Notes
-    doc.text("Notes: [Any Additional Notes]", 10, y + 135);
-
-    // Thank you message
-    doc.text("Thank you for choosing [Your Company Name]!", 10, y + 150);
-
-    doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
-  };
-
-  const inputStyle =
-    "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
 
   return (
     <>
@@ -199,7 +42,13 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
 
-      <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
+      <div>
+        {roleToComponents[role as TRole]
+          ? roleToComponents[role as TRole]()
+          : null}
+      </div>
+
+      {/* <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-2 md:h-screen  md:flex-row md:justify-center md:p-4">
         <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
             formData={formData}
@@ -311,7 +160,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </>
   );
 }

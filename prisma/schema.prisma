@@ -29,6 +29,7 @@ enum SupplyLevelStatus {
 enum productStatus {
   Default
   Queuing
+  Loaded
   OutForDelivery
   Delivered
 }
@@ -178,10 +179,9 @@ type DeliveryMessage {
 }
 
 model deliveryLogs {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  user    users  @relation(fields: [usersId], references: [id])
-  usersId String @db.ObjectId
-
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  user            users           @relation(fields: [usersId], references: [id])
+  usersId         String          @db.ObjectId
   deliveryMessage DeliveryMessage
 }
 

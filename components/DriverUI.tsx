@@ -15,7 +15,6 @@ type TDriverUIProps = {
   setDeliveryTrigger: React.Dispatch<React.SetStateAction<TDeliveryTrigger>>;
   locationEntry: TLocationEntry[] | null;
   coordinates: TCoordinates | null;
-  divRef: React.MutableRefObject<HTMLDivElement | null>;
   trucks?: TTrucks[];
 };
 
@@ -26,7 +25,6 @@ function DriverUI({
   deliveryTrigger,
   locationEntry,
   coordinates,
-  divRef,
   trucks,
 }: TDriverUIProps) {
   // const { data } = useSWR("/api/trucks/find-trucks", fetch, {
@@ -84,7 +82,7 @@ function DriverUI({
         </button>
       </div>
 
-      <div className="h-44 overflow-scroll" ref={divRef}>
+      <div className="h-44 overflow-scroll">
         {locationEntry?.map((pos, index) => (
           <h1 key={index}>
             {pos.latitude}, {pos.longitude}

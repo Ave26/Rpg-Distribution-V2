@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { useState, type FC, useEffect } from "react";
 import LoginForm from "./LoginForm";
-
+import ProStockV2 from "@/public/assets/Finally.png";
+import Image from "next/image";
 interface HomeProps {}
 
 const InitialPage: FC<HomeProps> = ({}) => {
   return (
     <>
       <section className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all border bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white">
-        <div className="relative h-28 w-28 rounded-lg bg-white/30 p-5 backdrop-blur-sm">
-          <div className="h-full w-full rotate-45 rounded-lg bg-white"></div>
-        </div>
+        <Image
+          priority
+          src={ProStockV2}
+          alt="RPG LOGO"
+          className="h-36 w-36 object-contain transition-all"
+        />
         <div className="text-words flex flex-col items-center justify-center break-normal text-center">
           <h1 className="text-4xl font-bold">RPG Prostock</h1>
           <p className="text-words break-normal text-center">
@@ -18,16 +22,6 @@ const InitialPage: FC<HomeProps> = ({}) => {
           </p>
         </div>
 
-        {/* <p>
-          Take Control of Your Warehouse with Prostock: The Ultimate Solution
-          for Streamlined Management! To know more about our company click the
-          button bellow!
-        </p>
-        <Link
-          className="rounded-lg border border-white p-4 md:text-3xl "
-          href={"https://rpg-ph.com"}>
-          Learn More
-        </Link> */}
         <div className="flex items-center justify-center">
           <LoginForm />
         </div>

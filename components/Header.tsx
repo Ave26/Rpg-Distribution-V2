@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import ProStockV2 from "../public/assets/Logo_RPG_Test.png";
+import ProStockV2 from "../public/assets/Finally.png";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -44,7 +44,7 @@ export default function Header() {
                 priority
                 src={ProStockV2}
                 alt="RPG LOGO"
-                className="h-28 w-28 object-cover transition-all"
+                className="h-20 w-20 object-cover transition-all"
               />
             </Link>
           ))}
