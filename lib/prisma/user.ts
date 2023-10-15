@@ -1,38 +1,28 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "./index";
-
-type AdditionalInfo = {
-  Dob: string;
-  Phone_Number: number;
-  email: string;
-};
+import { UsersAdditionalInfo, UserRole } from "@prisma/client";
 
 export const createUser = async (
   username: string,
   password: string,
-  additional_Info: AdditionalInfo
+  roles: UserRole,
+  additionalInfo: UsersAdditionalInfo
 ) => {
-  // const { Dob, Phone_Number, email } = additional_Info;
-  if (additional_Info) {
-    console.log(additional_Info);
-    console.log("user.ts");
-  }
   try {
     const newUser = await prisma.users.create({
       data: {
         username: username,
         password: password,
-        roles: "staff",
-        additional_Info,
+        roles,
+        additionalInfo,
       },
       select: {
         id: true,
         username: true,
         roles: true,
-        additional_Info: true,
+        additionalInfo: true,
       },
     });
-    // console.log(newUser + " user.ts");
     return { newUser };
   } catch (error) {
     console.log(error);
@@ -42,7 +32,7 @@ export const createUser = async (
 
 export const findUser = async (username: string) => {
   try {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.users.findFirst({
       where: {
         username,
       },
@@ -55,7 +45,7 @@ export const findUser = async (username: string) => {
 
 export const findUserFilterPassword = async (username: string) => {
   try {
-    const filteredUser = await prisma.users.findUnique({
+    const filteredUser = await prisma.users.findFirst({
       where: {
         username,
       },
@@ -79,7 +69,7 @@ export const findUserBasedOnId = async (id: string | undefined) => {
         id: true,
         username: true,
         roles: true,
-        additional_Info: true,
+        additionalInfo: true,
       },
     });
     return { user };

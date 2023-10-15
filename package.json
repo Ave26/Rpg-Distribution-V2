@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^5.4.1",
+    "@prisma/client": "^5.4.2",
     "@react-pdf/renderer": "^3.1.12",
     "@types/node": "18.15.10",
     "@types/react": "18.0.29",

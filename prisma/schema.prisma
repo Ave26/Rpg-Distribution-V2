@@ -8,18 +8,16 @@ datasource db {
 }
 
 type UsersAdditionalInfo {
-  Dob          String
+  dob          String
   Phone_Number Int
   email        String
 }
 
-enum StaffRole {
-  Driver
-}
-
 enum UserRole {
+  SuperAdmin
   Admin
   Staff
+  Driver
 }
 
 enum SupplyLevelStatus {
@@ -45,11 +43,10 @@ enum Category {
 
 model users {
   id                 String               @id @default(auto()) @map("_id") @db.ObjectId
-  additional_Info    UsersAdditionalInfo  @map("additional Info")
-  password           String               @unique(map: "password_1")
-  roles              String               @default("staff")
+  additionalInfo     UsersAdditionalInfo
+  password           String
+  roles              UserRole
   username           String               @unique(map: "username_1")
-  orderReportId      String?              @db.ObjectId
   transactionRecords transactionRecords[]
   assignedProducts   assignedProducts[]
   orders             orders[]

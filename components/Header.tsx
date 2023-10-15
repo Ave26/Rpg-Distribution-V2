@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import ProStockV2 from "../public/assets/ProStockV2.png";
+import ProStockV2 from "../public/assets/Logo_RPG_Test.png";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -19,42 +19,14 @@ export default function Header() {
   const role: string | undefined = globalState?.verifiedToken?.roles;
 
   const roleToRoutes: TRoleToRoutes = {
-    // object mapper
+    SuperAdmin: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
     Admin: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
-    staff: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
+    Staff: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
     Driver: [
       { path: "/dashboard/delivery-management", label: "Manage Delivery" },
     ],
   };
   const mapRoutes = roleToRoutes[role as TRole];
-
-  const gotoLogin = () => {
-    router.push("/login");
-  };
-
-  const handleLogout = async () => {
-    console.log("click");
-    try {
-      const response = await fetch("/api/user/logout", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await response.json();
-      console.log(json.message);
-      if (response.status === 200) {
-        console.log(json);
-        const auth = localStorage.setItem("authenticated", "false");
-        if (!Boolean(auth)) {
-          setIsAuthenticated(false);
-          router.push("/login");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const toggleMenu = () => {
     setIsOpen((prevState) => !prevState);
@@ -63,18 +35,25 @@ export default function Header() {
   return (
     <div
       className={`relative flex h-full w-full flex-col items-center justify-center  font-bold dark:bg-white md:px-20 lg:flex-row`}>
-      <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14">
-        <div className={`h-fit w-fit  select-none`}>
+      <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14  ">
+        <div
+          className={`flex h-fit  w-fit select-none flex-row items-end justify-center gap-2  p-2`}>
           {mapRoutes?.map((route, index) => (
             <Link key={index} href={route.path}>
               <Image
                 priority
                 src={ProStockV2}
                 alt="RPG LOGO"
-                className="h-16 w-16 transition-all"
+                className="h-28 w-28 object-cover transition-all"
               />
             </Link>
           ))}
+          <div className="flex flex-col items-start justify-center">
+            <h1 className="text-center">{globalState?.verifiedToken?.roles}</h1>
+            <p className="text-center text-sm">
+              {globalState?.verifiedToken?.id}
+            </p>
+          </div>
         </div>
         <div className="h-fit ">
           <button onClick={toggleMenu}>

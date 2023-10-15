@@ -3,7 +3,7 @@ import React, { ReactNode, SetStateAction, useEffect, useState } from "react";
 interface DataForToast {
   isShow?: boolean;
   style?: string;
-  data?: ReactNode | any;
+  data?: ReactNode | undefined;
 }
 
 export default function Toast({ data, isShow }: DataForToast) {

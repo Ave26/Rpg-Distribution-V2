@@ -17,20 +17,24 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { globalState } = useMyContext();
+  console.log(globalState);
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.roles;
 
+  const baseRoutes = [
+    { path: "/dashboard/log-overview", label: "Log Overview" },
+    { path: "/dashboard/add-new-product", label: "Add Product" },
+    { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
+    { path: "/dashboard/pallete-location", label: "Pallete Location" },
+    { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
+    { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+    { path: "/dashboard/acc-management", label: "Manage Account" },
+  ];
+
   const roleToRoutes: TRoleToRoutes = {
-    Admin: [
-      { path: "/dashboard/log-overview", label: "Log Overview" },
-      { path: "/dashboard/add-new-product", label: "Add Product" },
-      { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
-      { path: "/dashboard/pallete-location", label: "Pallete Location" },
-      { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
-      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
-      { path: "/dashboard/acc-management", label: "Manage Account" },
-    ],
-    staff: [
+    SuperAdmin: baseRoutes,
+    Admin: baseRoutes,
+    Staff: [
       { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
       { path: "/dashboard/add-new-product", label: "Add Product" },
     ],
@@ -52,8 +56,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       }
     }
   }, [currentPath, mapRoutes, router]);
-
-  /* if the current path is not equal to the path of current role then proceed to /unauthorized */
 
   const linkStyle = {
     select:
