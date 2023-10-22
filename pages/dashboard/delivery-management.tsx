@@ -14,17 +14,10 @@ import {
 } from "@/types/deliveryTypes";
 
 import { getTrucks } from "@/lib/prisma/trucks";
+import useMapComponent from "@/hooks/useMapComponent";
 
 type TDeliveryManagementProps = {
   trucks: TTrucks[];
-};
-
-type TRoleComponent = "Admin" | "SuperAdmin" | "Driver";
-
-type TRoleComponentMapper = {
-  SuperAdmin: () => JSX.Element;
-  Admin: () => JSX.Element;
-  Driver: () => JSX.Element;
 };
 
 export default function DeliveryManagement({
@@ -40,6 +33,7 @@ export default function DeliveryManagement({
   const [positionErrorMsg, setPositionErrorMsg] = useState<
     GeolocationPositionError[] | null
   >(null);
+
   const [deliveryTrigger, setDeliveryTrigger] = useState<TDeliveryTrigger>({
     hasStart: false,
     name: "Start Delivery",
@@ -81,37 +75,10 @@ export default function DeliveryManagement({
     };
   }, [deliveryTrigger.hasStart]);
 
-  useEffect(() => {
-    if (deliveryTrigger.hasStart) {
-      /* 
-      true ? truckStatus === outForDelivery : available | forRepair
-      if truckStatus === outForDeliver
-
-      we need a function to check what status is that
-      specific truck id
-
-      if determined as one of that 
-      it will run a 3 differenct functionalities
-
-      eg. outForDelivery
-      the assigned product will be updated as OutForDelivery
-      
-      1. If the delivery has been started then update the truck status to 
-      outForDelivery
-
-      if (outforDelivery) {
-        setIsClick(true)
-      } else {
-        setIsClick(false)
-      }
-      
-      */
-    }
-  }, [deliveryTrigger.hasStart]);
-
-  const roleComponentMapper: TRoleComponentMapper = {
+  const mapComponent = {
     SuperAdmin: () => <VehicleManagement />,
     Admin: () => <VehicleManagement />,
+    Staff: () => undefined,
     Driver: () => (
       <DriverUI
         setDeliveryTrigger={setDeliveryTrigger}
@@ -123,11 +90,10 @@ export default function DeliveryManagement({
     ),
   };
 
+  const { MappedComponent } = useMapComponent(mapComponent);
   return (
     <section className="relative flex h-screen w-full flex-col gap-9 px-4 py-20">
-      {roleComponentMapper[role as TRoleComponent]
-        ? roleComponentMapper[role as TRoleComponent]()
-        : null}
+      {MappedComponent}
     </section>
   );
 }

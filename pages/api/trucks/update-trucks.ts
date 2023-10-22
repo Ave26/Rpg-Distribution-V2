@@ -3,7 +3,9 @@ import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { getId } from "@/helper/_helper";
 import prisma from "@/lib/prisma";
-import { trucks } from "@prisma/client";
+import { trucks as TTrucks } from "@prisma/client";
+
+type TTrucksWithoutUserId = Omit<TTrucks, "driverId">;
 
 async function handler(
   req: NextApiRequest,
@@ -15,8 +17,9 @@ async function handler(
   try {
     switch (req.method) {
       case "PATCH":
-        const { id, status }: trucks = truckData;
+        const { id, status }: TTrucksWithoutUserId = truckData;
         const { userId } = getId(verifiedToken);
+        console.log("id", id);
         const updatedTruckData = await prisma.trucks.update({
           where: {
             id,

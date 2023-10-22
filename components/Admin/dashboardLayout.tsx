@@ -17,7 +17,6 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { globalState } = useMyContext();
-  console.log(globalState);
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.roles;
 
@@ -74,9 +73,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         },
       });
       const json = await response.json();
-      console.log(json.message);
       if (response.status === 200) {
-        console.log(json);
         const auth = localStorage.setItem("authenticated", "false");
         if (!Boolean(auth)) {
           router.push("/");

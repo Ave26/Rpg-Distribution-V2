@@ -24,13 +24,18 @@ function BarcodeScanner(): JSX.Element {
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   const [racks, setRacks] = useState<Racks[] | undefined>(undefined);
+  const [manualQuantity, setManualQuantity] = useState(0);
+
+  useEffect(() => {
+    isManual && setManualQuantity(0);
+  }, [isManual]);
 
   return (
     <>
       <Head>
         <title>{"Dashboard | Scan Barcode"}</title>
       </Head>
-      <form className="flex h-full w-full flex-col gap-2 p-4">
+      <form className="flex h-full w-full flex-col gap-2 overflow-hidden p-4 hover:overflow-y-scroll">
         <OperationalToggle isManual={isManual} setIsManual={setIsManual} />
         <ScanBarcode
           barcodeId={barcodeId}
@@ -41,6 +46,8 @@ function BarcodeScanner(): JSX.Element {
           quality={quality}
           quantity={quantity}
           isManual={isManual}
+          manualQuantity={manualQuantity}
+          setManualQuantity={setManualQuantity}
         />
 
         <ReusableInput

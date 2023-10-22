@@ -69,14 +69,12 @@ export default function BinsLayout({
     const { barcodeId, clientName, destination, productName, quantity, truck } =
       formData;
     if (!barcodeId || !quantity) {
-      console.log("Incomplete Field");
       return setToast({
         isShow: true,
         message: "Incomplete Field",
       });
     }
     bins ? getProductTotalQuantity(bins, formData.quantity, setToast) : null;
-    // const quantity = Number(formData?.quantity);
     const { newEntry, binId } = getRequiredBinData(bin, quantity);
     const isExisted =
       productEntry?.find(
@@ -92,9 +90,11 @@ export default function BinsLayout({
             : entry
         )
       );
-      setFormData({ ...formData, quantity: 0 });
+
+      // setFormData({ ...formData, quantity: 0 });
     } else {
       productEntry && setProductEntry([...productEntry, newEntry]);
+      // setFormData({ ...formData, quantity: 0 });
     }
   }
 
@@ -165,19 +165,20 @@ export default function BinsLayout({
               </tr>
             </thead>
             <tbody>
-              {bins?.map((bin: Bin, index) => {
-                return (
-                  <tr
-                    onClick={(e) => {
-                      e.preventDefault();
-                      selectEntry(bin);
-                    }}
-                    key={index}
-                    className={`text-white transition-all ${
-                      coveredBins.includes(bin?.id)
-                        ? "ring-2 ring-inset ring-white transition-all delay-100"
-                        : "ring-none"
-                    } 
+              {bins
+                ?.map((bin: Bin, index) => {
+                  return (
+                    <tr
+                      onClick={(e) => {
+                        e.preventDefault();
+                        selectEntry(bin);
+                      }}
+                      key={index}
+                      className={`text-white transition-all ${
+                        coveredBins.includes(bin?.id)
+                          ? "ring-2 ring-inset ring-white transition-all delay-100"
+                          : "ring-none"
+                      } 
                   
                   
                     ${
@@ -188,39 +189,40 @@ export default function BinsLayout({
                         : "bg-gray-800"
                     }
                   `}>
-                    <td className="px-6 py-4">
-                      {Number(bin?._count.assignedProducts)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {String(bin?.racks?.categories?.category)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {
-                        bin?.assignedProducts?.map((assign) => {
-                          return assign?.products?.productName;
-                        })[0]
-                      }
-                    </td>
-                    <td className="px-6 py-4">
-                      {
-                        bin?.assignedProducts?.map((assign) => {
-                          return Number(assign?.products?.price);
-                        })[0]
-                      }
-                    </td>
-                    <td className="px-6 py-4">
-                      {/* {
+                      <td className="px-6 py-4">
+                        {Number(bin?._count.assignedProducts)}
+                      </td>
+                      <td className="px-6 py-4">
+                        {String(bin?.racks?.categories?.category)}
+                      </td>
+                      <td className="px-6 py-4">
+                        {
+                          bin?.assignedProducts?.map((assign) => {
+                            return assign?.products?.productName;
+                          })[0]
+                        }
+                      </td>
+                      <td className="px-6 py-4">
+                        {
+                          bin?.assignedProducts?.map((assign) => {
+                            return Number(assign?.products?.price);
+                          })[0]
+                        }
+                      </td>
+                      <td className="px-6 py-4">
+                        {/* {
                       bin?.assignedProducts?.map(
                         (assign) => assign?.products?.price
                       )[0]
                     } */}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
+                      </td>
+                    </tr>
+                  );
+                })
+                .reverse()}
             </tbody>
 
             {/* <tfoot>

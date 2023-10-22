@@ -2,7 +2,7 @@ import Layout from "@/components/layout";
 import Head from "next/head";
 import React from "react";
 import Image from "next/image";
-import aboutus from "../public/assets/aboutus.png";
+import aboutus from "../public/assets/Finally.png";
 import { verifyJwt } from "@/lib/helper/jwt";
 import { NextApiRequest } from "next";
 export default function About({ data }: any) {

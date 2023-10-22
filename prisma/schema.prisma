@@ -187,6 +187,7 @@ model deliveryLogs {
 
 enum TruckAvailability {
   Available
+  Loaded
   ForRepair
   OutForDelivery
 }

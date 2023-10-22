@@ -13,6 +13,8 @@ interface Barcode {
   quality: string;
   quantity: number;
   isManual?: boolean;
+  manualQuantity: number;
+  setManualQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function ScanBarcode({
@@ -24,6 +26,8 @@ export default function ScanBarcode({
   quality,
   quantity,
   isManual,
+  manualQuantity,
+  setManualQuantity,
 }: Barcode): JSX.Element {
   const router = useRouter();
   const [isFetch, setIsFetch] = useState<boolean>(false);
@@ -52,6 +56,7 @@ export default function ScanBarcode({
         expirationDate,
         quality,
         quantity,
+        manualQuantity,
       }),
     });
     setIsLoading(false);
@@ -75,6 +80,8 @@ export default function ScanBarcode({
       setCount(0);
       setCapacity(0);
       console.log(error);
+    } finally {
+      setManualQuantity(0);
     }
   }
 
@@ -94,7 +101,7 @@ export default function ScanBarcode({
   }, [isShow]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center font-bold transition-all">
+    <div className="flex h-full w-full items-center justify-center gap-2 font-bold transition-all">
       <ReusableInput
         autoFocus
         disableLabel={true}
@@ -109,33 +116,28 @@ export default function ScanBarcode({
           }
         }}
       />
-      {isManual ? (
-        <div className="p-2 transition-all">
-          <ReusableInput
-            min={0}
-            placeholder={""}
+
+      <div className="relative  flex h-1/2 w-32 flex-col gap-2 p-1 transition-all">
+        <h1 className="text-center">
+          Bin: {binIndex} - {shelfLevel}
+        </h1>
+        <div
+          className={`${
+            count >= capacity &&
+            "border-none bg-pink-400/70 shadow-lg transition-all"
+          } flex h-full w-full items-center justify-center rounded-lg border border-black bg-pink-400/30 transition-all`}>
+          {isLoading ? <Loading /> : `${count ?? 0} / ${capacity ?? 0}`}
+        </div>
+        {isManual && (
+          <input
             type="number"
-            name="Quantity"
-            value={quantity}
-            onChange={(value: number) => {
-              setCount(value);
-            }}
+            min={0}
+            value={manualQuantity}
+            onChange={(e) => setManualQuantity(parseInt(e.target.value, 10))}
+            className="h-fit w-full animate-emerge border p-2"
           />
-        </div>
-      ) : (
-        <div className="h-24 w-28 p-1 transition-all">
-          <h1 className="text-center">
-            Bin: {binIndex} - {shelfLevel}
-          </h1>
-          <div
-            className={`${
-              count >= capacity &&
-              "border-none bg-pink-400/70 shadow-lg transition-all"
-            } flex h-full w-full items-center justify-center rounded-lg border border-black bg-pink-400/30 transition-all`}>
-            {isLoading ? <Loading /> : `${count ?? 0} / ${capacity ?? 0}`}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
       <Toast data={message} isShow={isShow} />
     </div>
   );

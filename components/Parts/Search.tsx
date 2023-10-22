@@ -4,6 +4,7 @@ import { InputProps, TFormData } from "@/types/inputTypes";
 interface SearchProps {
   personaleEffects?: PersonalEffectProps;
   formData: TFormData;
+  setFormData: React.Dispatch<React.SetStateAction<TFormData>>;
   handleSearch: () => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -18,6 +19,7 @@ function Search({
   formData,
   handleChange,
   handleSearch,
+  setFormData,
 }: SearchProps) {
   return (
     <div>
@@ -25,7 +27,7 @@ function Search({
         onSubmit={(e) => {
           e.preventDefault();
           console.log("search triggered");
-
+          setFormData({ ...formData, quantity: 0 });
           handleSearch();
         }}
         className="font-semibold">

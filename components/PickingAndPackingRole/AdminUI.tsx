@@ -198,6 +198,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
         <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
             formData={formData}
+            setFormData={setFormData}
             handleChange={handleChange}
             handleSearch={() => mutate()}
             personaleEffects={{ placeholder: "Search Barcode", maxLength: 14 }}
@@ -228,7 +229,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             onChange={handleChange}
             className={inputStyle}>
             {trucks?.map((truck) => {
-              return <option key={truck?.id}>{truck.name}</option>;
+              return <option key={truck?.id}>{truck?.name}</option>;
             })}
           </select>
 
@@ -262,11 +263,11 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
               formData={formData}
               setFormData={setFormData}
             />
-            <div className="border-slate relative h-[17em] w-full overflow-y-auto border border-black p-2 md:w-[45em]">
+            <div className="relative h-[17em] w-full overflow-y-auto border border-black p-2 text-black  md:w-[45em]">
               {productEntry?.map((entry, index) => (
                 <span
                   key={entry.barcodeId}
-                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 text-white`}>
+                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 rounded-lg  border border-black`}>
                   <div className="flex h-full w-full flex-row items-center justify-between rounded-lg border border-slate-100/50 p-2 text-center">
                     <div className="flex flex-col items-start">
                       <h1>
@@ -278,12 +279,12 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                       </p>
                     </div>
 
-                    <div className="flex rounded-lg border bg-slate-100/30 px-4 py-2 text-white">
+                    <div className="flex rounded-lg border bg-slate-100/30 px-4 py-2">
                       {entry.totalQuantity}
                     </div>
                   </div>
                   <button
-                    className="h-full w-1/12 rounded-lg border border-slate-100/50"
+                    className="h-full w-1/12 rounded-lg"
                     onClick={() => {
                       const updatedProductEntry = [...productEntry];
                       updatedProductEntry.splice(index, 1);

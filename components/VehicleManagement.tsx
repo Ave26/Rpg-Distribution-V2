@@ -140,6 +140,7 @@ export default function VehicleManagement() {
                 <button
                   onClick={async () => {
                     setIsOpen(true);
+
                     setTruckData({
                       id: truck.id,
                       name: truck?.name,

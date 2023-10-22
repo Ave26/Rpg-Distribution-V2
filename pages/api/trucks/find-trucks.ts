@@ -17,6 +17,14 @@ async function handler(
             orders: true,
           },
         });
+
+        const assingedProduct = await prisma.bins.findMany({
+          include: {
+            assignedProducts: true,
+          },
+        });
+
+        console.log(assingedProduct);
         const { userId } = getId(verifiedToken);
         return res.status(200).json(trucks);
 

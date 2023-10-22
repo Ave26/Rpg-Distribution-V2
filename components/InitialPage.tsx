@@ -3,6 +3,7 @@ import { useState, type FC, useEffect } from "react";
 import LoginForm from "./LoginForm";
 import ProStockV2 from "@/public/assets/Finally.png";
 import Image from "next/image";
+
 interface HomeProps {}
 
 const InitialPage: FC<HomeProps> = ({}) => {

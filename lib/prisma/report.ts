@@ -104,3 +104,94 @@ export async function update_product_status(orders: Orders | undefined) {
     return { error };
   }
 }
+
+export async function getReport() {
+  try {
+    const reports = await prisma.orders.findMany({
+      include: {
+        trucks: true,
+        users: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+
+    return { reports };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function updateReport(orderId: string) {
+  try {
+    const orders = await prisma.orders.findUnique({
+      where: {
+        id: orderId,
+      },
+      include: {
+        trucks: true,
+      },
+    });
+
+    await prisma.trucks.update({
+      where: { name: orders?.trucks?.name },
+      data: { status: "Loaded" },
+    });
+
+    let updatedProducts;
+    try {
+      if (orders) {
+        for (let order of orders.productOrdered) {
+          const bins = await prisma.bins.findMany({
+            where: {
+              id: {
+                in: order.binIdsEntries,
+              },
+            },
+            include: {
+              assignedProducts: {
+                where: {
+                  products: {
+                    barcodeId: order.barcodeId,
+                  },
+                  status: "Queuing",
+                },
+              },
+            },
+          });
+
+          const assignedProductToUpdate = [];
+          for (let bin of bins) {
+            for (let assinedProduct of bin?.assignedProducts) {
+              if (order.totalQuantity > 0) {
+                assignedProductToUpdate.push(assinedProduct?.id);
+                order.totalQuantity--;
+              } else {
+                break;
+              }
+            }
+          }
+          const udpatedData = await prisma.assignedProducts.updateMany({
+            where: {
+              id: {
+                in: assignedProductToUpdate,
+              },
+            },
+            data: {
+              status: "Loaded",
+            },
+          });
+          updatedProducts = udpatedData;
+        }
+      }
+
+      return { updatedProducts };
+    } catch (error) {
+      return { error };
+    }
+  } catch (error) {
+    return { error };
+  }
+}

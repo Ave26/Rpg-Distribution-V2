@@ -1,5 +1,7 @@
 import prisma from ".";
-import { bins, products } from "@prisma/client";
+import { bins, products, assignedProducts } from "@prisma/client";
+
+
 
 export async function scanBarcode(
   barcodeId: string,
