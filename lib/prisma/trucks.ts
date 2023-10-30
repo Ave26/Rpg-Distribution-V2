@@ -13,7 +13,7 @@ export async function getSpecificTrucks() {
   try {
     const trucks = await prisma.trucks.findMany({
       include: {
-        orders: true,
+        records: true,
       },
     });
   } catch (e) {

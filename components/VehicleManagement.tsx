@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { TRecords } from "@/types/recordsTypes";
 // PRISMA TYPES
 import {
   trucks as TTrucks,
   TruckAvailability as TTruckAvailability,
-  orders as TOrders,
+  records,
 } from "@prisma/client";
 import useSWR from "swr";
 
@@ -19,7 +20,7 @@ import {
 
 type TTrucksWithoutUserId = Omit<TTrucks, "driverId">;
 type TTrucksWithOrders = TTrucksWithoutUserId & {
-  orders: TOrders[];
+  orders: records[];
 };
 
 export default function VehicleManagement() {
@@ -32,7 +33,12 @@ export default function VehicleManagement() {
     name: "",
     status: "Available",
   });
-  const truckAvailabity = ["Available", "ForRepair", "OutForDelivery"];
+  const truckAvailabity = [
+    "Available",
+    "Loaded",
+    "ForRepair",
+    "OutForDelivery",
+  ];
 
   const fetchTrucks = async (url: string) => {
     const response = await fetch(url, {
@@ -120,20 +126,20 @@ export default function VehicleManagement() {
                     name=""
                     id="Orders"
                     className="rouned-sm h-full w-full border border-none outline-none transition-all">
-                    {truck?.orders?.map((order: TOrders) => {
+                    {/* {truck?.orders?.map((order: records) => {
                       return (
-                        <option key={order.id} value="">
-                          {order.productOrdered.map((product) => {
-                            return (
-                              <>
-                                Id: {order.id}, Name: {product.productName},
-                                Quantity: {product.totalQuantity}
-                              </>
-                            );
-                          })}
-                        </option>
+                        // <option key={order.id} value="">
+                        //   {order.orderedProducts.map((records) => {
+                        //     return (
+                        //       <>
+                        //         Id: {order.id}, Name: {product.productName},
+                        //         Quantity: {product.totalQuantity}
+                        //       </>
+                        //     );
+                        //   })}
+                        // </option>
                       );
-                    })}
+                    })} */}
                   </select>
                 </div>
                 <h1 className="p-2 text-center">Status: {truck?.status}</h1>

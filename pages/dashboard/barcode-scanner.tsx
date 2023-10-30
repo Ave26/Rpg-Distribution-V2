@@ -24,10 +24,9 @@ function BarcodeScanner(): JSX.Element {
   const [isManual, setIsManual] = useState<boolean>(false);
   const [isOpenRack, setIsOpenRack] = useState<boolean>(false);
   const [racks, setRacks] = useState<Racks[] | undefined>(undefined);
-  const [manualQuantity, setManualQuantity] = useState(0);
 
   useEffect(() => {
-    isManual && setManualQuantity(0);
+    isManual && setQuantity(0);
   }, [isManual]);
 
   return (
@@ -45,9 +44,8 @@ function BarcodeScanner(): JSX.Element {
           expirationDate={expirationDate}
           quality={quality}
           quantity={quantity}
+          setQuantity={setQuantity}
           isManual={isManual}
-          manualQuantity={manualQuantity}
-          setManualQuantity={setManualQuantity}
         />
 
         <ReusableInput

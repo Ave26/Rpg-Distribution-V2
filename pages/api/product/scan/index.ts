@@ -31,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     boxSize,
     expirationDate,
     quality,
-    // quantity,
+    quantity,
     // binId,
   } = req.body;
 
@@ -41,7 +41,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     !boxSize ||
     !expirationDate ||
     !quality
-    // !quantity ||
     // !binId
   ) {
     return res.status(405).json({
@@ -59,7 +58,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           purchaseOrder,
           boxSize,
           new Date(expirationDate),
-          quality
+          quality,
+          quantity
         );
 
         if (!data) {

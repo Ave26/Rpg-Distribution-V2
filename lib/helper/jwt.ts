@@ -20,7 +20,7 @@ export const createJwt = (user: UserTypes | null | undefined) => {
   if (user) {
     const { id, roles } = user;
     const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
-      expiresIn: "5h",
+      expiresIn: "12h",
     });
     return token;
   }

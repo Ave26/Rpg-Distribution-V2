@@ -11,19 +11,31 @@ import Search from "../Parts/Search";
 import ReusableButton from "../Parts/ReusableButton";
 import Loading from "../Parts/Loading";
 import BinsLayout from "../BinsLayout";
+import Toast from "../Parts/Toast";
 
 export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isClick, setIsClick] = useState(false);
+  const [orderData, setOrderData] = useState("");
   const [hasLoading, setHasLoading] = useState(false);
+  const [isShow, setIsShow] = useState(false);
   const [isAnimate, setIsAnimate] = useState(false);
   const [formData, setFormData] = useState<TFormData>({
     barcodeId: "",
-    truck: trucks[0]?.name,
+    truck: String(trucks[0]?.name),
     destination: "",
     clientName: "",
     productName: "",
     quantity: 0,
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShow(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [isShow]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -79,115 +91,116 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     }
   }, [productEntry]);
 
-  async function makeReport() {
-    if (Number(productEntry?.length) <= 0) {
-      return console.log("do something");
-    }
-    setHasLoading(true);
-    try {
-      const response = await fetch("/api/outbound/make-report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productEntry, formData }),
-      });
-      const reports: Orders = await response.json();
-      await generatePdf(reports);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setHasLoading(false);
-      setProductEntry([]);
-      setFormData({
-        barcodeId: "",
-        truck: "",
-        destination: "",
-        clientName: "",
-        productName: "",
-        quantity: 0,
-      });
-    }
-  }
+  // async function makeReport() {
+  //   if (Number(productEntry?.length) <= 0) {
+  //     return console.log("do something");
+  //   }
+  //   setHasLoading(true);
+  //   try {
+  //     const response = await fetch("/api/outbound/make-report", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ productEntry, formData }),
+  //     });
+  //     const reports: Orders = await response.json();
+  //     await generatePdf(reports);
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setHasLoading(false);
+  //     setProductEntry([]);
+  //     setFormData({
+  //       barcodeId: "",
+  //       truck: "",
+  //       destination: "",
+  //       clientName: "",
+  //       productName: "",
+  //       quantity: 0,
+  //     });
+  //   }
+  // }
 
-  const generatePdf = async (orderReport: Orders | null) => {
-    console.log("generate report executed");
-    console.log(orderReport?.id);
+  // const generatePdf = async (orderReport: Orders | null) => {
+  //   console.log("generate report executed");
+  //   console.log(orderReport?.id);
 
-    const doc = new jsPDF();
+  //   const doc = new jsPDF();
 
-    // Add "Hello, World!" text to the PDF
-    doc.text(`${orderReport?.clientName}`, 20, 40);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      10
-    );
-    doc.text("                  OUTBOUND ORDER REPORT", 10, 20);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      30
-    );
+  //   // Add "Hello, World!" text to the PDF
+  //   doc.text(`${orderReport?.clientName}`, 20, 40);
+  //   doc.text(
+  //     "--------------------------------------------------------------",
+  //     10,
+  //     10
+  //   );
+  //   doc.text("                  OUTBOUND ORDER REPORT", 10, 20);
+  //   doc.text(
+  //     "--------------------------------------------------------------",
+  //     10,
+  //     30
+  //   );
 
-    doc.text(`Order Date: ${String(orderReport?.dateCreated)}`, 20, 50);
-    doc.text(`Order Number: ${orderReport?.id}`, 20, 60);
-    doc.text(`Prepared by: ${orderReport?.users?.username}`, 20, 70);
+  //   doc.text(`Order Date: ${String(orderReport?.dateCreated)}`, 20, 50);
+  //   doc.text(`Order Number: ${orderReport?.id}`, 20, 60);
+  //   doc.text(`Prepared by: ${orderReport?.users?.username}`, 20, 70);
 
-    // Populate client information
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      100
-    );
-    doc.text("Client Information:", 20, 110);
-    doc.text(
-      "--------------------------------------------------------------",
-      10,
-      120
-    );
-    doc.text(`Client Name: ${orderReport?.clientName}`, 20, 140);
-    doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
-    doc.text(`Contact Phone: 09511219514`, 20, 160);
-    doc.text(`Email: client@gmail.com`, 20, 170);
+  //   // Populate client information
+  //   doc.text(
+  //     "--------------------------------------------------------------",
+  //     10,
+  //     100
+  //   );
+  //   doc.text("Client Information:", 20, 110);
+  //   doc.text(
+  //     "--------------------------------------------------------------",
+  //     10,
+  //     120
+  //   );
+  //   doc.text(`Client Name: ${orderReport?.clientName}`, 20, 140);
+  //   doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
+  //   doc.text(`Contact Phone: 09511219514`, 20, 160);
+  //   doc.text(`Email: client@gmail.com`, 20, 170);
 
-    // Order Details Section (Using a loop for tabular data)
-    var y = 120; // Set the initial Y-coordinate for the table
-    var columnWidth = 45;
+  //   // Order Details Section (Using a loop for tabular data)
+  //   var y = 120; // Set the initial Y-coordinate for the table
+  //   var columnWidth = 45;
 
-    doc.text("Order Details:", 10, 50);
-    doc.line(10, y + 5, 200, y + 5); // Horizontal line under section title
+  //   doc.text("Order Details:", 10, 50);
+  //   doc.line(10, y + 5, 200, y + 5); // Horizontal line under section title
 
-    // Table headers
-    doc.text("Product Name", 10, y + 15);
-    doc.text("Barcode ID", 10 + columnWidth, y + 15);
-    doc.text("Bin Location", 10 + 2 * columnWidth, y + 15);
-    doc.text("SKU", 10 + 3 * columnWidth, y + 15);
+  //   // Table headers
+  //   doc.text("Product Name", 10, y + 15);
+  //   doc.text("Barcode ID", 10 + columnWidth, y + 15);
+  //   doc.text("Bin Location", 10 + 2 * columnWidth, y + 15);
+  //   doc.text("SKU", 10 + 3 * columnWidth, y + 15);
 
-    // Use a loop to add data rows here
-    // Example:
-    // doc.text('[Product Name 1]', 10, y + 30);
-    // doc.text('[Barcode 1]', 10 + columnWidth, y + 30);
-    // doc.text('[Bin 1]', 10 + 2 * columnWidth, y + 30);
-    // doc.text('[SKU 1]', 10 + 3 * columnWidth, y + 30);
+  //   // Use a loop to add data rows here
+  //   // Example:
+  //   // doc.text('[Product Name 1]', 10, y + 30);
+  //   // doc.text('[Barcode 1]', 10 + columnWidth, y + 30);
+  //   // doc.text('[Bin 1]', 10 + 2 * columnWidth, y + 30);
+  //   // doc.text('[SKU 1]', 10 + 3 * columnWidth, y + 30);
 
-    // Continue adding rows in a similar fashion...
+  //   // Continue adding rows in a similar fashion...
 
-    // Order Total
-    doc.text("Order Total: [Total Price for All Items]", 10, y + 120);
+  //   // Order Total
+  //   doc.text("Order Total: [Total Price for All Items]", 10, y + 120);
 
-    // Notes
-    doc.text("Notes: [Any Additional Notes]", 10, y + 135);
+  //   // Notes
+  //   doc.text("Notes: [Any Additional Notes]", 10, y + 135);
 
-    // Thank you message
-    doc.text("Thank you for choosing [Your Company Name]!", 10, y + 150);
+  //   // Thank you message
+  //   doc.text("Thank you for choosing [Your Company Name]!", 10, y + 150);
 
-    doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
-  };
+  //   doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
+  // };
 
   const inputStyle =
-    "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
-
+    "select-none block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
+  const buttonStyle =
+    "rounded-lg border border-transparent bg-sky-200 p-2 transition-all hover:p-3 active:p-2";
   return (
     <>
       <Head>
@@ -215,6 +228,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
           />
 
           <input
+            disabled={isDisabled}
             type="text"
             name="clientName"
             placeholder="Client Name"
@@ -224,6 +238,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
           />
 
           <select
+            disabled={isDisabled}
             name="truck"
             value={formData.truck}
             onChange={handleChange}
@@ -234,6 +249,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
           </select>
 
           <input
+            disabled={isDisabled}
             type="text"
             name="destination"
             placeholder="Destination"
@@ -257,11 +273,12 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
         ) : (
           <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
             <BinsLayout
-              isLoading={isLoading}
               bins={bins}
-              dataEntries={{ productEntry, setProductEntry }}
               formData={formData}
+              isLoading={isLoading}
               setFormData={setFormData}
+              setIsDisabled={setIsDisabled}
+              dataEntries={{ productEntry, setProductEntry }}
             />
             <div className="relative h-[17em] w-full overflow-y-auto border border-black p-2 text-black  md:w-[45em]">
               {productEntry?.map((entry, index) => (
@@ -290,6 +307,10 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                       updatedProductEntry.splice(index, 1);
                       setProductEntry(updatedProductEntry);
                       setIsAnimate(true);
+
+                      if (updatedProductEntry.length <= 0) {
+                        setIsDisabled(false);
+                      }
                     }}>
                     x
                   </button>
@@ -297,17 +318,61 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
               ))}
             </div>
             <div className="flex items-center justify-center">
-              <ReusableButton
-                type={"submit"}
-                isLoading={hasLoading}
-                name={"Confirm and Print report"}
-                onClick={makeReport}
-                className="flex items-center justify-center rounded-lg bg-blue-700 p-2 text-center text-base font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800"
-              />
+              {isClick ? (
+                <div className="flex h-14 w-full items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setHasLoading(true);
+                      fetch("/api/outbound/make-order", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          productEntry,
+                          formData,
+                        }),
+                      })
+                        .then((res) => {
+                          return res.json();
+                        })
+                        .then((data) => setOrderData(data.message))
+                        .catch((error) => console.log(error))
+                        .finally(() => {
+                          setIsShow(true);
+                          setHasLoading(false);
+                          setProductEntry([]);
+                          setFormData({
+                            barcodeId: "",
+                            truck: "",
+                            destination: "",
+                            clientName: "",
+                            productName: "",
+                            quantity: 0,
+                          });
+                        });
+                    }}
+                    className={buttonStyle}>
+                    {hasLoading ? <Loading /> : "Confirm"}
+                  </button>
+                  <button
+                    onClick={() => setIsClick(false)}
+                    className={buttonStyle}>
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsClick(true)}
+                  className={buttonStyle}>
+                  Submit
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
+      <Toast data={orderData} isShow={isShow} />
     </>
   );
 }

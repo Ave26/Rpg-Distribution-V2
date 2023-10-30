@@ -26,14 +26,6 @@ enum SupplyLevelStatus {
   Critical
 }
 
-enum productStatus {
-  Default
-  Queuing
-  Loaded
-  OutForDelivery
-  Delivered
-}
-
 enum Category {
   Food
   Laundry
@@ -43,27 +35,15 @@ enum Category {
 }
 
 model users {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
-  additionalInfo     UsersAdditionalInfo
-  password           String
-  roles              UserRole
-  username           String               @unique(map: "username_1")
-  transactionRecords transactionRecords[]
-  assignedProducts   assignedProducts[]
-  orders             orders[]
-  deliveryLogs       deliveryLogs[]
-  trucks             trucks[]
-}
-
-model transactionRecords {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  orderDate        DateTime?
-  totalItems       Int
-  totalQuantity    Int
-  totalAmount      Int
-  users            users?             @relation(fields: [userId], references: [id])
-  userId           String             @db.ObjectId
+  id               String              @id @default(auto()) @map("_id") @db.ObjectId
+  additionalInfo   UsersAdditionalInfo
+  password         String
+  roles            UserRole
+  username         String              @unique(map: "username_1")
   assignedProducts assignedProducts[]
+  deliveryLogs     deliveryLogs[]
+  trucks           trucks[]
+  record           records[]
 }
 
 model products {
@@ -72,11 +52,12 @@ model products {
   category          Category
   image             String?
   price             Float?
-  productName       String
+  productName       String             @unique
   sku               String?
   supplyLevelStatus SupplyLevelStatus?
   variations        variations[]
   assignedProducts  assignedProducts[]
+  orderedProducts   orderedProducts?
 }
 
 model variations {
@@ -107,58 +88,79 @@ model racks {
 }
 
 model bins {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  isAvailable      Boolean            @default(true)
-  capacity         Int
-  shelfLevel       Int
-  row              Int
-  isSelected       Boolean?           @default(false)
-  status           SupplyLevelStatus?
-  racks            racks?             @relation(fields: [racksId], references: [id])
-  racksId          String?            @db.ObjectId
-  assignedProducts assignedProducts[]
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable       Boolean            @default(true)
+  capacity          Int
+  shelfLevel        Int
+  row               Int
+  isSelected        Boolean?           @default(false)
+  status            SupplyLevelStatus?
+  racks             racks?             @relation(fields: [racksId], references: [id])
+  racksId           String?            @db.ObjectId
+  assignedProducts  assignedProducts[]
+  orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
+  orderedProductsId String?            @db.ObjectId
+}
+
+enum productStatus {
+  Default
+  Queuing
+  Loaded
+  OutForDelivery
+  Delivered
+}
+
+enum ProductQuality {
+  Good
+  Damage
 }
 
 model assignedProducts {
-  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive          DateTime?
-  purchaseOrder        String
-  expirationDate       DateTime?
-  boxSize              String?
-  isDamage             Boolean?
-  status               productStatus       @default(Default)
-  products             products?           @relation(fields: [productId], references: [id])
-  productId            String?             @db.ObjectId
-  bin                  bins?               @relation(fields: [binId], references: [id])
-  binId                String?             @db.ObjectId
-  users                users?              @relation(fields: [usersId], references: [id])
-  usersId              String?             @db.ObjectId
-  damageBin            damageBin?          @relation(fields: [damageBinId], references: [id])
-  damageBinId          String?             @db.ObjectId
-  transactionRecords   transactionRecords? @relation(fields: [transactionRecordsId], references: [id])
-  transactionRecordsId String?             @db.ObjectId
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  dateReceive       DateTime?
+  purchaseOrder     String
+  expirationDate    DateTime?
+  boxSize           String?
+  isDamage          Boolean?
+  quality           ProductQuality
+  status            productStatus    @default(Default)
+  products          products?        @relation(fields: [productId], references: [id])
+  productId         String?          @db.ObjectId
+  bin               bins?            @relation(fields: [binId], references: [id])
+  binId             String?          @db.ObjectId
+  users             users?           @relation(fields: [usersId], references: [id])
+  usersId           String?          @db.ObjectId
+  damageBin         damageBin?       @relation(fields: [damageBinId], references: [id])
+  damageBinId       String?          @db.ObjectId
+  trucks            trucks?          @relation(fields: [truckName], references: [name])
+  truckName         String?          @unique
+  ordersId          String?          @db.ObjectId
+  orderedProducts   orderedProducts? @relation(fields: [orderedProductsId], references: [id])
+  orderedProductsId String?          @db.ObjectId
 }
 
-type productOrdered {
-  totalQuantity Int
-  productName   String
-  barcodeId     String
-  expiryDate    DateTime
-  sku           String
-  price         Int
-  binIdsEntries String[]
+model orderedProducts {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  totalQuantity    Int
+  assignedProducts assignedProducts[]
+  binIdsEntries    String[]
+  bins             bins[]
+  products         products?          @relation(fields: [barcodeId], references: [barcodeId])
+  barcodeId        String             @unique
+  record           records?           @relation(fields: [recordId], references: [id])
+  recordId         String?            @db.ObjectId
 }
 
-model orders {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  clientName     String
-  dateCreated    DateTime
-  trucks         trucks?          @relation(fields: [truckName], references: [name])
-  truckName      String?          @unique
-  destination    String
-  productOrdered productOrdered[]
-  users          users?           @relation(fields: [usersId], references: [id])
-  usersId        String?          @db.ObjectId
+model records {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  clientName      String
+  dateCreated     DateTime
+  destination     String
+  orderedProducts orderedProducts[]
+  trucks          trucks?           @relation(fields: [truckName], references: [name])
+  truckName       String            @unique
+  author          users?            @relation(fields: [username], references: [username])
+  username        String            @unique
 }
 
 enum DeliveryStatus {
@@ -192,13 +194,16 @@ enum TruckAvailability {
   OutForDelivery
 }
 
+// precentage for the loaded capacity
+
 model trucks {
-  id       String            @id @default(auto()) @map("_id") @db.ObjectId
-  name     String            @unique
-  status   TruckAvailability @default(Available)
-  driver   users?            @relation(fields: [driverId], references: [id])
-  driverId String?           @db.ObjectId
-  orders   orders[]
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String             @unique
+  status           TruckAvailability  @default(Available)
+  driver           users?             @relation(fields: [driverId], references: [id])
+  driverId         String?            @db.ObjectId
+  assignedProducts assignedProducts[]
+  records          records?
 }
 
 model damageBin {

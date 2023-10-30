@@ -15,6 +15,7 @@ interface BinsProps {
   dataEntries: dataEntriesTypes;
   formData: TFormData;
   setFormData: React.Dispatch<React.SetStateAction<TFormData>>;
+  setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface SetRequestTypes {
@@ -38,7 +39,7 @@ export default function BinsLayout({
   isLoading,
   dataEntries,
   formData,
-  setFormData,
+  setIsDisabled,
 }: BinsProps) {
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
   const { productEntry, setProductEntry } = dataEntries;
@@ -66,9 +67,8 @@ export default function BinsLayout({
   }, [toast.isShow]);
 
   async function selectEntry(bin: Bin) {
-    const { barcodeId, clientName, destination, productName, quantity, truck } =
-      formData;
-    if (!barcodeId || !quantity) {
+    const { barcodeId, clientName, destination, quantity, truck } = formData;
+    if (!barcodeId || !quantity || !clientName || !destination || !truck) {
       return setToast({
         isShow: true,
         message: "Incomplete Field",
@@ -90,12 +90,11 @@ export default function BinsLayout({
             : entry
         )
       );
-
-      // setFormData({ ...formData, quantity: 0 });
     } else {
       productEntry && setProductEntry([...productEntry, newEntry]);
-      // setFormData({ ...formData, quantity: 0 });
     }
+
+    setIsDisabled(true);
   }
 
   useEffect(() => {
@@ -210,11 +209,11 @@ export default function BinsLayout({
                         }
                       </td>
                       <td className="px-6 py-4">
-                        {/* {
-                      bin?.assignedProducts?.map(
-                        (assign) => assign?.products?.price
-                      )[0]
-                    } */}
+                        {
+                          bin?.assignedProducts?.map(
+                            (assign) => assign?.products?.price
+                          )[0]
+                        }
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}

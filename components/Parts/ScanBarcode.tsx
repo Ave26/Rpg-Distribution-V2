@@ -12,9 +12,8 @@ interface Barcode {
   expirationDate: Date | null | string;
   quality: string;
   quantity: number;
+  setQuantity: React.Dispatch<React.SetStateAction<number>>;
   isManual?: boolean;
-  manualQuantity: number;
-  setManualQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function ScanBarcode({
@@ -25,9 +24,8 @@ export default function ScanBarcode({
   expirationDate,
   quality,
   quantity,
+  setQuantity,
   isManual,
-  manualQuantity,
-  setManualQuantity,
 }: Barcode): JSX.Element {
   const router = useRouter();
   const [isFetch, setIsFetch] = useState<boolean>(false);
@@ -56,7 +54,6 @@ export default function ScanBarcode({
         expirationDate,
         quality,
         quantity,
-        manualQuantity,
       }),
     });
     setIsLoading(false);
@@ -81,7 +78,7 @@ export default function ScanBarcode({
       setCapacity(0);
       console.log(error);
     } finally {
-      setManualQuantity(0);
+      setQuantity(0);
     }
   }
 
@@ -89,6 +86,7 @@ export default function ScanBarcode({
     if (isFetch) {
       assignProduct();
     }
+    return () => setIsFetch(false);
   }, [isFetch]);
 
   useEffect(() => {
@@ -132,8 +130,8 @@ export default function ScanBarcode({
           <input
             type="number"
             min={0}
-            value={manualQuantity}
-            onChange={(e) => setManualQuantity(parseInt(e.target.value, 10))}
+            value={quantity}
+            onChange={(e) => setQuantity(parseInt(e.target.value))}
             className="h-fit w-full animate-emerge border p-2"
           />
         )}

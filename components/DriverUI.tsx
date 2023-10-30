@@ -104,3 +104,5 @@ function DriverUI({
 }
 
 export default DriverUI;
+
+/* Once the assignedProduct is Loaded the truck will be set into Loaded */

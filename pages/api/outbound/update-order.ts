@@ -2,7 +2,7 @@
 // import { authMiddleware } from "../authMiddleware";
 // import { JwtPayload } from "jsonwebtoken";
 // import { updateReport } from "@/lib/prisma/report";
-// import { error } from "console";
+// import { update_order } from "@/lib/prisma/order";
 
 // type TBody = {
 //   orderId: string;
@@ -17,14 +17,9 @@
 //   switch (req.method) {
 //     case "POST":
 //       try {
-//         const { updatedProducts, error } = await updateReport(orderId);
-//         if (!updatedProducts || error) {
-//           return res.status(500).json({
-//             message: "Product Has Not Been Loading",
-//           });
-//         }
+//         await update_order(orderId);
 //         return res.status(200).json({
-//           message: `Product has been loaded`,
+//           message: "Order Updated",
 //         });
 //       } catch (error) {
 //         return console.log(error);

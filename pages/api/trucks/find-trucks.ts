@@ -14,17 +14,31 @@ async function handler(
       case "GET":
         const trucks = await prisma.trucks.findMany({
           include: {
-            orders: true,
+            records: {
+              include: {
+                orderedProducts: {
+                  where: {
+                    assignedProducts: {
+                      every: {
+                        status: "Loaded",
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         });
 
-        const assingedProduct = await prisma.bins.findMany({
-          include: {
-            assignedProducts: true,
-          },
-        });
+        console.log(trucks);
 
-        console.log(assingedProduct);
+        // const assingedProduct = await prisma.bins.findMany({
+        //   include: {
+        //     assignedProducts: true,
+        //   },
+        // });
+
+        // console.log(assingedProduct);
         const { userId } = getId(verifiedToken);
         return res.status(200).json(trucks);
 

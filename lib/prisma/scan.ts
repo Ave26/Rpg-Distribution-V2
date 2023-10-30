@@ -1,14 +1,18 @@
 import prisma from ".";
-import { bins, products, assignedProducts } from "@prisma/client";
-
-
+import {
+  bins,
+  products,
+  assignedProducts,
+  ProductQuality,
+} from "@prisma/client";
 
 export async function scanBarcode(
   barcodeId: string,
   purchaseOrder: string,
   boxSize: string,
   expirationDate: Date,
-  quality: string
+  quality: ProductQuality,
+  quantity: number
 ) {
   try {
     const product = await prisma.products.findUnique({
@@ -45,7 +49,7 @@ export async function scanBarcode(
         for (const bin of bins) {
           const { dateReceive } = setTime();
 
-          const { availableBin } = await setMethod(
+          let { availableBin } = await setMethod(
             String(categories?.category),
             bin,
             product,
@@ -53,17 +57,30 @@ export async function scanBarcode(
             dateReceive
           );
 
+          const newData = {
+            productId: product?.id,
+            binId: String(availableBin?.id),
+            quality,
+            boxSize,
+            dateReceive,
+            purchaseOrder,
+            expirationDate,
+          };
+
           if (availableBin) {
-            await prisma.assignedProducts.create({
-              data: {
-                productId: product?.id,
-                binId: String(availableBin?.id),
-                boxSize,
-                dateReceive,
-                purchaseOrder,
-                expirationDate,
-              },
-            });
+            if (!quantity || quantity === 0) {
+              await prisma.assignedProducts.create({
+                data: newData,
+              });
+            } else {
+              let multipleAssignedProduct = [];
+              for (let i = 0; i < quantity; i++) {
+                multipleAssignedProduct.push(newData);
+              }
+              await prisma.assignedProducts.createMany({
+                data: multipleAssignedProduct,
+              });
+            }
 
             const TotalAssignedProduct = await prisma.assignedProducts.count({
               where: {

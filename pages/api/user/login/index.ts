@@ -24,7 +24,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
       try {
         const { user } = await findUser(username);
-        console.log("User", user);
 
         if (!user) {
           return res.status(401).json({
