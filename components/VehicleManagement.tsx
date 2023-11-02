@@ -1,38 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { TRecords } from "@/types/recordsTypes";
-// PRISMA TYPES
 import {
-  trucks as TTrucks,
-  TruckAvailability as TTruckAvailability,
+  trucks,
   records,
+  TruckAvailability,
+  orderedProducts,
+  assignedProducts,
+  products,
 } from "@prisma/client";
 import useSWR from "swr";
 
-// ICONS
+import Cargo from "./DeliveryMangement/Admin/Cargo";
 import { FaBackspace } from "react-icons/fa";
-// COMPONENT
 import Loading from "./Parts/Loading";
-import {
-  TCoordinates,
-  TDeliveryTrigger,
-  TLocationEntry,
-} from "@/types/deliveryTypes";
 
-type TTrucksWithoutUserId = Omit<TTrucks, "driverId">;
-type TTrucksWithOrders = TTrucksWithoutUserId & {
-  orders: records[];
+type TOmitTrucks = Omit<trucks, "driverId">;
+type TOmitRecord = Omit<
+  records,
+  "clientName" | "dateCreated" | "destination" | "username" | "truckName"
+>;
+
+type TTrucks = TOmitTrucks & {
+  records: TOmitRecord[];
+};
+
+type TCargo = {
+  animate: boolean;
+  style: "animate-emerge" | "animate-fade";
 };
 
 export default function VehicleManagement() {
   const [isClick, setIsClick] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCargoOpen, setIsCargoOpen] = useState<TCargo>({
+    animate: false,
+    style: "animate-fade",
+  });
   const [addTruckOnLoad, setAddTruckOnLoad] = useState(false);
   const [updateTruckOnLoad, setUpdateTruckOnLoad] = useState(false);
-  const [truckData, setTruckData] = useState<TTrucksWithoutUserId>({
+
+  const [truckData, setTruckData] = useState<TTrucks>({
     id: "",
     name: "",
     status: "Available",
+    records: [],
   });
+
   const truckAvailabity = [
     "Available",
     "Loaded",
@@ -40,18 +52,18 @@ export default function VehicleManagement() {
     "OutForDelivery",
   ];
 
-  const fetchTrucks = async (url: string) => {
+  const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Content-type": "application/json",
+        "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const data: TTrucksWithOrders[] = await response.json();
+    const data: TTrucks[] = await response.json();
     return data;
   };
 
@@ -59,7 +71,9 @@ export default function VehicleManagement() {
     data: trucks,
     isLoading,
     mutate,
-  } = useSWR("/api/trucks/find-trucks", fetchTrucks);
+  } = useSWR("/api/trucks/find-trucks", fetcher, {
+    refreshInterval: 1200,
+  });
 
   async function addTrucks() {
     setAddTruckOnLoad(true);
@@ -110,120 +124,131 @@ export default function VehicleManagement() {
         </h1>
       </div>
 
-      <div className="relative flex w-full flex-row gap-2 overflow-scroll p-2 transition-all">
-        <div className="flex w-full flex-col items-center justify-start gap-2 ">
-          {trucks?.map((truck) => {
-            return (
-              <div
-                key={truck?.id}
-                className="flex w-full flex-row justify-between border p-2">
-                <h1 className="p-2 text-center">Name: {truck?.name}</h1>
-                <div className="flex h-full w-1/2  items-center justify-start gap-2 border p-2 text-center font-semibold">
-                  <label htmlFor="Orders" className="">
-                    <p>Carried Products</p>
-                  </label>
-                  <select
-                    name=""
-                    id="Orders"
-                    className="rouned-sm h-full w-full border border-none outline-none transition-all">
-                    {/* {truck?.orders?.map((order: records) => {
-                      return (
-                        // <option key={order.id} value="">
-                        //   {order.orderedProducts.map((records) => {
-                        //     return (
-                        //       <>
-                        //         Id: {order.id}, Name: {product.productName},
-                        //         Quantity: {product.totalQuantity}
-                        //       </>
-                        //     );
-                        //   })}
-                        // </option>
-                      );
-                    })} */}
-                  </select>
+      <div
+        className={`relative overflow-hidden ${
+          isCargoOpen.animate || "overflow-y-scroll"
+        } flex h-72 w-full flex-wrap gap-4 border border-black bg-slate-400`}>
+        {trucks
+          ? trucks?.map((truck: TTrucks) => {
+              return (
+                <div
+                  key={truck.id}
+                  className="flex w-full items-center justify-between gap-3 rounded-md border border-transparent bg-sky-50/90 p-2 text-black">
+                  <div className="flex h-full w-full flex-col items-start justify-center ">
+                    <h1>{truck.name}</h1>
+                    <h1>{truck.status}</h1>
+                  </div>
+                  <div className="W-full flex items-center justify-center ">
+                    <button
+                      onClick={async () => {
+                        setIsCargoOpen({
+                          ...isCargoOpen,
+                          animate: true,
+                          style: "animate-emerge",
+                        });
+
+                        setTruckData({
+                          id: truck.id,
+                          name: truck.name,
+                          status: truck.status,
+                          records: truck.records.map((record) => ({
+                            id: record.id,
+                          })),
+                        });
+                      }}
+                      className="h-fit w-fit whitespace-nowrap rounded-lg border bg-slate-600/30 p-2">
+                      Show Cargo
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setIsOpen(true);
+
+                        setTruckData({
+                          id: truck.id,
+                          name: truck.name,
+                          status: truck.status,
+                          records: truck.records.map((record) => ({
+                            id: record.id,
+                          })),
+                        });
+                      }}
+                      className="h-fit w-fit rounded-lg border bg-slate-600/30 p-2">
+                      Update
+                    </button>
+                  </div>
                 </div>
-                <h1 className="p-2 text-center">Status: {truck?.status}</h1>
-                <button
-                  onClick={async () => {
-                    setIsOpen(true);
-
-                    setTruckData({
-                      id: truck.id,
-                      name: truck?.name,
-                      status: truck.status,
-                    });
-                  }}
-                  className="rounded-lg border p-2">
-                  Update
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        {isOpen && (
-          <div
-            className={`relative p-3 transition-all ${
-              isOpen ? "animate-emerge" : "animate-fade"
-            } absolute h-full w-full  border bg-slate-900/30`}>
-            <h1 className="text-2xl font-bold">Truck Name: {truckData.name}</h1>
-            <div className="flex flex-col gap-2 p-2">
-              <label htmlFor="truckStatus">Truck Status</label>
-              <select
-                id="truckStatus"
-                value={truckData.status}
-                onChange={(e) =>
-                  setTruckData({
-                    ...truckData,
-                    status: e.target.value as TTruckAvailability,
-                  })
-                }
-                className="block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                {truckAvailabity.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              onClick={() => {
-                setIsOpen(false);
-              }}
-              className="absolute right-2 top-2 h-fit w-fit">
-              <FaBackspace className="h-[20px] w-[20px]" />
-            </button>
-            <button
-              onClick={async () => {
-                try {
-                  setUpdateTruckOnLoad(true);
-                  const res = await fetch("/api/trucks/update-trucks", {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ truckData }),
-                  });
-                  console.log(res);
-                } catch (e) {
-                  console.log(e);
-                } finally {
-                  setUpdateTruckOnLoad(false);
-
-                  !updateTruckOnLoad &&
-                    (() => {
-                      setIsOpen(false);
-                      mutate();
-                    })();
-                }
-              }}
-              className="flex h-[3em] w-[5em] items-center justify-center rounded-sm border p-2 text-center font-bold">
-              {updateTruckOnLoad ? <Loading /> : "Confirm"}
-              {/* Confirm */}
-            </button>
-          </div>
+              );
+            })
+          : "No Data"}
+        {isCargoOpen.animate && (
+          <Cargo
+            dataCargo={{ isCargoOpen, setIsCargoOpen }}
+            truckData={truckData}
+          />
         )}
       </div>
+
+      {isOpen && (
+        <div
+          className={`relative p-3 transition-all ${
+            isOpen ? "animate-emerge" : "animate-fade"
+          } absolute h-fit w-full  border bg-slate-900/30`}>
+          <h1 className="text-2xl font-bold">Truck Name: {truckData.name}</h1>
+          <div className="flex flex-col gap-2 p-2">
+            <label htmlFor="truckStatus">Truck Status</label>
+            <select
+              id="truckStatus"
+              value={truckData.status}
+              onChange={(e) =>
+                setTruckData({
+                  ...truckData,
+                  status: e.target.value as TruckAvailability,
+                })
+              }
+              className="block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+              {truckAvailabity.map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => {
+              setIsOpen(false);
+            }}
+            className="absolute right-2 top-2 h-fit w-fit">
+            <FaBackspace className="h-[20px] w-[20px]" />
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                setUpdateTruckOnLoad(true);
+                const res = await fetch("/api/trucks/update-trucks", {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ truckData }),
+                });
+                console.log(res);
+              } catch (e) {
+                console.log(e);
+              } finally {
+                setUpdateTruckOnLoad(false);
+
+                !updateTruckOnLoad &&
+                  (() => {
+                    setIsOpen(false);
+                    mutate();
+                  })();
+              }
+            }}
+            className="flex h-[3em] w-[5em] items-center justify-center rounded-sm border p-2 text-center font-bold">
+            {updateTruckOnLoad ? <Loading /> : "Confirm"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

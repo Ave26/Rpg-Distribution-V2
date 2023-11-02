@@ -31,13 +31,13 @@ export async function handler(
           userId = verifiedToken.id;
         }
 
-        const { error, orders } = await create_order(
+        const { error, record } = await create_order(
           productEntry,
           formData,
           userId
         );
 
-        return res.json(orders);
+        return res.json(record);
       } catch (error) {
         return console.log(error);
       }

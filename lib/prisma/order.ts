@@ -87,7 +87,7 @@ export async function create_order(
       return rest;
     });
 
-    const orders = await prisma.records.create({
+    const record = await prisma.records.create({
       data: {
         clientName,
         destination,
@@ -109,20 +109,40 @@ export async function create_order(
         },
       },
     });
-    console.log(orders);
 
-    await update_product_status(orders);
-    return { orders };
+    const name = record?.truckName;
+
+    const connectTrucks = await prisma.trucks.update({
+      where: {
+        name: String(name),
+      },
+      data: {
+        records: {
+          connect: {
+            id: record.id,
+          },
+        },
+      },
+      include: {
+        records: true,
+      },
+    });
+
+    console.log(connectTrucks);
+
+    await update_product_status(record);
+    return { record };
   } catch (error) {
     return { error };
   }
 }
 
-export async function update_product_status(records: TRecords) {
+export async function update_product_status(record: TRecords) {
   let updatedProducts;
-  const updatedProductIds = [];
+
   try {
-    for (let orderedProduct of records.orderedProducts) {
+    for (let orderedProduct of record.orderedProducts) {
+      const updatedProductIds = [];
       let totalQuantity = orderedProduct.totalQuantity;
       const binIds = orderedProduct.binIdsEntries;
 
@@ -165,20 +185,22 @@ export async function update_product_status(records: TRecords) {
               status: "Queuing",
             },
           });
+
+        await prisma.orderedProducts.update({
+          where: {
+            id: orderedProduct.id,
+          },
+          data: {
+            assignedProducts: {
+              connect: updatedProductIds.map((id) => ({ id })),
+            },
+          },
+        });
+
         updatedProducts = updatedAssignedProducts;
       }
-
-      await prisma.orderedProducts.update({
-        where: {
-          id: orderedProduct.id,
-        },
-        data: {
-          assignedProducts: {
-            connect: updatedProductIds.map((id) => ({ id })),
-          },
-        },
-      });
     }
+
     return { updatedProducts };
   } catch (error) {
     return { error };

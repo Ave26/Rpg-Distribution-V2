@@ -102,14 +102,18 @@ export default function StaffUI() {
                   })}
                 </select>
                 <div className="relative flex w-full flex-row items-center justify-between border border-black px-4">
-                  {order?.orderedProducts?.map(
-                    (orderedProduct) =>
-                      orderedProduct.assignedProducts.map((assignedProduct) => (
-                        <h1 key={assignedProduct.id}>
-                          Status: {assignedProduct.status}
-                        </h1>
-                      ))[0]
-                  )}
+                  {
+                    order?.orderedProducts?.map(
+                      (orderedProduct) =>
+                        orderedProduct.assignedProducts.map(
+                          (assignedProduct) => (
+                            <h1 key={assignedProduct.id}>
+                              Status: {assignedProduct.status}
+                            </h1>
+                          )
+                        )[0]
+                    )[0]
+                  }
 
                   <button
                     disabled={

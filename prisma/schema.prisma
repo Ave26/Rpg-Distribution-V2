@@ -157,10 +157,12 @@ model records {
   dateCreated     DateTime
   destination     String
   orderedProducts orderedProducts[]
-  trucks          trucks?           @relation(fields: [truckName], references: [name])
-  truckName       String            @unique
-  author          users?            @relation(fields: [username], references: [username])
-  username        String            @unique
+
+  // trucks          trucks[]
+  author    users?  @relation(fields: [username], references: [username])
+  username  String  @unique
+  trucks    trucks? @relation(fields: [truckName], references: [name])
+  truckName String? @unique
 }
 
 enum DeliveryStatus {
@@ -200,10 +202,12 @@ model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   name             String             @unique
   status           TruckAvailability  @default(Available)
+  // routeCluster     String
+  // capacity         Int
   driver           users?             @relation(fields: [driverId], references: [id])
   driverId         String?            @db.ObjectId
   assignedProducts assignedProducts[]
-  records          records?
+  records          records[]
 }
 
 model damageBin {

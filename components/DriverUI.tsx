@@ -27,12 +27,12 @@ function DriverUI({
   coordinates,
   trucks,
 }: TDriverUIProps) {
-  // const { data } = useSWR("/api/trucks/find-trucks", fetch, {
-  //   refreshInterval: 1500,
-  // });
   const router = useRouter();
-  console.log(router.asPath);
-  // console.log(data);
+
+  const { data, mutate, isLoading } = useSWR("", fetcher, {
+    refreshInterval: 1200,
+  });
+
   const [truckName, setTruckName] = useState<string>("");
   const [endPoint, setEndpoint] = useState<TCoordinates>({
     latitude: 0,

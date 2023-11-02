@@ -13,33 +13,31 @@ async function handler(
     switch (req.method) {
       case "GET":
         const trucks = await prisma.trucks.findMany({
+          // include: {
+          //   records: {
+          //     select: {
+          //       id: true,
+          //       orderedProducts: {
+          //         where: {
+          //           assignedProducts: {
+          //             every: {
+          //               status: "Loaded",
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
           include: {
             records: {
-              include: {
-                orderedProducts: {
-                  where: {
-                    assignedProducts: {
-                      every: {
-                        status: "Loaded",
-                      },
-                    },
-                  },
-                },
+              select: {
+                id: true,
               },
             },
           },
         });
 
-        console.log(trucks);
-
-        // const assingedProduct = await prisma.bins.findMany({
-        //   include: {
-        //     assignedProducts: true,
-        //   },
-        // });
-
-        // console.log(assingedProduct);
-        const { userId } = getId(verifiedToken);
         return res.status(200).json(trucks);
 
       default:
