@@ -322,6 +322,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                 <div className="flex h-14 w-full items-center justify-center gap-3">
                   <button
                     onClick={() => {
+                      setIsDisabled(false);
                       setHasLoading(true);
                       fetch("/api/outbound/make-order", {
                         method: "POST",

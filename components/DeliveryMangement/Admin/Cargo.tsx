@@ -80,7 +80,7 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
 
   return (
     <div
-      className={`${isCargoOpen.style} absolute h-[100em] w-full bg-white/30 backdrop-blur-sm`}
+      className={`${isCargoOpen.style} absolute h-[100em] w-full overflow-y-scroll bg-white/30 backdrop-blur-sm`}
       onAnimationEnd={() => {
         let keyCargo: TCargoKey = {
           "animate-emerge": true,

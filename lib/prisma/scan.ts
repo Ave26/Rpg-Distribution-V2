@@ -152,6 +152,7 @@ async function setMethod(
   console.log(category);
   switch (category) {
     case "Food":
+    case "Cosmetics":
       console.log("FEFO Method");
 
       availableBin = await prisma.bins.findFirst({
@@ -173,7 +174,6 @@ async function setMethod(
 
       break;
     case "Laundry":
-    case "Cosmetics":
     case "Sanitary":
     case "Cleaning":
       console.log("FIFO Method");
