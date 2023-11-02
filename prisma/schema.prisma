@@ -202,8 +202,8 @@ model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   name             String             @unique
   status           TruckAvailability  @default(Available)
-  // routeCluster     String
-  // capacity         Int
+  routeCluster     String
+  capacity         Int
   driver           users?             @relation(fields: [driverId], references: [id])
   driverId         String?            @db.ObjectId
   assignedProducts assignedProducts[]

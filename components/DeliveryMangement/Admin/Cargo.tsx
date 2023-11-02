@@ -80,7 +80,7 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
 
   return (
     <div
-      className={`${isCargoOpen.style} absolute h-[100em] w-full overflow-y-scroll bg-white/30 backdrop-blur-sm`}
+      className={`${isCargoOpen.style} absolute h-full w-full  bg-white/30 p-2 backdrop-blur-sm`}
       onAnimationEnd={() => {
         let keyCargo: TCargoKey = {
           "animate-emerge": true,
@@ -91,45 +91,46 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
           animate: keyCargo[isCargoOpen.style],
         });
       }}>
-      <button
-        onClick={() =>
-          setIsCargoOpen({
-            ...isCargoOpen,
-            style: "animate-fade",
-          })
-        }
-        className="sticky left-2 top-2">
-        <FaBackspace />
-      </button>
-
       {isLoading ? (
         <Loading />
       ) : (
-        <div className="h-full w-full border border-black">
-          <div>
-            {records?.map((record) => (
-              <div key={record.id}>
-                <h1>{record.truckName}</h1>
-                <h1>{record.clientName}</h1>
-                <h1>{String(record.dateCreated)}</h1>
-                <h1>{record.username}</h1>
-                <h1>{record.id}</h1>
-                <select value="">
-                  {record.orderedProducts?.map((orderedProduct) => (
-                    <option
-                      key={orderedProduct.id}
-                      className="just flex flex-col items-center justify-center">
-                      <h1>
-                        Quantity: {orderedProduct.totalQuantity} Name:
-                        {orderedProduct.products.productName}
-                      </h1>
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
+        <>
+          <button
+            onClick={() =>
+              setIsCargoOpen({
+                ...isCargoOpen,
+                style: "animate-fade",
+              })
+            }
+            className="sticky flex w-full justify-end p-1">
+            <FaBackspace />
+          </button>
+          <div className="relative h-[17em] w-full gap-4 overflow-y-scroll">
+            <div>
+              {records?.map((record) => (
+                <div key={record.id} className="h-fit w-full">
+                  <h1>{record.truckName}</h1>
+                  <h1>{record.clientName}</h1>
+                  <h1>{String(record.dateCreated)}</h1>
+                  <h1>{record.username}</h1>
+                  <h1>{record.id}</h1>
+                  <select value="">
+                    {record.orderedProducts?.map((orderedProduct) => (
+                      <option
+                        key={orderedProduct.id}
+                        className="just flex flex-col items-center justify-center">
+                        <h1>
+                          Quantity: {orderedProduct.totalQuantity} Name:
+                          {orderedProduct.products.productName}
+                        </h1>
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

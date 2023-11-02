@@ -113,14 +113,3 @@ DeliveryManagement.getLayout = (page: ReactElement) => {
     </Layout>
   );
 };
-
-/* 
-  When the Start Delivery is Triggered
-    - Update The Truck that has the products in queue
-    - How to know where the product I will going to update
-    const updateSpecificTruck = await prisma.trucks.findMany({
-      where: {
-        
-      }
-    })
-*/

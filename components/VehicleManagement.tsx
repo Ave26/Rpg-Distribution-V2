@@ -127,7 +127,7 @@ export default function VehicleManagement() {
       <div
         className={`relative overflow-hidden ${
           isCargoOpen.animate || "overflow-y-scroll"
-        } flex h-72 w-full flex-wrap gap-4 border border-black bg-slate-400`}>
+        } flex h-80 w-full flex-wrap gap-4 border border-black bg-slate-400`}>
         {trucks
           ? trucks?.map((truck: TTrucks) => {
               return (

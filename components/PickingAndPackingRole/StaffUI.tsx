@@ -70,7 +70,7 @@ export default function StaffUI() {
   const h1Style = "h-fit w-full border border-black p-2";
 
   return (
-    <section className="h-screen w-full overflow-y-scroll border border-black md:h-full">
+    <section className="h-[20em] w-full overflow-y-scroll border border-black md:h-screen">
       <h1 className="p-5 text-xl font-bold">LIST OF ORDERS</h1>
 
       <div className="flex h-fit w-full flex-wrap items-start justify-start gap-2 overflow-y-scroll p-2 px-5 font-semibold hover:overflow-y-scroll">
