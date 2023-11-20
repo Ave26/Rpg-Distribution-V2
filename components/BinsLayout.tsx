@@ -1,19 +1,23 @@
 import React, { SetStateAction, useEffect, useReducer, useState } from "react";
 import { Bin } from "@/types/inventory";
-import { bins, assignedProducts } from "@prisma/client";
+import { bins, assignedProducts, stockKeepingUnit } from "@prisma/client";
 import { EntriesTypes, dataEntriesTypes } from "@/types/binEntries";
+import { trucks as TTrucks } from "@prisma/client";
 import Toast from "./Parts/Toast";
 import {
   getProductTotalQuantity,
   getRequiredBinData,
 } from "@/helper/_componentHelpers";
 import { TFormData } from "@/types/inputTypes";
+import { TBins } from "@/types/binsTypes";
 
-interface BinsProps {
+interface BinsLayoutProps {
   isLoading?: boolean;
-  bins: Bin[] | undefined;
+  bins: TBins[] | undefined;
   dataEntries: dataEntriesTypes;
   formData: TFormData;
+  trucks: TTrucks[];
+  truckCapacity?: number | undefined;
   setFormData: React.Dispatch<React.SetStateAction<TFormData>>;
   setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,19 +38,34 @@ type ToastTypes = {
   isShow: boolean;
 };
 
+type TSKU = {
+  data: string;
+  allData: string[];
+};
+
 export default function BinsLayout({
   bins,
   isLoading,
   dataEntries,
   formData,
+  setFormData,
   setIsDisabled,
-}: BinsProps) {
+  trucks,
+  truckCapacity,
+}: BinsLayoutProps) {
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
+  const [skus, setSkus] = useState<stockKeepingUnit[]>([]);
+  const [totalWeightLists, setTotalWeightList] = useState<number[]>([]);
+  // const [sku, setSku] = useState<TSKU>({
+  //   allData: [],
+  //   data: "",
+  // });
   const { productEntry, setProductEntry } = dataEntries;
   const [toast, setToast] = useState<ToastTypes>({
     isShow: false,
     message: "",
   });
+
   const titles = [
     "Quantity",
     "Product Category",
@@ -55,6 +74,144 @@ export default function BinsLayout({
     "Price",
     "Bin",
   ];
+  async function selectEntry(bin: TBins) {
+    try {
+      const {
+        barcodeId,
+        clientName,
+        destination,
+        quantity,
+        truck,
+        productName,
+      } = formData;
+      if (!barcodeId || !quantity || !clientName || !destination || !truck) {
+        return setToast({
+          isShow: true,
+          message: "Incomplete Field",
+        });
+      }
+      bins ? getProductTotalQuantity(bins, formData.quantity, setToast) : null;
+      const { newEntry, binId } = getRequiredBinData(bin, quantity);
+      const isExisted =
+        productEntry?.find(
+          (existingEntry) => existingEntry.barcodeId === newEntry.barcodeId
+        ) !== undefined;
+
+      if (isExisted) {
+        setProductEntry(
+          productEntry.map((entry) =>
+            entry.barcodeId === newEntry.barcodeId &&
+            !entry.binIdsEntries.includes(binId)
+              ? { ...entry, binIdsEntries: [...entry.binIdsEntries, binId] }
+              : entry
+          )
+        );
+      } else {
+        productEntry && setProductEntry([...productEntry, newEntry]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    // finding the sum for each product ordered
+    try {
+      const entryProducts = productEntry?.map((entry) => {
+        return { total: entry.totalQuantity, weight: entry.weight };
+      });
+
+      const listofTotalWeight = [];
+
+      for (let entryProduct of entryProducts!) {
+        const result = entryProduct.total * entryProduct.weight;
+        listofTotalWeight.push(result);
+      }
+      const sum = listofTotalWeight.reduce((accumulator, currentValue) => {
+        const result = accumulator + currentValue;
+        return result;
+      }, 0);
+
+      const truck = trucks.find((truck) => truck.name === formData.truck);
+      const result = Number(truck?.capacity) - sum;
+      console.log("result", result);
+
+      if (sum > Number(truck?.capacity)) {
+        setToast((prev) => {
+          return {
+            ...prev,
+            isShow: true,
+            message: `Truck Capacity Exceeded ${result}`,
+          };
+        });
+      }
+
+      setFormData((prev) => {
+        return {
+          ...prev,
+          truckCargo: result,
+        };
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [productEntry]);
+  // console.log(formData);
+
+  // function fetchSKU(SKUs: string[] | undefined, controller: AbortController) {
+  //   // find the skus
+  //   console.log("Finding SKUs");
+  //   try {
+  //     fetch("/api/SKUs-find", {
+  //       method: "POST",
+  //       signal: controller.signal,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ SKUs }),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((skus: stockKeepingUnit[]) => setSkus(skus))
+  //       .catch((error) => error);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   const controller = new AbortController();
+  //   if (Number(productEntry?.length) > 0) {
+  //     fetchSKU(SKUs, controller);
+  //   }
+
+  //   return () => {
+  //     controller.abort();
+  //   };
+  // }, [productEntry]);
+
+  // useEffect(() => {
+  //   if (Number(skus.length) > 0) {
+  //     for (let enteredProduct of productEntry!) {
+  //       const total = enteredProduct.totalQuantity;
+  //       for (let sku of skus) {
+  //         const weight = sku.weight;
+  //         if (enteredProduct.skuCode === sku.code) {
+  //           const totalWeight = total * weight;
+  //           // totalWeighLists.push(totalWeight);
+  //           console.log("totalWeight", totalWeight);
+  //           return setTotalWeightList((prev) => [...prev, totalWeight]);
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   console.log(totalWeightLists);
+  // }, [skus]);
+
+  /* 
+    I want to 
+
+  */
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -65,37 +222,6 @@ export default function BinsLayout({
       clearTimeout(timer);
     };
   }, [toast.isShow]);
-
-  async function selectEntry(bin: Bin) {
-    const { barcodeId, clientName, destination, quantity, truck } = formData;
-    if (!barcodeId || !quantity || !clientName || !destination || !truck) {
-      return setToast({
-        isShow: true,
-        message: "Incomplete Field",
-      });
-    }
-    bins ? getProductTotalQuantity(bins, formData.quantity, setToast) : null;
-    const { newEntry, binId } = getRequiredBinData(bin, quantity);
-    const isExisted =
-      productEntry?.find(
-        (existingEntry) => existingEntry.barcodeId === newEntry.barcodeId
-      ) !== undefined;
-
-    if (isExisted) {
-      setProductEntry(
-        productEntry.map((entry) =>
-          entry.barcodeId === newEntry.barcodeId &&
-          !entry.binIdsEntries.includes(binId)
-            ? { ...entry, binIdsEntries: [...entry.binIdsEntries, binId] }
-            : entry
-        )
-      );
-    } else {
-      productEntry && setProductEntry([...productEntry, newEntry]);
-    }
-
-    setIsDisabled(true);
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -114,7 +240,7 @@ export default function BinsLayout({
           return console.log("Requested Quantity Exceeded");
         }
 
-        console.log("Number:", totalProductQuantity);
+        // console.log("Number:", totalProductQuantity);
 
         for (let bin of bins) {
           const binCount = bin._count?.assignedProducts;
@@ -123,7 +249,7 @@ export default function BinsLayout({
           }
           negatedThreshold -= binCount;
           coveredBin.push(bin?.id);
-          console.log("negated:", negatedThreshold);
+          // console.log("negated:", negatedThreshold);
         }
 
         setCoverdBins(coveredBin);
@@ -135,9 +261,67 @@ export default function BinsLayout({
     };
   }, [formData.quantity]);
 
+  // useEffect(() => {
+  //   // If product entry is 0 then set the skuData to be ""
+  //   if (Number(productEntry?.length) === 0) {
+  //     console.log(productEntry);
+  //     setSku((prev) => {
+  //       return {
+  //         ...prev,
+  //         allData: [],
+  //         data: "",
+  //       };
+  //     });
+  //   }
+  // }, [productEntry]);
+
+  // useEffect(() => {
+  //   // this will search the sku and will be push through skus
+  //   let controller = new AbortController();
+
+  //   if (Number(productEntry?.length) > 0) {
+  //     fetch("/api/sku-find", {
+  //       method: "POST",
+  //       signal: controller.signal,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+
+  //       body: JSON.stringify({
+  //         skuCode: sku.data,
+  //       }),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((sku) => {
+  //         if (Number(productEntry?.length) > 0) {
+  //           console.log("executed A");
+
+  //           setSku((prev) => {
+  //             return {
+  //               ...prev,
+  //               allData: [...prev.allData, sku],
+  //             };
+  //           });
+  //         } else {
+  //           console.log("executed B");
+  //           setSku((prev) => {
+  //             return {
+  //               ...prev,
+  //               allData: [sku],
+  //             };
+  //           });
+  //         }
+  //       })
+  //       .catch((error) => error);
+  //   }
+
+  //   return () => controller.abort();
+  // }, [sku.data]);
+
   if (!bins) {
     return <>No data</>;
   }
+  const tdStyle = "px-6 py-4 text-center";
 
   return (
     <>
@@ -164,64 +348,127 @@ export default function BinsLayout({
               </tr>
             </thead>
             <tbody>
-              {bins
-                ?.map((bin: Bin, index) => {
-                  return (
-                    <tr
-                      onClick={(e) => {
-                        e.preventDefault();
-                        selectEntry(bin);
-                      }}
-                      key={index}
-                      className={`text-white transition-all ${
-                        coveredBins.includes(bin?.id)
-                          ? "ring-2 ring-inset ring-white transition-all delay-100"
-                          : "ring-none"
-                      } 
-                  
-                  
-                    ${
-                      productEntry?.find((value) =>
-                        value.binIdsEntries.includes(bin.id)
-                      )
-                        ? "bg-emerald-500"
-                        : "bg-gray-800"
+              {bins?.map((bin: TBins) => {
+                return (
+                  <tr
+                    key={bin.id}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      selectEntry(bin);
+                      const skuCode = bin.assignedProducts.map(
+                        (assignedProduct) => assignedProduct.skuCode
+                      )[0];
+
+                      // setSku((prev) => {
+                      //   return {
+                      //     ...prev,
+                      //     data: skuCode,
+                      //   };
+                      // });
+                    }}
+                    className={`text-white transition-all ${
+                      coveredBins.includes(bin?.id)
+                        ? "ring-2 ring-inset ring-amber-200 transition-all delay-100"
+                        : "ring-none"
                     }
-                  `}>
-                      <td className="px-6 py-4">
-                        {Number(bin?._count.assignedProducts)}
-                      </td>
-                      <td className="px-6 py-4">
-                        {String(bin?.racks?.categories?.category)}
-                      </td>
-                      <td className="px-6 py-4">
-                        {
-                          bin?.assignedProducts?.map((assign) => {
-                            return assign?.products?.productName;
-                          })[0]
+
+                        ${
+                          productEntry?.find((value) =>
+                            value.binIdsEntries.includes(bin.id)
+                          )
+                            ? "bg-emerald-500"
+                            : "bg-gray-800"
                         }
-                      </td>
-                      <td className="px-6 py-4">
-                        {
-                          bin?.assignedProducts?.map((assign) => {
-                            return Number(assign?.products?.price);
-                          })[0]
-                        }
-                      </td>
-                      <td className="px-6 py-4">
-                        {
-                          bin?.assignedProducts?.map(
-                            (assign) => assign?.products?.price
-                          )[0]
-                        }
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
-                      </td>
-                    </tr>
-                  );
-                })
-                .reverse()}
+                      `}>
+                    <td className={tdStyle}>{bin._count.assignedProducts}</td>
+
+                    <td className={tdStyle}>
+                      {
+                        bin.assignedProducts.map(
+                          (assignedProduct) => assignedProduct.products.category
+                        )[0]
+                      }
+                    </td>
+
+                    <td className={tdStyle}>
+                      {
+                        bin.assignedProducts.map(
+                          (assignedProduct) =>
+                            assignedProduct.products.productName
+                        )[0]
+                      }
+                    </td>
+                    <td className={tdStyle}>
+                      {
+                        bin.assignedProducts.map(
+                          (assignedProduct) => assignedProduct.skuCode
+                        )[0]
+                      }
+                    </td>
+                    <td className={tdStyle}>
+                      {
+                        bin.assignedProducts.map(
+                          (assignedProduct) => assignedProduct.products.price
+                        )[0]
+                      }
+                    </td>
+                    <td className={tdStyle}>
+                      {bin.row}-{bin.shelfLevel}
+                    </td>
+                  </tr>
+                  //   <tr
+                  //     onClick={(e) => {
+                  //       e.preventDefault();
+                  //       selectEntry(bin);
+                  //     }}
+                  //     key={index}
+                  //     className={`text-white transition-all ${
+                  //       coveredBins.includes(bin?.id)
+                  //         ? "ring-2 ring-inset ring-white transition-all delay-100"
+                  //         : "ring-none"
+                  //     }
+
+                  //   ${
+                  //     productEntry?.find((value) =>
+                  //       value.binIdsEntries.includes(bin.id)
+                  //     )
+                  //       ? "bg-emerald-500"
+                  //       : "bg-gray-800"
+                  //   }
+                  // `}>
+                  //     <td className="px-6 py-4">
+                  //       {Number(bin?._count.assignedProducts)}
+                  //     </td>
+                  //     <td className="px-6 py-4">
+                  //       {String(bin?.racks?.categories?.category)}
+                  //     </td>
+                  //     <td className="px-6 py-4">
+                  //       {
+                  //         bin?.assignedProducts?.map((assign) => {
+                  //           return assign?.products?.productName;
+                  //         })[0]
+                  //       }
+                  //     </td>
+                  //     <td className="px-6 py-4">
+                  //       {
+                  //         bin?.assignedProducts?.map((assign) => {
+                  //           return Number(assign?.products?.price);
+                  //         })[0]
+                  //       }
+                  //     </td>
+                  //     <td className="px-6 py-4">
+                  //       {
+                  //         bin?.assignedProducts?.map(
+                  //           (assign) => assign?.products?.price
+                  //         )[0]
+                  //       }
+                  //     </td>
+                  //     <td className="whitespace-nowrap px-6 py-4">
+                  //       {bin?.racks?.name} {bin?.row} - {bin?.shelfLevel}
+                  //     </td>
+                  //   </tr>
+                );
+              })}
             </tbody>
 
             {/* <tfoot>

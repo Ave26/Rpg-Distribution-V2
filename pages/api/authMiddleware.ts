@@ -15,7 +15,6 @@ export const authMiddleware =
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { verifiedToken, error } = await verifyJwt(req);
-
       if (error) {
         return res.status(403).json({
           authenticated: false,

@@ -20,12 +20,6 @@ enum UserRole {
   Driver
 }
 
-enum SupplyLevelStatus {
-  Normal
-  Low
-  Critical
-}
-
 enum Category {
   Food
   Laundry
@@ -46,6 +40,22 @@ model users {
   record           records[]
 }
 
+enum SupplyLevelStatus {
+  Normal
+  Low
+  Critical
+}
+
+model stockKeepingUnit {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  code             String            @unique
+  weight           Int
+  color            String
+  products         products?         @relation(fields: [barcodeId], references: [barcodeId])
+  barcodeId        String?           @unique
+  assignedProducts assignedProducts?
+}
+
 model products {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   barcodeId         String             @unique
@@ -53,7 +63,7 @@ model products {
   image             String?
   price             Float?
   productName       String             @unique
-  sku               String?
+  sku               stockKeepingUnit[]
   supplyLevelStatus SupplyLevelStatus?
   variations        variations[]
   assignedProducts  assignedProducts[]
@@ -115,17 +125,24 @@ enum ProductQuality {
   Damage
 }
 
+enum BoxSize {
+  Small
+  Medium
+  Large
+}
+
 model assignedProducts {
   id                String           @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive       DateTime?
+  dateReceive       DateTime
   purchaseOrder     String
   expirationDate    DateTime?
-  boxSize           String?
-  isDamage          Boolean?
+  boxSize           BoxSize
   quality           ProductQuality
   status            productStatus    @default(Default)
-  products          products?        @relation(fields: [productId], references: [id])
-  productId         String?          @db.ObjectId
+  sku               stockKeepingUnit @relation(fields: [skuCode], references: [code])
+  skuCode           String           @unique
+  products          products?        @relation(fields: [barcodeId], references: [barcodeId])
+  barcodeId         String           @unique
   bin               bins?            @relation(fields: [binId], references: [id])
   binId             String?          @db.ObjectId
   users             users?           @relation(fields: [usersId], references: [id])
@@ -140,8 +157,9 @@ model assignedProducts {
 }
 
 model orderedProducts {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  totalQuantity    Int
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  totalQuantity Int
+
   assignedProducts assignedProducts[]
   binIdsEntries    String[]
   bins             bins[]
@@ -151,18 +169,39 @@ model orderedProducts {
   recordId         String?            @db.ObjectId
 }
 
+model purchaseOrderOutBound {
+  id      String    @id @default(auto()) @map("_id") @db.ObjectId
+  poId    String    @unique
+  // batch   batch[]
+  records records[]
+}
+
+// model batch {
+//   id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+//   batchNumber           Int                    @unique @default(1)
+//   records               records[]
+//   purchaseOrderOutBound purchaseOrderOutBound? @relation(fields: [poId], references: [poId])
+//   poId                  String?                @unique
+// }
+
 model records {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId
   clientName      String
   dateCreated     DateTime
   destination     String
+  // POO             purchaseOrderOutBound[]
   orderedProducts orderedProducts[]
 
   // trucks          trucks[]
-  author    users?  @relation(fields: [username], references: [username])
-  username  String  @unique
-  trucks    trucks? @relation(fields: [truckName], references: [name])
-  truckName String? @unique
+  author                users?                 @relation(fields: [username], references: [username])
+  username              String                 @unique
+  trucks                trucks?                @relation(fields: [truckName], references: [name])
+  truckName             String?                @unique
+  purchaseOrderOutBound purchaseOrderOutBound? @relation(fields: [poId], references: [poId])
+  poId                  String?                @unique
+  batchNumber           Int                    @default(1)
+  // batch                 batch?                 @relation(fields: [batchNumber], references: [batchNumber])
+  // batchNumber           Int?                   @unique
 }
 
 enum DeliveryStatus {
@@ -202,12 +241,26 @@ model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   name             String             @unique
   status           TruckAvailability  @default(Available)
-  routeCluster     String
-  capacity         Int
+  capacity         Int?               @default(2000)
   driver           users?             @relation(fields: [driverId], references: [id])
   driverId         String?            @db.ObjectId
   assignedProducts assignedProducts[]
   records          records[]
+  routeCluster     routeCluster?      @relation(fields: [routeClusterId], references: [id])
+  routeClusterId   String?            @db.ObjectId
+}
+
+enum cluster {
+  North
+  East
+  West
+  South
+}
+
+model routeCluster {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  cluster cluster  @unique
+  trucks  trucks[]
 }
 
 model damageBin {

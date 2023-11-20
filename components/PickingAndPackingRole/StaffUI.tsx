@@ -90,6 +90,14 @@ export default function StaffUI() {
                 </h1>
                 <h1 className={h1Style}>{order.clientName}</h1>
                 <h1 className={h1Style}>{String(order.dateCreated)}</h1>
+                <h1 className={h1Style}>
+                  Truck Capacity: {String(order.trucks.capacity)}
+                </h1>
+
+                <h1 className={h1Style}>
+                  Purchase Order: {order.poId} batch#{order.batchNumber}
+                </h1>
+
                 <select className={h1Style}>
                   {order?.orderedProducts?.map((orderedProduct, index) => {
                     return (

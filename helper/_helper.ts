@@ -16,7 +16,13 @@ export const setTime = () => {
     day: "2-digit",
   });
 
-  return { date };
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Month is 0-based
+  const day = date.getDate().toString().padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}`;
+  const newDate = formattedDate.toString().split("T")[0];
+  return { date, newDate };
 };
 
 export const getId = (verifiedToken: string | JwtPayload | undefined) => {

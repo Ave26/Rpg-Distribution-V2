@@ -1,24 +1,59 @@
 import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
+import { assignedProducts, bins } from "@prisma/client";
 
 type ToastTypes = {
   message: string;
   isShow: boolean;
 };
 
-export const getRequiredBinData = (bin: Bin, quantity: number) => {
+type TSKU = {
+  code: string;
+};
+
+type TAssignedProducts = {
+  expirationDate: string;
+  dateReceive: string;
+  skuCode: string;
+  sku: {
+    weight: number;
+  };
+  products: {
+    barcodeId: string;
+    productName: string;
+    sku: TSKU[];
+    price: number;
+  };
+};
+
+type TBins = bins & {
+  assignedProducts: TAssignedProducts[];
+  racks: {
+    name: string;
+    categories: {
+      category: string;
+    };
+  };
+  _count: {
+    assignedProducts: number;
+  };
+};
+
+export const getRequiredBinData = (bin: TBins, quantity: number) => {
   const productName = bin.assignedProducts[0]?.products.productName;
   const barcodeId = bin.assignedProducts[0]?.products.barcodeId;
   const expiryDate = bin.assignedProducts[0]?.expirationDate;
   const price = bin.assignedProducts[0]?.products.price;
-  const sku = bin.assignedProducts[0]?.products.sku;
+  const skuCode = bin.assignedProducts[0]?.skuCode;
+  const weight = bin.assignedProducts[0].sku.weight;
   const binId = bin.id;
 
   let newEntry: EntriesTypes = {
     totalQuantity: Number(quantity),
     productName,
     barcodeId,
-    sku,
+    skuCode,
+    weight,
     expiryDate,
     price,
     binIdsEntries: [binId],
@@ -31,7 +66,7 @@ export const getRequiredBinData = (bin: Bin, quantity: number) => {
 };
 
 export const getProductTotalQuantity = (
-  bins: Bin[],
+  bins: TBins[],
   quantity: number,
   setToast: React.Dispatch<React.SetStateAction<ToastTypes>>
 ) => {

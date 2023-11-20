@@ -5,6 +5,8 @@ type TFormData = {
   productName: string;
   clientName: string;
   quantity: number;
+  purchaseOrderOutbound: string;
+  truckCargo: number;
 };
 
 interface InputProps {

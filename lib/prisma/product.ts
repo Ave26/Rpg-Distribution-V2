@@ -72,39 +72,39 @@ export const findProduct = async (barcodeId: string) => {
   }
 };
 
-export const addNewProduct = async (
-  barcodeId: string,
-  category: Category,
-  image: string,
-  price: number,
-  productName: string,
-  sku: string
-) => {
-  console.log(barcodeId, category, image, price, productName, "prisma");
-  try {
-    const findProduct = await prisma.products.findUnique({
-      where: {
-        barcodeId,
-      },
-    });
+// export const addNewProduct = async (
+//   barcodeId: string,
+//   category: Category,
+//   image: string,
+//   price: number,
+//   productName: string,
+//   skuCode: string
+// ) => {
+//   console.log(barcodeId, category, image, price, productName, "prisma");
+//   try {
+//     const findProduct = await prisma.products.findUnique({
+//       where: {
+//         barcodeId,
+//       },
+//     });
 
-    if (findProduct) {
-      return { findProduct };
-    } else {
-      const newProduct = await prisma.products.create({
-        data: {
-          barcodeId,
-          category,
-          image,
-          price,
-          productName,
-          sku,
-        },
-      });
-      return { newProduct };
-    }
-  } catch (error) {
-    console.log(error);
-    return { error };
-  }
-};
+//     if (findProduct) {
+//       return { findProduct };
+//     } else {
+//       const newProduct = await prisma.products.create({
+//         data: {
+//           barcodeId,
+//           category,
+//           image,
+//           price,
+//           productName,
+//           sku,
+//         },
+//       });
+//       return { newProduct };
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return { error };
+//   }
+// };

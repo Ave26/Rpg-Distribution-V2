@@ -13,7 +13,8 @@ export default async function handler(
 ) {
   try {
     const { searchSomething }: TBody = req.body;
-    console.log(searchSomething);
+
+    // console.log(searchSomething);
     let whereCondition = {};
     if (searchSomething) {
       whereCondition = {
@@ -21,10 +22,20 @@ export default async function handler(
           some: {
             products: {
               OR: [
-                { barcodeId: searchSomething || undefined },
-                { productName: searchSomething || undefined },
-                { sku: searchSomething || undefined },
-              ].filter((condition) => condition !== undefined),
+                {
+                  barcodeId: searchSomething || undefined,
+                },
+                {
+                  productName: searchSomething || undefined,
+                },
+                {
+                  sku: {
+                    some: {
+                      code: searchSomething || undefined,
+                    },
+                  },
+                },
+              ],
             },
           },
         },
@@ -43,6 +54,7 @@ export default async function handler(
             },
           },
         },
+
         assignedProducts: {
           where: {
             status: "Default",
@@ -50,11 +62,27 @@ export default async function handler(
           select: {
             expirationDate: true,
             dateReceive: true,
+            skuCode: true,
+            sku: {
+              select: {
+                weight: true,
+              },
+            },
             products: {
               select: {
+                // barcodeId: true,
+                // productName: true,
+                // sku: true,
+                // price: true,
+
+                category: true,
                 barcodeId: true,
                 productName: true,
-                sku: true,
+                sku: {
+                  select: {
+                    code: true,
+                  },
+                },
                 price: true,
               },
             },
@@ -76,6 +104,8 @@ export default async function handler(
     const filteredBins = bins?.filter((bin) => {
       return Number(bin?.assignedProducts?.length) > 0;
     });
+
+    // console.log(filteredBins);
 
     return res.status(200).json(filteredBins);
   } catch (error) {

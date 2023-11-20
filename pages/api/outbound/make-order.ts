@@ -37,6 +37,8 @@ export async function handler(
           userId
         );
 
+        console.log(error);
+
         return res.json(record);
       } catch (error) {
         return console.log(error);

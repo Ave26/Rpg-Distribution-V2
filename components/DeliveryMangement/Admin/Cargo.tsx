@@ -3,7 +3,7 @@ import { trucks, records, orderedProducts, products } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import { FaBackspace } from "react-icons/fa";
 
-type TOmitTrucks = Omit<trucks, "driverId">;
+type TOmitTrucks = Omit<trucks, "driverId" | "capacity" | "routeCluster">;
 type TOmitRecord = Omit<
   records,
   "clientName" | "dateCreated" | "destination" | "username" | "truckName"

@@ -13,7 +13,7 @@ import Cargo from "./DeliveryMangement/Admin/Cargo";
 import { FaBackspace } from "react-icons/fa";
 import Loading from "./Parts/Loading";
 
-type TOmitTrucks = Omit<trucks, "driverId">;
+type TOmitTrucks = Omit<trucks, "driverId" | "capacity" | "routeCluster">;
 type TOmitRecord = Omit<
   records,
   "clientName" | "dateCreated" | "destination" | "username" | "truckName"
@@ -43,6 +43,7 @@ export default function VehicleManagement() {
     name: "",
     status: "Available",
     records: [],
+    routeClusterId: "",
   });
 
   const truckAvailabity = [
@@ -71,7 +72,7 @@ export default function VehicleManagement() {
     data: trucks,
     isLoading,
     mutate,
-  } = useSWR("/api/trucks/find-trucks", fetcher, {
+  } = useSWR("/api/trucks/find-trucks-admin", fetcher, {
     refreshInterval: 1200,
   });
 
@@ -122,6 +123,8 @@ export default function VehicleManagement() {
         <h1 className="flex items-center justify-center border p-2">
           +{Number(trucks?.length)}
         </h1>
+
+        {/* <input name={} value={}/> */}
       </div>
 
       <div
@@ -138,7 +141,7 @@ export default function VehicleManagement() {
                     <h1>{truck.name}</h1>
                     <h1>{truck.status}</h1>
                   </div>
-                  <div className="W-full flex items-center justify-center ">
+                  {/* <div className="W-full flex items-center justify-center ">
                     <button
                       onClick={async () => {
                         setIsCargoOpen({
@@ -154,6 +157,7 @@ export default function VehicleManagement() {
                           records: truck.records.map((record) => ({
                             id: record.id,
                           })),
+                          routeClusterId: "",
                         });
                       }}
                       className="h-fit w-fit whitespace-nowrap rounded-lg border bg-slate-600/30 p-2">
@@ -170,12 +174,13 @@ export default function VehicleManagement() {
                           records: truck.records.map((record) => ({
                             id: record.id,
                           })),
+                          routeClusterId: "",
                         });
                       }}
                       className="h-fit w-fit rounded-lg border bg-slate-600/30 p-2">
                       Update
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               );
             })

@@ -23,7 +23,7 @@ import useMapComponent from "@/hooks/useMapComponent";
 
 export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const roleComponentMapper = {
-    SuperAdmin: () => <AdminUI trucks={trucks} />,
+    SuperAdmin: () => <AdminUI trucks={trucks || null} />,
     Admin: () => <AdminUI trucks={trucks} />,
     Staff: () => <StaffUI />,
     Driver: () => undefined,

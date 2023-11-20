@@ -17,19 +17,13 @@ async function handler(
         if (verifiedToken && typeof verifiedToken === "object") {
           roles = verifiedToken.roles;
         }
-        // console.log(roles);
-        // const roleMapping = {
-        //   SuperAdmin: () => console.log("do something"),
-        //   Admin: () => console.log("do something"),
-        // };
 
-        // const roleToMap = roleMapping[roles];
         let trucks;
         if (roles === "SuperAdmin" || "Admin") {
           trucks = await prisma.trucks.findMany({
-            where: {
-              status: "Available",
-            },
+            // where: {
+            //   capacity: 2000,
+            // },
             // include: {
             //   records: {
             //     select: {

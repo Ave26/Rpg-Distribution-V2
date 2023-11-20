@@ -9,6 +9,8 @@ import {
   assignedProducts as TAssignedProducts,
   products as TProducts,
 } from "@prisma/client";
+import makeOrder from "@/pages/api/outbound/make-order";
+import update from "@/pages/api/product/update";
 
 type TOrderedProducts = orderedProducts & {
   assignedProducts: TAssignedProducts[];
@@ -72,6 +74,8 @@ export async function create_order(
 ) {
   const { clientName, destination, truck: truckName } = formData;
   try {
+    let record;
+
     const { date: dateCreated } = setTime();
     const user = await prisma.users.findUnique({
       where: {
@@ -83,38 +87,89 @@ export async function create_order(
     });
 
     const omittedProductEntry = productEntry.map((entry) => {
-      const { expiryDate, price, productName, sku, ...rest } = entry;
+      const { expiryDate, price, productName, skuCode, weight, ...rest } =
+        entry;
       return rest;
     });
 
-    const record = await prisma.records.create({
-      data: {
-        clientName,
-        destination,
-        username: String(user?.username),
-        dateCreated,
-        truckName,
-
-        orderedProducts: {
-          createMany: {
-            data: omittedProductEntry,
-          },
-        },
-      },
-      include: {
-        orderedProducts: {
-          include: {
-            assignedProducts: true,
-          },
-        },
+    const poo = await prisma.purchaseOrderOutBound.findUnique({
+      where: {
+        poId: formData.purchaseOrderOutbound,
       },
     });
 
-    const name = record?.truckName;
+    // creation of records and poo
+    if (poo) {
+      const highest = await prisma.records.findFirst({
+        where: {
+          poId: poo.poId,
+        },
+        orderBy: {
+          batchNumber: "desc", // Order by batchNumber in descending order
+        },
+        take: 1, // Take only the first result (with the highest batchNumber)
+      });
+      console.log("Record Created");
+
+      record = await prisma.records.create({
+        data: {
+          clientName,
+          destination,
+          username: String(user?.username),
+          dateCreated,
+          truckName,
+          batchNumber: Number(highest?.batchNumber) + 1,
+          poId: poo.poId,
+          orderedProducts: {
+            createMany: {
+              data: omittedProductEntry,
+            },
+          },
+        },
+        include: {
+          orderedProducts: {
+            include: {
+              assignedProducts: true,
+            },
+          },
+        },
+      });
+    } else {
+      console.log("Record And POO Created");
+      const newPOO = await prisma.purchaseOrderOutBound.create({
+        data: {
+          poId: formData.purchaseOrderOutbound,
+        },
+      });
+
+      record = await prisma.records.create({
+        data: {
+          clientName,
+          destination,
+          username: String(user?.username),
+          dateCreated,
+          truckName,
+          poId: newPOO.poId,
+
+          orderedProducts: {
+            createMany: {
+              data: omittedProductEntry,
+            },
+          },
+        },
+        include: {
+          orderedProducts: {
+            include: {
+              assignedProducts: true,
+            },
+          },
+        },
+      });
+    }
 
     const connectTrucks = await prisma.trucks.update({
       where: {
-        name: String(name),
+        name: String(truckName),
       },
       data: {
         records: {
@@ -130,6 +185,27 @@ export async function create_order(
 
     console.log(connectTrucks);
 
+    const updateTruckCargo = await prisma.trucks.update({
+      where: {
+        name: formData.truck,
+      },
+      data: {
+        capacity: formData.truckCargo,
+      },
+    });
+
+    if (updateTruckCargo.capacity === 0) {
+      await prisma.trucks.update({
+        where: {
+          name: updateTruckCargo.name,
+        },
+        data: {
+          status: "Loaded",
+        },
+      });
+    }
+
+    console.log(`the ${updateTruckCargo.name} cargo has been updated`);
     await update_product_status(record);
     return { record };
   } catch (error) {

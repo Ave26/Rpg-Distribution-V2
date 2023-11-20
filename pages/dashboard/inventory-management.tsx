@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import Loading from "@/components/Parts/Loading";
+import DashboardLayout from "@/components/Admin/dashboardLayout";
 
 interface PROD {
   id: string;
@@ -119,3 +120,11 @@ export default function InventoryManageMent() {
     </Layout>
   );
 }
+
+InventoryManageMent.getLayout = (page: ReactElement) => {
+  return (
+    <Layout>
+      <DashboardLayout>{page}</DashboardLayout>
+    </Layout>
+  );
+};

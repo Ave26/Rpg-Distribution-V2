@@ -3,7 +3,8 @@ interface EntriesTypes {
   productName: string;
   barcodeId: string;
   expiryDate: date;
-  sku: string;
+  skuCode: string;
+  weight: number;
   price: number;
   binIdsEntries: string[];
 }

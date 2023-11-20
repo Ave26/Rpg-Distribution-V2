@@ -27,6 +27,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { path: "/dashboard/pallete-location", label: "Pallete Location" },
     { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
     { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+    { path: "/dashboard/inventory-management", label: "Manage Inventory" },
     { path: "/dashboard/acc-management", label: "Manage Account" },
   ];
 

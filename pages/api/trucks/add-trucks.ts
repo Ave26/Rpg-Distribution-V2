@@ -9,6 +9,7 @@ async function handler(
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
+  const { capacity, routeCluster } = req.body;
   try {
     switch (req.method) {
       case "POST":
@@ -19,6 +20,8 @@ async function handler(
         await prisma.trucks.create({
           data: {
             name: `truck#${newName}`,
+            capacity,
+            routeCluster,
           },
         });
         const updatedTrucks = await prisma.trucks.findMany({});

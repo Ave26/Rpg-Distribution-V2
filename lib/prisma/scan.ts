@@ -1,128 +1,7 @@
+import { assignedProducts, bins, Category } from "@prisma/client";
 import prisma from ".";
-import {
-  bins,
-  products,
-  assignedProducts,
-  ProductQuality,
-} from "@prisma/client";
 
-export async function scanBarcode(
-  barcodeId: string,
-  purchaseOrder: string,
-  boxSize: string,
-  expirationDate: Date,
-  quality: ProductQuality,
-  quantity: number
-) {
-  try {
-    const product = await prisma.products.findUnique({
-      where: {
-        barcodeId,
-      },
-    });
-
-    if (!product) {
-      return { message: "Product Not found" };
-    } else {
-      if (quality === "Good") {
-        const categories = await prisma.categories.findFirst({
-          where: {
-            category: product?.category,
-          },
-        });
-        console.log({ model: "Category Model", categories });
-        const racks = await prisma.racks.findFirst({
-          where: {
-            categoriesId: categories?.id,
-          },
-        });
-
-        const bins = await prisma.bins.findMany({
-          where: {
-            racksId: racks?.id,
-          },
-          include: {
-            assignedProducts: true,
-          },
-        });
-
-        for (const bin of bins) {
-          const { dateReceive } = setTime();
-
-          let { availableBin } = await setMethod(
-            String(categories?.category),
-            bin,
-            product,
-            expirationDate,
-            dateReceive
-          );
-
-          const newData = {
-            productId: product?.id,
-            binId: String(availableBin?.id),
-            quality,
-            boxSize,
-            dateReceive,
-            purchaseOrder,
-            expirationDate,
-          };
-
-          if (availableBin) {
-            if (!quantity || quantity === 0) {
-              await prisma.assignedProducts.create({
-                data: newData,
-              });
-            } else {
-              let multipleAssignedProduct = [];
-              for (let i = 0; i < quantity; i++) {
-                multipleAssignedProduct.push(newData);
-              }
-              await prisma.assignedProducts.createMany({
-                data: multipleAssignedProduct,
-              });
-            }
-
-            const TotalAssignedProduct = await prisma.assignedProducts.count({
-              where: {
-                binId: bin?.id,
-                status: "Default" || "Queuing",
-              },
-            });
-
-            const capacity = Number(bin?.capacity);
-            const binId = bin?.id;
-
-            if (TotalAssignedProduct >= capacity) {
-              await prisma.bins.update({
-                where: {
-                  id: binId,
-                },
-                data: {
-                  isAvailable: false,
-                },
-              });
-            }
-
-            const row = availableBin?.row;
-            const shelfLevel = availableBin?.shelfLevel;
-
-            return {
-              message: `Product Added ${TotalAssignedProduct}`,
-              TotalAssignedProduct,
-              capacity,
-              row,
-              shelfLevel,
-            };
-          }
-        }
-      }
-    }
-  } catch (error) {
-    return { error };
-  }
-}
-
-function setTime() {
+function setTime(value: Date | string | null) {
   let dateReceive = new Date();
 
   // Set the time component to zero
@@ -138,34 +17,175 @@ function setTime() {
     day: "2-digit",
   });
 
-  return { dateReceive };
+  const expiry = `${value}T00:00:00.000Z`;
+
+  return { dateReceive, expiry };
+}
+
+type TAssignedProducts = Omit<
+  assignedProducts,
+  | "id"
+  | "dateReceive"
+  | "binId"
+  | "orderedProductsId"
+  | "ordersId"
+  | "truckName"
+  | "productId"
+  | "damageBinId"
+  | "usersId"
+>;
+
+export async function scan_barcode(
+  assignedProduct: TAssignedProducts,
+  quantity: number
+) {
+  try {
+    const {
+      barcodeId,
+      boxSize,
+      expirationDate,
+      purchaseOrder,
+      quality,
+      skuCode,
+      status,
+    } = assignedProduct;
+
+    const product = await prisma.products.findUnique({
+      where: {
+        barcodeId,
+      },
+      include: {
+        sku: {
+          where: {
+            code: skuCode,
+          },
+        },
+      },
+    });
+    const category = await prisma.categories.findUnique({
+      where: {
+        category: product?.category,
+      },
+    });
+    const bins = await prisma.bins.findMany({
+      where: {
+        racks: {
+          categoriesId: category?.id,
+        },
+      },
+      include: {
+        racks: true,
+      },
+    });
+    let scanData: object | null = null;
+    console.log(quantity);
+    for (let bin of bins) {
+      const { dateReceive, expiry } = setTime(expirationDate);
+      const { availableBin } = await setMethod(
+        String(category?.category),
+        bin.id,
+        assignedProduct,
+        dateReceive
+      );
+
+      const newData = {
+        boxSize,
+        dateReceive,
+        purchaseOrder,
+        expirationDate: expiry,
+        status,
+        quality,
+        barcodeId,
+        skuCode,
+        binId: String(availableBin?.id),
+      };
+
+      if (availableBin) {
+        if (!quantity || quantity === 0) {
+          await prisma.assignedProducts.create({
+            data: newData,
+          });
+        } else {
+          let multipleAssignedProduct = [];
+          for (let i = 0; i < quantity; i++) {
+            multipleAssignedProduct.push(newData);
+          }
+          await prisma.assignedProducts.createMany({
+            data: multipleAssignedProduct,
+          });
+        }
+
+        const TotalAssignedProduct = await prisma.assignedProducts.count({
+          where: {
+            binId: bin?.id,
+            status: "Default" || "Queuing",
+          },
+        });
+
+        const capacity = Number(bin?.capacity);
+        const binId = bin?.id;
+        const rackName = bin.racks?.name;
+        if (TotalAssignedProduct >= capacity) {
+          await prisma.bins.update({
+            where: {
+              id: binId,
+            },
+            data: {
+              isAvailable: false,
+            },
+          });
+        }
+
+        const row = availableBin?.row;
+        const shelfLevel = availableBin?.shelfLevel;
+
+        scanData = {
+          message: `Product Added ${TotalAssignedProduct}`,
+          TotalAssignedProduct,
+          capacity,
+          row,
+          shelfLevel,
+          rackName,
+        };
+        console.log(scanData);
+        if (bin.capacity >= TotalAssignedProduct) {
+          break;
+        }
+      }
+    }
+
+    return { scanData };
+  } catch (error) {
+    return { error };
+  }
 }
 
 async function setMethod(
   category: string,
-  bin: bins,
-  product: products,
-  expirationDate: Date,
+  binId: string,
+  assignedProduct: TAssignedProducts,
   dateReceive: Date
 ) {
-  let availableBin;
-  console.log(category);
-  switch (category) {
+  let availableBin: bins | null = null;
+  switch (category as Category) {
     case "Food":
     case "Cosmetics":
       console.log("FEFO Method");
-
+      const { expiry } = setTime(assignedProduct.expirationDate);
       availableBin = await prisma.bins.findFirst({
         where: {
-          id: bin?.id,
+          id: binId,
           isAvailable: true,
           assignedProducts: {
             every: {
-              productId: {
-                equals: product?.id,
+              barcodeId: {
+                equals: assignedProduct.barcodeId,
+              },
+              skuCode: {
+                equals: assignedProduct.skuCode,
               },
               expirationDate: {
-                equals: expirationDate,
+                equals: expiry,
               },
             },
           },
@@ -180,12 +200,15 @@ async function setMethod(
 
       availableBin = await prisma.bins.findFirst({
         where: {
-          id: bin?.id,
+          id: binId,
           isAvailable: true,
           assignedProducts: {
             every: {
-              productId: {
-                equals: product?.id,
+              barcodeId: {
+                equals: assignedProduct.barcodeId,
+              },
+              skuCode: {
+                equals: assignedProduct.skuCode,
               },
               dateReceive: {
                 equals: dateReceive,
@@ -194,12 +217,15 @@ async function setMethod(
           },
         },
       });
-
       break;
-
     default:
-      console.log("No Categories Found");
+      console.log("There is no available bin");
       break;
   }
+  console.log(availableBin);
   return { availableBin };
 }
+
+/* 
+  IT INSERTS MULTIPLE DATA 
+*/
