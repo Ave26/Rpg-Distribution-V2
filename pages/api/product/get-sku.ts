@@ -10,6 +10,7 @@ export async function handler(
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { barcodeId } = req.body;
+  console.log(barcodeId);
   switch (req.method) {
     case "POST":
       try {
@@ -20,6 +21,7 @@ export async function handler(
             },
           },
         });
+
         // const sku = stockKeepingUnit.map((sku) => sku.code);
         // const bId = stockKeepingUnit.map((data) => data.barcodeId);
         console.log(stockKeepingUnit);

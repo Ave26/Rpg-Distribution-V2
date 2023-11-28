@@ -10,13 +10,7 @@ import DashboardLayout from "@/components/Admin/dashboardLayout";
 import Head from "next/head";
 import { products, stockKeepingUnit, Category } from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
-
-type TOmitProducts = Omit<products, "id" | "supplyLevelStatus">;
-type TOmitSKU = Omit<stockKeepingUnit, "id" | "productsId" | "barcodeId">;
-
-type TProducts = TOmitProducts & {
-  sku: TOmitSKU;
-};
+import { TProducts } from "@/types/productTypes";
 
 type TToast = {
   message: string;
@@ -270,6 +264,7 @@ export default function AddNewProduct() {
     price: 0,
     productName: "",
     sku: {
+      threshold: 0,
       code: "",
       color: "",
       weight: 0,
@@ -310,19 +305,20 @@ export default function AddNewProduct() {
           isShow: true,
         });
 
-        data.ok &&
-          setNewProduct({
-            barcodeId: "",
-            category: "Food",
-            image: "",
-            price: 0,
-            productName: "",
-            sku: {
-              code: "",
-              color: "",
-              weight: 0,
-            },
-          });
+        setNewProduct({
+          barcodeId: "",
+          category: "Food",
+          image: "",
+          price: 0,
+          productName: "",
+
+          sku: {
+            threshold: 0,
+            code: "",
+            color: "",
+            weight: 0,
+          },
+        });
       })
       .catch((error) =>
         setToastData({
@@ -386,16 +382,17 @@ export default function AddNewProduct() {
   const inputStyle =
     "block w-full appearance-none rounded border border-gray-200 bg-gray-200 px-4 py-3 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none";
   const labelStyle =
-    "mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700";
+    "mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700 w-[10em] p-2";
 
-  const spanStyle = "flex items-start w-full h-full justify-between";
+  const spanStyle =
+    "flex items-center flex-row w-full h-full justify-center gap-2";
 
   return (
-    <section className="text-md h-full w-full font-semibold transition-all">
+    <section className="text-md h-full w-full  font-semibold transition-all">
       <form
         onSubmit={submitProduct}
         className="flex flex-wrap items-center justify-start gap-2">
-        <div className="flex w-full flex-col items-start justify-center gap-2  border border-black p-2 md:w-[25em]">
+        <div className="flex w-full flex-col items-start justify-center gap-3 whitespace-nowrap border border-black p-2 md:w-[35em]">
           <span className={spanStyle}>
             <label htmlFor="barcodeId" className={labelStyle}>
               Barcode Id
@@ -491,9 +488,23 @@ export default function AddNewProduct() {
               onChange={handleChange}
             />
           </span>
+          <span className={spanStyle}>
+            <label htmlFor="threshold" className={labelStyle}>
+              Threshold
+            </label>
+            <input
+              id="threshold"
+              min={0}
+              className={inputStyle}
+              value={newProduct.sku.threshold as number}
+              name="threshold"
+              type="number"
+              onChange={handleChange}
+            />
+          </span>
         </div>
 
-        <div className="flex h-80 w-full flex-wrap items-center justify-center overflow-y-scroll border border-black md:w-[30em]">
+        <div className="flex h-full w-full flex-wrap items-center justify-center overflow-y-scroll border border-black md:w-[30em]">
           <input
             type="file"
             ref={fileInputRef}
@@ -502,7 +513,7 @@ export default function AddNewProduct() {
             onChange={handleChange}
             className="w-full break-all font-bold"
           />
-          <div className="flex h-full w-full items-center justify-center">
+          <div className="flex h-[27.3em] w-full items-center justify-center">
             <Image
               priority
               src={newProduct.image || noImg}

@@ -59,7 +59,7 @@ export async function handler(
           },
         });
 
-        return res.status(200).json({ scanData, image: product?.image });
+        return res.status(200).json({ scanData });
       } catch (error) {
         return res.json(error);
       }

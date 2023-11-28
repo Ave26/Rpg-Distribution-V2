@@ -9,6 +9,12 @@ interface EntriesTypes {
   binIdsEntries: string[];
 }
 
+// update
+// type binIdsEntries = {
+//   binId: "374573",
+//   assignedProductIds: [y]
+// }
+
 type SetEntriesTypes = React.Dispatch<
   React.SetStateAction<EntriesTypes[] | null>
 >;

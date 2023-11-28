@@ -22,6 +22,7 @@ export const setTime = () => {
 
   const formattedDate = `${year}-${month}-${day}`;
   const newDate = formattedDate.toString().split("T")[0];
+
   return { date, newDate };
 };
 

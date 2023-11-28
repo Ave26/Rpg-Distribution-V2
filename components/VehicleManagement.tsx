@@ -6,6 +6,7 @@ import {
   orderedProducts,
   assignedProducts,
   products,
+  bins,
 } from "@prisma/client";
 import useSWR from "swr";
 
@@ -21,6 +22,11 @@ type TOmitRecord = Omit<
 
 type TTrucks = TOmitTrucks & {
   records: TOmitRecord[];
+};
+
+type TData = {
+  trucks: TTrucks[];
+  bins: bins[];
 };
 
 type TCargo = {
@@ -64,17 +70,19 @@ export default function VehicleManagement() {
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const data: TTrucks[] = await response.json();
+
+    const data: TData = await response.json();
+
     return data;
   };
 
-  const {
-    data: trucks,
-    isLoading,
-    mutate,
-  } = useSWR("/api/trucks/find-trucks-admin", fetcher, {
-    refreshInterval: 1200,
-  });
+  const { data, isLoading, mutate } = useSWR(
+    "/api/trucks/find-trucks-admin",
+    fetcher,
+    {
+      refreshInterval: 1200,
+    }
+  );
 
   async function addTrucks() {
     setAddTruckOnLoad(true);
@@ -121,7 +129,7 @@ export default function VehicleManagement() {
           </button>
         )}
         <h1 className="flex items-center justify-center border p-2">
-          +{Number(trucks?.length)}
+          +{Number(data?.trucks?.length)}
         </h1>
 
         {/* <input name={} value={}/> */}
@@ -131,8 +139,8 @@ export default function VehicleManagement() {
         className={`relative overflow-hidden ${
           isCargoOpen.animate || "overflow-y-scroll"
         } flex h-80 w-full flex-wrap gap-4 border border-black bg-slate-400`}>
-        {trucks
-          ? trucks?.map((truck: TTrucks) => {
+        {data
+          ? data.trucks?.map((truck: TTrucks) => {
               return (
                 <div
                   key={truck.id}
@@ -141,7 +149,17 @@ export default function VehicleManagement() {
                     <h1>{truck.name}</h1>
                     <h1>{truck.status}</h1>
                   </div>
-                  {/* <div className="W-full flex items-center justify-center ">
+                  <div>
+                    {data?.bins.map((bin) => {
+                      return (
+                        <>
+                          {bin.row} - {bin.shelfLevel}
+                        </>
+                      );
+                    })}
+                  </div>
+
+                  <div className="W-full flex items-center justify-center ">
                     <button
                       onClick={async () => {
                         setIsCargoOpen({
@@ -156,6 +174,8 @@ export default function VehicleManagement() {
                           status: truck.status,
                           records: truck.records.map((record) => ({
                             id: record.id,
+                            batchNumber: record.batchNumber,
+                            poId: record.poId,
                           })),
                           routeClusterId: "",
                         });
@@ -167,20 +187,20 @@ export default function VehicleManagement() {
                       onClick={async () => {
                         setIsOpen(true);
 
-                        setTruckData({
-                          id: truck.id,
-                          name: truck.name,
-                          status: truck.status,
-                          records: truck.records.map((record) => ({
-                            id: record.id,
-                          })),
-                          routeClusterId: "",
-                        });
+                        // setTruckData({
+                        //   id: truck.id,
+                        //   name: truck.name,
+                        //   status: truck.status,
+                        //   records: truck.records.map((record) => ({
+                        //     id: record.id,
+                        //   })),
+                        //   routeClusterId: "",
+                        // });
                       }}
                       className="h-fit w-fit rounded-lg border bg-slate-600/30 p-2">
                       Update
                     </button>
-                  </div> */}
+                  </div>
                 </div>
               );
             })

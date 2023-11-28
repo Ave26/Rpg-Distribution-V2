@@ -3,7 +3,7 @@ import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { trucks } from "@prisma/client";
-type TRoles = "SuperAdmin" | "Admin" | undefined;
+type TRoles = "SuperAdmin" | "Admin" | "Staff" | "Driver" | undefined;
 
 async function handler(
   req: NextApiRequest,
@@ -25,7 +25,8 @@ async function handler(
 
         // const roleToMap = roleMapping[roles];
         let trucks;
-        if (roles === "SuperAdmin" || "Admin") {
+        if (roles === "SuperAdmin" || roles === "Admin") {
+          console.log("admin executed");
           trucks = await prisma.trucks.findMany({
             where: {
               status: "Available",
@@ -54,8 +55,37 @@ async function handler(
               },
             },
           });
+        } else if (roles === "Staff") {
+          console.log("staff executed");
+          trucks = await prisma.trucks.findMany({
+            include: {
+              records: {
+                where: {
+                  orderedProducts: {
+                    some: {
+                      assignedProducts: {
+                        some: {
+                          status: "Queuing",
+                        },
+                      },
+                    },
+                  },
+                },
+                include: {
+                  orderedProducts: {
+                    include: {
+                      assignedProducts: {
+                        where: {
+                          status: "Queuing",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
         }
-
         return res.status(200).json(trucks);
 
       default:

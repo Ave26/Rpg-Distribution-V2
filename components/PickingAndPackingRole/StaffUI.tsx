@@ -1,7 +1,24 @@
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import Toast from "../Parts/Toast";
-import { TRecords } from "@/types/recordsTypes";
+import {
+  trucks,
+  records,
+  assignedProducts,
+  orderedProducts,
+} from "@prisma/client";
+
+type TTrucks = trucks & {
+  records: TRecords[];
+};
+
+type TRecords = records & {
+  orderedProducts: TOrderedProducts[];
+};
+
+type TOrderedProducts = orderedProducts & {
+  assignedProducts: assignedProducts[];
+};
 
 type TToastData = {
   message: string;
@@ -19,22 +36,29 @@ const fetcher = async (url: string) => {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const data: TRecords[] = await response.json();
-  console.log(data);
-
-  for (let dt of data) {
-    const orderedProducts = dt.orderedProducts;
-    for (let ordered of orderedProducts) {
-      console.log(ordered.totalQuantity);
-    }
-  }
+  const data: TTrucks[] = await response.json();
 
   return data;
 };
+
+type TAnimate = {
+  id: string;
+  show: boolean;
+  style: "max-h-20" | "max-h-0";
+};
+
 type TLoadingStates = Record<string, boolean>;
 
 export default function StaffUI() {
-  const [loadingStates, setLoadingStates] = useState<TLoadingStates>({});
+  const [selected, setSelected] = useState<string[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<string>("");
+  console.log(selectedRecord);
+  const [isBtnOpen, setIsBtnOpen] = useState(false);
+  const [animate, setAnimate] = useState<TAnimate>({
+    id: "",
+    show: false,
+    style: "max-h-0",
+  });
   const [toastData, setToastData] = useState<TToastData>({
     message: "",
     show: false,
@@ -49,155 +73,161 @@ export default function StaffUI() {
     }, 2000);
     return () => clearTimeout(timer);
   }, [toastData.show]);
+  // /api/outbound/get-order
 
   const {
-    data: orders,
+    data: trucks,
     isLoading,
     error,
     mutate,
-  } = useSWR("/api/outbound/get-order", fetcher, {
+  } = useSWR("/api/trucks/find-trucks", fetcher, {
     refreshInterval: 1500,
   });
 
-  if (isLoading || error || !orders) {
+  if (isLoading || error || !trucks) {
     return (
-      <section className="h-screen w-full">
+      <section className="flex h-screen w-full items-center justify-center">
         <h1>Loading...</h1>
       </section>
     );
   }
 
-  const h1Style = "h-fit w-full border border-black p-2";
+  const buttonStyle =
+    "rounded-sm bg-sky-300/40 p-2 shadow-md hover:bg-sky-300/10 active:bg-sky-300 uppercase text-xs font-bold";
 
   return (
-    <section className="h-[20em] w-full overflow-y-scroll border border-black md:h-screen">
+    <section className="flex h-[20em] w-full flex-col overflow-y-scroll whitespace-nowrap p-2 text-sm font-medium uppercase md:h-screen">
       <h1 className="p-5 text-xl font-bold">LIST OF ORDERS</h1>
-
-      <div className="flex h-fit w-full flex-wrap items-start justify-start gap-2 overflow-y-scroll p-2 px-5 font-semibold hover:overflow-y-scroll">
-        {orders.length >= 0 ? (
-          orders?.map((order) => {
-            const isButtonLoading = loadingStates[order.id];
-
+      <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col">
+          {trucks?.map((truck) => {
             return (
-              <div
-                key={order.id}
-                className="relative flex h-1/2 w-full flex-wrap  border border-black p-2 transition-all md:w-80">
-                <h1 className={h1Style}>
-                  {order.truckName} {order.id}
-                </h1>
-                <h1 className={h1Style}>
-                  {order?.author.username || "unknown"}
-                </h1>
-                <h1 className={h1Style}>{order.clientName}</h1>
-                <h1 className={h1Style}>{String(order.dateCreated)}</h1>
-                <h1 className={h1Style}>
-                  Truck Capacity: {String(order.trucks.capacity)}
-                </h1>
-
-                <h1 className={h1Style}>
-                  Purchase Order: {order.poId} batch#{order.batchNumber}
-                </h1>
-
-                <select className={h1Style}>
-                  {order?.orderedProducts?.map((orderedProduct, index) => {
+              <div key={truck.id} className="flex flex-col">
+                <div
+                  className="flex w-[54em] select-none flex-row items-center justify-between gap-4 rounded-md border border-black p-3"
+                  onClick={() => {
+                    if (selected.includes(truck.id)) {
+                      setSelected(selected.filter((i) => i !== truck.id));
+                    } else {
+                      setSelected([...selected, truck.id]);
+                    }
+                  }}>
+                  <div className="flex flex-row items-center justify-between gap-2">
+                    <h1>
+                      <strong className="text-sm">Truck Name:</strong>{" "}
+                      {truck.name}
+                    </h1>
+                    <h1>Capacity: {truck.capacity}</h1>
+                  </div>
+                  <h1>{truck.records.length}</h1>
+                </div>
+                <div
+                  className={`mb-2 flex w-[54em] ${
+                    selected.find((i) => i === truck.id)
+                      ? "h-[10em] overflow-y-scroll py-2"
+                      : "max-h-0 overflow-hidden"
+                  } flex-col items-center justify-start gap-[2px] rounded-sm border border-transparent transition-all`}>
+                  {truck?.records?.map((record) => {
                     return (
-                      <option
-                        key={index}
-                        value={orderedProduct.products.productName}>
-                        {`Name: ${orderedProduct.products.productName}, Price: ${orderedProduct.products.price}, Total: ${orderedProduct.totalQuantity}`}
-                      </option>
+                      <div
+                        key={record.id}
+                        className="flex w-full flex-row items-center justify-between rounded-md border border-slate-500/30 p-2">
+                        <div className="flex w-[38em] flex-row items-start justify-between gap-2 p-2">
+                          <h1>
+                            <strong>Batch Number : </strong>{" "}
+                            {record.batchNumber}
+                          </h1>
+                          <h1 className="flex flex-col">
+                            <strong>Purchase Order : </strong> {record.poId}
+                          </h1>
+                          <div>
+                            <strong>Product Status:</strong>
+                            {record.orderedProducts.map(
+                              (orderedProducts) =>
+                                orderedProducts.assignedProducts.map(
+                                  (assignedProduct) => (
+                                    <h1
+                                      className="text-xs"
+                                      key={assignedProduct.id}>
+                                      {assignedProduct.status} -{" "}
+                                      {assignedProduct.skuCode}
+                                    </h1>
+                                  )
+                                )[0]
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            className={buttonStyle}
+                            onClick={() => {
+                              console.log(record.id);
+                            }}>
+                            View Details
+                          </button>
+                          {isBtnOpen && selectedRecord === record.id && (
+                            <div className="flex gap-[2px]">
+                              <button
+                                className={buttonStyle}
+                                onClick={() => setIsBtnOpen(false)}>
+                                Cancel
+                              </button>
+                              <button
+                                className={buttonStyle}
+                                onClick={() => {
+                                  fetch("/api/outbound/update-order", {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                      orderId: record?.id,
+                                    }),
+                                  })
+                                    .then((response) => response.json())
+                                    .then((data) => {
+                                      setToastData({
+                                        ...toastData,
+                                        message: data.message,
+                                        show: true,
+                                      });
+                                      mutate();
+                                    })
+                                    .catch((e) => console.log(e));
+                                }}>
+                                Confirm
+                              </button>
+                            </div>
+                          )}
+
+                          {(isBtnOpen && selectedRecord === record.id) || (
+                            <button
+                              className={buttonStyle}
+                              onClick={() => {
+                                setSelectedRecord(record.id);
+                                setIsBtnOpen(true);
+                              }}>
+                              load to truck
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     );
                   })}
-                </select>
-                <div className="relative flex w-full flex-row items-center justify-between border border-black px-4">
-                  {
-                    order?.orderedProducts?.map(
-                      (orderedProduct) =>
-                        orderedProduct.assignedProducts.map(
-                          (assignedProduct) => (
-                            <h1 key={assignedProduct.id}>
-                              Status: {assignedProduct.status}
-                            </h1>
-                          )
-                        )[0]
-                    )[0]
-                  }
-
-                  <button
-                    disabled={
-                      order.orderedProducts.every((orderedProducts) =>
-                        orderedProducts.assignedProducts.every(
-                          (assignedProduct) =>
-                            assignedProduct.status === "Loaded"
-                        )
-                      )
-                        ? true
-                        : false
-                    }
-                    className={`h-fit w-fit rounded-md border ${
-                      order.orderedProducts.every((orderedProducts) =>
-                        orderedProducts.assignedProducts.every(
-                          (assignedProduct) =>
-                            assignedProduct.status === "Loaded"
-                        )
-                      )
-                        ? "border-black/30"
-                        : "border-black hover:border-transparent hover:bg-slate-900 hover:text-white "
-                    }  p-2 text-xs font-bold transition-all `}
-                    key={order.clientName}
-                    id={order.id}
-                    onClick={() => {
-                      setLoadingStates({
-                        ...loadingStates,
-                        [order.id]: true,
-                      });
-
-                      fetch("/api/outbound/update-order", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ orderId: order?.id }),
-                      })
-                        .then((response) => response.json())
-                        .then((data) => {
-                          setToastData({
-                            ...toastData,
-                            message: data.message,
-                            show: true,
-                          });
-                          mutate();
-                        })
-                        .catch((e) => console.log(e))
-                        .finally(() => {
-                          setLoadingStates({
-                            ...loadingStates,
-                            [order.id]: false,
-                          });
-                        });
-                    }}>
-                    {isButtonLoading
-                      ? "loading..."
-                      : order.orderedProducts.every((orderedProducts) =>
-                          orderedProducts.assignedProducts.every(
-                            (assignedProduct) =>
-                              assignedProduct.status === "Loaded"
-                          )
-                        )
-                      ? "Loaded on truck"
-                      : "load to truck"}
-                  </button>
                 </div>
               </div>
             );
-          })
-        ) : (
-          <div className="flex h-fit w-full flex-wrap items-start justify-start gap-2 overflow-y-scroll p-2 px-5 font-semibold hover:overflow-y-scroll">
-            no data
-          </div>
-        )}
+          })}
+        </div>
+        <div>skwak</div>
       </div>
+
       <Toast data={toastData.message} isShow={toastData.show} />
     </section>
   );
 }
+
+/* 
+
+
+*/

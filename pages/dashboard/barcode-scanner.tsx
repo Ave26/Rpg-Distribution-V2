@@ -48,7 +48,6 @@ type TData = {
     shelfLevel: number;
     rackName: string;
   };
-  image: string;
 };
 
 export default function BarcodeScanner() {
@@ -56,6 +55,7 @@ export default function BarcodeScanner() {
     isShow: false,
     message: "",
   });
+  const [img, setImg] = useState("");
   const [data, setData] = useState<TData>({
     scanData: {
       capacity: 0,
@@ -65,7 +65,6 @@ export default function BarcodeScanner() {
       TotalAssignedProduct: 0,
       rackName: "",
     },
-    image: "",
   });
   const [quantity, setQuantity] = useState<number>(0);
   const [isManual, setIsManual] = useState(false);
@@ -124,6 +123,7 @@ export default function BarcodeScanner() {
           };
         });
       } else if (value.length === 14) {
+        getProductImage(value);
         if (SKUCode.sku.some((v) => v.barcodeId !== value)) {
           setSKUCode({
             ...SKUCode,
@@ -199,10 +199,9 @@ export default function BarcodeScanner() {
     })
       .then((res) => res.json())
       .then((data: TData) => {
-        const { scanData, image } = data;
+        const { scanData } = data;
         setData({
           scanData,
-          image,
         });
 
         setToastData({
@@ -216,6 +215,22 @@ export default function BarcodeScanner() {
         setScanning(false);
         setIsLoading(false);
       });
+  }
+
+  function getProductImage(barcodeId: string) {
+    console.log("finding ProductImage");
+    fetch("/api/product/get-image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        barcodeId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((image) => setImg(image))
+      .catch((error) => error);
   }
 
   useEffect(() => {
@@ -268,8 +283,8 @@ export default function BarcodeScanner() {
 
         <span className={inputStyle}>
           <span>
-            Bin: {data.scanData.rackName}
-            {data.scanData.row}-{data.scanData.shelfLevel}
+            Bin: {data.scanData?.rackName}
+            {data?.scanData?.row}-{data?.scanData?.shelfLevel}
           </span>
         </span>
 
@@ -377,7 +392,7 @@ export default function BarcodeScanner() {
           </span>
         </span>
       </div>
-      <div className="md:[20em] flex flex-grow items-center justify-center border border-black p-2 md:w-1/2">
+      <div className="md:[20em] flex flex-grow items-center justify-center p-2 md:w-1/2">
         {isLoading ? (
           <Loading />
         ) : (
@@ -385,7 +400,7 @@ export default function BarcodeScanner() {
             priority
             width={250}
             height={250}
-            src={data.image || noImage}
+            src={img || noImage}
             alt={"Product Image"}
             className="h-1/2 w-1/2 object-fill"
           />

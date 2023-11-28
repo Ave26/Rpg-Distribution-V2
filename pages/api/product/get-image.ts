@@ -1,27 +1,27 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
-import { update_order } from "@/lib/prisma/order";
 
-type TBody = {
-  orderId: string;
-};
+import prisma from "@/lib/prisma";
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  const { orderId }: TBody = req.body;
+  const { barcodeId } = req.body;
   switch (req.method) {
     case "POST":
       try {
-        await update_order(orderId);
-        return res.status(200).json({
-          message: "Loaded On Truck",
+        const product = await prisma.products.findUnique({
+          where: {
+            barcodeId,
+          },
         });
+
+        return res.status(200).json(product?.image);
       } catch (error) {
-        return console.log(error);
+        return res.json(error);
       }
     default:
       break;

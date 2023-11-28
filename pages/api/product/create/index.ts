@@ -5,13 +5,7 @@ import { authMiddleware } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { products, stockKeepingUnit } from "@prisma/client";
 import prisma from "@/lib/prisma";
-
-type TOmitProducts = Omit<products, "id" | "supplyLevelStatus">;
-type TOmitSKU = Omit<stockKeepingUnit, "id" | "productsId">;
-
-type TProducts = TOmitProducts & {
-  sku: TOmitSKU;
-};
+import { TProducts } from "@/types/productTypes";
 
 type TReqBody = {
   newProduct: TProducts;
@@ -23,15 +17,15 @@ async function handler(
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { newProduct }: TReqBody = req.body;
-  console.log(newProduct);
   const {
     barcodeId,
     category,
     image,
     price,
     productName,
-    sku: { code, color, weight },
+    sku: { code, color, weight, threshold },
   } = newProduct;
+  const th = Number(threshold);
 
   try {
     if (!Object.values(newProduct).every(Boolean)) {
@@ -73,6 +67,7 @@ async function handler(
         price,
         sku: {
           create: {
+            threshold: th,
             code,
             color,
             weight,

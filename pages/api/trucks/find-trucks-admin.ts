@@ -42,15 +42,47 @@ async function handler(
             // },
             include: {
               records: {
-                select: {
-                  id: true,
+                where: {
+                  orderedProducts: {
+                    some: {
+                      assignedProducts: {
+                        every: {
+                          status: "Loaded",
+                        },
+                      },
+                    },
+                  },
+                },
+                include: {
+                  orderedProducts: {
+                    include: {
+                      assignedProducts: true,
+                    },
+                  },
                 },
               },
             },
           });
         }
-
-        return res.status(200).json(trucks);
+        let bins;
+        if (trucks) {
+          for (let truck of trucks) {
+            for (let record of truck.records) {
+              for (let orderedProduct of record.orderedProducts) {
+                const binEntries = orderedProduct.binIdsEntries;
+                bins = await prisma.bins.findMany({
+                  where: {
+                    id: {
+                      in: binEntries,
+                    },
+                  },
+                });
+              }
+            }
+          }
+        }
+        console.log(bins);
+        return res.status(200).json({ trucks, bins });
 
       default:
         return res.send(`Method ${req.method} is not allowed`);

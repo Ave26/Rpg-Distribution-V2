@@ -1,6 +1,6 @@
 import { EntriesTypes } from "@/types/binEntries";
 import { TFormData } from "@/types/inputTypes";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { trucks as TTrucks } from "@prisma/client";
 import { Bin } from "@/types/inventory";
 import useSWR from "swr";
@@ -25,7 +25,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [isShow, setIsShow] = useState(false);
   const [isAnimate, setIsAnimate] = useState(false);
   const [purchaseOrders, setPurchaseOrders] = useState<string[]>([]);
-  // const [truckCapacity, setTruckCapacity] = useState<number | undefined>(0);
+  const [truckCapacity, setTruckCapacity] = useState<number>(0);
   const [formData, setFormData] = useState<TFormData>({
     barcodeId: "",
     truck: String(trucks[0]?.name),
@@ -40,6 +40,10 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   /* TODO
     CALCULATE THE ASSIGNEDPRODUCTS. FOR THE 
   */
+
+  const capacityRef = useRef<HTMLSelectElement | null>(null);
+
+  useEffect(() => {}, [capacityRef]);
 
   const fetchTrucks = (url: string) => {
     fetch(url)
@@ -261,9 +265,19 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
 
   //   doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
   // };
+  // console.log(trucks.find((truck) => truck.capacity === formData.truckCargo));
+
+  useEffect(() => {
+    console.log("truck capacity finding");
+    const truck = testTrucks?.find((truck) => {
+      return truck.name === formData.truck;
+    });
+    console.log(truck);
+    setTruckCapacity(truck?.capacity!);
+  }, [formData.truck, formData]);
 
   const inputStyle =
-    "select-none block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
+    "appearance-none select-none block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
   const buttonStyle =
     "rounded-lg border border-transparent bg-sky-200 p-2 transition-all hover:p-3 active:p-2";
   return (
@@ -272,8 +286,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
 
-      <div className="flex h-full w-full flex-col gap-2 overflow-y-auto p-2 md:h-screen  md:flex-row md:items-start md:justify-center md:p-4">
-        <div className="flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
+      <div className="flex h-full w-full flex-wrap gap-2 overflow-y-auto p-2 md:h-screen   md:items-start md:justify-start md:p-4">
+        <div className=" flex h-full w-full flex-col gap-2 md:h-fit md:max-w-fit md:justify-start">
           <Search
             formData={formData}
             setFormData={setFormData}
@@ -321,16 +335,10 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             className={inputStyle}>
             {testTrucks &&
               testTrucks?.map((truck: TTrucks) => {
-                // setTruckCapacity(Number(truck?.capacity));
-
-                return (
-                  <option key={truck?.id}>
-                    {truck.name} {truck.capacity} %
-                  </option>
-                );
+                return <option key={truck?.id}>{truck.name}</option>;
               })}
           </select>
-
+          <h1 className={inputStyle}>Truck Capacity {truckCapacity}</h1>
           <input
             disabled={isDisabled}
             type="text"
@@ -367,6 +375,17 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                       }),
                     })
                       .then((res) => {
+                        setFormData({
+                          barcodeId: "",
+                          truck: "",
+                          destination: "",
+                          clientName: "",
+                          productName: "",
+                          quantity: 0,
+                          purchaseOrderOutbound: "",
+                          truckCargo: Number(trucks[0].capacity),
+                        });
+
                         return res.json();
                       })
                       .then((data) => setOrderData(data.message))
@@ -375,16 +394,6 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                         setIsShow(true);
                         setHasLoading(false);
                         setProductEntry([]);
-
-                        // setFormData({
-                        //   barcodeId: "",
-                        //   truck: "",
-                        //   destination: "",
-                        //   clientName: "",
-                        //   productName: "",
-                        //   quantity: 0,
-                        //   purchaseOrderOutbound: "",
-                        // });
                       });
                   }}
                   className={buttonStyle}>
@@ -408,7 +417,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             <Loading />
           </div>
         ) : (
-          <div className="relative flex w-full flex-col items-center justify-center gap-2 transition-all">
+          <div className="relative flex h-full w-fit flex-col items-center justify-start transition-all">
             <BinsLayout
               bins={bins}
               // truckCapacity={truckCapacity}

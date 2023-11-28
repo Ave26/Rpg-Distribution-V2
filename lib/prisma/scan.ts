@@ -62,11 +62,13 @@ export async function scan_barcode(
         },
       },
     });
-    const category = await prisma.categories.findUnique({
+
+    const category = await prisma.categories.findFirst({
       where: {
         category: product?.category,
       },
     });
+
     const bins = await prisma.bins.findMany({
       where: {
         racks: {
@@ -77,8 +79,9 @@ export async function scan_barcode(
         racks: true,
       },
     });
+
     let scanData: object | null = null;
-    console.log(quantity);
+
     for (let bin of bins) {
       const { dateReceive, expiry } = setTime(expirationDate);
       const { availableBin } = await setMethod(
@@ -87,70 +90,73 @@ export async function scan_barcode(
         assignedProduct,
         dateReceive
       );
-
-      const newData = {
-        boxSize,
-        dateReceive,
-        purchaseOrder,
-        expirationDate: expiry,
-        status,
-        quality,
-        barcodeId,
-        skuCode,
-        binId: String(availableBin?.id),
-      };
-
-      if (availableBin) {
-        if (!quantity || quantity === 0) {
-          await prisma.assignedProducts.create({
-            data: newData,
-          });
-        } else {
-          let multipleAssignedProduct = [];
-          for (let i = 0; i < quantity; i++) {
-            multipleAssignedProduct.push(newData);
-          }
-          await prisma.assignedProducts.createMany({
-            data: multipleAssignedProduct,
-          });
-        }
-
-        const TotalAssignedProduct = await prisma.assignedProducts.count({
-          where: {
-            binId: bin?.id,
-            status: "Default" || "Queuing",
-          },
-        });
-
-        const capacity = Number(bin?.capacity);
-        const binId = bin?.id;
-        const rackName = bin.racks?.name;
-        if (TotalAssignedProduct >= capacity) {
-          await prisma.bins.update({
-            where: {
-              id: binId,
-            },
-            data: {
-              isAvailable: false,
-            },
-          });
-        }
-
-        const row = availableBin?.row;
-        const shelfLevel = availableBin?.shelfLevel;
-
-        scanData = {
-          message: `Product Added ${TotalAssignedProduct}`,
-          TotalAssignedProduct,
-          capacity,
-          row,
-          shelfLevel,
-          rackName,
+      if (quality === "Good") {
+        const newData = {
+          boxSize,
+          dateReceive,
+          purchaseOrder,
+          expirationDate: expiry,
+          status,
+          quality,
+          barcodeId,
+          skuCode,
+          binId: String(availableBin?.id),
         };
-        console.log(scanData);
-        if (bin.capacity >= TotalAssignedProduct) {
-          break;
+
+        if (availableBin) {
+          if (!quantity || quantity === 0) {
+            await prisma.assignedProducts.create({
+              data: newData,
+            });
+          } else {
+            let multipleAssignedProduct = [];
+            for (let i = 0; i < quantity; i++) {
+              multipleAssignedProduct.push(newData);
+            }
+            await prisma.assignedProducts.createMany({
+              data: multipleAssignedProduct,
+            });
+          }
+
+          const TotalAssignedProduct = await prisma.assignedProducts.count({
+            where: {
+              binId: bin?.id,
+              status: "Default" || "Queuing",
+            },
+          });
+
+          const capacity = Number(bin?.capacity);
+          const binId = bin?.id;
+          const rackName = bin.racks?.name;
+          if (TotalAssignedProduct >= capacity) {
+            await prisma.bins.update({
+              where: {
+                id: binId,
+              },
+              data: {
+                isAvailable: false,
+              },
+            });
+          }
+
+          const row = availableBin?.row;
+          const shelfLevel = availableBin?.shelfLevel;
+
+          scanData = {
+            message: `Product Added ${TotalAssignedProduct}`,
+            TotalAssignedProduct,
+            capacity,
+            row,
+            shelfLevel,
+            rackName,
+          };
+          console.log(scanData);
+          if (bin.capacity >= TotalAssignedProduct) {
+            break;
+          }
         }
+      } else {
+        console.log("Goes to Damage Bin");
       }
     }
 
@@ -172,6 +178,7 @@ async function setMethod(
     case "Cosmetics":
       console.log("FEFO Method");
       const { expiry } = setTime(assignedProduct.expirationDate);
+
       availableBin = await prisma.bins.findFirst({
         where: {
           id: binId,
@@ -191,6 +198,29 @@ async function setMethod(
           },
         },
       });
+
+      // availableBin = await prisma.bins.findFirst({
+      //   where: {
+      //     assignedProducts: {
+      //       some: {
+      //         status: {
+      //           equals: "Default",
+      //         },
+      //       },
+      //       every: {
+      //         barcodeId: {
+      //           equals: assignedProduct.barcodeId,
+      //         },
+      //         skuCode: {
+      //           equals: assignedProduct.skuCode,
+      //         },
+      //         expirationDate: {
+      //           equals: expiry,
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
 
       break;
     case "Laundry":

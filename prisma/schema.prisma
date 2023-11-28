@@ -51,6 +51,7 @@ model stockKeepingUnit {
   code             String            @unique
   weight           Int
   color            String
+  threshold        Int
   products         products?         @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId        String?           @unique
   assignedProducts assignedProducts?
@@ -63,6 +64,7 @@ model products {
   image             String?
   price             Float?
   productName       String             @unique
+  discontinued      Boolean?           @default(false)
   sku               stockKeepingUnit[]
   supplyLevelStatus SupplyLevelStatus?
   variations        variations[]
@@ -170,19 +172,11 @@ model orderedProducts {
 }
 
 model purchaseOrderOutBound {
-  id      String    @id @default(auto()) @map("_id") @db.ObjectId
-  poId    String    @unique
-  // batch   batch[]
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  poId String @unique
+
   records records[]
 }
-
-// model batch {
-//   id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
-//   batchNumber           Int                    @unique @default(1)
-//   records               records[]
-//   purchaseOrderOutBound purchaseOrderOutBound? @relation(fields: [poId], references: [poId])
-//   poId                  String?                @unique
-// }
 
 model records {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId

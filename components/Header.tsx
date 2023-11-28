@@ -66,7 +66,7 @@ export default function Header() {
         </div>
       </div>
       <nav
-        className={`lg:w-fiy flex h-full w-full select-none flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:flex-row lg:justify-end lg:p-4 ${
+        className={`flex h-full w-full select-none flex-col items-center justify-center gap-5 p-4 lg:not-sr-only lg:w-fit lg:flex-row lg:justify-end lg:p-4 ${
           isOpen
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"

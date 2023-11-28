@@ -84,7 +84,7 @@ export default function BinsLayout({
         truck,
         productName,
       } = formData;
-      if (!barcodeId || !quantity || !clientName || !destination || !truck) {
+      if (!barcodeId || !quantity || !clientName || !destination) {
         return setToast({
           isShow: true,
           message: "Incomplete Field",
@@ -325,7 +325,7 @@ export default function BinsLayout({
 
   return (
     <>
-      <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em] md:max-h-[25em] md:min-w-0 md:max-w-[45em]">
+      <div className="h-full w-full select-none overflow-y-auto rounded-t-md border md:h-[25em]">
         {isLoading ? (
           <>loading...</>
         ) : (

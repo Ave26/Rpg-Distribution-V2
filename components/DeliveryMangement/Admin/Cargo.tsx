@@ -105,6 +105,7 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
             className="sticky flex w-full justify-end p-1">
             <FaBackspace />
           </button>
+          555
           <div className="relative h-[17em] w-full gap-4 overflow-y-scroll">
             <div>
               {records?.map((record) => (
@@ -113,7 +114,20 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
                   <h1>{record.clientName}</h1>
                   <h1>{String(record.dateCreated)}</h1>
                   <h1>{record.username}</h1>
-                  <h1>{record.id}</h1>
+                  <h1>
+                    binIdEntry:
+                    <h1>
+                      {record.orderedProducts?.map((orderedProduct) =>
+                        orderedProduct.binIdsEntries
+                          ? orderedProduct.binIdsEntries.map(
+                              (binIdEntry, index) => (
+                                <span key={index}>{binIdEntry}</span>
+                              )
+                            )
+                          : null
+                      )}
+                    </h1>
+                  </h1>
                   <select value="">
                     {record.orderedProducts?.map((orderedProduct) => (
                       <option

@@ -3,7 +3,6 @@ import prisma from ".";
 export async function getTrucks() {
   try {
     const trucks = await prisma.trucks.findMany({});
-    console.log(trucks);
     return { trucks };
   } catch (e) {
     return { e };

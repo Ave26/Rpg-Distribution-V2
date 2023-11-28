@@ -54,11 +54,15 @@ export async function update_order(recordId: string) {
             },
             data: {
               status: "Loaded",
+              binId: {
+                unset: true,
+              },
             },
           });
         }
       }
     }
+
     console.log(updatedProducts);
 
     return { updatedProducts };
@@ -287,7 +291,11 @@ export async function get_order() {
   try {
     const orders = await prisma.records.findMany({
       include: {
-        trucks: true,
+        trucks: {
+          select: {
+            capacity: true,
+          },
+        },
         author: {
           select: {
             username: true,
@@ -313,7 +321,6 @@ export async function get_order() {
         },
       },
     });
-    console.log(orders);
     // await updateStatus_and_assignProducts(orders);
     return { orders };
   } catch (error) {
