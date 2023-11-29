@@ -1,43 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import Loading from "@/components/Parts/Loading";
 import useSWR from "swr";
-import {
-  products,
-  bins,
-  assignedProducts,
-  racks,
-  categories,
-  Category,
-} from "@prisma/client";
+import { Category } from "@prisma/client";
 import Toast from "@/components/Parts/Toast";
 import InputWLabel from "./InventroyParts/InputWLabel";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
+import { TBins, TToast } from "./InventoryTypes";
+import BinTable from "./InventroyParts/BinTable";
 
-type TBins = bins & {
-  assignedProducts: TAssignedProducts[];
-  racks: TRacks;
-  _count: {
-    assignedProducts: number;
-  };
-};
-
-type TAssignedProducts = assignedProducts & {
-  products: products;
-};
-
-type TRacks = racks & {
-  categories: categories;
-};
-
-type TToast = {
-  show: boolean;
-  message: "";
+type TInput = {
+  barcodeId: string;
+  sku: string;
+  productName: string;
+  dateReceiveFrom: Date;
+  dateReceiveTo: Date;
+  dateExpiryFrom: Date;
+  dateExpiryTo: Date;
+  category: Category;
 };
 
 async function fetcher(url: string): Promise<TBins[]> {
@@ -54,20 +32,16 @@ async function fetcher(url: string): Promise<TBins[]> {
     });
 }
 
-type TInput = {
-  barcodeId: string;
-  sku: string;
-  productName: string;
-  dateReceiveFrom: Date;
-  dateReceiveTo: Date;
-  dateExpiryFrom: Date;
-  dateExpiryTo: Date;
-  category: Category;
-};
-
 export default function InventoryManageMent() {
   const [startSearching, setStartSearching] = useState(false);
-  const CATEGORY = ["Food", "Laundry", "Cosmetics", "Sanitary", "Cleaning"];
+  const CATEGORY = [
+    "Food",
+    "Laundry",
+    "Cosmetics",
+    "Sanitary",
+    "Cleaning",
+    "Choose Category",
+  ];
 
   const [input, setInput] = useState<TInput>({
     barcodeId: "",
@@ -77,15 +51,13 @@ export default function InventoryManageMent() {
     dateExpiryTo: new Date(),
     dateReceiveFrom: new Date(),
     dateReceiveTo: new Date(),
-    category: CATEGORY[0] as Category,
+    category: "Choose Category" as Category,
   });
 
   const { isLoading, data, mutate } = useSWR(
     `/api/inventory/bins-find`,
     fetcher,
-    {
-      refreshInterval: 1500,
-    }
+    { refreshInterval: 1200 }
   );
   const [bins, setBins] = useState<TBins[] | undefined>(data);
 
@@ -93,20 +65,6 @@ export default function InventoryManageMent() {
     message: "",
     show: false,
   });
-
-  const thArray = [
-    "Category",
-    "BinName",
-    "SKUCode",
-    "Barcode Id",
-    "Product Name",
-    "Purchase Order",
-    "Expiration Date",
-    "Receive Date",
-    "Quality",
-    "Status",
-    "Quantity",
-  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -136,32 +94,38 @@ export default function InventoryManageMent() {
     });
   }
 
-  console.log(input.category);
   useEffect(() => {
+    // if (startSearching) {
+    //   const filteredData = data?.filter((bin) => {
+    //     return bin.assignedProducts.some((assignedProduct) => {
+    //       return assignedProduct.barcodeId === input.barcodeId;
+    //     });
+    //   });
+    //   setBins(filteredData);
+    // } else {
+    //   setBins(data);
+    //   setInput((prevState) => {
+    //     return {
+    //       ...prevState,
+    //       category: "Choose Category" as Category,
+    //     };
+    //   });
+    // }
+    console.log("filtering");
     if (startSearching) {
-      const filteredData = data?.filter((bin) => {
-        return bin.assignedProducts.some(
+      const filteredBins = data?.filter((bin) =>
+        bin.assignedProducts.some(
           (assignedProduct) =>
             assignedProduct.barcodeId === input.barcodeId ||
             assignedProduct.skuCode === input.sku ||
-            assignedProduct.products?.productName === input.productName ||
-            assignedProduct.products?.category === input.category ||
-            (String(assignedProduct.expirationDate).split("T")[0] >=
-              String(input.dateExpiryFrom).split("T")[0] &&
-              String(assignedProduct.expirationDate).split("T")[0] <=
-                String(input.dateExpiryTo).split("T")[0]) ||
-            (String(assignedProduct.dateReceive).split("T")[0] >=
-              String(input.dateReceiveFrom).split("T")[0] &&
-              String(assignedProduct.dateReceive).split("T")[0] <=
-                String(input.dateReceiveTo).split("T")[0])
-        );
-      });
-
-      setBins(filteredData);
+            assignedProduct.products.productName === input.productName
+        )
+      );
+      setBins(filteredBins);
     } else {
       setBins(data);
     }
-  }, [startSearching, input.barcodeId, input.sku, input.productName, data]);
+  }, [data, startSearching]);
 
   // useEffect(() => {
   //   const doc = new jsPDF({
@@ -385,108 +349,7 @@ export default function InventoryManageMent() {
             <Loading />
           </div>
         ) : (
-          <table className="min-w-full text-center text-sm font-light">
-            <thead className="border-b bg-neutral-800 font-medium text-white dark:border-neutral-500 dark:bg-neutral-900">
-              <tr>
-                {thArray.map((th, index) => {
-                  return <th key={index}>{th}</th>;
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {bins?.map((bin: TBins, index) => {
-                return (
-                  <tr key={bin.id}>
-                    <td className="text-end">
-                      {bin.racks.categories.category}
-                    </td>
-                    <td className="text-center">
-                      {bin.racks.name}
-                      {bin.row} - {bin.shelfLevel}
-                    </td>
-                    <td>
-                      {
-                        bin.assignedProducts.map((assignedProduct) => (
-                          <h1 key={assignedProduct.id}>
-                            {assignedProduct.skuCode}
-                          </h1>
-                        ))[0]
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        bin.assignedProducts.map((assignedProduct) => (
-                          <h1 key={assignedProduct.id}>
-                            {assignedProduct.products?.barcodeId}
-                          </h1>
-                        ))[0]
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        bin.assignedProducts.map((assignedProduct) => (
-                          <h1 key={assignedProduct.id}>
-                            {assignedProduct.products?.productName}
-                          </h1>
-                        ))[0]
-                      }
-                    </td>
-
-                    <td>
-                      <select
-                        name=""
-                        id=""
-                        className="w-24 appearance-none border border-black text-center">
-                        {bin.assignedProducts.map((assignedProduct) => (
-                          <option value="" key={assignedProduct.id}>
-                            {assignedProduct.purchaseOrder}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-
-                    <td>
-                      {
-                        bin.assignedProducts.map(
-                          (assignedProduct) =>
-                            String(assignedProduct?.expirationDate).split(
-                              "T"
-                            )[0]
-                        )[0]
-                      }
-                    </td>
-                    <td>
-                      {
-                        bin.assignedProducts.map(
-                          (assignedProduct) =>
-                            String(assignedProduct?.dateReceive).split("T")[0]
-                        )[0]
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        bin.assignedProducts.map(
-                          (assignedProduct) => assignedProduct.quality
-                        )[0]
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        bin.assignedProducts.map(
-                          (assignedProduct) => assignedProduct.status
-                        )[0]
-                      }
-                    </td>
-                    <td>{bin._count.assignedProducts}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <BinTable bins={bins} />
         )}
       </div>
       <Toast data={toast.message} isShow={toast.show} />

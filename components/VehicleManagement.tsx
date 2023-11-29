@@ -150,7 +150,7 @@ export default function VehicleManagement() {
                     <h1>{truck.status}</h1>
                   </div>
                   <div>
-                    {data?.bins.map((bin) => {
+                    {data?.bins?.map((bin) => {
                       return (
                         <>
                           {bin.row} - {bin.shelfLevel}

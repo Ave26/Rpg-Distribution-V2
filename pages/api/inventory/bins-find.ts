@@ -18,9 +18,23 @@ export async function handler(
                 assignedProducts: true,
               },
             },
+
             assignedProducts: {
-              include: {
-                products: true,
+              select: {
+                purchaseOrder: true,
+                skuCode: true,
+                dateReceive: true,
+                expirationDate: true,
+                quality: true,
+                status: true,
+                barcodeId: true,
+
+                products: {
+                  select: {
+                    category: true,
+                    productName: true,
+                  },
+                },
               },
             },
             racks: {

@@ -13,8 +13,7 @@ export default function InventoryManageMent() {
   };
 
   const renderSelectedComponent = componentMapping[selected];
-  const btnStyle =
-    "rounded-sm bg-sky-300/40 p-2 shadow-md hover:bg-sky-300/10 active:bg-sky-300 uppercase text-xs font-bold";
+
   return (
     <section>
       <div className="flex gap-2 border border-black p-2">

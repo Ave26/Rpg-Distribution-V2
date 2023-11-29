@@ -77,13 +77,26 @@ export async function scan_barcode(
       },
       include: {
         racks: true,
+        _count: {
+          select: {
+            assignedProducts: {
+              where: {
+                status: "Default" || "Queuing",
+              },
+            },
+          },
+        },
       },
     });
 
     let scanData: object | null = null;
 
+    let remainingQuantity = quantity;
+    console.log(remainingQuantity);
+
     for (let bin of bins) {
       const { dateReceive, expiry } = setTime(expirationDate);
+
       const { availableBin } = await setMethod(
         String(category?.category),
         bin.id,
@@ -109,13 +122,38 @@ export async function scan_barcode(
               data: newData,
             });
           } else {
-            let multipleAssignedProduct = [];
-            for (let i = 0; i < quantity; i++) {
-              multipleAssignedProduct.push(newData);
+            const quantityToInsert = Math.min(
+              remainingQuantity,
+              bin.capacity - bin._count.assignedProducts
+            );
+
+            console.log("remaining q:", remainingQuantity);
+            console.log(
+              "binCapacity - countAssigneProducts:",
+              bin.capacity - bin._count.assignedProducts
+            );
+
+            if (quantityToInsert > 0) {
+              const multipleAssignedProduct = Array.from(
+                { length: quantityToInsert },
+                () => newData
+              );
+
+              await prisma.assignedProducts.createMany({
+                data: multipleAssignedProduct,
+              });
+
+              remainingQuantity -= quantityToInsert;
             }
-            await prisma.assignedProducts.createMany({
-              data: multipleAssignedProduct,
-            });
+
+            // let multipleAssignedProduct = [];
+            // for (let i = 0; i < remainingQuantity; i++) {
+            //   multipleAssignedProduct.push(newData);
+
+            // }
+            // await prisma.assignedProducts.createMany({
+            //   data: multipleAssignedProduct,
+            // });
           }
 
           const TotalAssignedProduct = await prisma.assignedProducts.count({
@@ -128,6 +166,7 @@ export async function scan_barcode(
           const capacity = Number(bin?.capacity);
           const binId = bin?.id;
           const rackName = bin.racks?.name;
+
           if (TotalAssignedProduct >= capacity) {
             await prisma.bins.update({
               where: {
@@ -143,16 +182,18 @@ export async function scan_barcode(
           const shelfLevel = availableBin?.shelfLevel;
 
           scanData = {
-            message: `Product Added ${TotalAssignedProduct}`,
-            TotalAssignedProduct,
+            message: `Product Added ${quantity}`,
+            quantity,
             capacity,
             row,
             shelfLevel,
             rackName,
           };
-          console.log(scanData);
+
           if (bin.capacity >= TotalAssignedProduct) {
-            break;
+            if (remainingQuantity <= 0) {
+              break; // Break if all products have been assigned
+            }
           }
         }
       } else {
@@ -198,29 +239,6 @@ async function setMethod(
           },
         },
       });
-
-      // availableBin = await prisma.bins.findFirst({
-      //   where: {
-      //     assignedProducts: {
-      //       some: {
-      //         status: {
-      //           equals: "Default",
-      //         },
-      //       },
-      //       every: {
-      //         barcodeId: {
-      //           equals: assignedProduct.barcodeId,
-      //         },
-      //         skuCode: {
-      //           equals: assignedProduct.skuCode,
-      //         },
-      //         expirationDate: {
-      //           equals: expiry,
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
 
       break;
     case "Laundry":
