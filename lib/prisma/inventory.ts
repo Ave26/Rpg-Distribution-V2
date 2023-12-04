@@ -15,45 +15,105 @@ export async function sortProductBins() {
       },
     });
 
-    for (let category of categories) {
-      for (let rack of category.racks) {
+    for (let ct of categories) {
+      for (let rack of ct.racks) {
         const bins = await prisma.bins.findMany({
           where: {
             racksId: rack.id,
           },
-          include: { assignedProducts: { where: { status: "Default" } } },
+
+          include: {
+            _count: { select: { assignedProducts: true } },
+            assignedProducts: { where: { status: "Default" } },
+          },
         });
 
         for (let i = 1; i < bins.length; i++) {
+          const rackCategory = ct.category;
           const currentBin = bins[i];
           const previousBin = bins[i - 1];
 
-          const rackCategory = category.category;
-          const prevAssignedProducts = previousBin.assignedProducts;
-          const currentAssignedProducts = currentBin.assignedProducts;
-
-          const isSame = isSameAssignedProductData(
-            prevAssignedProducts,
-            currentAssignedProducts,
+          const hasSameProductData = isSameAssignedProductData(
+            previousBin.assignedProducts,
+            currentBin.assignedProducts,
             rackCategory
           );
 
-          console.log("all the data is match", isSame);
+          let remainingQuantityToUpdate: number =
+            currentBin.assignedProducts.length;
 
-          if (previousBin.assignedProducts.length === 0) {
-            updatedProducts = await prisma.assignedProducts.updateMany({
-              where: {
-                binId: currentBin.id,
-              },
-              data: {
-                binId: previousBin.id,
-              },
-            });
+          if (previousBin.assignedProducts.length === 0 || hasSameProductData) {
+            console.log("if triggered");
+            const quantityToUpdate = Math.min(
+              remainingQuantityToUpdate,
+              previousBin.capacity - previousBin._count.assignedProducts
+            );
+
+            console.log("quantityToUpdate", quantityToUpdate);
+
+            let multipleAssignedProductToBeUpdated: string[] = [];
+
+            if (quantityToUpdate > 0) {
+              for (let assignedProduct of currentBin.assignedProducts) {
+                multipleAssignedProductToBeUpdated.push(assignedProduct.id);
+                const count = multipleAssignedProductToBeUpdated.length;
+                if (count >= quantityToUpdate) {
+                  break;
+                }
+              }
+
+              if (multipleAssignedProductToBeUpdated.length > 0) {
+                updatedProducts = await prisma.assignedProducts.updateMany({
+                  where: {
+                    id: {
+                      in: multipleAssignedProductToBeUpdated,
+                    },
+                  },
+                  data: {
+                    binId: previousBin.id,
+                  },
+                });
+              }
+
+              const diffOfPrevBinCount =
+                previousBin.capacity - previousBin._count.assignedProducts;
+              const prevBinCount = previousBin._count.assignedProducts;
+              console.log(prevBinCount);
+
+              const total = diffOfPrevBinCount + prevBinCount;
+
+              if (previousBin.capacity >= total) {
+                await prisma.bins.update({
+                  where: {
+                    id: previousBin.id,
+                  },
+                  data: {
+                    isAvailable: false,
+                  },
+                });
+              }
+            } else {
+              console.log("else triggered");
+              console.log(
+                multipleAssignedProductToBeUpdated.length +
+                  previousBin._count.assignedProducts ===
+                  previousBin.capacity
+              );
+
+              await prisma.bins.update({
+                where: {
+                  id: previousBin.id,
+                },
+                data: {
+                  isAvailable: false,
+                },
+              });
+            }
           }
         }
       }
     }
-    console.log(updatedProducts);
+    // console.log("updatedProducts", updatedProducts);
 
     return { updatedProducts };
   } catch (error) {
@@ -71,13 +131,9 @@ function isSameAssignedProductData(
   switch (rackCategory) {
     case "Food":
     case "Cosmetics":
-      console.log(rackCategory);
+      // console.log(rackCategory);
       return (allDataNeededIsMatch = prevAssignedProducts.every((prevProduct) =>
         currentAssignedProducts.some((currentProduct) => {
-          console.log(
-            currentProduct.expirationDate,
-            prevProduct.expirationDate
-          );
           return (
             currentProduct.barcodeId === prevProduct.barcodeId &&
             currentProduct.skuCode === prevProduct.skuCode &&
@@ -92,10 +148,10 @@ function isSameAssignedProductData(
     case "Cleaning":
       return (allDataNeededIsMatch = prevAssignedProducts.every((prevProduct) =>
         currentAssignedProducts.some((currentProduct) => {
-          console.log(
-            currentProduct.expirationDate,
-            prevProduct.expirationDate
-          );
+          // console.log(
+          //   currentProduct.expirationDate,
+          //   prevProduct.expirationDate
+          // );
           return (
             currentProduct.barcodeId === prevProduct.barcodeId &&
             currentProduct.skuCode === prevProduct.skuCode &&

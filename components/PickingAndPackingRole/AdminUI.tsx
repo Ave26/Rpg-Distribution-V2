@@ -1,10 +1,14 @@
 import { EntriesTypes } from "@/types/binEntries";
 import { TFormData } from "@/types/inputTypes";
-import { use, useEffect, useRef, useState } from "react";
-import { trucks as TTrucks } from "@prisma/client";
-import { Bin } from "@/types/inventory";
+import { useEffect, useRef, useState } from "react";
+import {
+  trucks as TTrucks,
+  assignedProducts,
+  bins,
+  products,
+  stockKeepingUnit,
+} from "@prisma/client";
 import useSWR from "swr";
-import { Orders } from "@/types/ordersTypes";
 import jsPDF from "jspdf";
 import Head from "next/head";
 import Search from "../Parts/Search";
@@ -12,8 +16,18 @@ import ReusableButton from "../Parts/ReusableButton";
 import Loading from "../Parts/Loading";
 import BinsLayout from "../BinsLayout";
 import Toast from "../Parts/Toast";
-import { TBins } from "@/types/binsTypes";
-// import BatchInput from "../Parts/batchInput";
+
+type TBins = bins & {
+  _count: {
+    assignedProducts: number;
+  };
+  assignedProducts: TAssignedProducts[];
+};
+
+type TAssignedProducts = assignedProducts & {
+  sku: stockKeepingUnit;
+  products: products;
+};
 
 export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
@@ -266,13 +280,12 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   //   doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
   // };
   // console.log(trucks.find((truck) => truck.capacity === formData.truckCargo));
-
+  console.log(formData);
   useEffect(() => {
     console.log("truck capacity finding");
     const truck = testTrucks?.find((truck) => {
       return truck.name === formData.truck;
     });
-    console.log(truck);
     setTruckCapacity(truck?.capacity!);
   }, [formData.truck, formData]);
 
@@ -307,7 +320,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
           />
 
           <input
-            // disabled={isDisabled
+            disabled={isDisabled}
             type="text"
             name="purchaseOrderOutbound"
             placeholder="purchaseOrderOutbound"
@@ -375,16 +388,16 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                       }),
                     })
                       .then((res) => {
-                        setFormData({
-                          barcodeId: "",
-                          truck: "",
-                          destination: "",
-                          clientName: "",
-                          productName: "",
-                          quantity: 0,
-                          purchaseOrderOutbound: "",
-                          truckCargo: Number(trucks[0].capacity),
-                        });
+                        // setFormData({
+                        //   barcodeId: "",
+                        //   truck: "",
+                        //   destination: "",
+                        //   clientName: "",
+                        //   productName: "",
+                        //   quantity: 0,
+                        //   purchaseOrderOutbound: "",
+                        //   truckCargo: Number(trucks[0].capacity),
+                        // });
 
                         return res.json();
                       })

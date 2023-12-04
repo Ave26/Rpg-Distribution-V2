@@ -131,7 +131,7 @@ export async function findBin(barcodeId: string) {
         categoriesId: categories?.id,
       },
       include: {
-        bin: {
+        bins: {
           where: {
             isSelected: false,
           },

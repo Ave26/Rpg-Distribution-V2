@@ -86,6 +86,8 @@ async function handler(
             },
           });
         }
+
+        // console.log(trucks);
         return res.status(200).json(trucks);
 
       default:

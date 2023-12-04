@@ -8,6 +8,7 @@ import {
   orderedProducts,
   assignedProducts as TAssignedProducts,
   products as TProducts,
+  assignedProducts,
 } from "@prisma/client";
 import makeOrder from "@/pages/api/outbound/make-order";
 import update from "@/pages/api/product/update";
@@ -63,6 +64,30 @@ export async function update_order(recordId: string) {
       }
     }
 
+    const bins = await prisma.bins.findMany({
+      include: {
+        _count: {
+          select: {
+            assignedProducts: true,
+          },
+        },
+      },
+    });
+    for (let bin of bins) {
+      const assignedProductCount = bin._count.assignedProducts;
+
+      if (assignedProductCount === 0 || assignedProductCount < bin.capacity) {
+        const updateBin = await prisma.bins.updateMany({
+          where: {
+            id: bin.id,
+          },
+          data: {
+            isAvailable: true,
+          },
+        });
+        console.log("Empty Bin Updated", updateBin);
+      }
+    }
     console.log(updatedProducts);
 
     return { updatedProducts };
@@ -76,10 +101,10 @@ export async function create_order(
   formData: TFormData,
   authorId: string
 ) {
+  console.log(productEntry, formData);
   const { clientName, destination, truck: truckName } = formData;
   try {
-    let record;
-
+    let record: TRecords | undefined;
     const { date: dateCreated } = setTime();
     const user = await prisma.users.findUnique({
       where: {
@@ -90,6 +115,8 @@ export async function create_order(
       },
     });
 
+    console.log(user);
+
     const omittedProductEntry = productEntry.map((entry) => {
       const { expiryDate, price, productName, skuCode, weight, ...rest } =
         entry;
@@ -98,31 +125,35 @@ export async function create_order(
 
     const poo = await prisma.purchaseOrderOutBound.findUnique({
       where: {
-        poId: formData.purchaseOrderOutbound,
+        poId: formData.purchaseOrderOutbound, // "test"
       },
     });
 
-    // creation of records and poo
-    if (poo) {
-      const highest = await prisma.records.findFirst({
-        where: {
-          poId: poo.poId,
-        },
-        orderBy: {
-          batchNumber: "desc", // Order by batchNumber in descending order
-        },
-        take: 1, // Take only the first result (with the highest batchNumber)
-      });
-      console.log("Record Created");
+    console.log(poo);
 
+    const highest = await prisma.records.findFirst({
+      where: {
+        poId: poo?.poId,
+      },
+      select: {
+        batchNumber: true,
+      },
+      orderBy: {
+        batchNumber: "desc", // Order by batchNumber in descending order
+      },
+      take: 1, // Take only the first result (with the highest batchNumber)
+    });
+    console.log(highest);
+
+    if (poo && highest) {
       record = await prisma.records.create({
         data: {
           clientName,
           destination,
-          username: String(user?.username),
           dateCreated,
+          authorName: String(user?.username),
           truckName,
-          batchNumber: Number(highest?.batchNumber) + 1,
+          batchNumber: Number(highest?.batchNumber) + 1, // Assuming this is a non-nullable field of type Int
           poId: poo.poId,
           orderedProducts: {
             createMany: {
@@ -150,11 +181,11 @@ export async function create_order(
         data: {
           clientName,
           destination,
-          username: String(user?.username),
           dateCreated,
+          authorName: String(user?.username),
           truckName,
-          poId: newPOO.poId,
 
+          poId: newPOO.poId, // This should be a unique ID from the `purchaseOrderOutBound` table
           orderedProducts: {
             createMany: {
               data: omittedProductEntry,
@@ -178,7 +209,7 @@ export async function create_order(
       data: {
         records: {
           connect: {
-            id: record.id,
+            id: record?.id,
           },
         },
       },
@@ -186,6 +217,20 @@ export async function create_order(
         records: true,
       },
     });
+
+    // const connectTrucks = await prisma.trucks.update({
+    //   where: {
+    //     name: String(truckName),
+    //   },
+    //   data: {
+    //     records: {
+    //       connect: record ? { id: record.id } : undefined,
+    //     },
+    //   },
+    //   include: {
+    //     records: true,
+    //   },
+    // });
 
     console.log(connectTrucks);
 
@@ -201,13 +246,14 @@ export async function create_order(
     if (updateTruckCargo.capacity === 0) {
       await prisma.trucks.update({
         where: {
-          name: updateTruckCargo.name,
+          name: String(updateTruckCargo?.name),
         },
         data: {
           status: "Loaded",
         },
       });
     }
+    console.log(record);
 
     console.log(`the ${updateTruckCargo.name} cargo has been updated`);
     await update_product_status(record);
@@ -217,8 +263,12 @@ export async function create_order(
   }
 }
 
-export async function update_product_status(record: TRecords) {
+export async function update_product_status(record: TRecords | undefined) {
   let updatedProducts;
+  console.log(record);
+  if (!record) {
+    return (updatedProducts = null);
+  }
 
   try {
     for (let orderedProduct of record.orderedProducts) {

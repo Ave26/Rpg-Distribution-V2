@@ -16,6 +16,7 @@ export async function handler(
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { productEntry, formData }: TBody = req.body;
+
   console.log(productEntry, formData);
   switch (req.method) {
     case "POST":
@@ -37,9 +38,13 @@ export async function handler(
           userId
         );
 
+        if (error) {
+          return res.status(500).json({ error, message: "Unknown Error" });
+        }
+
         console.log(error);
 
-        return res.json(record);
+        return res.json({ record, message: "Order Created" });
       } catch (error) {
         return console.log(error);
       }

@@ -113,7 +113,7 @@ export default function Cargo({ dataCargo, truckData }: TCargoProps) {
                   <h1>{record.truckName}</h1>
                   <h1>{record.clientName}</h1>
                   <h1>{String(record.dateCreated)}</h1>
-                  <h1>{record.username}</h1>
+                  {/* <h1>{record.username}</h1> */}
                   <h1>
                     binIdEntry:
                     <h1>

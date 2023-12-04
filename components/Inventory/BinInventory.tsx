@@ -95,22 +95,6 @@ export default function InventoryManageMent() {
   }
 
   useEffect(() => {
-    // if (startSearching) {
-    //   const filteredData = data?.filter((bin) => {
-    //     return bin.assignedProducts.some((assignedProduct) => {
-    //       return assignedProduct.barcodeId === input.barcodeId;
-    //     });
-    //   });
-    //   setBins(filteredData);
-    // } else {
-    //   setBins(data);
-    //   setInput((prevState) => {
-    //     return {
-    //       ...prevState,
-    //       category: "Choose Category" as Category,
-    //     };
-    //   });
-    // }
     console.log("filtering");
     if (startSearching) {
       const filteredBins = data?.filter((bin) =>

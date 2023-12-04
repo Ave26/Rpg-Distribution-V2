@@ -7,6 +7,14 @@ type TBody = {
   searchSomething: string;
 };
 
+type TKeys = {
+  barcodeId?: string;
+  skuCode?: string;
+  products?: {
+    productName?: string;
+  };
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -14,37 +22,24 @@ export default async function handler(
   try {
     const { searchSomething }: TBody = req.body;
 
-    // console.log(searchSomething);
-    let whereCondition = {};
-    if (searchSomething) {
-      whereCondition = {
-        assignedProducts: {
-          some: {
-            products: {
-              OR: [
-                {
-                  barcodeId: searchSomething || undefined,
-                },
-                {
-                  productName: searchSomething || undefined,
-                },
-                {
-                  sku: {
-                    some: {
-                      code: searchSomething || undefined,
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        },
-      };
-    }
-
     const bins = await prisma.bins.findMany({
-      where: whereCondition,
-      include: {
+      where: searchSomething
+        ? {
+            assignedProducts: {
+              some: {
+                OR: [
+                  { barcodeId: searchSomething || undefined },
+                  { skuCode: searchSomething || undefined },
+                ],
+              },
+            },
+          }
+        : {},
+
+      select: {
+        row: true,
+        shelfLevel: true,
+        id: true,
         _count: {
           select: {
             assignedProducts: {
@@ -59,10 +54,12 @@ export default async function handler(
           where: {
             status: "Default",
           },
+          take: 1,
           select: {
-            expirationDate: true,
-            dateReceive: true,
+            barcodeId: true,
             skuCode: true,
+            status: true,
+            expirationDate: true,
             sku: {
               select: {
                 weight: true,
@@ -70,30 +67,9 @@ export default async function handler(
             },
             products: {
               select: {
-                // barcodeId: true,
-                // productName: true,
-                // sku: true,
-                // price: true,
-
                 category: true,
-                barcodeId: true,
                 productName: true,
-                sku: {
-                  select: {
-                    code: true,
-                  },
-                },
                 price: true,
-              },
-            },
-          },
-        },
-        racks: {
-          select: {
-            name: true,
-            categories: {
-              select: {
-                category: true,
               },
             },
           },
@@ -101,14 +77,29 @@ export default async function handler(
       },
     });
 
+    // console.log(bins);
+
+    /* 
+        barcodeId: "",
+      truck: String(trucks[0]?.name),
+      destination: "",
+      clientName: "",
+      productName: "",
+      quantity: 0,
+      purchaseOrderOutbound: "",
+      truckCargo: 0,
+
+      */
+
     const filteredBins = bins?.filter((bin) => {
-      return Number(bin?.assignedProducts?.length) > 0;
+      return bin._count.assignedProducts > 0;
     });
 
     // console.log(filteredBins);
 
     return res.status(200).json(filteredBins);
   } catch (error) {
+    console.log(error);
     return res.json(error);
   }
 }

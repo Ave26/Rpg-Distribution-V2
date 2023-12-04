@@ -168,17 +168,17 @@ export default function VehicleManagement() {
                           style: "animate-emerge",
                         });
 
-                        setTruckData({
-                          id: truck.id,
-                          name: truck.name,
-                          status: truck.status,
-                          records: truck.records.map((record) => ({
-                            id: record.id,
-                            batchNumber: record.batchNumber,
-                            poId: record.poId,
-                          })),
-                          routeClusterId: "",
-                        });
+                        // setTruckData({
+                        //   id: truck.id,
+                        //   name: truck.name,
+                        //   status: truck.status,
+                        //   records: truck.records.map((record) => ({
+                        //     id: record.id,
+                        //     batchNumber: record.batchNumber,
+                        //     poId: record.poId,
+                        //   })),
+                        //   routeClusterId: "",
+                        // });
                       }}
                       className="h-fit w-fit whitespace-nowrap rounded-lg border bg-slate-600/30 p-2">
                       Show Cargo

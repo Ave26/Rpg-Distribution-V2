@@ -1,6 +1,11 @@
 import React, { SetStateAction, useEffect, useReducer, useState } from "react";
 import { Bin } from "@/types/inventory";
-import { bins, assignedProducts, stockKeepingUnit } from "@prisma/client";
+import {
+  bins,
+  assignedProducts,
+  stockKeepingUnit,
+  products,
+} from "@prisma/client";
 import { EntriesTypes, dataEntriesTypes } from "@/types/binEntries";
 import { trucks as TTrucks } from "@prisma/client";
 import Toast from "./Parts/Toast";
@@ -9,7 +14,19 @@ import {
   getRequiredBinData,
 } from "@/helper/_componentHelpers";
 import { TFormData } from "@/types/inputTypes";
-import { TBins } from "@/types/binsTypes";
+// import { TBins } from "@/types/binsTypes";
+
+type TBins = bins & {
+  _count: {
+    assignedProducts: number;
+  };
+  assignedProducts: TAssignedProducts[];
+};
+
+type TAssignedProducts = assignedProducts & {
+  sku: stockKeepingUnit;
+  products: products;
+};
 
 interface BinsLayoutProps {
   isLoading?: boolean;
@@ -109,11 +126,12 @@ export default function BinsLayout({
       } else {
         productEntry && setProductEntry([...productEntry, newEntry]);
       }
+
+      setIsDisabled(true);
     } catch (error) {
       console.log(error);
     }
   }
-
   useEffect(() => {
     // finding the sum for each product ordered
     try {
@@ -134,7 +152,7 @@ export default function BinsLayout({
 
       const truck = trucks.find((truck) => truck.name === formData.truck);
       const result = Number(truck?.capacity) - sum;
-      console.log("result", result);
+      // console.log("result", result);
 
       if (sum > Number(truck?.capacity)) {
         setToast((prev) => {

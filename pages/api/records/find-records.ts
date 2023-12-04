@@ -41,7 +41,7 @@ export async function handler(
             id: true,
             truckName: true,
             clientName: true,
-            username: true,
+            authorName: true,
             dateCreated: true,
 
             orderedProducts: {
