@@ -3,9 +3,9 @@ import Loading from "@/components/Parts/Loading";
 import useSWR from "swr";
 import { Category } from "@prisma/client";
 import Toast from "@/components/Parts/Toast";
-import InputWLabel from "./InventroyParts/InputWLabel";
+import InputWLabel from "./InventoryParts/InputWLabel";
 import { TBins, TToast } from "./InventoryTypes";
-import BinTable from "./InventroyParts/BinTable";
+import BinTable from "./InventoryParts/BinTable";
 
 type TInput = {
   barcodeId: string;
@@ -327,7 +327,7 @@ export default function InventoryManageMent() {
         </div>
       </div>
 
-      <div className="h-[30em] overflow-y-scroll border border-black">
+      <div className="h-[27em] overflow-y-scroll border border-black">
         {isLoading ? (
           <div className="flex h-full w-full items-center justify-center">
             <Loading />

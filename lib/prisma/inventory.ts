@@ -74,52 +74,103 @@ export async function sortProductBins() {
                   },
                 });
               }
-
-              const diffOfPrevBinCount =
-                previousBin.capacity - previousBin._count.assignedProducts;
-              const prevBinCount = previousBin._count.assignedProducts;
-              console.log(prevBinCount);
-
-              const total = diffOfPrevBinCount + prevBinCount;
-
-              if (previousBin.capacity >= total) {
-                await prisma.bins.update({
-                  where: {
-                    id: previousBin.id,
-                  },
-                  data: {
-                    isAvailable: false,
-                  },
-                });
-              }
-            } else {
-              console.log("else triggered");
-              console.log(
-                multipleAssignedProductToBeUpdated.length +
-                  previousBin._count.assignedProducts ===
-                  previousBin.capacity
-              );
-
-              await prisma.bins.update({
-                where: {
-                  id: previousBin.id,
-                },
-                data: {
-                  isAvailable: false,
-                },
-              });
             }
           }
         }
       }
     }
     // console.log("updatedProducts", updatedProducts);
-
+    await updateBinsAvailability();
     return { updatedProducts };
   } catch (error) {
     return { error };
   }
 }
+
+async function updateBinsAvailability() {
+  const bins = await prisma.bins.findMany({
+    include: {
+      assignedProducts: { where: { status: "Default" } },
+      _count: { select: { assignedProducts: true } },
+    },
+  });
+
+  for (let bin of bins) {
+    let Status: boolean | undefined;
+
+    // check if the capacity has been met
+    const Capacity = bin.capacity;
+    const ProductCount = bin._count.assignedProducts;
+
+    if (Capacity > ProductCount) {
+      console.log("if executed");
+      Status = true;
+    } else if (Capacity === ProductCount) {
+      console.log("else if executed");
+      Status = false;
+    }
+
+    console.log("Bin ID:", bin.id, "Status:", Status);
+
+    // Update the availability status for the current bin
+    const UpdatedBin = await prisma.bins.update({
+      where: {
+        id: bin.id,
+      },
+      data: {
+        isAvailable: Status,
+      },
+    });
+
+    console.log("Updated Bin:", UpdatedBin);
+  }
+}
+
+// Call the function
+updateBinsAvailability();
+
+// async function updateBinsAvailability() {
+//   const bins = await prisma.bins.findMany({
+//     include: {
+//       assignedProducts: { where: { status: "Default" } },
+//       _count: { select: { assignedProducts: true } },
+//     },
+//   });
+
+//   let BinToBeUpdate: string[] = [];
+//   let Status: boolean | undefined;
+
+//   for (let bin of bins) {
+//     // check if the capacity has been met
+//     const Capacity = bin.capacity;
+//     const ProductCount = bin._count.assignedProducts;
+
+//     if (Capacity > ProductCount) {
+//       console.log("if executed");
+//       BinToBeUpdate.push(bin.id);
+//       Status = true;
+//     } else if (Capacity === ProductCount) {
+//       console.log("else if executed");
+
+//       BinToBeUpdate.push(bin.id);
+//       Status = false;
+//     }
+//   }
+
+//   console.log(BinToBeUpdate);
+//   const UpdatedBins = await prisma.bins.updateMany({
+//     where: {
+//       id: {
+//         in: BinToBeUpdate,
+//       },
+//     },
+//     data: {
+//       isAvailable: Status,
+//     },
+//   });
+
+//   console.log(UpdatedBins);
+// }
 
 function isSameAssignedProductData(
   prevAssignedProducts: assignedProducts[],

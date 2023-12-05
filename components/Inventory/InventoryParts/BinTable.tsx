@@ -23,7 +23,7 @@ const BinTable = ({ bins }: TBinTableProps) => {
 
   return (
     <table className="min-w-full text-center text-sm font-light">
-      <thead className="border-b bg-neutral-800 font-medium text-white dark:border-neutral-500 dark:bg-neutral-900">
+      <thead className="sticky border-b bg-neutral-800 font-medium text-white dark:border-neutral-500 dark:bg-neutral-900">
         <tr>
           {thArray.map((th, index) => {
             return <th key={index}>{th}</th>;
