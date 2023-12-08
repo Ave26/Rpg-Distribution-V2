@@ -25,7 +25,38 @@ export async function handler(
         const categories = await prisma.categories.findMany({
           include: {
             racks: {
-              include: { bins: { include: { assignedProducts: true } } },
+              include: {
+                bins: {
+                  include: {
+                    _count: {
+                      select: { assignedProducts: true },
+                    },
+                    assignedProducts: {
+                      select: {
+                        id: true,
+                        purchaseOrder: true,
+                        skuCode: true,
+                        dateReceive: true,
+                        expirationDate: true,
+                        quality: true,
+                        status: true,
+                        barcodeId: true,
+                        products: {
+                          select: {
+                            category: true,
+                            productName: true,
+                          },
+                        },
+                      },
+                    },
+                    racks: {
+                      include: {
+                        categories: true,
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
           // include: {

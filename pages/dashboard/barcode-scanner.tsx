@@ -267,6 +267,7 @@ export default function BarcodeScanner() {
                 type="number"
                 value={quantity}
                 min={0}
+                max={100}
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="absolute right-9 top-1 block h-9 w-20 animate-emerge appearance-none rounded border border-gray-200 bg-white px-4 py-3 leading-tight text-gray-700 transition-all focus:border-gray-500 focus:bg-white focus:outline-none"
               />
@@ -277,6 +278,10 @@ export default function BarcodeScanner() {
                 isManual={isManual}
                 setIsManual={setIsManual}
               />
+
+              <p className="absolute text-[10px] font-bold uppercase text-red-500">
+                Note: You Can Only Select Quantity Up To 100
+              </p>
             </div>
           </span>
         </span>
