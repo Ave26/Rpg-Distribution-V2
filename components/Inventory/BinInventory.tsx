@@ -43,9 +43,9 @@ export default function InventoryManageMent() {
   const router = useRouter();
   // const { page, itemsPerPage } = router.query;
 
-  const ITEMS_PER_PAGE = 17;
+  const ITEMS_PER_PAGE = 10;
   const [startSearching, setStartSearching] = useState(false);
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
 
   const CATEGORY = [
     "Food",
@@ -355,8 +355,12 @@ export default function InventoryManageMent() {
           onClick={() => {
             setPage((prevPage) => {
               if (prevPage === 1) {
+                mutate();
+
                 return prevPage;
               } else {
+                mutate();
+
                 return prevPage - 1;
               }
             });
@@ -370,8 +374,12 @@ export default function InventoryManageMent() {
           onClick={() => {
             setPage((prevPage) => {
               if (prevPage === data?.lastPage) {
+                mutate();
+
                 return prevPage;
               } else {
+                mutate();
+
                 return prevPage + 1;
               }
             });

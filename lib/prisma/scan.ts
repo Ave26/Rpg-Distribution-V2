@@ -127,7 +127,7 @@ export async function scan_barcode(
               bin.capacity - bin._count.assignedProducts
             );
 
-            console.log("remaining q:", remainingQuantity);
+            console.log("remaining quantity:", remainingQuantity);
             console.log(
               "binCapacity - countAssigneProducts:",
               bin.capacity - bin._count.assignedProducts
@@ -159,6 +159,7 @@ export async function scan_barcode(
           const TotalAssignedProduct = await prisma.assignedProducts.count({
             where: {
               binId: bin?.id,
+
               status: "Default" || "Queuing",
             },
           });
@@ -180,7 +181,7 @@ export async function scan_barcode(
 
           const row = availableBin?.row;
           const shelfLevel = availableBin?.shelfLevel;
-
+          console.log(TotalAssignedProduct);
           scanData = {
             message: `Product Added ${quantity}`,
             quantity,
