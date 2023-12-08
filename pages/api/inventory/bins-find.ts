@@ -23,7 +23,11 @@ export async function handler(
         let sortedBins = [];
 
         const categories = await prisma.categories.findMany({
-          include: { racks: { include: { bins: true } } },
+          include: {
+            racks: {
+              include: { bins: { include: { assignedProducts: true } } },
+            },
+          },
           // include: {
           //   racks: {
           //     include: {
