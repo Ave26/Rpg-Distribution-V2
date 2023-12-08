@@ -7,7 +7,6 @@ import noImg from "../../public/assets/products/noProductDisplay.png";
 import Toast from "@/components/Parts/Toast";
 import { stringify } from "querystring";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-import Head from "next/head";
 import { products, stockKeepingUnit, Category } from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
 import { TProducts } from "@/types/productTypes";

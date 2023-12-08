@@ -3,7 +3,15 @@ import prisma from ".";
 
 export const findPublicProducts = async () => {
   try {
-    const products = await prisma.products.findMany({});
+    const products = await prisma.products.findMany({
+      take: 10,
+      select: {
+        productName: true,
+        category: true,
+        price: true,
+      },
+    });
+    console.log(products);
     return { products };
   } catch (error) {
     return { error };

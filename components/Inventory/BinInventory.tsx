@@ -6,6 +6,8 @@ import Toast from "@/components/Parts/Toast";
 import InputWLabel from "./InventoryParts/InputWLabel";
 import { TBins, TToast } from "./InventoryTypes";
 import BinTable from "./InventoryParts/BinTable";
+import { MdNavigateNext } from "react-icons/md";
+import { useRouter } from "next/router";
 
 type TInput = {
   barcodeId: string;
@@ -18,7 +20,12 @@ type TInput = {
   category: Category;
 };
 
-async function fetcher(url: string): Promise<TBins[]> {
+type TResponse = {
+  bins: TBins[];
+  lastPage: number;
+};
+
+async function fetcher(url: string): Promise<TResponse> {
   return fetch(url)
     .then((res) => {
       if (!res.ok) {
@@ -33,7 +40,13 @@ async function fetcher(url: string): Promise<TBins[]> {
 }
 
 export default function InventoryManageMent() {
+  const router = useRouter();
+  // const { page, itemsPerPage } = router.query;
+
+  const ITEMS_PER_PAGE = 17;
   const [startSearching, setStartSearching] = useState(false);
+  const [page, setPage] = useState(2);
+
   const CATEGORY = [
     "Food",
     "Laundry",
@@ -55,11 +68,11 @@ export default function InventoryManageMent() {
   });
 
   const { isLoading, data, mutate } = useSWR(
-    `/api/inventory/bins-find`,
+    `/api/inventory/bins-find?page=${page}&itemsPerPage=${ITEMS_PER_PAGE}`,
     fetcher,
     { refreshInterval: 1200 }
   );
-  const [bins, setBins] = useState<TBins[] | undefined>(data);
+  const [bins, setBins] = useState<TBins[] | undefined>(data?.bins);
 
   const [toast, setToast] = useState<TToast>({
     message: "",
@@ -97,7 +110,7 @@ export default function InventoryManageMent() {
   useEffect(() => {
     console.log("filtering");
     if (startSearching) {
-      const filteredBins = data?.filter((bin) =>
+      const filteredBins = data?.bins.filter((bin) =>
         bin.assignedProducts.some(
           (assignedProduct) =>
             assignedProduct.barcodeId === input.barcodeId ||
@@ -107,7 +120,7 @@ export default function InventoryManageMent() {
       );
       setBins(filteredBins);
     } else {
-      setBins(data);
+      setBins(data?.bins);
     }
   }, [data, startSearching]);
 
@@ -335,6 +348,36 @@ export default function InventoryManageMent() {
         ) : (
           <BinTable bins={bins} />
         )}
+      </div>
+
+      <div className="flex w-fit flex-row justify-end gap-2 bg-slate-800/20">
+        <button
+          onClick={() => {
+            setPage((prevPage) => {
+              if (prevPage === 1) {
+                return prevPage;
+              } else {
+                return prevPage - 1;
+              }
+            });
+          }}>
+          <MdNavigateNext className="rotate-180 text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
+        </button>
+        <h1 className="flex items-center justify-center p-2 text-sm font-extrabold">
+          {page}
+        </h1>
+        <button
+          onClick={() => {
+            setPage((prevPage) => {
+              if (prevPage === data?.lastPage) {
+                return prevPage;
+              } else {
+                return prevPage + 1;
+              }
+            });
+          }}>
+          <MdNavigateNext className="rounded-sm text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
+        </button>
       </div>
       <Toast data={toast.message} isShow={toast.show} />
     </div>

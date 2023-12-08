@@ -262,7 +262,7 @@ export default function BarcodeScanner() {
               value={assignedProduct.barcodeId}
               onChange={handleChange}
             />
-            {isManual || (
+            {isManual && (
               <input
                 type="number"
                 value={quantity}

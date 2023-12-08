@@ -3,6 +3,7 @@ import Head from "next/head";
 import Layout from "@/components/layout";
 import Loading from "@/components/Parts/Loading";
 import Image from "next/image";
+import { products } from "@prisma/client";
 // import { findPublicProducts } from "@/lib/prisma/product";
 // import { NextApiRequest } from "next";
 // import { verifyJwt } from "@/lib/helper/jwt";
@@ -16,14 +17,27 @@ interface DATA {
   productName?: string;
 }
 
-interface Products {
-  id: string;
-  barcodeId: string;
-  category: string;
-  image: string;
-  price: number;
-  productName: string;
-  sku: null;
+// interface Products {
+//   id: string;
+//   barcodeId: string;
+//   category: string;
+//   image: string;
+//   price: number;
+//   productName: string;
+//   sku: null;
+// }
+
+async function fetcher(url: string): Promise<products[]> {
+  return fetch(url)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      throw error;
+    });
 }
 
 export default function Products({}: {
@@ -32,17 +46,6 @@ export default function Products({}: {
   error: unknown;
 }) {
   const [searchInput, setSearchInput] = useState<string>("");
-
-  const fetcher = async (url: string) => {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data = await response.json();
-    return data;
-  };
 
   const { data: products, isLoading } = useSWR(
     "/api/public-products",
@@ -66,7 +69,7 @@ export default function Products({}: {
               </div>
             ) : (
               <div className="flex flex-col flex-wrap items-center justify-center gap-2 p-5 transition-all md:flex-row">
-                {products?.map((value: Products, index: number) => {
+                {products?.map((value: products, index: number) => {
                   return (
                     <div
                       className="flex flex-col items-center justify-center gap-3 shadow-lg"
