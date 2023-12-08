@@ -176,218 +176,219 @@ export default function InventoryManageMent() {
 
   const inputDateStyle = "w-[15em]";
   return (
-    <div className="transition-all">
-      <div className="flex flex-row items-center justify-between gap-[2px] p-2">
-        <div className="flex flex-row gap-2 p-[2px]">
-          <div className="flex flex-col gap-2 p-[2px]">
-            <InputWLabel
-              inputAttributes={{
-                name: "barcodeId",
-                id: "barcodeId",
-                maxLength: 14,
-                value: input.barcodeId,
-                onChange: handleChange,
-                autoFocus: true,
-              }}
-              lableAttributes={{
-                htmlFor: "barcodeId",
-                children: "Barcode Id",
-              }}
-            />
+    <>No data</>
+    // <div className="transition-all">
+    //   <div className="flex flex-row items-center justify-between gap-[2px] p-2">
+    //     <div className="flex flex-row gap-2 p-[2px]">
+    //       <div className="flex flex-col gap-2 p-[2px]">
+    //         <InputWLabel
+    //           inputAttributes={{
+    //             name: "barcodeId",
+    //             id: "barcodeId",
+    //             maxLength: 14,
+    //             value: input.barcodeId,
+    //             onChange: handleChange,
+    //             autoFocus: true,
+    //           }}
+    //           lableAttributes={{
+    //             htmlFor: "barcodeId",
+    //             children: "Barcode Id",
+    //           }}
+    //         />
 
-            <InputWLabel
-              inputAttributes={{
-                name: "sku",
-                id: "sku",
-                value: input.sku,
-                onChange: handleChange,
-              }}
-              lableAttributes={{
-                htmlFor: "barcodeId",
-                children: "Stock Keeping Unit",
-              }}
-            />
+    //         <InputWLabel
+    //           inputAttributes={{
+    //             name: "sku",
+    //             id: "sku",
+    //             value: input.sku,
+    //             onChange: handleChange,
+    //           }}
+    //           lableAttributes={{
+    //             htmlFor: "barcodeId",
+    //             children: "Stock Keeping Unit",
+    //           }}
+    //         />
 
-            <InputWLabel
-              inputAttributes={{
-                name: "productName",
-                id: "productName",
-                value: input.productName,
-                onChange: handleChange,
-              }}
-              lableAttributes={{
-                htmlFor: "productName",
-                children: "Product Name",
-              }}
-            />
+    //         <InputWLabel
+    //           inputAttributes={{
+    //             name: "productName",
+    //             id: "productName",
+    //             value: input.productName,
+    //             onChange: handleChange,
+    //           }}
+    //           lableAttributes={{
+    //             htmlFor: "productName",
+    //             children: "Product Name",
+    //           }}
+    //         />
 
-            <button
-              className={btnStyle}
-              onClick={() => {
-                setStartSearching((prevStartSearching) => !prevStartSearching);
-              }}>
-              {startSearching ? "x" : "Search"}
-            </button>
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex w-full gap-2">
-              <InputWLabel
-                inputAttributes={{
-                  type: "date",
-                  name: "dateExpiryFrom",
-                  id: "dateExpiryFrom",
-                  value: String(input.dateExpiryFrom),
-                  onChange: handleChange,
-                }}
-                lableAttributes={{
-                  children: "Date Expiry From:",
-                  htmlFor: "dateExpiryFrom",
-                }}
-                customInputStyle={inputDateStyle}
-              />
-              <InputWLabel
-                inputAttributes={{
-                  type: "date",
-                  name: "dateExpiryTo",
-                  id: "dateExpiryTo",
-                  value: String(input.dateExpiryTo),
-                  onChange: handleChange,
-                }}
-                lableAttributes={{
-                  children: "Date Expiry To:",
-                  htmlFor: "dateExpiryTo",
-                }}
-                customInputStyle={inputDateStyle}
-              />
-            </div>
+    //         <button
+    //           className={btnStyle}
+    //           onClick={() => {
+    //             setStartSearching((prevStartSearching) => !prevStartSearching);
+    //           }}>
+    //           {startSearching ? "x" : "Search"}
+    //         </button>
+    //       </div>
+    //       <div className="flex flex-col gap-2">
+    //         <div className="flex w-full gap-2">
+    //           <InputWLabel
+    //             inputAttributes={{
+    //               type: "date",
+    //               name: "dateExpiryFrom",
+    //               id: "dateExpiryFrom",
+    //               value: String(input.dateExpiryFrom),
+    //               onChange: handleChange,
+    //             }}
+    //             lableAttributes={{
+    //               children: "Date Expiry From:",
+    //               htmlFor: "dateExpiryFrom",
+    //             }}
+    //             customInputStyle={inputDateStyle}
+    //           />
+    //           <InputWLabel
+    //             inputAttributes={{
+    //               type: "date",
+    //               name: "dateExpiryTo",
+    //               id: "dateExpiryTo",
+    //               value: String(input.dateExpiryTo),
+    //               onChange: handleChange,
+    //             }}
+    //             lableAttributes={{
+    //               children: "Date Expiry To:",
+    //               htmlFor: "dateExpiryTo",
+    //             }}
+    //             customInputStyle={inputDateStyle}
+    //           />
+    //         </div>
 
-            <div className="flex w-full gap-2">
-              <InputWLabel
-                inputAttributes={{
-                  type: "date",
-                  name: "dateReceiveFrom",
-                  id: "dateReceiveFrom",
-                  value: String(input.dateReceiveFrom),
-                  onChange: handleChange,
-                }}
-                lableAttributes={{
-                  children: "Date Receive From:",
-                  htmlFor: "dateReceiveFrom",
-                }}
-                customInputStyle="w-[15em]"
-              />
-              <InputWLabel
-                inputAttributes={{
-                  type: "date",
-                  name: "dateReceiveTo",
-                  id: "dateReceiveTo",
-                  value: String(input.dateReceiveTo),
-                  onChange: handleChange,
-                }}
-                lableAttributes={{
-                  children: "Date Receive To:",
-                  htmlFor: "dateReceiveTo",
-                }}
-                customInputStyle={inputDateStyle}
-              />
-            </div>
+    //         <div className="flex w-full gap-2">
+    //           <InputWLabel
+    //             inputAttributes={{
+    //               type: "date",
+    //               name: "dateReceiveFrom",
+    //               id: "dateReceiveFrom",
+    //               value: String(input.dateReceiveFrom),
+    //               onChange: handleChange,
+    //             }}
+    //             lableAttributes={{
+    //               children: "Date Receive From:",
+    //               htmlFor: "dateReceiveFrom",
+    //             }}
+    //             customInputStyle="w-[15em]"
+    //           />
+    //           <InputWLabel
+    //             inputAttributes={{
+    //               type: "date",
+    //               name: "dateReceiveTo",
+    //               id: "dateReceiveTo",
+    //               value: String(input.dateReceiveTo),
+    //               onChange: handleChange,
+    //             }}
+    //             lableAttributes={{
+    //               children: "Date Receive To:",
+    //               htmlFor: "dateReceiveTo",
+    //             }}
+    //             customInputStyle={inputDateStyle}
+    //           />
+    //         </div>
 
-            <select
-              value={input.category}
-              onChange={handleChange}
-              name="category"
-              className="h-8 appearance-none rounded-sm border border-black px-2 text-xs font-bold outline-none">
-              {CATEGORY.map((c, index) => {
-                return <option key={index}>{c}</option>;
-              })}
-            </select>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-end gap-2">
-            <button className={btnStyle} id="printInventory">
-              Print Inventory
-            </button>
+    //         <select
+    //           value={input.category}
+    //           onChange={handleChange}
+    //           name="category"
+    //           className="h-8 appearance-none rounded-sm border border-black px-2 text-xs font-bold outline-none">
+    //           {CATEGORY.map((c, index) => {
+    //             return <option key={index}>{c}</option>;
+    //           })}
+    //         </select>
+    //       </div>
+    //     </div>
+    //     <div className="flex flex-col gap-2">
+    //       <div className="flex justify-end gap-2">
+    //         <button className={btnStyle} id="printInventory">
+    //           Print Inventory
+    //         </button>
 
-            <button
-              className={btnStyle}
-              onClick={() => {
-                fetch("/api/inventory/products-sort", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ initiate: true }),
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    setToast((prevState) => {
-                      return {
-                        ...prevState,
-                        message: data.message,
-                        show: true,
-                      };
-                    });
+    //         <button
+    //           className={btnStyle}
+    //           onClick={() => {
+    //             fetch("/api/inventory/products-sort", {
+    //               method: "POST",
+    //               headers: { "Content-Type": "application/json" },
+    //               body: JSON.stringify({ initiate: true }),
+    //             })
+    //               .then((res) => res.json())
+    //               .then((data) => {
+    //                 setToast((prevState) => {
+    //                   return {
+    //                     ...prevState,
+    //                     message: data.message,
+    //                     show: true,
+    //                   };
+    //                 });
 
-                    return mutate();
-                  });
-              }}>
-              Organize Bin
-            </button>
-          </div>
+    //                 return mutate();
+    //               });
+    //           }}>
+    //           Organize Bin
+    //         </button>
+    //       </div>
 
-          <p className="w-18 break-words  text-end text-[10px] uppercase text-red-500">
-            Take note: Please ensure that there are no products on Queue
-          </p>
-        </div>
-      </div>
+    //       <p className="w-18 break-words  text-end text-[10px] uppercase text-red-500">
+    //         Take note: Please ensure that there are no products on Queue
+    //       </p>
+    //     </div>
+    //   </div>
 
-      <div className="h-[27em] overflow-y-scroll border border-black">
-        {isLoading ? (
-          <div className="flex h-full w-full items-center justify-center">
-            <Loading />
-          </div>
-        ) : (
-          <BinTable bins={bins} />
-        )}
-      </div>
+    //   <div className="h-[27em] overflow-y-scroll border border-black">
+    //     {isLoading ? (
+    //       <div className="flex h-full w-full items-center justify-center">
+    //         <Loading />
+    //       </div>
+    //     ) : (
+    //       <BinTable bins={bins} />
+    //     )}
+    //   </div>
 
-      <div className="flex w-fit flex-row justify-end gap-2 bg-slate-800/20">
-        <button
-          onClick={() => {
-            setPage((prevPage) => {
-              if (prevPage === 1) {
-                mutate();
+    //   <div className="flex w-fit flex-row justify-end gap-2 bg-slate-800/20">
+    //     <button
+    //       onClick={() => {
+    //         setPage((prevPage) => {
+    //           if (prevPage === 1) {
+    //             mutate();
 
-                return prevPage;
-              } else {
-                mutate();
+    //             return prevPage;
+    //           } else {
+    //             mutate();
 
-                return prevPage - 1;
-              }
-            });
-          }}>
-          <MdNavigateNext className="rotate-180 text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
-        </button>
-        <h1 className="flex items-center justify-center p-2 text-sm font-extrabold">
-          {page}
-        </h1>
-        <button
-          onClick={() => {
-            setPage((prevPage) => {
-              if (prevPage === data?.lastPage) {
-                mutate();
+    //             return prevPage - 1;
+    //           }
+    //         });
+    //       }}>
+    //       <MdNavigateNext className="rotate-180 text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
+    //     </button>
+    //     <h1 className="flex items-center justify-center p-2 text-sm font-extrabold">
+    //       {page}
+    //     </h1>
+    //     <button
+    //       onClick={() => {
+    //         setPage((prevPage) => {
+    //           if (prevPage === data?.lastPage) {
+    //             mutate();
 
-                return prevPage;
-              } else {
-                mutate();
+    //             return prevPage;
+    //           } else {
+    //             mutate();
 
-                return prevPage + 1;
-              }
-            });
-          }}>
-          <MdNavigateNext className="rounded-sm text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
-        </button>
-      </div>
-      <Toast data={toast.message} isShow={toast.show} />
-    </div>
+    //             return prevPage + 1;
+    //           }
+    //         });
+    //       }}>
+    //       <MdNavigateNext className="rounded-sm text-4xl hover:bg-slate-500/30 active:bg-slate-300/70" />
+    //     </button>
+    //   </div>
+    //   <Toast data={toast.message} isShow={toast.show} />
+    // </div>
   );
 }
