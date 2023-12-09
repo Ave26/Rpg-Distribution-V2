@@ -71,21 +71,16 @@ export async function scan_barcode(
 
     const bins = await prisma.bins.findMany({
       where: {
-        racks: {
-          categoriesId: category?.id,
-        },
+        racks: { categoriesId: category?.id },
       },
       include: {
         racks: true,
         _count: {
           select: {
-            assignedProducts: {
-              where: {
-                status: "Default" || "Queuing",
-              },
-            },
+            assignedProducts: { where: { status: "Default" || "Queuing" } },
           },
         },
+        assignedProducts: { select: { id: true } },
       },
     });
 
@@ -127,12 +122,6 @@ export async function scan_barcode(
               bin.capacity - bin._count.assignedProducts
             );
 
-            console.log("remaining quantity:", remainingQuantity);
-            console.log(
-              "binCapacity - countAssigneProducts:",
-              bin.capacity - bin._count.assignedProducts
-            );
-
             if (quantityToInsert > 0) {
               const multipleAssignedProduct = Array.from(
                 { length: quantityToInsert },
@@ -145,6 +134,13 @@ export async function scan_barcode(
 
               remainingQuantity -= quantityToInsert;
             }
+
+            console.log("remaining quantity:", remainingQuantity);
+            console.log(
+              "binCapacity - countAssigneProducts:",
+              bin.capacity - bin.assignedProducts.length
+            );
+            console.log("Capacity:", bin.capacity, "");
 
             // let multipleAssignedProduct = [];
             // for (let i = 0; i < remainingQuantity; i++) {
@@ -183,7 +179,7 @@ export async function scan_barcode(
           const shelfLevel = availableBin?.shelfLevel;
           console.log(TotalAssignedProduct);
           scanData = {
-            message: `Product Added ${quantity}`,
+            message: `Product Added ${TotalAssignedProduct}`,
             quantity,
             capacity,
             row,
