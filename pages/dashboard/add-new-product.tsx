@@ -265,7 +265,6 @@ export default function AddNewProduct() {
     sku: {
       threshold: 0,
       code: "",
-      color: "",
       weight: 0,
     },
   });
@@ -314,7 +313,6 @@ export default function AddNewProduct() {
           sku: {
             threshold: 0,
             code: "",
-            color: "",
             weight: 0,
           },
         });
@@ -461,7 +459,7 @@ export default function AddNewProduct() {
               onChange={handleChange}
             />
           </span>
-          <span className={spanStyle}>
+          {/* <span className={spanStyle}>
             <label htmlFor="color" className={labelStyle}>
               Color
             </label>
@@ -473,7 +471,7 @@ export default function AddNewProduct() {
               type="text"
               onChange={handleChange}
             />
-          </span>
+          </span> */}
           <span className={spanStyle}>
             <label htmlFor="weight" className={labelStyle}>
               Weight

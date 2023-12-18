@@ -11,6 +11,7 @@ export type TProducts = products & {
   _count: {
     assignedProducts: number;
   };
+  sku: stockKeepingUnit[];
   assignedProducts: TAssignedProducts[];
 };
 
@@ -40,11 +41,11 @@ export type TUpdateProductId = {
   id: string;
   barcodeId: string;
   isOpen: boolean;
-  productName?: string;
-  price?: number;
-  skuCode?: string;
-  threshold?: number;
-  weight?: number;
+  productName: string;
+  price: number;
+  skuCode: string;
+  threshold: number;
+  weight: number;
 };
 
 export type TInput = {

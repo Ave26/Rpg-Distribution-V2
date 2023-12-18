@@ -8,13 +8,14 @@ import { get_order } from "@/lib/prisma/order";
 import { scan_barcode } from "@/lib/prisma/scan";
 import { assignedProducts } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { scanBarcode } from "@/lib/prisma/inbound";
 
 type TBody = {
   assignedProduct: TAssignedProducts;
   quantity: number;
 };
 
-type TAssignedProducts = Omit<
+export type TAssignedProducts = Omit<
   assignedProducts,
   | "id"
   | "dateReceive"
@@ -40,27 +41,36 @@ export async function handler(
         if (!Object.values(assignedProduct).every(Boolean)) {
           return res.status(401).json({ message: "Incomplete Field" });
         }
-        const { scanData } = await scan_barcode(assignedProduct, quantity);
-        /* 
-        PO-12345
-        PO-67890
-        PO-54321
-        PO-98765
-        PO-24680
-        PO-13579
-        PO-11223
-        PO-45678
-        PO-87654
-        PO-54321
-      */
-        const product = await prisma.products.findUnique({
-          where: {
-            barcodeId: assignedProduct.barcodeId,
-          },
-        });
 
-        return res.status(200).json({ scanData });
+        let userId: string = "";
+        if (verifiedToken && typeof verifiedToken === "object") {
+          userId = verifiedToken.id;
+        }
+
+        if (quantity > 1) {
+          console.log("multi operation");
+          // scanMultipleProduct(assignedProduct, quantity, userId);
+          let msg: string | undefined;
+          for (let i = 0; i < quantity; i++) {
+            console.log(`1 ${i}`);
+            const { message } = await scanBarcode(assignedProduct, userId);
+            msg = message;
+          }
+          return res.status(200).json(msg);
+        } else {
+          console.log("single operation");
+          const { message } = await scanBarcode(assignedProduct, userId);
+          return res.status(200).json(message);
+        }
+
+        // console.log(assignedProduct);
+        // const transaction = await scan_barcode(
+        //   assignedProduct,
+        //   quantity,
+        //   userId
+        // );
       } catch (error) {
+        console.log(error);
         return res.json(error);
       }
     default:

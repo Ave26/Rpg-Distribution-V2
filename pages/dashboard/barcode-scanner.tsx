@@ -15,7 +15,7 @@ import noImage from "@/public/assets/products/noProductDisplay.png";
 import Loading from "@/components/Parts/Loading";
 import Toast from "@/components/Parts/Toast";
 
-type TAssignedProducts = Omit<
+export type TAssignedProducts = Omit<
   assignedProducts,
   | "id"
   | "dateReceive"
@@ -35,11 +35,12 @@ type TSKU = {
 };
 
 type TToast = {
-  message: string;
+  message: string | undefined | unknown;
   isShow: boolean;
 };
 
 type TData = {
+  message: string;
   scanData: {
     message: string;
     TotalAssignedProduct: number;
@@ -57,6 +58,7 @@ export default function BarcodeScanner() {
   });
   const [img, setImg] = useState("");
   const [data, setData] = useState<TData>({
+    message: "",
     scanData: {
       capacity: 0,
       message: "",
@@ -69,6 +71,7 @@ export default function BarcodeScanner() {
   const [quantity, setQuantity] = useState<number>(0);
   const [isManual, setIsManual] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [disable, setDisable] = useState(false);
   // const [image, setImage] = useState("");
   const Quality = ["Good", "Damage"];
   const BoxSize = ["Small", "Medium", "Large"];
@@ -123,7 +126,6 @@ export default function BarcodeScanner() {
           };
         });
       } else if (value.length === 14) {
-        getProductImage(value);
         if (SKUCode.sku.some((v) => v.barcodeId !== value)) {
           setSKUCode({
             ...SKUCode,
@@ -131,6 +133,8 @@ export default function BarcodeScanner() {
           });
           getSKUCode(value);
         } else {
+          getProductImage(value);
+
           SKUCode.sku.length <= 0
             ? getSKUCode(value)
             : assignedProduct.skuCode === ""
@@ -186,6 +190,8 @@ export default function BarcodeScanner() {
   function scanBarcode() {
     console.log("scan triggered");
     setIsLoading(true);
+    // setDisable(true);
+
     fetch("/api/inbound/scan", {
       method: "POST",
       headers: {
@@ -198,22 +204,24 @@ export default function BarcodeScanner() {
       }),
     })
       .then((res) => res.json())
-      .then((data: TData) => {
-        const { scanData } = data;
-        setData({
-          scanData,
-        });
+      .then((data: unknown) => {
+        // const { scanData } = data;
+        // setData({
+        //   scanData,
+        // });
 
-        setToastData({
-          isShow: true,
-          message: data.scanData.message,
-        });
+        // setToastData({
+        //   isShow: true,
+        //   message: data,
+        // });
+
         console.log(data);
       })
       .catch((error) => console.log(error))
       .finally(() => {
         setScanning(false);
         setIsLoading(false);
+        // setDisable(false);
       });
   }
 
@@ -234,11 +242,12 @@ export default function BarcodeScanner() {
   }
 
   useEffect(() => {
-    if (isManual === true) {
+    if (isManual === false) {
       setQuantity((prev) => (prev = 0));
     }
   }, [isManual]);
 
+  // console.log("setQuantity", quantity, "isManual", isManual);
   const inputStyle =
     "block w-full appearance-none rounded border border-gray-200 bg-gray-200 px-4 py-3 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none";
   const labelStyle =
@@ -255,6 +264,7 @@ export default function BarcodeScanner() {
           </label>
           <span className="relative block">
             <input
+              // disabled={disable}
               type="text"
               name="barcodeId"
               placeholder="eg: 14087460734592"
@@ -279,9 +289,9 @@ export default function BarcodeScanner() {
                 setIsManual={setIsManual}
               />
 
-              <p className="absolute text-[10px] font-bold uppercase text-red-500">
+              {/* <p className="absolute text-[10px] font-bold uppercase text-red-500">
                 Note: You Can Only Select Quantity Up To 100
-              </p>
+              </p> */}
             </div>
           </span>
         </span>
@@ -411,7 +421,7 @@ export default function BarcodeScanner() {
           />
         )}
       </div>
-      <Toast data={toastData.message} isShow={toastData.isShow} />
+      {/* <Toast data={toastData.message} isShow={toastData.isShow} /> */}
     </section>
   );
 }

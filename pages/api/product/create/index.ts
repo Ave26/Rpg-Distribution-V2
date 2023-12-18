@@ -23,7 +23,7 @@ async function handler(
     image,
     price,
     productName,
-    sku: { code, color, weight, threshold },
+    sku: { code, weight, threshold },
   } = newProduct;
   const th = Number(threshold);
 
@@ -69,7 +69,6 @@ async function handler(
           create: {
             threshold: th,
             code,
-            color,
             weight,
           },
         },

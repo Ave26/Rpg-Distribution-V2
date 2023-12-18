@@ -22,8 +22,10 @@ export default function InputWLabel({
       <label
         {...lableAttributes}
         className={`${
-          typeof inputAttributes.value === "string" &&
-          inputAttributes.value.length !== 0
+          (typeof inputAttributes.value === "number" &&
+            inputAttributes.value >= 0) ||
+          (typeof inputAttributes.value === "string" &&
+            inputAttributes.value.length !== 0)
             ? "-top-2 bg-white"
             : "top-2 bg-transparent"
         } absolute left-4 h-fit w-fit appearance-none uppercase transition-all ease-in ${customLabelStyle}`}>

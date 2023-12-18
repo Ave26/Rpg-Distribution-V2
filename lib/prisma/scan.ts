@@ -37,9 +37,11 @@ type TAssignedProducts = Omit<
 
 export async function scan_barcode(
   assignedProduct: TAssignedProducts,
-  quantity: number
+  quantity: number,
+  usersId: string
 ) {
   try {
+    let scanData: object | null = null;
     const {
       barcodeId,
       boxSize,
@@ -50,28 +52,27 @@ export async function scan_barcode(
       status,
     } = assignedProduct;
 
-    const product = await prisma.products.findUnique({
+    const productPromise = prisma.products.findUnique({
       where: {
         barcodeId,
       },
-      include: {
-        sku: {
-          where: {
-            code: skuCode,
-          },
-        },
+      select: {
+        category: true,
       },
     });
 
-    const category = await prisma.categories.findFirst({
+    const categoryPromise = prisma.categories.findFirst({
       where: {
-        category: product?.category,
+        category: (await productPromise)?.category,
+      },
+      select: {
+        id: true,
       },
     });
 
-    const bins = await prisma.bins.findMany({
+    const binsPromise = prisma.bins.findMany({
       where: {
-        racks: { categoriesId: category?.id },
+        racks: { categoriesId: (await categoryPromise)?.id },
       },
       include: {
         racks: true,
@@ -84,20 +85,31 @@ export async function scan_barcode(
       },
     });
 
-    let scanData: object | null = null;
+    const [productResult, categories, bins] = await prisma.$transaction([
+      productPromise,
+      categoryPromise,
+      binsPromise,
+    ]);
 
     let remainingQuantity = quantity;
     console.log(remainingQuantity);
 
-    for (let bin of bins) {
-      const { dateReceive, expiry } = setTime(expirationDate);
-
-      const { availableBin } = await setMethod(
-        String(category?.category),
+    const { dateReceive, expiry } = setTime(expirationDate);
+    const binPromises = bins.map((bin) => {
+      return setMethod(
+        String(productResult?.category),
         bin.id,
         assignedProduct,
         dateReceive
       );
+    });
+
+    const availableBins = await Promise.all(binPromises);
+
+    for (let i = 0; i < bins.length; i++) {
+      const bin = bins[i];
+      const { availableBin } = availableBins[i];
+
       if (quality === "Good") {
         const newData = {
           boxSize,
@@ -108,7 +120,8 @@ export async function scan_barcode(
           quality,
           barcodeId,
           skuCode,
-          binId: String(availableBin?.id),
+          binId: availableBin ? String(availableBin.id) : bin.id,
+          usersId,
         };
 
         if (availableBin) {
@@ -134,28 +147,11 @@ export async function scan_barcode(
 
               remainingQuantity -= quantityToInsert;
             }
-
-            console.log("remaining quantity:", remainingQuantity);
-            console.log(
-              "binCapacity - countAssigneProducts:",
-              bin.capacity - bin.assignedProducts.length
-            );
-            console.log("Capacity:", bin.capacity, "");
-
-            // let multipleAssignedProduct = [];
-            // for (let i = 0; i < remainingQuantity; i++) {
-            //   multipleAssignedProduct.push(newData);
-
-            // }
-            // await prisma.assignedProducts.createMany({
-            //   data: multipleAssignedProduct,
-            // });
           }
 
           const TotalAssignedProduct = await prisma.assignedProducts.count({
             where: {
               binId: bin?.id,
-
               status: "Default" || "Queuing",
             },
           });
@@ -195,6 +191,8 @@ export async function scan_barcode(
         }
       } else {
         console.log("Goes to Damage Bin");
+        // Handle the case where quality is not "Good"
+        console.log("handle damage bin");
       }
     }
 
@@ -204,13 +202,26 @@ export async function scan_barcode(
   }
 }
 
+// Update BinWithDate type to include assignedProducts with dateReceive and expiry
+type BinWithDate = bins & {
+  assignedProducts?: {
+    barcodeId: string;
+    skuCode: string;
+    expirationDate: Date;
+    dateReceive: Date; // Assuming dateReceive is part of assignedProducts
+  }[];
+};
+
+// ...
+
 async function setMethod(
   category: string,
   binId: string,
   assignedProduct: TAssignedProducts,
   dateReceive: Date
 ) {
-  let availableBin: bins | null = null;
+  let availableBin: BinWithDate | null = null;
+
   switch (category as Category) {
     case "Food":
     case "Cosmetics":
@@ -267,10 +278,8 @@ async function setMethod(
       console.log("There is no available bin");
       break;
   }
+
   console.log(availableBin);
+
   return { availableBin };
 }
-
-/* 
-  IT INSERTS MULTIPLE DATA 
-*/

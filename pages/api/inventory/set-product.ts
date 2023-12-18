@@ -7,91 +7,71 @@ import {
   TUpdateProductId,
 } from "@/components/Inventory/InventoryTypes";
 
+type TBody = {
+  updateProduct: TUpdateProductId;
+};
+
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  const {
-    id,
-    price,
-    productName,
-    skuCode,
-    threshold,
-    weight,
-    barcodeId,
-  }: TUpdateProductId = req.body;
-
+  const { updateProduct }: TBody = req.body;
+  const { price, productName, skuCode, threshold, weight, ...rest } =
+    updateProduct;
   switch (req.method) {
     case "POST":
       try {
-        if ((!price && !productName && !skuCode && !threshold) || !weight) {
-          return res.status(404).json({
-            message: "All fields are empty",
-          });
+        if (
+          price === undefined &&
+          productName === undefined &&
+          skuCode === undefined &&
+          weight === undefined
+        ) {
+          return res.status(422).json({ message: "undefined" });
         }
 
-        // let data: Record<string, any> = {};
+        const dataToUpdate: Record<string, any> = {};
 
-        // // Add fields to data object if they are provided
-        // if (productName !== undefined) {
-        //   data.productName = productName;
-        // }
+        if (price !== undefined) dataToUpdate.price = price;
+        if (productName !== undefined) dataToUpdate.productName = productName;
+        // if (skuCode !== undefined) dataToUpdate.skuCode = skuCode;
+        // if (threshold !== undefined) dataToUpdate.threshold = threshold;
+        // if (weight !== undefined) dataToUpdate.weight = weight;
+        console.log(skuCode);
+        Object.keys(dataToUpdate).forEach(
+          (key) => !dataToUpdate[key] && delete dataToUpdate[key]
+        );
+        console.log(dataToUpdate);
 
-        // if (price !== undefined) {
-        //   data.price = price;
-        // }
+        const updatedProduct = await prisma.products.update({
+          where: {
+            id: rest.id,
+          },
+          data: dataToUpdate,
+        });
 
-        // if (skuCode !== undefined) {
-        //   data.sku = {
-        //     create: {
-        //       code: skuCode,
-        //     },
-        //   };
-        // }
+        // update\\\\\
 
-        // const updatedProduct = await prisma.products.update({
+        // const sku = await prisma.stockKeepingUnit.upsert({
         //   where: {
-        //     id,
+        //     barcodeId: rest.barcodeId,
+        //     code: skuCode,
         //   },
-        //   data,
-        // });
-        // console.log(updatedProduct);
-        // console.log(price, productName, skuCode, threshold);
-
-        // const updatedProduct = await prisma.products.update({
-        //   where: { id },
-        //   data: {
-        //     ...(barcodeId !== undefined && { barcodeId }), // Include barcodeId only if it is not undefined
+        //   create: {
+        //     code: skuCode,
+        //     weight: 0, // Replace with the actual weight value
+        //     color: "default_color", // Replace with the actual color value
+        //     threshold: 0, // Replace with the actual threshold value
         //   },
+        //   update: {}, // This can be an empty object since you are creating a new entry
         // });
 
-        // const updatedProduct = await prisma.products.update({
-        //   where: { id },
-        //   data: {
-        //     barcodeId,
-        //     price,
-        //     sku: {
-        //       create: {
-        //         code: String(skuCode),
-        //         threshold: Number(threshold),
-        //         weight: Number(weight),
-        //       },
-        //     },
-        //   },
-        // });
+        // I also want to create using prisma upsert
 
-        const data = {
-          id,
-          price,
-          productName,
-          skuCode,
-          threshold,
-          weight,
-          barcodeId,
-        };
-
-        return data && res.status(200).json(data);
+        return res
+          .status(200)
+          .json({ updatedProduct, message: "Product Updated" });
       } catch (error) {
         return console.log(error);
       }

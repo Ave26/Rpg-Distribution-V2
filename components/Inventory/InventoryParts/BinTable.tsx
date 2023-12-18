@@ -30,7 +30,6 @@ const BinTable = ({ bins }: TBinTableProps) => {
           })}
         </tr>
       </thead>
-      {/* z */}
 
       <tbody>
         {bins?.map((bin: TBins) => {

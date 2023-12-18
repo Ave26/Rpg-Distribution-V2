@@ -19,7 +19,11 @@ export async function handler(
             price: true,
             id: true,
             discontinued: true,
-
+            sku: {
+              select: {
+                code: true,
+              },
+            },
             _count: {
               select: {
                 assignedProducts: {

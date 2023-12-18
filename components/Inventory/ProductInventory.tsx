@@ -4,8 +4,6 @@ import useSWR from "swr";
 import { TProducts, TUpdateProductId } from "./InventoryTypes";
 import ProductToBeUpdate from "./InventoryParts/ProductToBeUpdate";
 
-type ProductInventoryProps = {};
-
 async function fetcher(url: string): Promise<TProducts[]> {
   return fetch(url)
     .then((res) => {
@@ -30,14 +28,13 @@ export default function ProductInventory() {
     threshold: 0,
     weight: 0,
   });
+
   const { data, mutate } = useSWR("/api/inventory/get-products", fetcher, {
     refreshInterval: 1200,
   });
 
-  function takeProductId() {}
-
   return (
-    <section className="flex h-[24.5em] w-full items-start justify-center overflow-y-scroll border border-black">
+    <section className="flex h-[30.5em] w-full items-start justify-center overflow-y-scroll border border-black">
       <ProductTable
         products={data}
         setUpdateProduct={setUpdateProduct}
@@ -48,6 +45,7 @@ export default function ProductInventory() {
         <ProductToBeUpdate
           updateProduct={updateProduct}
           setUpdateProduct={setUpdateProduct}
+          mutate={mutate}
         />
       )}
     </section>
