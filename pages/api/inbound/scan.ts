@@ -49,26 +49,26 @@ export async function handler(
 
         if (quantity > 1) {
           console.log("multi operation");
-          // scanMultipleProduct(assignedProduct, quantity, userId);
-          let msg: string | undefined;
+
+          res
+            .status(200)
+            .json({ message: "Processing in progress. It may take a while." });
+
+          let msg: string | undefined = "success";
           for (let i = 0; i < quantity; i++) {
             console.log(`1 ${i}`);
             const { message } = await scanBarcode(assignedProduct, userId);
-            msg = message;
           }
-          return res.status(200).json(msg);
+
+          console.log("Multi operation completed");
         } else {
           console.log("single operation");
-          const { message } = await scanBarcode(assignedProduct, userId);
-          return res.status(200).json(message);
-        }
+          res
+            .status(200)
+            .json({ message: "Processing in progress. It may take a while." });
 
-        // console.log(assignedProduct);
-        // const transaction = await scan_barcode(
-        //   assignedProduct,
-        //   quantity,
-        //   userId
-        // );
+          const { message } = await scanBarcode(assignedProduct, userId);
+        }
       } catch (error) {
         console.log(error);
         return res.json(error);
