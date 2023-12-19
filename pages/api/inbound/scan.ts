@@ -33,7 +33,7 @@ export async function handler(
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  const { assignedProduct, quantity }: TBody = req.body;
+  const { assignedProduct, quantity }: TBody = req.body; // 40
 
   switch (req.method) {
     case "POST":
@@ -50,24 +50,26 @@ export async function handler(
         if (quantity > 1) {
           console.log("multi operation");
 
-          res
-            .status(200)
-            .json({ message: "Processing in progress. It may take a while." });
+          // res
+          //   .status(200)
+          //   .json({ message: "Processing in progress. It may take a while." });
 
           let msg: string | undefined = "success";
           for (let i = 0; i < quantity; i++) {
             console.log(`1 ${i}`);
             const { message } = await scanBarcode(assignedProduct, userId);
+            msg = message;
           }
 
-          console.log("Multi operation completed");
+          return res.status(200).json(msg);
         } else {
           console.log("single operation");
-          res
-            .status(200)
-            .json({ message: "Processing in progress. It may take a while." });
+          // res
+          //   .status(200)
+          //   .json({ message: "Processing in progress. It may take a while." });
 
           const { message } = await scanBarcode(assignedProduct, userId);
+          return res.status(200).json(message);
         }
       } catch (error) {
         console.log(error);
