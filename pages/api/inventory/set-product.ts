@@ -17,39 +17,59 @@ export async function handler(
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { updateProduct }: TBody = req.body;
-  const { price, productName, skuCode, threshold, weight, ...rest } =
-    updateProduct;
+  const { barcodeId, id, ...rest } = updateProduct;
+  console.log(updateProduct);
+  // const { price, productName, skuCode, threshold, weight, ...rest } =
+  //   updateProduct;
   switch (req.method) {
     case "POST":
       try {
-        if (
-          price === undefined &&
-          productName === undefined &&
-          skuCode === undefined &&
-          weight === undefined
-        ) {
-          return res.status(422).json({ message: "undefined" });
+        if (!Object.values(rest).every(Boolean)) {
+          return res.status(204).json({ message: "Empty Fields" });
         }
 
-        const dataToUpdate: Record<string, any> = {};
+        // remove the key if it is undefiend or it is empty field
 
-        if (price !== undefined) dataToUpdate.price = price;
-        if (productName !== undefined) dataToUpdate.productName = productName;
-        // if (skuCode !== undefined) dataToUpdate.skuCode = skuCode;
-        // if (threshold !== undefined) dataToUpdate.threshold = threshold;
-        // if (weight !== undefined) dataToUpdate.weight = weight;
-        console.log(skuCode);
-        Object.keys(dataToUpdate).forEach(
-          (key) => !dataToUpdate[key] && delete dataToUpdate[key]
-        );
-        console.log(dataToUpdate);
+        const dataToUpdate: Record<string, number | string | undefined> = {
+          productName: rest.productName,
+          price: rest.price,
+        };
+        const keyToUpdate = dataToUpdate[rest.price || rest.productName];
 
-        const updatedProduct = await prisma.products.update({
-          where: {
-            id: rest.id,
-          },
-          data: dataToUpdate,
-        });
+        // const updatedProduct = await prisma.products.update({
+        //   where: {
+        //     id,
+        //     barcodeId,
+        //   },
+        //   data: keyToUpdate,
+        // });
+
+        // if (
+        //   price === undefined &&
+        //   productName === undefined &&
+        //   skuCode === undefined &&
+        //   weight === undefined
+        // ) {
+        //   return res.status(422).json({ message: "undefined" });
+        // }
+
+        // if (price !== undefined) dataToUpdate.price = price;
+        // if (productName !== undefined) dataToUpdate.productName = productName;
+        // // if (skuCode !== undefined) dataToUpdate.skuCode = skuCode;
+        // // if (threshold !== undefined) dataToUpdate.threshold = threshold;
+        // // if (weight !== undefined) dataToUpdate.weight = weight;
+        // console.log(skuCode);
+        // Object.keys(dataToUpdate).forEach(
+        //   (key) => !dataToUpdate[key] && delete dataToUpdate[key]
+        // );
+        // console.log(dataToUpdate);
+
+        // const updatedProduct = await prisma.products.update({
+        //   where: {
+        //     id: rest.id,
+        //   },
+        //   data: dataToUpdate,
+        // });
 
         // update\\\\\
 
@@ -69,9 +89,7 @@ export async function handler(
 
         // I also want to create using prisma upsert
 
-        return res
-          .status(200)
-          .json({ updatedProduct, message: "Product Updated" });
+        return res.status(200).json(updateProduct);
       } catch (error) {
         return console.log(error);
       }

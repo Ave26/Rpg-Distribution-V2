@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductTable from "./InventoryParts/ProductTable";
 import useSWR from "swr";
-import { TProducts, TUpdateProductId } from "./InventoryTypes";
+import { TProducts, TUpdateProductId, TSKU } from "./InventoryTypes";
 import ProductToBeUpdate from "./InventoryParts/ProductToBeUpdate";
 
 async function fetcher(url: string): Promise<TProducts[]> {
@@ -18,13 +18,17 @@ async function fetcher(url: string): Promise<TProducts[]> {
 }
 
 export default function ProductInventory() {
+  const [isOpen, setIsOpen] = useState(false);
   const [updateProduct, setUpdateProduct] = useState<TUpdateProductId>({
     id: "",
     barcodeId: "",
-    isOpen: false,
     price: 0,
     productName: "",
-    skuCode: "",
+  });
+
+  const [SKU, setSKU] = useState<TSKU>({
+    barcodeId: "",
+    code: "",
     threshold: 0,
     weight: 0,
   });
@@ -39,12 +43,20 @@ export default function ProductInventory() {
         products={data}
         setUpdateProduct={setUpdateProduct}
         updateProduct={updateProduct}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        SKU={SKU}
+        setSKU={setSKU}
       />
 
-      {updateProduct.isOpen && (
+      {isOpen && (
         <ProductToBeUpdate
           updateProduct={updateProduct}
           setUpdateProduct={setUpdateProduct}
+          SKU={SKU}
+          setSKU={setSKU}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
           mutate={mutate}
         />
       )}

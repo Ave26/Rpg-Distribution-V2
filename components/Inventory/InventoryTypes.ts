@@ -40,13 +40,11 @@ export type TToast = {
 export type TUpdateProductId = {
   id: string;
   barcodeId: string;
-  isOpen: boolean;
   productName: string;
   price: number;
-  skuCode: string;
-  threshold: number;
-  weight: number;
 };
+
+export type TSKU = Omit<stockKeepingUnit, "id">;
 
 export type TInput = {
   id: string;

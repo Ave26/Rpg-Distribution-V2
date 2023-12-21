@@ -50,7 +50,6 @@ model stockKeepingUnit {
   id               String            @id @default(auto()) @map("_id") @db.ObjectId
   code             String            @unique
   weight           Int
-  // color            String
   threshold        Int
   products         products?         @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId        String?           @unique

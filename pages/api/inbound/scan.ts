@@ -8,7 +8,7 @@ import { get_order } from "@/lib/prisma/order";
 import { scan_barcode } from "@/lib/prisma/scan";
 import { assignedProducts } from "@prisma/client";
 import prisma from "@/lib/prisma";
-import { scanBarcode } from "@/lib/prisma/inbound";
+import { scanBarcode, scanMultipleProduct } from "@/lib/prisma/inbound";
 
 type TBody = {
   assignedProduct: TAssignedProducts;
@@ -49,24 +49,20 @@ export async function handler(
 
         if (quantity > 1) {
           console.log("multi operation");
-
-          // res
-          //   .status(200)
-          //   .json({ message: "Processing in progress. It may take a while." });
-
-          let msg: string | undefined = "success";
-          for (let i = 0; i < quantity; i++) {
-            console.log(`1 ${i}`);
-            const { message } = await scanBarcode(assignedProduct, userId);
-            msg = message;
-          }
-
-          return res.status(200).json(msg);
+          const { message } = await scanMultipleProduct(
+            assignedProduct,
+            quantity,
+            userId
+          );
+          // let msg: string | undefined;
+          // for (let i = 0; i < quantity; i++) {
+          //   console.log(`1 ${i}`);
+          //   const { message } = await scanBarcode(assignedProduct, userId);
+          //   msg = message;
+          // }
+          return res.status(200).json(message);
         } else {
           console.log("single operation");
-          // res
-          //   .status(200)
-          //   .json({ message: "Processing in progress. It may take a while." });
 
           const { message } = await scanBarcode(assignedProduct, userId);
           return res.status(200).json(message);
@@ -74,6 +70,9 @@ export async function handler(
       } catch (error) {
         console.log(error);
         return res.json(error);
+      } finally {
+        await prisma.$disconnect();
+        console.log("prisma disconnected");
       }
     default:
       break;

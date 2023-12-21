@@ -21,7 +21,10 @@ export async function handler(
             discontinued: true,
             sku: {
               select: {
+                id: true,
                 code: true,
+                threshold: true,
+                weight: true,
               },
             },
             _count: {
@@ -29,21 +32,6 @@ export async function handler(
                 assignedProducts: {
                   where: {
                     status: "Default",
-                  },
-                },
-              },
-            },
-            assignedProducts: {
-              where: {
-                status: "Default",
-              },
-
-              select: {
-                skuCode: true,
-
-                sku: {
-                  select: {
-                    threshold: true,
                   },
                 },
               },

@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { TProducts, TUpdateProductId } from "../InventoryTypes";
 import { KeyedMutator } from "swr";
+import { TSKU } from "../InventoryTypes";
 
 type ProductTableProps = {
   products: TProducts[] | undefined;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   updateProduct: TUpdateProductId;
   setUpdateProduct: React.Dispatch<React.SetStateAction<TUpdateProductId>>;
+  SKU: TSKU;
+  setSKU: React.Dispatch<React.SetStateAction<TSKU>>;
 };
 
 export default function ProductTable({
   products,
   updateProduct,
   setUpdateProduct,
+  isOpen,
+  setIsOpen,
+  SKU,
+  setSKU,
 }: ProductTableProps) {
   const thArray = [
     "Product Name",
@@ -21,6 +30,7 @@ export default function ProductTable({
     "Threshold",
     "Price",
     "Status",
+    "Weight",
   ];
 
   // Generate initial SKU mapping based on the products array
@@ -33,20 +43,11 @@ export default function ProductTable({
   const [selectedSKUs, setSelectedSKUs] =
     useState<Record<string, string>>(initialSKUs);
 
-  function handleChange(
-    productId: string,
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) {
-    const { value } = e.target;
-    console.log(productId);
-    setSelectedSKUs((prevSelectedSKUs) => ({
-      ...prevSelectedSKUs,
-      [productId]: value,
-    }));
-    setUpdateProduct((prevState) => ({
-      ...prevState,
-      skuCode: value,
-    }));
+  function getSKUCode(skuCode: string): string {
+    setSKU((prevState) => {
+      return { ...prevState, code: skuCode };
+    });
+    return skuCode;
   }
 
   return (
@@ -70,8 +71,13 @@ export default function ProductTable({
                 <select
                   name="skuCode"
                   id=""
-                  value={selectedSKUs[product.id] || product.sku[0]?.code}
-                  onChange={(e) => handleChange(product.id, e)}>
+                  value={SKU.code || getSKUCode(product.sku[0].code)}
+                  onChange={(e) => {
+                    setSKU((prevState) => ({
+                      ...prevState,
+                      code: e.target.value,
+                    }));
+                  }}>
                   {product.sku.map((value) => {
                     return <option key={value.id}>{value.code}</option>;
                   })}
@@ -79,19 +85,29 @@ export default function ProductTable({
               </td>
 
               <td>
-                {
-                  product.assignedProducts.map((assignedProduct) => (
-                    <h1 key={assignedProduct.id}>
-                      {assignedProduct.sku?.threshold}
-                    </h1>
-                  ))[0]
-                }
+                {product.sku.map((value) => {
+                  return (
+                    <p key={value.id}>
+                      {SKU.code === value.code && value.threshold}
+                    </p>
+                  );
+                })}
               </td>
               <td>{product.price}</td>
               <td>{String(product.discontinued)}</td>
+              <td>
+                {product.sku.map((value) => {
+                  return (
+                    <p key={value.id}>
+                      {SKU.code === value.code && value.weight}
+                    </p>
+                  );
+                })}
+              </td>
+
               <td
                 className={`${
-                  updateProduct.isOpen &&
+                  isOpen &&
                   updateProduct.id === product.id &&
                   "border border-black"
                 } cursor-pointer rounded-sm text-[10px] font-bold uppercase text-blue-500`}
@@ -100,9 +116,9 @@ export default function ProductTable({
                     ...updateProduct,
                     id: product.id,
                     barcodeId: product.barcodeId,
-                    isOpen: true,
-                    skuCode: selectedSKUs[product.id],
                   });
+                  setIsOpen(true);
+
                   console.log("Selected SKU:", selectedSKUs[product.id]); // undefined
                 }}>
                 Update
