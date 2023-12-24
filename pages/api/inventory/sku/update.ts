@@ -1,38 +1,30 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import {
-  TInput,
-  TUpdateProductId,
-} from "@/components/Inventory/InventoryTypes";
+import { authMiddleware } from "../../authMiddleware";
+import { TSKU } from "@/components/Inventory/InventoryTypes";
 
-type TBody = {
-  updateProduct: TUpdateProductId;
-};
+type TBody = { SKU: TSKU };
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  const { updateProduct }: TBody = req.body;
-  const { barcodeId, id, ...rest } = updateProduct;
-  console.log(rest);
-
+  const { SKU }: TBody = req.body;
+  const { barcodeId, code, ...rest } = SKU;
   switch (req.method) {
     case "POST":
       try {
         if (!Object.values(rest).some(Boolean)) {
-          return res.status(200).send({ message: "Empty Fields" });
+          return res.json({ message: "Incomplete Fields" });
         }
 
-        const dataToUpdate: Record<string, number | string> = {
-          productName: rest.productName,
-          price: Number(rest.price),
+        const dataToUpdate: Record<string, number> = {
+          weight: rest.weight,
+          threshold: rest.threshold,
         };
 
-        // Remove undefined or empty fields from dataToUpdate
         const filteredData: Record<string, number | string> = {};
         Object.entries(dataToUpdate).forEach(([key, value]) => {
           if (value) {
@@ -40,21 +32,14 @@ export async function handler(
           }
         });
 
-        const updatedProduct = await prisma.products.update({
+        const updatedSKU = await prisma.stockKeepingUnit.update({
           where: {
-            id,
             barcodeId,
           },
           data: filteredData,
         });
 
-        return (
-          updatedProduct &&
-          res.status(200).json({
-            message: "Product Updated",
-            updatedProduct,
-          })
-        );
+        return res.status(200).json({ message: "SKU Updated", updatedSKU });
       } catch (error) {
         return console.log(error);
       }

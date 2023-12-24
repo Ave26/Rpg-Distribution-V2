@@ -52,7 +52,7 @@ model stockKeepingUnit {
   weight           Int
   threshold        Int
   products         products?         @relation(fields: [barcodeId], references: [barcodeId])
-  barcodeId        String?           @unique
+  barcodeId        String            @unique
   assignedProducts assignedProducts?
 }
 

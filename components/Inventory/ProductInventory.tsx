@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ProductTable from "./InventoryParts/ProductTable";
 import useSWR from "swr";
-import { TProducts, TUpdateProductId, TSKU } from "./InventoryTypes";
+import { TProducts, TUpdateProductId, TSKU, TToast } from "./InventoryTypes";
 import ProductToBeUpdate from "./InventoryParts/ProductToBeUpdate";
+import Toast from "../Parts/Toast";
 
 async function fetcher(url: string): Promise<TProducts[]> {
   return fetch(url)
@@ -19,6 +20,12 @@ async function fetcher(url: string): Promise<TProducts[]> {
 
 export default function ProductInventory() {
   const [isOpen, setIsOpen] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [toast, setToast] = useState<TToast>({
+    message: "",
+    show: false,
+  });
+
   const [updateProduct, setUpdateProduct] = useState<TUpdateProductId>({
     id: "",
     barcodeId: "",
@@ -37,6 +44,16 @@ export default function ProductInventory() {
     refreshInterval: 1200,
   });
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setToast({ ...toast, show: false });
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [toast.show]);
+
   return (
     <section className="flex h-[30.5em] w-full items-start justify-center overflow-y-scroll border border-black">
       <ProductTable
@@ -47,6 +64,8 @@ export default function ProductInventory() {
         setIsOpen={setIsOpen}
         SKU={SKU}
         setSKU={setSKU}
+        disabled={disabled}
+        setDisabled={setDisabled}
       />
 
       {isOpen && (
@@ -58,8 +77,14 @@ export default function ProductInventory() {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           mutate={mutate}
+          setToast={setToast}
+          toast={toast}
+          disabled={disabled}
+          setDisabled={setDisabled}
         />
       )}
+
+      <Toast data={toast.message} isShow={toast.show} />
     </section>
   );
 }

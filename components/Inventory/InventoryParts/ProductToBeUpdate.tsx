@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { TInput, TSKU, TUpdateProductId } from "../InventoryTypes";
+import { TInput, TSKU, TToast, TUpdateProductId } from "../InventoryTypes";
 import { RiCloseFill } from "react-icons/ri";
 import InputWLabel from "./InputWLabel";
 import Loading from "@/components/Parts/Loading";
+import { products } from "@prisma/client";
+import InventoryRequestButton from "./InventoryRequestButton";
 
 type TProductToBeUpdate = {
   updateProduct: TUpdateProductId;
@@ -12,6 +14,15 @@ type TProductToBeUpdate = {
   SKU: TSKU;
   setSKU: React.Dispatch<React.SetStateAction<TSKU>>;
   mutate: () => void;
+  toast: TToast;
+  setToast: React.Dispatch<React.SetStateAction<TToast>>;
+  disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+type TData = {
+  products: products;
+  message: string;
 };
 
 function ProductToBeUpdate({
@@ -22,67 +33,53 @@ function ProductToBeUpdate({
   setSKU,
   isOpen,
   setIsOpen,
+  setToast,
+  toast,
+  disabled,
+  setDisabled,
 }: TProductToBeUpdate) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [swap, setSwap] = useState(false);
+  const [loading, setLoading] = useState({
+    product: false,
+    sku: {
+      update: false,
+      alter: false,
+    },
+  });
   const [code, setCode] = useState("");
+  const [swap, setSwap] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     if (name === "skuCode") {
       setCode(value);
+    } else if (name === "weight" || name === "threshold") {
+      setSKU((prevState) => ({ ...prevState, [name]: parseInt(value) }));
     } else {
-      setUpdateProduct((prevState) => ({ ...prevState, [name]: value }));
+      setUpdateProduct((prevState) => ({
+        ...prevState,
+        [name]: name === "price" ? parseFloat(value) : value,
+      }));
     }
   }
 
-  useEffect(() => {
-    console.log(SKU.code);
-  }, [SKU.code]);
-  // function handleSubmit(e: React.MouseEvent<HTMLFormElement>) {
-  //   e.preventDefault();
-  //   setIsLoading(true);
-  //   fetch("/api/inventory/set-product", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ updateProduct, SKU }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => data && mutate())
-  //     .catch((error) => error)
-  //     .finally(() => {
-  //       setIsLoading(false);
-
-  //       if (!isLoading) {
-  //         setUpdateProduct((prevState) => {
-  //           return { ...prevState, isOpen: false, productName: "", price: 0 };
-  //         });
-  //       }
-  //     });
-  // }
-
-  // function getSKU(skuCode: string): string {
-  //   setSKU((prevState) => ({ ...prevState, code: "" }));
-  //   return skuCode;
-  // }
-
-  const btnStyle =
-    "rounded-sm bg-sky-300/40 p-2 shadow-md hover:bg-sky-300/80 active:bg-sky-300 uppercase text-xs font-bold w-full";
   return (
     <form
       className={`absolute translate-y-24 flex-col rounded-sm border border-black bg-white/20 p-2  shadow-lg backdrop-blur-lg transition-colors ${
         isOpen ? "animation-emerge" : "animation-fade"
       }`}>
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault();
           setUpdateProduct({
             ...updateProduct,
             barcodeId: "",
             price: 0,
             productName: "",
           });
+          setSKU((prevState) => ({
+            ...prevState,
+            barcodeId: "",
+          }));
 
           setIsOpen(false);
         }}
@@ -112,7 +109,7 @@ function ProductToBeUpdate({
             type: "number",
             name: "price",
             id: "price",
-            value: updateProduct.price,
+            value: Number(updateProduct.price),
             onChange: handleChange,
           }}
           lableAttributes={{
@@ -128,20 +125,35 @@ function ProductToBeUpdate({
           </h1>
           <div className="">
             <button
-              className={btnStyle}
+              className="h-[40px] w-full rounded-sm bg-sky-300/40 p-2 text-xs font-bold uppercase shadow-md hover:bg-sky-300/80 active:bg-sky-300"
               type="button"
               onClick={async () => {
+                setLoading({ ...loading, product: true });
                 fetch("/api/inventory/set-product", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ updateProduct }),
                 })
-                  .then((res) => res.json)
-                  .then((data) => console.log(data))
+                  .then((res) => res.json())
+                  .then(({ message }: TData) => {
+                    console.log(message);
+                    setLoading({ ...loading, product: false });
+                    setToast({
+                      ...toast,
+                      show: true,
+                      message: message,
+                    });
+                  })
                   .catch((error) => console.log(error))
-                  .finally(() => console.log("finish"));
+                  .finally(() =>
+                    setUpdateProduct((prevState) => ({
+                      ...prevState,
+                      productName: "",
+                      price: 0,
+                    }))
+                  );
               }}>
-              Update Product
+              {loading.product ? <Loading /> : "Update Product"}
             </button>
           </div>
         </div>
@@ -150,6 +162,7 @@ function ProductToBeUpdate({
             <div
               onDoubleClick={() => {
                 setSwap(false);
+                setDisabled(false);
               }}>
               <InputWLabel
                 inputAttributes={{
@@ -170,6 +183,7 @@ function ProductToBeUpdate({
             <div
               onDoubleClick={() => {
                 setSwap(true);
+                setDisabled(true);
               }}
               className="peer flex cursor-pointer select-none appearance-none items-center justify-between rounded-sm border border-black px-3 py-2 text-xs font-bold uppercase outline-none">
               <h1>{SKU.code}</h1>
@@ -213,14 +227,21 @@ function ProductToBeUpdate({
             customInputStyle="w-[20em]"
           />
         </div>
-        <div className="flex flex-row gap-2">
-          <button className={`${btnStyle}`} type="submit">
-            {isLoading ? <Loading /> : "Alter"}
-          </button>
-          <button className={`${btnStyle}`} type="submit">
-            {isLoading ? <Loading /> : "Add"}
-          </button>
-        </div>
+        <InventoryRequestButton
+          states={{
+            code,
+            disabled,
+            loading,
+            mutate,
+            setCode,
+            setDisabled,
+            setLoading,
+            setSKU,
+            setToast,
+            SKU,
+            toast,
+          }}
+        />
       </div>
     </form>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TProducts, TUpdateProductId } from "../InventoryTypes";
 import { KeyedMutator } from "swr";
 import { TSKU } from "../InventoryTypes";
@@ -11,6 +11,8 @@ type ProductTableProps = {
   setUpdateProduct: React.Dispatch<React.SetStateAction<TUpdateProductId>>;
   SKU: TSKU;
   setSKU: React.Dispatch<React.SetStateAction<TSKU>>;
+  disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ProductTable({
@@ -33,22 +35,10 @@ export default function ProductTable({
     "Weight",
   ];
 
-  // Generate initial SKU mapping based on the products array
   const initialSKUs: Record<string, string> = {};
   products?.forEach((product) => {
     initialSKUs[product.id] = product.sku[0]?.code || "";
   });
-
-  // State to track selected SKU for each product
-  const [selectedSKUs, setSelectedSKUs] =
-    useState<Record<string, string>>(initialSKUs);
-
-  function getSKUCode(skuCode: string): string {
-    setSKU((prevState) => {
-      return { ...prevState, code: skuCode };
-    });
-    return skuCode;
-  }
 
   return (
     <table className="min-w-full text-center text-sm  font-bold">
@@ -71,13 +61,14 @@ export default function ProductTable({
                 <select
                   name="skuCode"
                   id=""
-                  value={SKU.code || getSKUCode(product.sku[0].code)}
+                  value={SKU.code} // SKU.code || getSKUCode(product.sku[0].code)
                   onChange={(e) => {
                     setSKU((prevState) => ({
                       ...prevState,
                       code: e.target.value,
                     }));
                   }}>
+                  <option defaultValue={"Please Select"}></option>;
                   {product.sku.map((value) => {
                     return <option key={value.id}>{value.code}</option>;
                   })}
@@ -117,9 +108,11 @@ export default function ProductTable({
                     id: product.id,
                     barcodeId: product.barcodeId,
                   });
+                  setSKU((prevState) => ({
+                    ...prevState,
+                    barcodeId: product.barcodeId,
+                  }));
                   setIsOpen(true);
-
-                  console.log("Selected SKU:", selectedSKUs[product.id]); // undefined
                 }}>
                 Update
               </td>

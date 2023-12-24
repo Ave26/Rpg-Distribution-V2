@@ -34,7 +34,7 @@ type TRacks = racks & {
 
 export type TToast = {
   show: boolean;
-  message: "";
+  message: string;
 };
 
 export type TUpdateProductId = {
