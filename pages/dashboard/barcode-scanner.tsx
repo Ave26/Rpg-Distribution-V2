@@ -256,7 +256,7 @@ export default function BarcodeScanner() {
   const spanStyle = "w-full";
 
   return (
-    <section className="flex flex-wrap items-center justify-center border font-semibold transition-all">
+    <section className="flex flex-wrap items-center justify-evenly border p-2 font-semibold transition-all">
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-2 md:w-1/2">
         <span className={spanStyle}>
           <label htmlFor="barcodeId" className={labelStyle}>
@@ -407,18 +407,11 @@ export default function BarcodeScanner() {
           </span>
         </span>
       </div>
-      <div className="md:[20em] flex flex-grow items-center justify-center p-2 md:w-1/2">
+      <div className="relative flex h-96 max-w-sm flex-grow  items-center justify-center">
         {isLoading ? (
           <Loading />
         ) : (
-          <Image
-            priority
-            width={250}
-            height={250}
-            src={img || noImage}
-            alt={"Product Image"}
-            className="h-1/2 w-1/2 object-fill"
-          />
+          <Image priority src={img || noImage} alt={"Product Image"} fill />
         )}
       </div>
       {/* <Toast data={toastData.message} isShow={toastData.isShow} /> */}
