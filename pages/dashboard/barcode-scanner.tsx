@@ -256,7 +256,7 @@ export default function BarcodeScanner() {
   const spanStyle = "w-full";
 
   return (
-    <section className="flex flex-wrap items-center justify-evenly border p-2 font-semibold transition-all">
+    <section className="flex flex-wrap  overflow-y-scroll p-2 font-semibold transition-all md:justify-start">
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-2 md:w-1/2">
         <span className={spanStyle}>
           <label htmlFor="barcodeId" className={labelStyle}>
@@ -272,7 +272,7 @@ export default function BarcodeScanner() {
               value={assignedProduct.barcodeId}
               onChange={handleChange}
             />
-            {isManual && (
+            {/* {isManual && (
               <input
                 type="number"
                 value={quantity}
@@ -281,18 +281,14 @@ export default function BarcodeScanner() {
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="absolute right-9 top-1 block h-9 w-20 animate-emerge appearance-none rounded border border-gray-200 bg-white px-4 py-3 leading-tight text-gray-700 transition-all focus:border-gray-500 focus:bg-white focus:outline-none"
               />
-            )}
+            )} */}
 
-            <div className="absolute right-2 top-3">
+            {/* <div className="absolute right-2 top-3">
               <OperationalToggle
                 isManual={isManual}
                 setIsManual={setIsManual}
               />
-
-              {/* <p className="absolute text-[10px] font-bold uppercase text-red-500">
-                Note: You Can Only Select Quantity Up To 100
-              </p> */}
-            </div>
+            </div> */}
           </span>
         </span>
 
@@ -407,13 +403,13 @@ export default function BarcodeScanner() {
           </span>
         </span>
       </div>
-      <div className="relative flex h-96 max-w-sm flex-grow  items-center justify-center">
+      {/* <div className="relative flex h-[30em] w-[20em] flex-grow items-center justify-center border border-black">
         {isLoading ? (
           <Loading />
         ) : (
           <Image priority src={img || noImage} alt={"Product Image"} fill />
         )}
-      </div>
+      </div> */}
       {/* <Toast data={toastData.message} isShow={toastData.isShow} /> */}
     </section>
   );

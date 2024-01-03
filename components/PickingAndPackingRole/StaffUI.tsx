@@ -7,6 +7,7 @@ import {
   assignedProducts,
   orderedProducts,
 } from "@prisma/client";
+import Circle from "./PickingAndPackingParts/Circle";
 
 type TTrucks = trucks & {
   records: TRecords[];
@@ -47,8 +48,6 @@ type TAnimate = {
   style: "max-h-20" | "max-h-0";
 };
 
-type TLoadingStates = Record<string, boolean>;
-
 export default function StaffUI() {
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<string>("");
@@ -73,7 +72,6 @@ export default function StaffUI() {
     }, 2000);
     return () => clearTimeout(timer);
   }, [toastData.show]);
-  // /api/outbound/get-order
 
   const {
     data: trucks,
@@ -97,7 +95,7 @@ export default function StaffUI() {
 
   return (
     <section className="flex h-[20em] w-full flex-col overflow-y-scroll whitespace-nowrap p-2 text-sm font-medium uppercase md:h-screen">
-      <h1 className="p-5 text-xl font-bold">LIST OF ORDERS</h1>
+      <h1 className="text-xl font-bold">LIST OF ORDERS</h1>
       <div className="flex flex-wrap gap-2">
         <div className="flex flex-col">
           {trucks?.map((truck) => {

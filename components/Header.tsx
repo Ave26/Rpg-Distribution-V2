@@ -34,7 +34,7 @@ export default function Header() {
 
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-center  font-bold dark:bg-white md:px-20 lg:flex-row`}>
+      className={`relative flex h-full w-full flex-col items-center justify-center  font-bold dark:bg-[#B4D4FF] md:px-20 lg:flex-row`}>
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14  ">
         <div
           className={`flex h-fit  w-fit select-none flex-row items-end justify-center gap-2  p-2`}>

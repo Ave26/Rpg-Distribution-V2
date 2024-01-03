@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const linkStyle = {
     select:
-      "rounded-md border  border-transparent bg-[#65CECA] p-2 font-bold hover:border-cyan-400",
+      "rounded-md border  border-transparent bg-[#86B6F6] p-2 font-bold hover:border-cyan-400",
     unSelect:
       "rounded-md border  border-transparent bg-transparent p-2  font-bold",
   };
@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 md:h-screen md:flex-row  md:overflow-y-hidden">
-      <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-5 md:text-sm">
+      <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted border-black md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
         {mapRoutes?.map((route, index) => {
           return (
             <Link

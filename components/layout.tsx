@@ -8,6 +8,7 @@ import React, { ReactNode } from "react";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
+import Circle from "./PickingAndPackingRole/PickingAndPackingParts/Circle";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -29,10 +30,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div
       className="transition-all
     ">
-      {/* headerBg={headerBg} headerTxt={headerTxt} headerSky={headerSky} */}
       <Header />
-      <main className="h-full w-full">{children}</main>
-      {/* footerSky={footerSky} */}
+      <main className="h-full w-full bg-[#EEF5FF]">{children}</main>
       <Footer />
     </div>
   );

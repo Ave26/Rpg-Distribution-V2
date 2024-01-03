@@ -20,6 +20,7 @@ module.exports = {
       animation: {
         fade: "fade .2s linear forwards",
         emerge: "emerge .5s linear forwards",
+        "ping-slow": "ping 3s linear infinite",
       },
     },
   },
