@@ -49,18 +49,18 @@ export async function handler(
 
         if (quantity > 1) {
           console.log("multi operation");
-          const { message } = await scanMultipleProduct(
-            assignedProduct,
-            quantity,
-            userId
-          );
-          // let msg: string | undefined;
-          // for (let i = 0; i < quantity; i++) {
-          //   console.log(`1 ${i}`);
-          //   const { message } = await scanBarcode(assignedProduct, userId);
-          //   msg = message;
-          // }
-          return res.status(200).json(message);
+          // const { message } = await scanMultipleProduct(
+          //   assignedProduct,
+          //   quantity,
+          //   userId
+          // );
+          let msg: string | undefined;
+          for (let i = 0; i < quantity; i++) {
+            console.log(`1 ${i}`);
+            const { message } = await scanBarcode(assignedProduct, userId);
+            msg = message;
+          }
+          return res.status(200).json(msg);
         } else {
           console.log("single operation");
 
