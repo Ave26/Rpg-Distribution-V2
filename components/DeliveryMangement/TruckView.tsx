@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import UpdateTruck from "./UpdateTruck";
 import Loading from "../Parts/Loading";
+import { TSelectedTruck } from "./deliveryManagementTypes";
 
 async function fetcher(url: string): Promise<trucks[]> {
   return fetch(url)
@@ -26,12 +27,12 @@ type TStates = {
   setTruckComponentKey: React.Dispatch<
     React.SetStateAction<"create" | "update">
   >;
-  selectedId: string;
-  setSelectedId: React.Dispatch<React.SetStateAction<string>>;
+  selectedTruck: TSelectedTruck;
+  setSelectedTruck: React.Dispatch<React.SetStateAction<TSelectedTruck>>;
 };
 
 export default function TruckView({ states }: TTruckViewProps) {
-  const { setTruckComponentKey, setSelectedId } = states;
+  const { setTruckComponentKey, setSelectedTruck } = states;
   const { data, isLoading } = useSWR("/api/trucks/find-trucks", fetcher, {
     refreshInterval: 1200,
   });
@@ -44,7 +45,7 @@ export default function TruckView({ states }: TTruckViewProps) {
 
   // after selecting the truck new window will pop up
   const btnStyle =
-    "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
+    "my-2 md:m-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
   return (
     <>
       {isLoading ? (
@@ -60,8 +61,8 @@ export default function TruckView({ states }: TTruckViewProps) {
           <div
             onClick={() => setSelectTruck(truck.id)}
             key={truck.id}
-            className="flex w-full items-center justify-between gap-2 border border-black p-2">
-            <div className="flex w-full flex-shrink flex-wrap gap-2">
+            className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2">
+            <div className="flex w-full flex-wrap gap-2">
               <h1 className="">Truck Name:</h1>
               <p className="font-light">{truck.truckName}</p>
             </div>
@@ -70,7 +71,7 @@ export default function TruckView({ states }: TTruckViewProps) {
               <p className="font-light">{truck.payloadCapacity}</p>
             </div>
             <div className="flex w-full flex-wrap gap-2">
-              <h1 className="">Driver`&apos;`s License:</h1>
+              <h1 className="">Driver&apos;s License:</h1>
               <p className="font-light">{truck.plate}</p>
             </div>
             <div className="flex w-full flex-wrap gap-2">
@@ -82,7 +83,11 @@ export default function TruckView({ states }: TTruckViewProps) {
               className={btnStyle}
               onClick={() => {
                 setTruckComponentKey("update");
-                setSelectedId(truck.id);
+                setSelectedTruck((prevState) => ({
+                  ...prevState,
+                  id: truck.id,
+                  truckName: truck.truckName,
+                }));
               }}>
               Update
             </button>

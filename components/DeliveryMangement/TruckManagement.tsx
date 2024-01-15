@@ -4,10 +4,15 @@ import Toast from "../Parts/Toast";
 import TruckView from "./TruckView";
 import FormCreateTruck from "./FormCreateTruck";
 import FormUpdateTruck from "./FormUpdateTruck";
+import { TSelectedTruck } from "./deliveryManagementTypes";
 
 export default function TruckManagement() {
   const [toast, setToast] = useState<TToast>({ message: "", show: false });
   const [selectedId, setSelectedId] = useState("");
+  const [selectedTruck, setSelectedTruck] = useState<TSelectedTruck>({
+    id: "",
+    truckName: "",
+  });
   const [truckComponentKey, setTruckComponentKey] = useState<
     "create" | "update"
   >("create");
@@ -29,7 +34,12 @@ export default function TruckManagement() {
     create: <FormCreateTruck states={{ setToast, toast }} />,
     update: (
       <FormUpdateTruck
-        states={{ setTruckComponentKey, truckComponentKey, selectedId }}
+        states={{
+          setTruckComponentKey,
+          truckComponentKey,
+          selectedTruck,
+          setToast,
+        }}
       />
     ),
   };
@@ -47,13 +57,13 @@ export default function TruckManagement() {
           {renderComponent}
         </div>
 
-        <div className="flex h-[40em] w-full flex-col items-center justify-start gap-[1px] overflow-y-scroll md:items-start">
+        <div className="flex h-[40em] w-full flex-col gap-[1.5px] overflow-y-scroll border border-black p-2">
           <TruckView
             states={{
               truckComponentKey,
               setTruckComponentKey,
-              selectedId,
-              setSelectedId,
+              selectedTruck,
+              setSelectedTruck,
             }}
           />
         </div>
@@ -63,7 +73,7 @@ export default function TruckManagement() {
     </div>
   );
 }
-
+// flex h-[40em] w-full flex-col items-center justify-start gap-[1px] overflow-y-scroll md:items-start
 /* 
   Empty: Indicates that the truck is not carrying any cargo at the moment.
   Partial Load: Indicates that the truck is carrying some cargo, but it is not fully loaded.

@@ -1,4 +1,5 @@
 import { trucks } from "@prisma/client";
+import { TruckAvailability } from "@prisma/client";
 
 export type TSelectedBTN = "Truck Management" | "View Truck Loads";
 export type TForm = Omit<
@@ -6,6 +7,10 @@ export type TForm = Omit<
   "id" | "status" | "driverId" | "routeClusterId"
 >;
 export type TFormExtend = TForm & {
+  status: TruckAvailability;
+};
+
+export type TSelectedTruck = {
   id: string;
-  status: string;
+  truckName: string;
 };
