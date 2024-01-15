@@ -65,6 +65,7 @@ export async function handler(
           console.log("single operation");
 
           const { message } = await scanBarcode(assignedProduct, userId);
+          console.log(message);
           return res.status(200).json(message);
         }
       } catch (error) {

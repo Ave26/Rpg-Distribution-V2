@@ -28,7 +28,7 @@ export async function handler(
             },
             trucks: {
               select: {
-                capacity: true,
+                payloadCapacity: true,
               },
             },
             sku: {

@@ -46,9 +46,11 @@ export default function VehicleManagement() {
 
   const [truckData, setTruckData] = useState<TTrucks>({
     id: "",
-    name: "",
-    status: "Available",
+    truckName: "",
+    status: "Empty",
     records: [],
+    plate: "",
+    payloadCapacity: 0,
     routeClusterId: "",
   });
 
@@ -146,7 +148,7 @@ export default function VehicleManagement() {
                   key={truck.id}
                   className="flex w-full items-center justify-between gap-3 rounded-md border border-transparent bg-sky-50/90 p-2 text-black">
                   <div className="flex h-full w-full flex-col items-start justify-center ">
-                    <h1>{truck.name}</h1>
+                    <h1>{truck.truckName}</h1>
                     <h1>{truck.status}</h1>
                   </div>
                   <div>
@@ -218,7 +220,9 @@ export default function VehicleManagement() {
           className={`relative p-3 transition-all ${
             isOpen ? "animate-emerge" : "animate-fade"
           } absolute h-fit w-full  border bg-slate-900/30`}>
-          <h1 className="text-2xl font-bold">Truck Name: {truckData.name}</h1>
+          <h1 className="text-2xl font-bold">
+            Truck Name: {truckData.truckName}
+          </h1>
           <div className="flex flex-col gap-2 p-2">
             <label htmlFor="truckStatus">Truck Status</label>
             <select

@@ -39,3 +39,69 @@ export async function updateTrucks(id: string, truckName: string) {
   // });
   console.log("update trucks triggered");
 }
+
+export async function getTruckAdminAccess() {
+  try {
+    const trucks = await prisma.trucks.findMany({
+      select: {
+        id: true,
+        truckName: true,
+        plate: true,
+        payloadCapacity: true,
+        status: true,
+      },
+    });
+    console.log(trucks);
+    return { trucks };
+  } catch (error) {
+    return { error };
+  }
+}
+export async function getTruckStaffAccess() {
+  try {
+    // const trucks = await prisma.trucks.findMany({
+    //   where: { status: "FullLoad" || "HalfFull" || "PartialLoad" || "Empty" },
+    //   include: {
+    //     records: {
+    //       where: {
+    //         orderedProducts: {
+    //           some: {
+    //             assignedProducts: {
+    //               some: {
+    //                 status: "Queuing",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //       include: {
+    //         orderedProducts: {
+    //           include: {
+    //             assignedProducts: {
+    //               where: {
+    //                 status: "Queuing",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
+
+    const trucks = await prisma.trucks.findMany({
+      where: { status: "Empty" },
+      select: {
+        truckName: true,
+        plate: true,
+        payloadCapacity: true,
+        status: true,
+        records: true,
+      },
+    });
+    console.log(trucks);
+    return { trucks };
+  } catch (error) {
+    return { error };
+  }
+}

@@ -150,7 +150,7 @@ model assignedProducts {
   usersId           String?          @db.ObjectId
   damageBin         damageBin?       @relation(fields: [damageBinId], references: [id])
   damageBinId       String?          @db.ObjectId
-  trucks            trucks?          @relation(fields: [truckName], references: [name])
+  trucks            trucks?          @relation(fields: [truckName], references: [truckName])
   truckName         String?          @unique
   ordersId          String?          @db.ObjectId
   orderedProducts   orderedProducts? @relation(fields: [orderedProductsId], references: [id])
@@ -185,7 +185,7 @@ model records {
   orderedProducts       orderedProducts[]
   author                users?                @relation(fields: [authorName], references: [username])
   authorName            String?               @unique
-  trucks                trucks?               @relation(fields: [truckName], references: [name])
+  trucks                trucks?               @relation(fields: [truckName], references: [truckName])
   truckName             String?               @unique
   purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
   poId                  String                @unique
@@ -217,19 +217,29 @@ model deliveryLogs {
 }
 
 enum TruckAvailability {
-  Available
-  Loaded
-  ForRepair
-  OutForDelivery
+  // Available
+  // Loaded
+  // ForRepair
+  // OutForDelivery
+  Empty
+  PartialLoad
+  FullLoad
+  HalfFull
+  InTransit
+  Delivered
+  ScheduledforPickup
+  OnHold
 }
 
 // precentage for the loaded capacity
 
 model trucks {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  name             String?            @unique
-  status           TruckAvailability  @default(Available)
-  capacity         Int?               @default(3800)
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  truckName       String            @unique
+  plate           String            @unique
+  status          TruckAvailability @default(Empty)
+  payloadCapacity Int
+
   driver           users?             @relation(fields: [driverId], references: [id])
   driverId         String?            @db.ObjectId
   assignedProducts assignedProducts[]

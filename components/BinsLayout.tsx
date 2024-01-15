@@ -150,11 +150,11 @@ export default function BinsLayout({
         return result;
       }, 0);
 
-      const truck = trucks.find((truck) => truck.name === formData.truck);
-      const result = Number(truck?.capacity) - sum;
+      const truck = trucks.find((truck) => truck.truckName === formData.truck);
+      const result = Number(truck?.payloadCapacity) - sum;
       // console.log("result", result);
 
-      if (sum > Number(truck?.capacity)) {
+      if (sum > Number(truck?.payloadCapacity)) {
         setToast((prev) => {
           return {
             ...prev,

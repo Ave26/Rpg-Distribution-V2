@@ -58,13 +58,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   }, [currentPath, mapRoutes, router]);
 
-  const linkStyle = {
-    select:
-      "rounded-md border  border-transparent bg-[#86B6F6] p-2 font-bold hover:border-cyan-400",
-    unSelect:
-      "rounded-md border  border-transparent bg-transparent p-2  font-bold",
-  };
-
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/user/logout", {
@@ -87,9 +80,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
+  const linkStyle = {
+    select:
+      "rounded-md border  border-transparent bg-[#86B6F6] p-2 font-bold hover:border-cyan-400",
+    unSelect:
+      "rounded-md border  border-transparent bg-transparent p-2  font-bold",
+  };
+
   return (
-    <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 md:h-screen md:flex-row  md:overflow-y-hidden">
-      <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted border-black md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
+    <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 text-xs font-extrabold md:h-screen md:flex-row  md:overflow-y-hidden">
+      <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted border-black p-2  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
         {mapRoutes?.map((route, index) => {
           return (
             <Link

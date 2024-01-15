@@ -113,9 +113,9 @@ export default function StaffUI() {
                   <div className="flex flex-row items-center justify-between gap-2">
                     <h1>
                       <strong className="text-sm">Truck Name:</strong>{" "}
-                      {truck.name}
+                      {truck.truckName}
                     </h1>
-                    <h1>Capacity: {truck.capacity}</h1>
+                    <h1>Capacity: {truck.payloadCapacity}</h1>
                   </div>
                   <h1>{truck.records.length}</h1>
                 </div>

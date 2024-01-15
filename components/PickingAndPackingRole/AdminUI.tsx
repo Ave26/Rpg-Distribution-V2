@@ -9,7 +9,6 @@ import {
   stockKeepingUnit,
 } from "@prisma/client";
 import useSWR from "swr";
-import jsPDF from "jspdf";
 import Head from "next/head";
 import Search from "../Parts/Search";
 import ReusableButton from "../Parts/ReusableButton";
@@ -42,7 +41,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [truckCapacity, setTruckCapacity] = useState<number>(0);
   const [formData, setFormData] = useState<TFormData>({
     barcodeId: "",
-    truck: String(trucks[0]?.name),
+    truck: String(trucks[0]?.truckName),
     destination: "",
     clientName: "",
     productName: "",
@@ -55,9 +54,9 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     CALCULATE THE ASSIGNEDPRODUCTS. FOR THE 
   */
 
-  const capacityRef = useRef<HTMLSelectElement | null>(null);
+  // const capacityRef = useRef<HTMLSelectElement | null>(null);
 
-  useEffect(() => {}, [capacityRef]);
+  // useEffect(() => {}, [capacityRef]);
 
   const fetchTrucks = (url: string) => {
     fetch(url)
@@ -121,8 +120,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     const { name, value } = e.target;
 
     setFormData({
-      ...formData, // Spread the existing state
-      [name]: value, // Update the specific field
+      ...formData,
+      [name]: value,
     });
   }
   const fetcher = async (url: string) => {
@@ -284,9 +283,9 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   useEffect(() => {
     console.log("truck capacity finding");
     const truck = testTrucks?.find((truck) => {
-      return truck.name === formData.truck;
+      return truck.truckName === formData.truck;
     });
-    setTruckCapacity(truck?.capacity!);
+    setTruckCapacity(truck?.payloadCapacity!);
   }, [formData.truck, formData]);
 
   const inputStyle =
@@ -348,7 +347,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             className={inputStyle}>
             {testTrucks &&
               testTrucks?.map((truck: TTrucks) => {
-                return <option key={truck?.id}>{truck.name}</option>;
+                return <option key={truck?.id}>{truck.truckName}</option>;
               })}
           </select>
           <h1 className={inputStyle}>Truck Capacity {truckCapacity}</h1>

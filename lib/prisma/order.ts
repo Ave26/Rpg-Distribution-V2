@@ -204,7 +204,7 @@ export async function create_order(
 
     const connectTrucks = await prisma.trucks.update({
       where: {
-        name: String(truckName),
+        truckName: String(truckName),
       },
       data: {
         records: {
@@ -236,26 +236,26 @@ export async function create_order(
 
     const updateTruckCargo = await prisma.trucks.update({
       where: {
-        name: formData.truck,
+        truckName: formData.truck,
       },
       data: {
-        capacity: formData.truckCargo,
+        payloadCapacity: formData.truckCargo,
       },
     });
 
-    if (updateTruckCargo.capacity === 0) {
+    if (updateTruckCargo.payloadCapacity === 0) {
       await prisma.trucks.update({
         where: {
-          name: String(updateTruckCargo?.name),
+          truckName: String(updateTruckCargo?.truckName),
         },
         data: {
-          status: "Loaded",
+          status: "FullLoad",
         },
       });
     }
     console.log(record);
 
-    console.log(`the ${updateTruckCargo.name} cargo has been updated`);
+    console.log(`the ${updateTruckCargo.truckName} cargo has been updated`);
     await update_product_status(record);
     return { record };
   } catch (error) {
@@ -343,7 +343,7 @@ export async function get_order() {
       include: {
         trucks: {
           select: {
-            capacity: true,
+            payloadCapacity: true,
           },
         },
         author: {
