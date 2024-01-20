@@ -24,6 +24,7 @@ type TStates = {
   >;
   selectedTruck: TSelectedTruck;
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
+  
 };
 
 export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
@@ -34,9 +35,9 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
   );
   const [form, setForm] = useState<TFormExtend>({
     truckName: "",
-    plate: "",
+    plate: "",  
     payloadCapacity: 0,
-    status: "Empty",
+    status: selectedTruck.truckStatus, // need initial value to be based on the swr data
   });
 
   function handleChange(
@@ -50,6 +51,8 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
       [name]: name === "payloadCapacity" ? parseInt(value) : value,
     });
   }
+
+
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,8 +72,15 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
         }));
       })
       .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false)
+        });
   }
+
+  useEffect(()=> {
+    setForm({...form, status: selectedTruck.truckStatus})
+  }, [selectedTruck.truckStatus])
+
 
   const btnStyle =
     "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";

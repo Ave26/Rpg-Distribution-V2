@@ -13,4 +13,5 @@ export type TFormExtend = TForm & {
 export type TSelectedTruck = {
   id: string;
   truckName: string;
+  truckStatus: TruckAvailability
 };

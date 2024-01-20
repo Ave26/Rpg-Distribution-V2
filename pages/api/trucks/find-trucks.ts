@@ -26,6 +26,8 @@ async function handler(
           Staff: getTruckStaffAccess,
           Driver: getTruckAdminAccess,
         };
+
+        
         const { trucks, error } = await roleMapping[roles as TRoles]();
 
         if (error) {
