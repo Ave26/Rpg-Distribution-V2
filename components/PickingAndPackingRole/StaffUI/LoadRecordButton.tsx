@@ -6,7 +6,6 @@ import { mutate } from "swr";
 type TLoadRecordButtonProps = {
   orderedProduct: orderedProducts;
   record: TRecords;
-
   states?: TStates;
 };
 
