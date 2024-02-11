@@ -1,14 +1,5 @@
 import prisma from ".";
 
-export async function getTrucks() {
-  try {
-    const trucks = await prisma.trucks.findMany({});
-    return { trucks };
-  } catch (e) {
-    return { e };
-  }
-}
-
 export async function getSpecificTrucks() {
   try {
     const trucks = await prisma.trucks.findMany({
@@ -40,7 +31,7 @@ export async function updateTrucks(id: string, truckName: string) {
   console.log("update trucks triggered");
 }
 
-export async function getTruckAdminAccess() {
+export async function getTrucks() {
   try {
     const trucks = await prisma.trucks.findMany({
       select: {
@@ -49,56 +40,88 @@ export async function getTruckAdminAccess() {
         plate: true,
         payloadCapacity: true,
         status: true,
+        records: {
+          select: {
+            poId: true,
+            id: true,
+            authorName: true,
+            batchNumber: true,
+            destination: true,
+            orderedProducts: true,
+          },
+        },
       },
     });
-    console.log(trucks);
+
+    return { trucks };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function getTruckAdminAccess() {
+  console.log("running admin");
+  try {
+    const trucks = await prisma.trucks.findMany({
+      select: {
+        id: true,
+        truckName: true,
+        plate: true,
+        payloadCapacity: true,
+        status: true,
+        records: {
+          where: {
+            orderedProducts: {
+              every: { assignedProducts: { some: { status: "Loaded" } } },
+            },
+          },
+          select: {
+            poId: true,
+            id: true,
+            authorName: true,
+            batchNumber: true,
+            destination: true,
+            orderedProducts: true,
+          },
+        },
+      },
+    });
+    // console.log(trucks);
     return { trucks };
   } catch (error) {
     return { error };
   }
 }
 export async function getTruckStaffAccess() {
+  console.log("running staff");
   try {
-    // const trucks = await prisma.trucks.findMany({
-    //   where: { status: "FullLoad" || "HalfFull" || "PartialLoad" || "Empty" },
-    //   include: {
-    //     records: {
-    //       where: {
-    //         orderedProducts: {
-    //           some: {
-    //             assignedProducts: {
-    //               some: {
-    //                 status: "Queuing",
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //       include: {
-    //         orderedProducts: {
-    //           include: {
-    //             assignedProducts: {
-    //               where: {
-    //                 status: "Queuing",
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
     const trucks = await prisma.trucks.findMany({
-      where: { status: "Empty" },
       select: {
+        id: true,
         truckName: true,
         plate: true,
         payloadCapacity: true,
         status: true,
-        records: true,
+        records: {
+          where: {
+            orderedProducts: {
+              every: {
+                assignedProducts: { some: { status: "Queuing" } },
+              },
+            },
+          },
+          select: {
+            poId: true,
+            id: true,
+            authorName: true,
+            batchNumber: true,
+            destination: true,
+            orderedProducts: true,
+          },
+        },
       },
     });
+
     console.log(trucks);
     return { trucks };
   } catch (error) {

@@ -18,7 +18,7 @@ import { useMyContext } from "@/contexts/AuthenticationContext";
 
 import { trucks as TTrucks, UserRole } from "@prisma/client";
 import AdminUI from "@/components/PickingAndPackingRole/AdminUI";
-import StaffUI from "@/components/PickingAndPackingRole/StaffUI";
+import StaffUI from "@/components/PickingAndPackingRole/StaffUI/Staff";
 import useMapComponent from "@/hooks/useMapComponent";
 
 export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {

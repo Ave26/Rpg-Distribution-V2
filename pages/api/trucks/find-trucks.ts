@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
-import prisma from "@/lib/prisma";
-import { trucks } from "@prisma/client";
-import { getTruckAdminAccess, getTruckStaffAccess } from "@/lib/prisma/trucks";
-
-type TRoles = "SuperAdmin" | "Admin" | "Staff" | "Driver";
+import {
+  getTrucks,
+  getTruckStaffAccess,
+  getTruckAdminAccess,
+} from "@/lib/prisma/trucks";
+import { UserRole } from "@prisma/client";
 
 async function handler(
   req: NextApiRequest,
@@ -15,7 +16,7 @@ async function handler(
   try {
     switch (req.method) {
       case "GET":
-        let roles: TRoles = "SuperAdmin";
+        let roles: UserRole = "SuperAdmin";
         if (verifiedToken && typeof verifiedToken === "object") {
           roles = verifiedToken.roles;
         }
@@ -27,8 +28,7 @@ async function handler(
           Driver: getTruckAdminAccess,
         };
 
-        
-        const { trucks, error } = await roleMapping[roles as TRoles]();
+        const { error, trucks } = await roleMapping[roles as UserRole]();
 
         if (error) {
           return res.status(500).json({ message: "Server Error", error });
@@ -44,75 +44,3 @@ async function handler(
 }
 
 export default authMiddleware(handler);
-
-// console.log(roles);
-// const roleMapping = {
-//   SuperAdmin: () => console.log("do something"),
-//   Admin: () => console.log("do something"),
-// };
-
-// const roleToMap = roleMapping[roles];
-// let trucks;
-// if (roles === "SuperAdmin" || roles === "Admin") {
-//   console.log("admin executed");
-//   trucks = await prisma.trucks.findMany({
-//     where: {
-//       status: "Available",
-//     },
-//     // include: {
-//     //   records: {
-//     //     select: {
-//     //       id: true,
-//     //       orderedProducts: {
-//     //         where: {
-//     //           assignedProducts: {
-//     //             every: {
-//     //               status: "Loaded",
-//     //             },
-//     //           },
-//     //         },
-//     //       },
-//     //     },
-//     //   },
-//     // },
-//     include: {
-//       records: {
-//         select: {
-//           id: true,
-//         },
-//       },
-//     },
-//   });
-// } else if (roles === "Staff") {
-//   console.log("staff executed");
-//   trucks = await prisma.trucks.findMany({
-//     include: {
-//       records: {
-//         where: {
-//           orderedProducts: {
-//             some: {
-//               assignedProducts: {
-//                 some: {
-//                   status: "Queuing",
-//                 },
-//               },
-//             },
-//           },
-//         },
-//         include: {
-//           orderedProducts: {
-//             include: {
-//               assignedProducts: {
-//                 where: {
-//                   status: "Queuing",
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     },
-//   });
-// }
-
-// console.log(trucks);
