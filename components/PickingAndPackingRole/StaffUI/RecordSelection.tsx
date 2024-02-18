@@ -12,33 +12,55 @@ type TRecordSelectionProps = {
 export default function RecordSelection({ record }: TRecordSelectionProps) {
   const { globalState } = useMyContext();
   const role: string | undefined = globalState?.verifiedToken?.roles;
+
   const mapComponent = {
     SuperAdmin: () => null,
     Admin: () => null,
     Driver: () => null,
     Staff: (orderedProduct: orderedProducts) => (
-      <LoadRecordButton orderedProduct={orderedProduct} record={record} />
+      <div className="flex h-full gap-2 border py-2 transition-all">
+        <LoadRecordButton orderedProduct={orderedProduct} record={record} />
+      </div>
     ),
   };
+
   const renderComponent = mapComponent[role as UserRole];
+  const buttonStyle =
+    "rounded-sm bg-sky-300/40 w-full flex justify-center items-center text-center h-10 p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase  font-black";
 
   return (
     <>
-      <h1>Batch Number: {record.batchNumber}</h1>
-      <h1>Purchase Order: {record.poId}</h1>
-      {record.orderedProducts.map((orderedProduct) => (
-        <div
-          key={orderedProduct.id}
-          className="flex h-fit flex-row justify-between gap-2"
-        >
-          <div className="flex h-[5em] w-full items-start justify-start gap-2 overflow-y-auto border  border-black p-2">
-            <OrderedProduct orderedProduct={orderedProduct} record={record} />
-          </div>
-          <div className="flex h-full gap-2 py-2 transition-all">
+      <div className="flex flex-col items-start justify-center gap-[.5px] border border-dotted border-red-600 p-[2px]">
+        <h1 className="text-lg">Record Details</h1>
+
+        <ul>Batch Number: {record.batchNumber}</ul>
+        <ul>Purchase Order: {record.poId}</ul>
+        <ul>Desitnation: {record.destination}</ul>
+        <ul>Route: {"<Point of Location>"}</ul>
+        <ul>Client: {record.clientName}</ul>
+      </div>
+      <div className="h-[11em] overflow-y-scroll border border-black">
+        {record.orderedProducts.map((orderedProduct) => (
+          <div
+            key={orderedProduct.id}
+            className="flex h-fit flex-row justify-between gap-2"
+          >
+            <li className="flex w-full gap-2 border-b-2 border-dotted border-slate-900 p-1">
+              <ul>
+                <OrderedProduct
+                  orderedProduct={orderedProduct}
+                  record={record}
+                />
+              </ul>
+            </li>
+
             {renderComponent(orderedProduct)}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+      {role === "Driver" && (
+        <button className={buttonStyle}>Complete Delivery</button>
+      )}
     </>
   );
 }

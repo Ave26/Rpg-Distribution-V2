@@ -7,15 +7,12 @@ import FormUpdateTruck from "./FormUpdateTruck";
 import { TSelectedTruck } from "./deliveryManagementTypes";
 import { TruckAvailability } from "@prisma/client";
 
-
-
 export default function TruckManagement() {
   const [toast, setToast] = useState<TToast>({ message: "", show: false });
-  const [selectedId, setSelectedId] = useState("");
   const [selectedTruck, setSelectedTruck] = useState<TSelectedTruck>({
     id: "",
     truckName: "",
-    truckStatus: "Empty"
+    truckStatus: "Empty",
   });
   const [truckComponentKey, setTruckComponentKey] = useState<
     "create" | "update"
@@ -43,17 +40,12 @@ export default function TruckManagement() {
           truckComponentKey,
           selectedTruck,
           setToast,
-          
         }}
       />
     ),
   };
 
   const renderComponent = mappedComponent[truckComponentKey];
-
-  function getTruckStatus(status: string) {
-    return status
-  }
 
   return (
     <div className="flex h-full w-full animate-emerge flex-col items-center justify-center gap-2 p-2 text-xs transition-all md:flex-row md:items-start md:justify-start">

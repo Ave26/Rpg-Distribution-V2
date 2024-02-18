@@ -81,12 +81,12 @@ export async function getTruckAdminAccess() {
             authorName: true,
             batchNumber: true,
             destination: true,
+            clientName: true,
             orderedProducts: true,
           },
         },
       },
     });
-    // console.log(trucks);
     return { trucks };
   } catch (error) {
     return { error };

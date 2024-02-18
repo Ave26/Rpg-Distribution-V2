@@ -12,7 +12,7 @@ type TOrderedProductProps = {
 function OrderedProduct({ orderedProduct, record }: TOrderedProductProps) {
   return (
     <>
-      OrderedProductId: {orderedProduct.id}
+      Ordered Product Id: {orderedProduct.id}
       <h1>Total Quantity: {orderedProduct.totalQuantity}</h1>
       <h1>Barcode Id: {orderedProduct.barcodeId}</h1>
     </>

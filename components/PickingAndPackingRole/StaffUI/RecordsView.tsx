@@ -1,6 +1,7 @@
 import React from "react";
 import { TTrucks } from "../PickingAndPackingType";
 import RecordSelection from "./RecordSelection";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 
 type TRecordsViewProps = {
   truck: TTrucks;
@@ -12,7 +13,7 @@ function RecordsView({ truck, selectedId }: TRecordsViewProps) {
     <div
       className={`mb-2 flex ${
         selectedId.find((i) => i === truck.id)
-          ? "h-[11.5em] overflow-y-scroll py-2"
+          ? "h-[45em] overflow-y-scroll py-2"
           : "max-h-0 overflow-hidden"
       } w-full flex-col items-center justify-start gap-[2px] rounded-sm border border-transparent transition-all`}
     >

@@ -3,6 +3,7 @@ import { TSelectedBTN } from "./deliveryManagementTypes";
 
 type TDMSProps = {
   states: TStates;
+  role: string | undefined;
 };
 
 type TStates = {
@@ -12,6 +13,7 @@ type TStates = {
 
 export default function DeliveryManagementButtonSelection({
   states,
+  role,
 }: TDMSProps) {
   const { selectedButton, setSelectedButton } = states;
   const btnStyle =
@@ -19,18 +21,22 @@ export default function DeliveryManagementButtonSelection({
 
   return (
     <div className="flex w-full items-center justify-center gap-2 p-2 text-xs font-bold md:w-fit">
-      <button
-        className={`${btnStyle} ${
-          selectedButton === "Truck Management" && "bg-[#86B6F6]"
-        }`}
-        onClick={() => setSelectedButton("Truck Management")}>
-        Truck Management
-      </button>
+      {role === "Driver" || (
+        <button
+          className={`${btnStyle} ${
+            selectedButton === "Truck Management" && "bg-[#86B6F6]"
+          }`}
+          onClick={() => setSelectedButton("Truck Management")}
+        >
+          Truck Management
+        </button>
+      )}
       <button
         className={`${btnStyle} ${
           selectedButton === "View Truck Loads" && "bg-[#86B6F6]"
         }`}
-        onClick={() => setSelectedButton("View Truck Loads")}>
+        onClick={() => setSelectedButton("View Truck Loads")}
+      >
         View Trucks Loads
       </button>
     </div>
