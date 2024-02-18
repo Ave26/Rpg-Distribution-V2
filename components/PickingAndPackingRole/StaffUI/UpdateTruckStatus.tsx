@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TruckAvailability, productStatus, trucks } from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle } from "@/styles/style";
+import { mutate } from "swr";
 
 type TUpdateTruckStatusProps = {
   states?: TStates;
@@ -17,6 +18,7 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
 
   function handleRequest() {
     // lets know this request will be persists
+    console.log(truck.id);
     setLoading(true);
     fetch("/api/outbound/truck/update-status", {
       method: "POST",
@@ -24,13 +26,17 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
       body: JSON.stringify({ status, truckId: truck.id }),
     })
       .then((res) => res.json())
-      .then((data) => console.log(data))
+      .then((data) => mutate("/api/trucks/find-trucks"))
       .catch((e) => e)
       .finally(() => {
         // do something
         setLoading(false);
       });
   }
+
+  useEffect(() => {
+    console.log(truck.status);
+  }, [truck.id]);
 
   const mappedComponent: Record<TruckAvailability, string | null> = {
     InTransit: "Go Back",
@@ -43,7 +49,7 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     OnHold: null,
   };
 
-  const renderComponent = mappedComponent[status];
+  const renderComponent = mappedComponent[truck.status];
 
   return (
     <button

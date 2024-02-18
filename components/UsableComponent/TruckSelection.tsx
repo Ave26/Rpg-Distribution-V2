@@ -42,10 +42,14 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 <h1>Payload Capacity: {truck.payloadCapacity}</h1>
                 <h1>Status: {truck.status}</h1>
                 {role === "Driver" && (
-                  <div className="gap-2transition-all flex w-[30em] items-center justify-end gap-2">
+                  <div className="flex w-[30em] items-center justify-center gap-2 transition-all md:justify-end">
                     <GasStopButton />
                     <EmergencyStopButton />
-                    <UpdateTruckStatus key={truck.id} truck={truck} />
+                    <UpdateTruckStatus truck={truck} />
+                    {/* 
+                      fix the tracking of id of the truck
+                      
+                    */}
                   </div>
                 )}
                 ({truck.records.length})
