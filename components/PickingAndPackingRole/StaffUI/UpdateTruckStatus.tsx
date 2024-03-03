@@ -12,12 +12,23 @@ type TUpdateTruckStatusProps = {
 
 type TStates = {};
 
+type TButtonName =
+  | "Complete the Delivery"
+  | "Go Back"
+  | "Start Deliver"
+  | "Delivery Completed"
+  | null;
+
 export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<TruckAvailability>("InTransit");
+  const [status, setStatus] = useState<TruckAvailability | null>(null);
+  const newStatus = Object.values(TruckAvailability).filter(
+    (value) => value === "Delivered" || "Empty"
+  );
 
   function handleRequest() {
     // lets know this request will be persists
+    console.log("touched!");
     console.log(truck.id);
     setLoading(true);
     fetch("/api/outbound/truck/update-status", {
@@ -26,30 +37,40 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
       body: JSON.stringify({ status, truckId: truck.id }),
     })
       .then((res) => res.json())
-      .then((data) => mutate("/api/trucks/find-trucks"))
+      .then((data) => data && mutate("/api/trucks/find-trucks"))
       .catch((e) => e)
       .finally(() => {
         // do something
+
         setLoading(false);
       });
   }
 
-  useEffect(() => {
-    console.log(truck.status);
-  }, [truck.id]);
-
-  const mappedComponent: Record<TruckAvailability, string | null> = {
-    InTransit: "Go Back",
-    Empty: null,
-    PartialLoad: null,
+  const mappedComponent: Record<TruckAvailability, TButtonName> = {
+    InTransit: "Complete the Delivery",
+    Empty: "Start Deliver",
+    PartialLoad: "Start Deliver",
     FullLoad: "Start Deliver",
     HalfFull: null,
-    Delivered: null,
+    Delivered: "Delivery Completed",
     ScheduledforPickup: null,
     OnHold: null,
   };
 
   const renderComponent = mappedComponent[truck.status];
+
+  useEffect(() => {
+    if (renderComponent === "Complete the Delivery") {
+      setStatus("Delivered");
+      return handleRequest();
+    } else if (renderComponent === "Start Deliver") {
+      setStatus("InTransit");
+      return handleRequest();
+    } else if (renderComponent === "Delivery Completed") {
+      setStatus("Empty");
+      return handleRequest();
+    }
+  }, [renderComponent]);
 
   return (
     <button

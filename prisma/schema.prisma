@@ -173,7 +173,6 @@ model orderedProducts {
 model purchaseOrderOutBound {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   poId String @unique
-
   records records[]
 }
 

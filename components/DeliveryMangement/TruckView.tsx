@@ -17,13 +17,9 @@ async function fetcher(url: string): Promise<trucks[]> {
       throw error;
     });
 }
-
 type TTruckViewProps = {
   states: TStates;
 };
-
-
-
 type TStates = {
   truckComponentKey: "create" | "update";
   setTruckComponentKey: React.Dispatch<
@@ -35,17 +31,16 @@ type TStates = {
 
 export default function TruckView({ states }: TTruckViewProps) {
   const { setTruckComponentKey, setSelectedTruck } = states;
-  
+
   const { data, isLoading } = useSWR("/api/trucks/find-trucks", fetcher, {
     refreshInterval: 1200,
   });
-
-
 
   const [selectTruck, setSelectTruck] = useState("");
 
   const btnStyle =
     "my-2 md:m-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
+
   return (
     <>
       {isLoading ? (
@@ -61,7 +56,8 @@ export default function TruckView({ states }: TTruckViewProps) {
           <div
             onClick={() => setSelectTruck(truck.id)}
             key={truck.id}
-            className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2">
+            className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2"
+          >
             <div className="flex w-full flex-wrap gap-2">
               <h1 className="">Truck Name:</h1>
               <p className="font-light">{truck.truckName}</p>
@@ -87,9 +83,10 @@ export default function TruckView({ states }: TTruckViewProps) {
                   ...prevState,
                   id: truck.id,
                   truckName: truck.truckName,
-                  truckStatus: truck.status
+                  truckStatus: truck.status,
                 }));
-              }}>
+              }}
+            >
               Update
             </button>
           </div>

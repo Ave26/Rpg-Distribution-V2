@@ -1,14 +1,13 @@
 import React from "react";
 import { TTrucks } from "../PickingAndPackingType";
 import RecordSelection from "./RecordSelection";
-import { useMyContext } from "@/contexts/AuthenticationContext";
 
 type TRecordsViewProps = {
   truck: TTrucks;
   selectedId: string[];
 };
 
-function RecordsView({ truck, selectedId }: TRecordsViewProps) {
+export default function RecordsView({ truck, selectedId }: TRecordsViewProps) {
   return (
     <div
       className={`mb-2 flex ${
@@ -32,5 +31,3 @@ function RecordsView({ truck, selectedId }: TRecordsViewProps) {
     </div>
   );
 }
-
-export default RecordsView;

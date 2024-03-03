@@ -11,6 +11,8 @@ async function handler(
 ) {
   const { status, truckId }: { status: TruckAvailability; truckId: string } =
     req.body;
+
+  console.log({ truckId, status });
   try {
     let UpdatedTruck;
     await prisma.$transaction(async (tx) => {
@@ -18,16 +20,16 @@ async function handler(
         where: { id: truckId },
       });
 
-      if (currentTruck?.status === "InTransit") {
-        return res.status(200).json({
-          message: `Current Status is already in ${currentTruck.status}`,
-        });
-      } else {
-        UpdatedTruck = await prisma.trucks.update({
-          where: { id: truckId },
-          data: { status },
-        });
-      }
+      // if (currentTruck?.status) {
+      //   return res.status(200).json({
+      //     message: `Current Status is already in ${currentTruck.status}`,
+      //   });
+      // } else {
+      // }
+      UpdatedTruck = await prisma.trucks.update({
+        where: { id: truckId },
+        data: { status },
+      });
     });
     return (
       UpdatedTruck &&

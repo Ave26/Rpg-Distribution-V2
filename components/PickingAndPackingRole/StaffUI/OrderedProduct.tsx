@@ -9,7 +9,10 @@ type TOrderedProductProps = {
   orderedProduct: orderedProducts;
 };
 
-function OrderedProduct({ orderedProduct, record }: TOrderedProductProps) {
+export default function OrderedProduct({
+  orderedProduct,
+  record,
+}: TOrderedProductProps) {
   return (
     <>
       Ordered Product Id: {orderedProduct.id}
@@ -18,5 +21,3 @@ function OrderedProduct({ orderedProduct, record }: TOrderedProductProps) {
     </>
   );
 }
-
-export default OrderedProduct;

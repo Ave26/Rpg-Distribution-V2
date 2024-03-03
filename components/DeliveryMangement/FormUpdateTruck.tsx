@@ -24,7 +24,6 @@ type TStates = {
   >;
   selectedTruck: TSelectedTruck;
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
-  
 };
 
 export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
@@ -35,7 +34,7 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
   );
   const [form, setForm] = useState<TFormExtend>({
     truckName: "",
-    plate: "",  
+    plate: "",
     payloadCapacity: 0,
     status: selectedTruck.truckStatus, // need initial value to be based on the swr data
   });
@@ -51,8 +50,6 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
       [name]: name === "payloadCapacity" ? parseInt(value) : value,
     });
   }
-
-
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,14 +70,13 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
       })
       .catch((error) => console.log(error))
       .finally(() => {
-        setLoading(false)
-        });
+        setLoading(false);
+      });
   }
 
-  useEffect(()=> {
-    setForm({...form, status: selectedTruck.truckStatus})
-  }, [selectedTruck.truckStatus])
-
+  useEffect(() => {
+    setForm({ ...form, status: selectedTruck.truckStatus });
+  }, [selectedTruck.truckStatus]);
 
   const btnStyle =
     "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
@@ -88,12 +84,14 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
   return (
     <form
       className="relative flex w-fit animate-emerge flex-col gap-2"
-      onSubmit={handleSubmit}>
+      onSubmit={handleSubmit}
+    >
       <div className="flex h-fit w-full justify-end ">
         <button
           type="button"
           onClick={() => setTruckComponentKey("create")}
-          className="scale-125 transition-all active:scale-150">
+          className="scale-125 transition-all active:scale-150"
+        >
           <IoIosClose />
         </button>
       </div>
@@ -119,7 +117,8 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
                 id={key}
                 value={form[key as keyof TForm]}
                 onChange={handleChange}
-                className="border-blue-gray-200  text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full appearance-none rounded-[7px] border bg-transparent px-3 py-2 font-sans text-sm font-normal outline outline-0 transition-all focus:border-2 focus:border-sky-400">
+                className="border-blue-gray-200  text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full appearance-none rounded-[7px] border bg-transparent px-3 py-2 font-sans text-sm font-normal outline outline-0 transition-all focus:border-2 focus:border-sky-400"
+              >
                 {truckStatus.map((statusOption) => (
                   <option key={statusOption} value={statusOption}>
                     {statusOption}

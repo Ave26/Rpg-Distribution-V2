@@ -30,11 +30,9 @@ async function handler(
 
         const { error, trucks } = await roleMapping[roles as UserRole]();
 
-        if (error) {
-          return res.status(500).json({ message: "Server Error", error });
-        }
-
-        return res.status(200).json(trucks);
+        return error
+          ? res.status(500).json({ message: "Server Error", error })
+          : res.status(200).json(trucks);
       default:
         return res.send(`Method ${req.method} is not allowed`);
     }

@@ -1,6 +1,5 @@
 import React, { ReactElement, useState, useEffect } from "react";
 import useSWR from "swr";
-import jsPDF from "jspdf";
 import Head from "next/head";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";

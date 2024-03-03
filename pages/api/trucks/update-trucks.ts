@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
-import { getId } from "@/helper/_helper";
 import prisma from "@/lib/prisma";
-import { trucks as TTrucks } from "@prisma/client";
 import { TFormExtend } from "@/components/DeliveryMangement/deliveryManagementTypes";
 
 type TBody = { form: TFormExtend; id: string };

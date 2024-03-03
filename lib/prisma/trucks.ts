@@ -60,7 +60,6 @@ export async function getTrucks() {
 }
 
 export async function getTruckAdminAccess() {
-  console.log("running admin");
   try {
     const trucks = await prisma.trucks.findMany({
       select: {

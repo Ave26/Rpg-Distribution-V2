@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { TToast } from "../Inventory/InventoryTypes";
 import Toast from "../Parts/Toast";
 import TruckView from "./TruckView";
-import FormCreateTruck from "./FormCreateTruck";
 import FormUpdateTruck from "./FormUpdateTruck";
 import { TSelectedTruck } from "./deliveryManagementTypes";
-import { TruckAvailability } from "@prisma/client";
+import FormCreateTruck from "./FormCreateTruck";
+
+type TTruckComponent = "create" | "update";
 
 export default function TruckManagement() {
   const [toast, setToast] = useState<TToast>({ message: "", show: false });
@@ -14,9 +15,8 @@ export default function TruckManagement() {
     truckName: "",
     truckStatus: "Empty",
   });
-  const [truckComponentKey, setTruckComponentKey] = useState<
-    "create" | "update"
-  >("create");
+  const [truckComponentKey, setTruckComponentKey] =
+    useState<TTruckComponent>("create");
 
   useEffect(() => {
     const timer: NodeJS.Timeout = setTimeout(() => {
@@ -44,7 +44,6 @@ export default function TruckManagement() {
       />
     ),
   };
-
   const renderComponent = mappedComponent[truckComponentKey];
 
   return (

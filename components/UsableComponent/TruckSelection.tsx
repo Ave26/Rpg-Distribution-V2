@@ -21,6 +21,7 @@ type TStates = {
 export default function TruckSelection({ states }: TTruckSelectionProps) {
   const { globalState } = useMyContext();
   const role: string | undefined = globalState?.verifiedToken?.roles;
+
   const { selectedId, setSelectedId } = states;
   const { trucks } = useTrucks();
 
