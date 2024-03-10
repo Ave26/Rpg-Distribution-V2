@@ -1,15 +1,13 @@
-import ReusableLink from "../Parts/ReusableLink";
-import ReusableDropDownMenu from "../Parts/ReusableDropDownMenu";
-import ReusableButton from "../Parts/ReusableButton";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { UserRole } from "@prisma/client";
 
-import AccountManagement from "@/public/assets/dashBoardIcons/AccountManagement.png";
-import useSWR from "swr";
-import { AuthProps } from "@/types/authTypes";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import Link from "next/link";
-import { TRole, TRoleToRoutes } from "@/types/roleTypes";
+import { TEndPoints, TRole, TRoleToRoutes } from "@/types/roleTypes";
+import { linkStyle } from "@/styles/style";
+import { roleToRoutes } from "../RoleBaseRoutes";
+import LogoutButton from "../Parts/LogoutButton";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,31 +18,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.roles;
 
-  const baseRoutes = [
-    { path: "/dashboard/log-overview", label: "Log Overview" },
-    { path: "/dashboard/add-new-product", label: "Add Product" },
-    { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
-    { path: "/dashboard/pallete-location", label: "Pallete Location" },
-    { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
-    { path: "/dashboard/delivery-management", label: "Manage Delivery" },
-    { path: "/dashboard/inventory-management", label: "Manage Inventory" },
-    { path: "/dashboard/acc-management", label: "Manage Account" },
-  ];
-
-  const roleToRoutes: TRoleToRoutes = {
-    SuperAdmin: baseRoutes,
-    Admin: baseRoutes,
-    Staff: [
-      { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
-      { path: "/dashboard/add-new-product", label: "Add Product" },
-      { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
-    ],
-    Driver: [
-      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
-    ],
-  };
-
-  const mapRoutes = roleToRoutes[role as TRole];
+  const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
   const currentPath = router.asPath;
 
   useEffect(() => {
@@ -58,60 +32,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   }, [currentPath, mapRoutes, router]);
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/user/logout", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await response.json();
-      if (response.status === 200) {
-        const auth = localStorage.setItem("authenticated", "false");
-        if (!Boolean(auth)) {
-          router.push("/");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      console.log(globalState?.verifiedToken?.roles);
-    }
-  };
-
-  const linkStyle = {
-    select:
-      "rounded-md border  border-transparent bg-[#86B6F6] p-2 font-bold hover:border-cyan-400",
-    unSelect:
-      "rounded-md border  border-transparent bg-transparent p-2  font-bold",
-  };
-
   return (
     <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 text-xs font-extrabold md:h-screen md:flex-row  md:overflow-y-hidden">
       <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted border-black p-2  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
-        {mapRoutes?.map((route, index) => {
-          return (
-            <Link
-              key={index}
-              href={route.path}
-              className={`h-fit w-fit cursor-pointer select-none whitespace-nowrap text-center transition-all hover:border-cyan-400 ${
-                router.asPath === route.path
-                  ? linkStyle.select
-                  : linkStyle.unSelect
-              }`}>
-              {route.label}
+        {mapRoutes &&
+          mapRoutes.length > 0 &&
+          mapRoutes.map((route, index) => (
+            <Link key={index} href={route.path}>
+              <div
+                className={`h-fit w-fit cursor-pointer select-none whitespace-nowrap text-center transition-all hover:border-cyan-400 ${
+                  router.asPath === route.path
+                    ? linkStyle.select
+                    : linkStyle.unSelect
+                }`}
+              >
+                {route.label}
+              </div>
             </Link>
-          );
-        })}
-        <button
-          type="button"
-          onClick={handleLogout}
-          className={
-            "cursor-pointer select-none rounded-md border border-transparent bg-transparent  p-2 font-bold hover:border-cyan-400 "
-          }>
-          Logout
-        </button>
+          ))}
+        <LogoutButton />
       </aside>
 
       <main className="animation-emerge relative h-full w-full">

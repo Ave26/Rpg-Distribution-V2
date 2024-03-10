@@ -22,9 +22,6 @@ type TButtonName =
 export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<TruckAvailability | null>(null);
-  const newStatus = Object.values(TruckAvailability).filter(
-    (value) => value === "Delivered" || "Empty"
-  );
 
   function handleRequest() {
     // lets know this request will be persists
@@ -52,25 +49,31 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     PartialLoad: "Start Deliver",
     FullLoad: "Start Deliver",
     HalfFull: null,
-    Delivered: "Delivery Completed",
+    Delivered: "Go Back",
     ScheduledforPickup: null,
     OnHold: null,
   };
 
-  const renderComponent = mappedComponent[truck.status];
+  const renderButtonName = mappedComponent[truck.status];
 
   useEffect(() => {
-    if (renderComponent === "Complete the Delivery") {
-      setStatus("Delivered");
-      return handleRequest();
-    } else if (renderComponent === "Start Deliver") {
-      setStatus("InTransit");
-      return handleRequest();
-    } else if (renderComponent === "Delivery Completed") {
-      setStatus("Empty");
-      return handleRequest();
+    switch (renderButtonName) {
+      case "Complete the Delivery":
+        setStatus("Delivered");
+        break;
+      case "Start Deliver":
+        setStatus("InTransit");
+        break;
+      case "Go Back":
+        setStatus("Empty");
+        break;
+      default:
+        setStatus(null);
+        break;
     }
-  }, [renderComponent]);
+
+    return handleRequest();
+  }, [renderButtonName]);
 
   return (
     <button
@@ -85,7 +88,9 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
           <Loading />
         </div>
       ) : (
-        renderComponent
+        <div className="flex h-[2em] w-fit items-center justify-center text-center">
+          {renderButtonName}
+        </div>
       )}
     </button>
   );

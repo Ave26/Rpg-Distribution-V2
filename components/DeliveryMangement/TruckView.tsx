@@ -36,8 +36,6 @@ export default function TruckView({ states }: TTruckViewProps) {
     refreshInterval: 1200,
   });
 
-  const [selectTruck, setSelectTruck] = useState("");
-
   const btnStyle =
     "my-2 md:m-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
 
@@ -54,7 +52,6 @@ export default function TruckView({ states }: TTruckViewProps) {
       ) : (
         data?.map((truck) => (
           <div
-            onClick={() => setSelectTruck(truck.id)}
             key={truck.id}
             className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2"
           >

@@ -1,13 +1,11 @@
 import Loading from "@/components/Parts/Loading";
 import useTrucks from "@/hooks/useTrucks";
-import React, { useState } from "react";
-import RecordSelection from "../PickingAndPackingRole/StaffUI/RecordSelection";
-import { trucks } from "@prisma/client";
 import RecordsView from "../PickingAndPackingRole/StaffUI/RecordsView";
 import UpdateTruckStatus from "../PickingAndPackingRole/StaffUI/UpdateTruckStatus";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import EmergencyStopButton from "../PickingAndPackingRole/StaffUI/EmergencyStopButton";
 import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
+import TruckDetails from "./TruckDetails";
 
 type TTruckSelectionProps = {
   states: TStates;
@@ -25,6 +23,12 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
   const { selectedId, setSelectedId } = states;
   const { trucks } = useTrucks();
 
+  function selectId(truckId: string) {
+    selectedId?.includes(truckId)
+      ? setSelectedId(selectedId.filter((i) => i !== truckId))
+      : setSelectedId([...selectedId, truckId]);
+  }
+
   return (
     <>
       {Array.isArray(trucks) ? (
@@ -32,30 +36,24 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
           return (
             <div key={truck.id}>
               <div
-                className="flex h-fit w-full flex-col items-center justify-between rounded-sm border border-black p-1 transition-all md:flex-row"
-                onClick={() => {
-                  selectedId?.includes(truck.id)
-                    ? setSelectedId(selectedId.filter((i) => i !== truck.id))
-                    : setSelectedId([...selectedId, truck.id]);
-                }}
+                className="flex h-full w-full flex-col items-center justify-between gap-2 rounded-sm border border-transparent border-b-slate-900 p-[.5px] transition-all hover:bg-slate-500 md:flex-row"
+                onClick={() => selectId(truck.id)}
               >
-                <h1>Truck Name: {truck.truckName}</h1>
-                <h1>Payload Capacity: {truck.payloadCapacity}</h1>
-                <h1>Status: {truck.status}</h1>
+                <div className="flex max-h-full max-w-[30em] gap-2 break-words  text-[12px]">
+                  <TruckDetails truck={truck} />
+                </div>
                 {role === "Driver" && (
-                  <div className="flex w-[30em] items-center justify-center gap-2 transition-all md:justify-end">
+                  <div className="flex items-center justify-between gap-2 transition-all">
                     <GasStopButton />
                     <EmergencyStopButton />
                     <UpdateTruckStatus truck={truck} />
-                    {/* 
-                      fix the tracking of id of the truck
-                      
-                    */}
                   </div>
                 )}
-                ({truck.records.length})
+                <div>({truck.records.length})</div>
               </div>
-              <RecordsView selectedId={selectedId} truck={truck} />
+              <div className="flex items-center justify-center border border-dotted border-x-slate-900 border-y-transparent">
+                <RecordsView selectedId={selectedId} truck={truck} />
+              </div>
             </div>
           );
         })

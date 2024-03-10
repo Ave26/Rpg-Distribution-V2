@@ -12,19 +12,19 @@ type TRecordSelectionProps = {
 export default function RecordSelection({ record }: TRecordSelectionProps) {
   const { globalState } = useMyContext();
   const role: string | undefined = globalState?.verifiedToken?.roles;
+  const isDriver = role === "Driver";
+  // const mapComponent = {
+  //   SuperAdmin: () => null,
+  //   Admin: () => null,
+  //   Driver: () => null,
+  //   Staff: (orderedProduct: orderedProducts) => (
+  //     <div className="flex h-full gap-2 border py-2 transition-all">
+  //       <LoadRecordButton orderedProduct={orderedProduct} record={record} />
+  //     </div>
+  //   ),
+  // };
 
-  const mapComponent = {
-    SuperAdmin: () => null,
-    Admin: () => null,
-    Driver: () => null,
-    Staff: (orderedProduct: orderedProducts) => (
-      <div className="flex h-full gap-2 border py-2 transition-all">
-        <LoadRecordButton orderedProduct={orderedProduct} record={record} />
-      </div>
-    ),
-  };
-
-  const renderButton = mapComponent[role as UserRole];
+  // const renderButton = mapComponent[role as UserRole];
   const buttonStyle =
     "rounded-sm bg-sky-300/40 w-full flex justify-center items-center text-center h-10 p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase  font-black";
 
@@ -54,7 +54,14 @@ export default function RecordSelection({ record }: TRecordSelectionProps) {
               </ul>
             </li>
 
-            {renderButton(orderedProduct)}
+            {!isDriver && (
+              <div className="flex h-full gap-2 border py-2 transition-all">
+                <LoadRecordButton
+                  orderedProduct={orderedProduct}
+                  record={record}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
