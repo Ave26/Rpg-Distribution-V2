@@ -1,32 +1,32 @@
-import React from "react";
-import { TRecords } from "../PickingAndPackingType";
-import OrderedProduct from "./OrderedProduct";
+import React, { useEffect } from "react";
+import {
+  TRecords,
+  TTrucks,
+} from "../PickingAndPackingRole/PickingAndPackingType";
+import OrderedProduct from "../PickingAndPackingRole/StaffUI/OrderedProduct";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import LoadRecordButton from "./LoadRecordButton";
-import { UserRole, orderedProducts, records } from "@prisma/client";
+import LoadRecordButton from "../PickingAndPackingRole/StaffUI/LoadRecordButton";
+import DeliverButton from "../DeliveryMangement/Driver/DeliverButton";
 
 type TRecordSelectionProps = {
-  record: TRecords;
+  data: TData;
 };
 
-export default function RecordSelection({ record }: TRecordSelectionProps) {
+type TData = {
+  record: TRecords;
+  truck: TTrucks;
+};
+
+export default function RecordSelection({ data }: TRecordSelectionProps) {
   const { globalState } = useMyContext();
   const role: string | undefined = globalState?.verifiedToken?.roles;
+  const isStaff = role === "Staff";
   const isDriver = role === "Driver";
-  // const mapComponent = {
-  //   SuperAdmin: () => null,
-  //   Admin: () => null,
-  //   Driver: () => null,
-  //   Staff: (orderedProduct: orderedProducts) => (
-  //     <div className="flex h-full gap-2 border py-2 transition-all">
-  //       <LoadRecordButton orderedProduct={orderedProduct} record={record} />
-  //     </div>
-  //   ),
-  // };
+  const { record, truck } = data;
 
-  // const renderButton = mapComponent[role as UserRole];
-  const buttonStyle =
-    "rounded-sm bg-sky-300/40 w-full flex justify-center items-center text-center h-10 p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase  font-black";
+  useEffect(() => {
+    console.log({ truck: truck });
+  }, [truck]);
 
   return (
     <>
@@ -54,9 +54,10 @@ export default function RecordSelection({ record }: TRecordSelectionProps) {
               </ul>
             </li>
 
-            {!isDriver && (
-              <div className="flex h-full gap-2 border py-2 transition-all">
+            {isStaff && (
+              <div className="flex items-center justify-center py-3">
                 <LoadRecordButton
+                  truck={truck}
                   orderedProduct={orderedProduct}
                   record={record}
                 />
@@ -65,9 +66,8 @@ export default function RecordSelection({ record }: TRecordSelectionProps) {
           </div>
         ))}
       </div>
-      {role === "Driver" && (
-        <button className={buttonStyle}>Complete Delivery</button>
-      )}
+
+      {isDriver && <DeliverButton />}
     </>
   );
 }

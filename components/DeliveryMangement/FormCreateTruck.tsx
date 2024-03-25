@@ -62,7 +62,8 @@ function FormCreateTruck({ states }: TFormCreateTruckProps) {
   return (
     <form
       className="relative flex w-fit animate-emerge flex-col gap-2"
-      onSubmit={handleSubmit}>
+      onSubmit={handleSubmit}
+    >
       {Object.keys(form).map((key) => (
         <TMInput
           key={key}

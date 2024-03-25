@@ -23,18 +23,10 @@ export default function Layout({ children }: { children: ReactNode }) {
     updateGlobalState(data);
     return data;
   };
-
   useSWR("/api/authentication", fetcher);
 
-  useEffect(() => {
-    console.log("I Layout is rendered and fetch");
-  }, []);
-
   return (
-    <div
-      className="transition-all
-    "
-    >
+    <div className="transition-all">
       <Header />
       <main className="h-full w-full bg-[#EEF5FF]">{children}</main>
       <Footer />

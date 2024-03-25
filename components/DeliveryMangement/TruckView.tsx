@@ -64,7 +64,7 @@ export default function TruckView({ states }: TTruckViewProps) {
               <p className="font-light">{truck.payloadCapacity}</p>
             </div>
             <div className="flex w-full flex-wrap gap-2">
-              <h1 className="">Driver&apos;s License:</h1>
+              <h1 className="">Plate Number:</h1>
               <p className="font-light">{truck.plate}</p>
             </div>
             <div className="flex w-full flex-wrap gap-2">

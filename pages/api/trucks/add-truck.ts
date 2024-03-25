@@ -15,7 +15,7 @@ export default authMiddleware(async function handler(
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { form }: TBody = req.body;
-  console.log(form);
+
   try {
     switch (req.method) {
       case "POST":
@@ -35,7 +35,10 @@ export default authMiddleware(async function handler(
         }
 
         const addedTruck = await prisma.trucks.create({
-          data: form,
+          data: {
+            ...form,
+            threshold: form.payloadCapacity,
+          },
         });
 
         return res.json({ message: "Truck Added", addedTruck });
@@ -47,18 +50,3 @@ export default authMiddleware(async function handler(
     return res.json(error);
   }
 });
-
-// const { userId } = getId(verifiedToken);
-// const trucks = await prisma.trucks.findMany({});
-// const newName = trucks?.length + 1;
-
-// await prisma.trucks.create({
-//   data: {
-//     name: `truck#${newName}`,
-//     capacity,
-//     routeCluster,
-//   },
-// });
-// const updatedTrucks = await prisma.trucks.findMany({});
-
-// return res.status(200).json(updatedTrucks);

@@ -1,4 +1,4 @@
-import TruckSelection from "@/components/UsableComponent/TruckSelection";
+import TruckSelection from "@/components/ReusableComponent/TruckSelection";
 import React, { useState } from "react";
 import CloseAllButton from "../PickingAndPackingRole/StaffUI/CloseAllButton";
 

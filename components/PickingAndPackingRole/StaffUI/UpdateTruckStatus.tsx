@@ -14,7 +14,7 @@ type TStates = {};
 
 type TButtonName =
   | "Complete the Delivery"
-  | "Go Back"
+  | "Return"
   | "Start Deliver"
   | "Delivery Completed"
   | null;
@@ -24,9 +24,6 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
   const [status, setStatus] = useState<TruckAvailability | null>(null);
 
   function handleRequest() {
-    // lets know this request will be persists
-    console.log("touched!");
-    console.log(truck.id);
     setLoading(true);
     fetch("/api/outbound/truck/update-status", {
       method: "POST",
@@ -35,12 +32,8 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     })
       .then((res) => res.json())
       .then((data) => data && mutate("/api/trucks/find-trucks"))
-      .catch((e) => e)
-      .finally(() => {
-        // do something
-
-        setLoading(false);
-      });
+      .catch((e) => console.log(e))
+      .finally(() => setLoading(false));
   }
 
   const mappedComponent: Record<TruckAvailability, TButtonName> = {
@@ -49,7 +42,7 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     PartialLoad: "Start Deliver",
     FullLoad: "Start Deliver",
     HalfFull: null,
-    Delivered: "Go Back",
+    Delivered: "Return",
     ScheduledforPickup: null,
     OnHold: null,
   };
@@ -64,15 +57,13 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
       case "Start Deliver":
         setStatus("InTransit");
         break;
-      case "Go Back":
+      case "Return":
         setStatus("Empty");
         break;
       default:
         setStatus(null);
         break;
     }
-
-    return handleRequest();
   }, [renderButtonName]);
 
   return (

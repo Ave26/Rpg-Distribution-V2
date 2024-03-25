@@ -1,17 +1,23 @@
 import { orderedProducts } from "@prisma/client";
 import React, { useState } from "react";
-import { TRecords } from "../PickingAndPackingType";
+import { TRecords, TTrucks } from "../PickingAndPackingType";
 import { mutate } from "swr";
+import { channel } from "diagnostics_channel";
 
 type TLoadRecordButtonProps = {
   orderedProduct: orderedProducts;
   record: TRecords;
+  truck: TTrucks;
   states?: TStates;
 };
 
 type TStates = {};
 
-function LoadRecordButton({ orderedProduct, record }: TLoadRecordButtonProps) {
+function LoadRecordButton({
+  orderedProduct,
+  record,
+  truck,
+}: TLoadRecordButtonProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [animate, setAnimate] = useState<"animate-emerge" | "animate-fade">(
@@ -41,13 +47,30 @@ function LoadRecordButton({ orderedProduct, record }: TLoadRecordButtonProps) {
       .catch((e) => console.log(e))
       .finally(() => setAnimate("animate-fade"));
   }
-  //onClick={setRecordToLoad}
+
+  /* 
+   To find the current capacity, simply negate the current capacity into payloadCapacity
+  */
+  // function test
+  function setTruckStatus(currentCapacity: number, threshold: number): string {
+    const percentage = (currentCapacity / threshold) * 100;
+    if (percentage === 0) {
+      console.log("empty");
+      return "empty";
+    } else if (percentage < 50) {
+      console.log("partial");
+      return "partial";
+    } else if (percentage === 50) {
+      console.log("halfFull");
+      return "halfFull";
+    } else {
+      console.log("full");
+      return "full";
+    }
+  }
+
   const buttonStyle =
-    "rounded-sm bg-sky-300/40 w-full h-full p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase  font-black";
-
-  /* load | confirm | cancel  */
-
-  /* load -> animate open confirm -> trck id of the  */
+    "rounded-sm bg-sky-300/40 w-full h-full p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase font-black";
 
   return (
     <>
@@ -64,7 +87,10 @@ function LoadRecordButton({ orderedProduct, record }: TLoadRecordButtonProps) {
           >
             Cancel
           </button>
-          <button className={buttonStyle} onClick={() => setRecordToLoad()}>
+          <button
+            className={buttonStyle}
+            onClick={() => setTruckStatus(1600, 3200)}
+          >
             Confirm
           </button>
         </div>

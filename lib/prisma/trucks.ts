@@ -60,6 +60,7 @@ export async function getTrucks() {
 }
 
 export async function getTruckAdminAccess() {
+  console.log("truck admin access..");
   try {
     const trucks = await prisma.trucks.findMany({
       select: {
@@ -67,6 +68,7 @@ export async function getTruckAdminAccess() {
         truckName: true,
         plate: true,
         payloadCapacity: true,
+        threshold: true,
         status: true,
         records: {
           where: {
@@ -92,7 +94,8 @@ export async function getTruckAdminAccess() {
   }
 }
 export async function getTruckStaffAccess() {
-  console.log("running staff");
+  console.log("truck staff access..");
+
   try {
     const trucks = await prisma.trucks.findMany({
       select: {
@@ -122,6 +125,57 @@ export async function getTruckStaffAccess() {
     });
 
     console.log(trucks);
+    return { trucks };
+  } catch (error) {
+    return { error };
+  }
+}
+export async function getTruckDriverAccess(id: string) {
+  console.log("truck driver access..");
+
+  try {
+    const truck = await prisma.trucks.findFirst({
+      where: { driverId: id },
+      select: { driverId: true },
+    });
+
+    const driverFilter = truck
+      ? { driverId: truck.driverId }
+      : {
+          driverId: {
+            isSet: false,
+          },
+        };
+
+    const trucks = await prisma.trucks.findMany({
+      where: driverFilter,
+      select: {
+        id: true,
+        truckName: true,
+        plate: true,
+        payloadCapacity: true,
+        threshold: true,
+        status: true,
+        driverId: true,
+        records: {
+          where: {
+            orderedProducts: {
+              every: { assignedProducts: { some: { status: "Loaded" } } },
+            },
+          },
+          select: {
+            poId: true,
+            id: true,
+            authorName: true,
+            batchNumber: true,
+            destination: true,
+            clientName: true,
+            orderedProducts: true,
+          },
+        },
+      },
+    });
+
     return { trucks };
   } catch (error) {
     return { error };

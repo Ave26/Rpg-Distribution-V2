@@ -10,8 +10,6 @@ import {
   products as TProducts,
   assignedProducts,
 } from "@prisma/client";
-import makeOrder from "@/pages/api/outbound/make-order";
-import update from "@/pages/api/product/update";
 
 type TOrderedProducts = orderedProducts & {
   assignedProducts: TAssignedProducts[];
@@ -118,8 +116,7 @@ export async function create_order(
     console.log(user);
 
     const omittedProductEntry = productEntry.map((entry) => {
-      const { expiryDate, price, productName, skuCode, weight, ...rest } =
-        entry;
+      const { expiryDate, price, productName, skuCode, ...rest } = entry;
       return rest;
     });
 

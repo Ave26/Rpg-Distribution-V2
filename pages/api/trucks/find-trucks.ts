@@ -5,6 +5,7 @@ import {
   getTrucks,
   getTruckStaffAccess,
   getTruckAdminAccess,
+  getTruckDriverAccess,
 } from "@/lib/prisma/trucks";
 import { UserRole } from "@prisma/client";
 
@@ -17,15 +18,17 @@ async function handler(
     switch (req.method) {
       case "GET":
         let roles: UserRole = "SuperAdmin";
+        let userId: string;
         if (verifiedToken && typeof verifiedToken === "object") {
           roles = verifiedToken.roles;
+          userId = verifiedToken.id;
         }
 
         const roleMapping = {
           Admin: getTruckAdminAccess,
           SuperAdmin: getTruckAdminAccess,
           Staff: getTruckStaffAccess,
-          Driver: getTruckAdminAccess,
+          Driver: () => getTruckDriverAccess(userId),
         };
 
         const { error, trucks } = await roleMapping[roles as UserRole]();

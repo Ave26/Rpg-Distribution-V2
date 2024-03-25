@@ -16,14 +16,20 @@ import { getTrucks } from "@/lib/prisma/trucks";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 
 import { trucks as TTrucks, UserRole } from "@prisma/client";
-import AdminUI from "@/components/PickingAndPackingRole/AdminUI";
+import Admin from "@/components/PickingAndPackingRole/AdminUI";
 import StaffUI from "@/components/PickingAndPackingRole/StaffUI/Staff";
 import useMapComponent from "@/hooks/useMapComponent";
+import useTrucks from "@/hooks/useTrucks";
+import AdminUI from "@/components/PickingAndPackingRole/AdminUI/Admin";
+// { trucks }: { trucks: TTrucks[] }
 
-export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
+export default function PickingAndPacking() {
+  const { trucks } = useTrucks();
+  console.log(trucks);
+
   const roleComponentMapper = {
-    SuperAdmin: () => <AdminUI trucks={trucks || null} />,
-    Admin: () => <AdminUI trucks={trucks} />,
+    SuperAdmin: () => <Admin />,
+    Admin: () => <AdminUI />,
     Staff: () => <StaffUI />,
     Driver: () => undefined,
   };
@@ -40,21 +46,21 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   );
 }
 
-export async function getServerSideProps() {
-  const { trucks } = await getTrucks();
+// export async function getServerSideProps() {
+//   const { trucks } = await getTrucks();
 
-  if (!trucks) {
-    return {
-      props: {
-        trucks: null,
-      },
-    };
-  }
+//   if (!trucks) {
+//     return {
+//       props: {
+//         trucks: null,
+//       },
+//     };
+//   }
 
-  return {
-    props: { trucks },
-  };
-}
+//   return {
+//     props: { trucks },
+//   };
+// }
 
 PickingAndPacking.getLayout = (page: ReactElement) => {
   return (

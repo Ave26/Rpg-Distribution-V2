@@ -34,8 +34,8 @@ model users {
   password         String
   roles            UserRole
   username         String              @unique(map: "username_1")
-  assignedProducts assignedProducts[]
   deliveryLogs     deliveryLogs[]
+  assignedProducts assignedProducts[]
   trucks           trucks[]
   record           records[]
 }
@@ -133,13 +133,14 @@ enum BoxSize {
 }
 
 model assignedProducts {
-  id                String           @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive       DateTime
-  purchaseOrder     String
-  expirationDate    DateTime?
-  boxSize           BoxSize
-  quality           ProductQuality
-  status            productStatus    @default(Default)
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  dateReceive    DateTime
+  purchaseOrder  String
+  expirationDate DateTime?
+  boxSize        BoxSize
+  quality        ProductQuality
+  status         productStatus  @default(Default)
+
   sku               stockKeepingUnit @relation(fields: [skuCode], references: [code])
   skuCode           String           @unique
   products          products?        @relation(fields: [barcodeId], references: [barcodeId])
@@ -158,9 +159,9 @@ model assignedProducts {
 }
 
 model orderedProducts {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  totalQuantity Int
-
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  totalQuantity    Int
+  weight           Int
   assignedProducts assignedProducts[]
   binIdsEntries    String[]
   bins             bins[]
@@ -171,8 +172,8 @@ model orderedProducts {
 }
 
 model purchaseOrderOutBound {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  poId String @unique
+  id      String    @id @default(auto()) @map("_id") @db.ObjectId
+  poId    String    @unique
   records records[]
 }
 
@@ -209,10 +210,12 @@ type DeliveryMessage {
 }
 
 model deliveryLogs {
-  id              String          @id @default(auto()) @map("_id") @db.ObjectId
-  user            users           @relation(fields: [usersId], references: [id])
-  usersId         String          @db.ObjectId
-  deliveryMessage DeliveryMessage
+  id       String            @id @default(auto()) @map("_id") @db.ObjectId
+  status   TruckAvailability
+  trucks   trucks?           @relation(fields: [trucksId], references: [id])
+  trucksId String?           @db.ObjectId
+  users    users?            @relation(fields: [driverId], references: [id])
+  driverId String?           @db.ObjectId
 }
 
 enum TruckAvailability {
@@ -233,12 +236,13 @@ enum TruckAvailability {
 // precentage for the loaded capacity
 
 model trucks {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  truckName       String            @unique
-  plate           String            @unique
-  status          TruckAvailability @default(Empty)
-  payloadCapacity Int
-
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  truckName        String             @unique
+  plate            String             @unique
+  status           TruckAvailability  @default(Empty)
+  payloadCapacity  Int
+  threshold        Int
+  deliveryLogs     deliveryLogs[]
   driver           users?             @relation(fields: [driverId], references: [id])
   driverId         String?            @db.ObjectId
   assignedProducts assignedProducts[]

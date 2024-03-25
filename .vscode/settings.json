@@ -1,4 +1,4 @@
 {
   "editor.cursorBlinking": "smooth",
-  "editor.cursorSmoothCaretAnimation": "on"
+  "editor.cursorSmoothCaretAnimation": "on" // this is the old config
 }

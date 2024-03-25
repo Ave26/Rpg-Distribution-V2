@@ -73,10 +73,7 @@ export default function BinsLayout({
   const [coveredBins, setCoverdBins] = useState<String[]>([]);
   const [skus, setSkus] = useState<stockKeepingUnit[]>([]);
   const [totalWeightLists, setTotalWeightList] = useState<number[]>([]);
-  // const [sku, setSku] = useState<TSKU>({
-  //   allData: [],
-  //   data: "",
-  // });
+
   const { productEntry, setProductEntry } = dataEntries;
   const [toast, setToast] = useState<ToastTypes>({
     isShow: false,
@@ -146,8 +143,7 @@ export default function BinsLayout({
         listofTotalWeight.push(result);
       }
       const sum = listofTotalWeight.reduce((accumulator, currentValue) => {
-        const result = accumulator + currentValue;
-        return result;
+        return accumulator + currentValue;
       }, 0);
 
       const truck = trucks.find((truck) => truck.truckName === formData.truck);
@@ -358,7 +354,8 @@ export default function BinsLayout({
                       className={`px-6 py-3 md:py-7 ${
                         (index === 0 && "rounded-tl-md") ||
                         (index === 5 && "rounded-tr-md")
-                      }`}>
+                      }`}
+                    >
                       {title}
                     </th>
                   );
@@ -397,7 +394,8 @@ export default function BinsLayout({
                             ? "bg-emerald-500"
                             : "bg-gray-800"
                         }
-                      `}>
+                      `}
+                  >
                     <td className={tdStyle}>{bin._count.assignedProducts}</td>
 
                     <td className={tdStyle}>

@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import { TruckAvailability } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { updateTrucks } from "@/lib/prisma/trucks";
+import { stat } from "fs";
 
 async function handler(
   req: NextApiRequest,
@@ -12,30 +14,66 @@ async function handler(
   const { status, truckId }: { status: TruckAvailability; truckId: string } =
     req.body;
 
-  console.log({ truckId, status });
+  let userId: string = "";
+  if (verifiedToken && typeof verifiedToken === "object") {
+    userId = verifiedToken.id;
+  }
   try {
-    let UpdatedTruck;
-    await prisma.$transaction(async (tx) => {
-      const currentTruck = await tx.trucks.findUnique({
-        where: { id: truckId },
-      });
+    let updatedTruck;
+    let logs;
 
-      // if (currentTruck?.status) {
-      //   return res.status(200).json({
-      //     message: `Current Status is already in ${currentTruck.status}`,
-      //   });
-      // } else {
-      // }
-      UpdatedTruck = await prisma.trucks.update({
+    const deliveryLogs = {
+      create: {
+        driverId: userId,
+        status,
+      },
+    };
+
+    await prisma.$transaction(async (tx) => {
+      const truck = await tx.trucks.findUniqueOrThrow({
         where: { id: truckId },
-        data: { status },
+        include: { records: { include: { orderedProducts: true } } },
       });
+      console.log(truck);
+
+      if (status === "InTransit" || status === "Delivered") {
+        // if (status === "Delivered") {
+        //   // check first if the product inside has been delivered before settings into delivered status
+        //   const productInsideTruck = prisma.trucks.findFirst({
+        //     select: {
+        //       assignedProducts: true,
+        //     },
+        //   });
+        //   console.log(productInsideTruck);
+        // }
+        updatedTruck = await prisma.trucks.update({
+          where: { id: truckId },
+          data: {
+            status,
+            driverId: userId,
+            deliveryLogs,
+          },
+        });
+      } else {
+        updatedTruck = await prisma.trucks.update({
+          where: { id: truckId },
+          data: {
+            status,
+            driverId: {
+              unset: true,
+            },
+            deliveryLogs,
+          },
+        });
+      }
     });
+
     return (
-      UpdatedTruck &&
+      updatedTruck &&
       res.status(200).json({
         message: "Truck Updated",
-        UpdatedTruck,
+        updatedTruck,
+        logs,
       })
     );
   } catch (error) {

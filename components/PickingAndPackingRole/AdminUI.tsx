@@ -28,7 +28,9 @@ type TAssignedProducts = assignedProducts & {
   products: products;
 };
 
-export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
+//{ trucks }: { trucks: TTrucks[] }1
+
+export default function PickingAndPacking() {
   const [productEntry, setProductEntry] = useState<EntriesTypes[] | null>([]);
   const [testTrucks, setTestTrucks] = useState<TTrucks[]>([]);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -41,7 +43,7 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
   const [truckCapacity, setTruckCapacity] = useState<number>(0);
   const [formData, setFormData] = useState<TFormData>({
     barcodeId: "",
-    truck: String(trucks[0]?.truckName),
+    truck: "", // String(trucks[0]?.truckName)
     destination: "",
     clientName: "",
     productName: "",
@@ -49,14 +51,6 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     purchaseOrderOutbound: "",
     truckCargo: 0,
   });
-  // console.log(formData);
-  /* TODO
-    CALCULATE THE ASSIGNEDPRODUCTS. FOR THE 
-  */
-
-  // const capacityRef = useRef<HTMLSelectElement | null>(null);
-
-  // useEffect(() => {}, [capacityRef]);
 
   const fetchTrucks = (url: string) => {
     fetch(url)
@@ -173,112 +167,6 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     }
   }, [productEntry]);
 
-  // async function makeReport() {
-  //   if (Number(productEntry?.length) <= 0) {
-  //     return console.log("do something");
-  //   }
-  //   setHasLoading(true);
-  //   try {
-  //     const response = await fetch("/api/outbound/make-report", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ productEntry, formData }),
-  //     });
-  //     const reports: Orders = await response.json();
-  //     await generatePdf(reports);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setHasLoading(false);
-  //     setProductEntry([]);
-  //     setFormData({
-  //       barcodeId: "",
-  //       truck: "",
-  //       destination: "",
-  //       clientName: "",
-  //       productName: "",
-  //       quantity: 0,
-  //     });
-  //   }
-  // }
-
-  // const generatePdf = async (orderReport: Orders | null) => {
-  //   console.log("generate report executed");
-  //   console.log(orderReport?.id);
-
-  //   const doc = new jsPDF();
-
-  //   // Add "Hello, World!" text to the PDF
-  //   doc.text(`${orderReport?.clientName}`, 20, 40);
-  //   doc.text(
-  //     "--------------------------------------------------------------",
-  //     10,
-  //     10
-  //   );
-  //   doc.text("                  OUTBOUND ORDER REPORT", 10, 20);
-  //   doc.text(
-  //     "--------------------------------------------------------------",
-  //     10,
-  //     30
-  //   );
-
-  //   doc.text(`Order Date: ${String(orderReport?.dateCreated)}`, 20, 50);
-  //   doc.text(`Order Number: ${orderReport?.id}`, 20, 60);
-  //   doc.text(`Prepared by: ${orderReport?.users?.username}`, 20, 70);
-
-  //   // Populate client information
-  //   doc.text(
-  //     "--------------------------------------------------------------",
-  //     10,
-  //     100
-  //   );
-  //   doc.text("Client Information:", 20, 110);
-  //   doc.text(
-  //     "--------------------------------------------------------------",
-  //     10,
-  //     120
-  //   );
-  //   doc.text(`Client Name: ${orderReport?.clientName}`, 20, 140);
-  //   doc.text(`Shipping Address: ${orderReport?.destination}`, 20, 150);
-  //   doc.text(`Contact Phone: 09511219514`, 20, 160);
-  //   doc.text(`Email: client@gmail.com`, 20, 170);
-
-  //   // Order Details Section (Using a loop for tabular data)
-  //   var y = 120; // Set the initial Y-coordinate for the table
-  //   var columnWidth = 45;
-
-  //   doc.text("Order Details:", 10, 50);
-  //   doc.line(10, y + 5, 200, y + 5); // Horizontal line under section title
-
-  //   // Table headers
-  //   doc.text("Product Name", 10, y + 15);
-  //   doc.text("Barcode ID", 10 + columnWidth, y + 15);
-  //   doc.text("Bin Location", 10 + 2 * columnWidth, y + 15);
-  //   doc.text("SKU", 10 + 3 * columnWidth, y + 15);
-
-  //   // Use a loop to add data rows here
-  //   // Example:
-  //   // doc.text('[Product Name 1]', 10, y + 30);
-  //   // doc.text('[Barcode 1]', 10 + columnWidth, y + 30);
-  //   // doc.text('[Bin 1]', 10 + 2 * columnWidth, y + 30);
-  //   // doc.text('[SKU 1]', 10 + 3 * columnWidth, y + 30);
-
-  //   // Continue adding rows in a similar fashion...
-
-  //   // Order Total
-  //   doc.text("Order Total: [Total Price for All Items]", 10, y + 120);
-
-  //   // Notes
-  //   doc.text("Notes: [Any Additional Notes]", 10, y + 135);
-
-  //   // Thank you message
-  //   doc.text("Thank you for choosing [Your Company Name]!", 10, y + 150);
-
-  //   doc.save(`outbound_order_report_${orderReport?.id}.pdf`);
-  // };
-  // console.log(trucks.find((truck) => truck.capacity === formData.truckCargo));
   console.log(formData);
   useEffect(() => {
     console.log("truck capacity finding");
@@ -344,7 +232,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
             name="truck"
             value={formData.truck}
             onChange={handleChange}
-            className={inputStyle}>
+            className={inputStyle}
+          >
             {testTrucks &&
               testTrucks?.map((truck: TTrucks) => {
                 return <option key={truck?.id}>{truck.truckName}</option>;
@@ -408,12 +297,14 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                         setProductEntry([]);
                       });
                   }}
-                  className={buttonStyle}>
+                  className={buttonStyle}
+                >
                   {hasLoading ? <Loading /> : "Confirm"}
                 </button>
                 <button
                   onClick={() => setIsClick(false)}
-                  className={buttonStyle}>
+                  className={buttonStyle}
+                >
                   Cancel
                 </button>
               </div>
@@ -444,7 +335,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
               {productEntry?.map((entry, index) => (
                 <span
                   key={entry.barcodeId}
-                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 rounded-lg  border border-black`}>
+                  className={`relative my-2 flex h-1/4 w-full animate-emerge items-center justify-center gap-2 rounded-lg  border border-black`}
+                >
                   <div className="flex h-full w-full flex-row items-center justify-between rounded-lg border border-slate-100/50 p-2 text-center">
                     <div className="flex flex-col items-start">
                       <h1>
@@ -471,7 +363,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
                       if (updatedProductEntry.length <= 0) {
                         setIsDisabled(false);
                       }
-                    }}>
+                    }}
+                  >
                     x
                   </button>
                 </span>
@@ -484,3 +377,8 @@ export default function PickingAndPacking({ trucks }: { trucks: TTrucks[] }) {
     </>
   );
 }
+
+/* 
+  Need a massive refactor for admin UI
+
+*/

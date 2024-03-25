@@ -1,14 +1,11 @@
 import useTrucks from "@/hooks/useTrucks";
 import React, { useEffect, useState } from "react";
 import Loading from "../../Parts/Loading";
-import TruckSelection from "../../UsableComponent/TruckSelection";
+import TruckSelection from "../../ReusableComponent/TruckSelection";
 import CloseAllButton from "./CloseAllButton";
 
 export default function StaffUI() {
   const [selectedId, setSelectedId] = useState<string[]>([]);
-
-  const btnStyle =
-    "text-white bg-blue-700 w-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 h-10 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
 
   return (
     <section className="flex flex-col items-center justify-center md:flex-row">
