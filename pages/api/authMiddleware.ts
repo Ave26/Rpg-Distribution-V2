@@ -1,20 +1,29 @@
 // authMiddleware.ts
 import { verifyJwt } from "@/lib/helper/jwt";
 import { VerifyToken } from "@/types/authTypes";
+import { UserRole } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+
+interface Token {
+  id: string;
+  roles: string;
+  iat: number;
+  exp: number;
+}
 
 export const authMiddleware =
   (
     handler: (
       req: NextApiRequest,
       res: NextApiResponse,
-      verifiedToken: string | JwtPayload | undefined
+      verifiedToken: JwtPayload & { roles: UserRole; id: string }
     ) => Promise<void>
   ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const { verifiedToken, error } = await verifyJwt(req);
+
       if (error) {
         return res.status(403).json({
           authenticated: false,

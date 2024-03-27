@@ -41,7 +41,7 @@ export default function PickingAndPacking() {
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <div>{MappedComponent}</div>
+      <section className="h-full w-full">{MappedComponent}</section>
     </>
   );
 }

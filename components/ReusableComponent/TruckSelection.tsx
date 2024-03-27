@@ -37,7 +37,7 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
           return (
             <div key={truck.id}>
               <div
-                className="flex h-full w-full select-none flex-col items-center justify-between gap-2 rounded-sm p-[.5px] px-2 shadow-xl transition-all md:flex-row md:hover:bg-slate-500 md:hover:text-white"
+                className="flex h-full w-full select-none flex-col items-center justify-between gap-2 rounded-md bg-slate-500/20 p-[.5px] px-2 py-1 shadow-sm transition-all md:flex-row md:hover:bg-slate-500 md:hover:text-white"
                 onClick={() => selectId(truck.id)}
               >
                 <div className="flex max-h-full max-w-[30em] gap-2 break-words  text-[12px]">

@@ -1,7 +1,10 @@
 import { trucks } from "@prisma/client";
 import { TruckAvailability } from "@prisma/client";
 
-export type TSelectedBTN = "Truck Management" | "View Truck Loads";
+export type TSelectedBTN =
+  | "Truck Management"
+  | "View Truck Loads"
+  | "Manage Location";
 export type TForm = Omit<
   trucks,
   "id" | "status" | "driverId" | "routeClusterId" | "threshold"

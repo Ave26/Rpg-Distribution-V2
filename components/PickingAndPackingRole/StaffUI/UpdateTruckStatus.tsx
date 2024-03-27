@@ -45,6 +45,8 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     Delivered: "Return",
     ScheduledforPickup: null,
     OnHold: null,
+    EmergencyStop: null,
+    GasStop: null,
   };
 
   const renderButtonName = mappedComponent[truck.status];

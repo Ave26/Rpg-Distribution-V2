@@ -43,9 +43,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // Remove the password field from the user object
         // delete user.password;
-        const { filteredUser } = await findUserFilterPassword(
-          String(user.username)
-        );
+        // const { filteredUser } = await findUserFilterPassword(
+        //   String(user.username)
+        // );
+        const { id, roles } = user;
+        const filteredUser = {
+          id,
+          roles,
+        };
 
         const token = createJwt(filteredUser);
         createCookie(token, res);

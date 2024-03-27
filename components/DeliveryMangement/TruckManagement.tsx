@@ -47,9 +47,9 @@ export default function TruckManagement() {
   const renderComponent = mappedComponent[truckComponentKey];
 
   return (
-    <div className="flex h-full w-full animate-emerge flex-col items-center justify-center gap-2 p-2 text-xs transition-all md:flex-row md:items-start md:justify-start">
+    <div className="flex h-full w-full animate-emerge flex-col items-center justify-center gap-2  text-xs transition-all md:flex-row md:items-start md:justify-start">
       <div className="flex h-full w-full flex-col items-center gap-2 border border-black p-2 transition-all md:flex-row md:items-start">
-        <div className="flex h-full w-fit items-start  justify-center border border-black p-2">
+        <div className="justify-centerp-2 flex h-full w-fit  items-start p-[.5] drop-shadow-sm">
           {renderComponent}
         </div>
 

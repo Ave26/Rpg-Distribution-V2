@@ -7,6 +7,7 @@ import TruckStatusOptions from "./TruckStatusOptions";
 import { TToast } from "../Inventory/InventoryTypes";
 import Loading from "../Parts/Loading";
 import { mutate } from "swr";
+import { buttonStyleEdge, buttonStyleSubmit } from "@/styles/style";
 
 type TData = {
   updatedTruck: trucks;
@@ -77,9 +78,6 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
   useEffect(() => {
     setForm({ ...form, status: selectedTruck.truckStatus });
   }, [selectedTruck.truckStatus]);
-
-  const btnStyle =
-    "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
 
   return (
     <form
@@ -154,7 +152,7 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
           )}
         </div>
       ))}
-      <button className={btnStyle} type="submit">
+      <button className={buttonStyleSubmit} type="submit">
         {loading ? (
           <div className="flex h-full w-full items-center justify-center">
             <Loading />

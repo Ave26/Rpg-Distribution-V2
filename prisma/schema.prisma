@@ -190,6 +190,7 @@ model records {
   purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
   poId                  String                @unique
   batchNumber           Int?                  @default(1)
+  locations             locations[]
 }
 
 enum DeliveryStatus {
@@ -219,10 +220,6 @@ model deliveryLogs {
 }
 
 enum TruckAvailability {
-  // Available
-  // Loaded
-  // ForRepair
-  // OutForDelivery
   Empty
   PartialLoad
   FullLoad
@@ -231,9 +228,9 @@ enum TruckAvailability {
   Delivered
   ScheduledforPickup
   OnHold
+  EmergencyStop
+  GasStop
 }
-
-// precentage for the loaded capacity
 
 model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
@@ -267,4 +264,17 @@ model routeCluster {
 model damageBin {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   assignedProducts assignedProducts[]
+}
+
+type Coordinates {
+  longitude Float
+  latitude  Float
+}
+
+model locations {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  records     records?    @relation(fields: [recordId], references: [id])
+  recordId    String?     @db.ObjectId
+  name        String      @unique
+  coordinates Coordinates
 }

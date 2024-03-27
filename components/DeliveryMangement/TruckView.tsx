@@ -41,15 +41,7 @@ export default function TruckView({ states }: TTruckViewProps) {
 
   return (
     <>
-      {isLoading ? (
-        <div className="flex h-full w-full items-center justify-center border border-black">
-          <Loading />
-        </div>
-      ) : data?.length === 0 ? (
-        <div className="flex h-full w-full items-center justify-center border border-black">
-          no trucks
-        </div>
-      ) : (
+      {Array.isArray(data) ? (
         data?.map((truck) => (
           <div
             key={truck.id}
@@ -88,6 +80,10 @@ export default function TruckView({ states }: TTruckViewProps) {
             </button>
           </div>
         ))
+      ) : (
+        <div className="flex h-full w-full items-center justify-center border border-black">
+          <Loading />
+        </div>
       )}
     </>
   );

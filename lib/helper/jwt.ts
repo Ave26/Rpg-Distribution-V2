@@ -1,8 +1,9 @@
-import { sign, verify, decode, JwtPayload } from "jsonwebtoken";
+import { sign, verify, decode } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { VerifyToken } from "@/types/authTypes";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest } from "next/server";
+import { UserRole, users } from "@prisma/client";
 
 interface Token {
   id: string;
@@ -11,15 +12,25 @@ interface Token {
   exp: number;
 }
 
-interface UserTypes {
-  id: string;
+interface JwtPayload {
   roles: string;
+  username: string;
+  iat: number;
+  exp: number;
+  // Add other properties if needed
 }
 
-export const createJwt = (user: UserTypes | null | undefined) => {
+type TUser = Omit<users, "password" | "username" | "additionalInfo">;
+
+interface UserTypes {
+  id: string;
+  roles: UserRole;
+}
+// const { id, roles } = user;
+
+export const createJwt = (user: TUser | null | undefined) => {
   if (user) {
-    const { id, roles } = user;
-    const token = sign({ id, roles }, String(process.env.JWT_SECRET), {
+    const token = sign(user, process.env.JWT_SECRET as string, {
       expiresIn: "12h",
     });
     return token;
@@ -31,8 +42,15 @@ export const verifyJwt = async (req: NextApiRequest) => {
   // console.log(`Token: ${token}`);
 
   try {
-    const verifiedToken = verify(String(token), String(process.env.JWT_SECRET));
+    // const verifiedToken = verify(
+    //   token as string,
+    //   process.env.JWT_SECRET as string
+    // );
 
+    const verifiedToken = verify(
+      token as string,
+      process.env.JWT_SECRET as string
+    ) as JwtPayload & { roles: UserRole; id: string };
     return { verifiedToken };
   } catch (error) {
     return { error };

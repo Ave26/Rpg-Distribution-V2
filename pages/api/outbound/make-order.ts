@@ -4,6 +4,7 @@ import { EntriesTypes } from "@/types/binEntries";
 import { JwtPayload } from "jsonwebtoken";
 import { TFormData } from "@/types/inputTypes";
 import { create_order } from "@/lib/prisma/order";
+import { UserRole } from "@prisma/client";
 
 type TBody = {
   productEntry: EntriesTypes[];
@@ -13,7 +14,7 @@ type TBody = {
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: string | JwtPayload | undefined
+  verifiedToken: JwtPayload & { roles: UserRole; id: string }
 ) {
   const { productEntry, formData }: TBody = req.body;
 
@@ -26,11 +27,7 @@ export async function handler(
             message: "Incomplete Field",
           });
         }
-
-        let userId: string = "";
-        if (verifiedToken && typeof verifiedToken === "object") {
-          userId = verifiedToken.id;
-        }
+        const userId: string = verifiedToken.id;
 
         const { error, record } = await create_order(
           productEntry,

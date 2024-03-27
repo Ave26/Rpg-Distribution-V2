@@ -5,11 +5,11 @@ type TTMInputProps = {
 };
 
 type TAttributes = {
-  input: React.InputHTMLAttributes<HTMLInputElement>;
-  label: React.LabelHTMLAttributes<HTMLLabelElement>;
+  input?: React.InputHTMLAttributes<HTMLInputElement>;
+  label?: React.LabelHTMLAttributes<HTMLLabelElement>;
 };
 
-function TMInput({ attributes }: TTMInputProps) {
+export default function Input({ attributes }: TTMInputProps) {
   return (
     <div className="w-72">
       <div className="relative h-10 w-full min-w-[200px]">
@@ -26,5 +26,3 @@ function TMInput({ attributes }: TTMInputProps) {
     </div>
   );
 }
-
-export default TMInput;

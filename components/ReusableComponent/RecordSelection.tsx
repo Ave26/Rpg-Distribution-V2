@@ -66,8 +66,7 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
           </div>
         ))}
       </div>
-
-      {isDriver && <DeliverButton />}
+      {isDriver && <DeliverButton />} {/* this will deliver the product */}
     </>
   );
 }

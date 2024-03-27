@@ -5,24 +5,27 @@ import ViewTruckLoads from "@/components/DeliveryMangement/ViewTruckLoads";
 import { TSelectedBTN } from "@/components/DeliveryMangement/deliveryManagementTypes";
 import Layout from "@/components/layout";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
+import Location from "@/components/DeliveryMangement/Location/index";
 
 export default function DeliveryManagement() {
   const { globalState } = useMyContext();
-  const role: string | undefined =
-    globalState?.verifiedToken?.roles ?? "Driver";
+  const role = globalState?.verifiedToken?.roles;
 
-  const [selectedButton, setSelectedButton] = useState<TSelectedBTN>(
-    role === "Driver" ? "View Truck Loads" : "Truck Management"
-  );
+  const [selectedButton, setSelectedButton] =
+    useState<TSelectedBTN>("Truck Management");
 
-  const componentMapping = {
-    "Truck Management": role === "Driver" || <TruckManagement />,
+  const componentMapping: Record<TSelectedBTN, JSX.Element> = {
+    "Truck Management": <TruckManagement />,
     "View Truck Loads": <ViewTruckLoads />,
+    "Manage Location": <Location />,
   };
 
-  const renderComponent = componentMapping[selectedButton];
+  useEffect(() => {
+    if (role === "Driver") setSelectedButton("View Truck Loads");
+  }, [role]);
 
+  const renderComponent = componentMapping[selectedButton];
   return (
     <section className="flex h-full w-full flex-col items-start justify-start gap-3">
       <DeliveryManagementButtonSelection
