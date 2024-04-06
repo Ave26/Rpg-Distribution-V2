@@ -11,13 +11,14 @@ import { MdOutlineTipsAndUpdates } from "react-icons/md";
 import LocationFormUpdate from "./LocationFormUpdate";
 import LocationDetails from "./LocationDetails";
 import LocationButtonCheckMap from "./LocationButtonCheckMap";
+
 export default function ViewLocations() {
   const { locations } = useLocations();
   const [selectedLocation, setSelectedLocation] = useState("");
 
-  useEffect(() => {
-    console.log(selectedLocation);
-  }, [selectedLocation]);
+  // useEffect(() => {
+  //   console.log(selectedLocation);
+  // }, [selectedLocation]);
 
   return (
     <>
@@ -25,7 +26,7 @@ export default function ViewLocations() {
         locations?.map((location) => (
           <div key={location.id} className="flex w-full gap-2">
             <div className="flex h-full w-full flex-col items-center gap-2 rounded-md bg-gray-500/20 p-2 text-center">
-              <div className="flex h-fit w-full gap-2 bg-slate-500/5 p-2 shadow-sm">
+              <div className="flex h-fit w-full flex-wrap gap-2 bg-slate-500/5 p-2 shadow-sm">
                 <LocationDetails location={location} />
               </div>
 

@@ -28,8 +28,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="transition-all">
       <Header />
-      <main className="h-full w-full bg-[#EEF5FF]">{children}</main>
+      <main className="h-full w-full bg-slate-200">{children}</main>
       <Footer />
     </div>
   );
 }
+// bg-gradient-to-b from-[#86B6F6] via-blue-500 to-cyan-300

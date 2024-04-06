@@ -9,7 +9,7 @@ interface HomeProps {}
 const InitialPage: FC<HomeProps> = ({}) => {
   return (
     <>
-      <section className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all border bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white">
+      <section className="flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white">
         <Image
           priority
           src={ProStockV2}
@@ -29,7 +29,8 @@ const InitialPage: FC<HomeProps> = ({}) => {
         <div className="flex h-full w-full items-center justify-center md:justify-start md:px-80">
           <Link
             className="h-full w-fit cursor-pointer select-none border p-2 text-center font-bold transition-all hover:drop-shadow-2xl lg:text-start"
-            href={"https://rpg-ph.com"}>
+            href={"https://rpg-ph.com"}
+          >
             Learn More
           </Link>
         </div>

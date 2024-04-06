@@ -35,7 +35,7 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
 
         <ul>Batch Number: {record.batchNumber}</ul>
         <ul>Purchase Order: {record.poId}</ul>
-        <ul>Desitnation: {record.destination}</ul>
+        <ul>Desitnation: {record.locationsId}</ul>
         <ul>Route: {"<Point of Location>"}</ul>
         <ul>Client: {record.clientName}</ul>
       </div>

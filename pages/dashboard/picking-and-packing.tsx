@@ -12,7 +12,6 @@ import { EntriesTypes } from "@/types/binEntries";
 import { Bin } from "@/types/inventory";
 import { TFormData } from "@/types/inputTypes";
 import { Orders } from "@/types/ordersTypes";
-import { getTrucks } from "@/lib/prisma/trucks";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 
 import { trucks as TTrucks, UserRole } from "@prisma/client";
@@ -24,9 +23,6 @@ import AdminUI from "@/components/PickingAndPackingRole/AdminUI/Admin";
 // { trucks }: { trucks: TTrucks[] }
 
 export default function PickingAndPacking() {
-  const { trucks } = useTrucks();
-  console.log(trucks);
-
   const roleComponentMapper = {
     SuperAdmin: () => <Admin />,
     Admin: () => <AdminUI />,

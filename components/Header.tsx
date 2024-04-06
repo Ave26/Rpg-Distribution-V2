@@ -32,12 +32,26 @@ export default function Header() {
     setIsOpen((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    Boolean(globalState?.authenticated) &&
+      console.log(
+        `is authenticated then change color ${Boolean(
+          globalState?.authenticated
+        )}`
+      );
+  }, [Boolean(globalState?.authenticated)]);
+
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-center  font-bold dark:bg-[#B4D4FF] md:px-20 lg:flex-row`}>
+      className={`relative flex h-full w-full flex-col items-center  
+      justify-center ${
+        globalState?.authenticated ? "bg-[#86B6F6]" : "bg-cyan-300"
+      }  font-bold transition-all md:px-20 lg:flex-row`}
+    >
       <div className="relative flex h-24 w-full items-center justify-between px-5 font-bold lg:justify-start  lg:px-14  ">
         <div
-          className={`flex h-fit  w-fit select-none flex-row items-end justify-center gap-2  p-2`}>
+          className={`flex h-fit  w-fit select-none flex-row items-end justify-center gap-2  p-2`}
+        >
           {mapRoutes?.map((route, index) => (
             <Link key={index} href={route.path}>
               <Image
@@ -70,15 +84,18 @@ export default function Header() {
           isOpen
             ? "not-sr-only animate-emerge transition-all"
             : "sr-only transition-all"
-        }`}>
+        }`}
+      >
         <Link
           href={"/products"}
-          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
+          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}
+        >
           Product Catalog
         </Link>
         <Link
           href={"/about"}
-          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}>
+          className={` whitespace-nowrap transition-all hover:text-sky-500 active:text-black`}
+        >
           About Us
         </Link>
       </nav>

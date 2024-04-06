@@ -22,6 +22,7 @@ export async function handler(
             },
             bin: {
               select: {
+                id: true,
                 shelfLevel: true,
                 row: true,
               },

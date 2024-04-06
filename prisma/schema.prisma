@@ -54,6 +54,7 @@ model stockKeepingUnit {
   products         products?         @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId        String            @unique
   assignedProducts assignedProducts?
+  binLocations     binLocations?
 }
 
 model products {
@@ -111,6 +112,7 @@ model bins {
   assignedProducts  assignedProducts[]
   orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
   orderedProductsId String?            @db.ObjectId
+  binLocations      binLocations[]
 }
 
 enum productStatus {
@@ -156,6 +158,8 @@ model assignedProducts {
   ordersId          String?          @db.ObjectId
   orderedProducts   orderedProducts? @relation(fields: [orderedProductsId], references: [id])
   orderedProductsId String?          @db.ObjectId
+  binLocations      binLocations?    @relation(fields: [binLocationsId], references: [id])
+  binLocationsId    String?          @db.ObjectId
 }
 
 model orderedProducts {
@@ -167,30 +171,52 @@ model orderedProducts {
   bins             bins[]
   products         products?          @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId        String             @unique
-  record           records?           @relation(fields: [recordId], references: [id])
-  recordId         String?            @db.ObjectId
+  // records          records?           @relation(fields: [recordId], references: [id])
+  // recordId         String?            @db.ObjectId
 }
 
 model purchaseOrderOutBound {
-  id      String    @id @default(auto()) @map("_id") @db.ObjectId
-  poId    String    @unique
-  records records[]
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  poId String @unique
 }
 
 model records {
-  id                    String                @id @default(auto()) @map("_id") @db.ObjectId
-  clientName            String?
-  dateCreated           DateTime?
-  destination           String?
-  orderedProducts       orderedProducts[]
-  author                users?                @relation(fields: [authorName], references: [username])
-  authorName            String?               @unique
-  trucks                trucks?               @relation(fields: [truckName], references: [truckName])
-  truckName             String?               @unique
-  purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
-  poId                  String                @unique
-  batchNumber           Int?                  @default(1)
-  locations             locations[]
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  clientName   String
+  dateCreated  DateTime?
+  batchNumber  Int?       @default(1)
+  POO          String     @unique
+  locationName String     @unique
+  authorName   String?    @unique
+  truckName    String?    @unique
+  locations    locations? @relation(fields: [locationName], references: [name])
+  author       users?     @relation(fields: [authorName], references: [username])
+  trucks       trucks?    @relation(fields: [truckName], references: [truckName])
+  // orderedProducts     orderedProducts[]
+  // purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
+  // poId                  String                @unique
+
+  orderedProductsTest orderedProductsTest[]
+}
+
+model orderedProductsTest {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  recordsId    String         @db.ObjectId
+  productName  String?
+  binLocations binLocations[]
+  records      records?       @relation(fields: [recordsId], references: [id])
+}
+
+model binLocations {
+  id                    String               @id @default(auto()) @map("_id") @db.ObjectId
+  quantity              Int
+  skuCode               String               @unique
+  binId                 String               @db.ObjectId
+  orderedProductsTestId String?              @db.ObjectId
+  assignedProducts      assignedProducts[]
+  bins                  bins?                @relation(fields: [binId], references: [id])
+  stockKeepingUnit      stockKeepingUnit?    @relation(fields: [skuCode], references: [code])
+  orderedProductsTest   orderedProductsTest? @relation(fields: [orderedProductsTestId], references: [id])
 }
 
 enum DeliveryStatus {
@@ -273,8 +299,7 @@ type Coordinates {
 
 model locations {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  records     records?    @relation(fields: [recordId], references: [id])
-  recordId    String?     @db.ObjectId
   name        String      @unique
   coordinates Coordinates
+  records     records?
 }

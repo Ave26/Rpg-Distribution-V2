@@ -1,21 +1,21 @@
 import React from "react";
 
-type TTMInputProps = {
-  attributes: TAttributes;
+type TTMInputProps<T> = {
+  attributes: TAttributes<T>;
 };
 
-type TAttributes = {
-  input?: React.InputHTMLAttributes<HTMLInputElement>;
+type TAttributes<T> = {
+  input?: React.InputHTMLAttributes<HTMLInputElement | T>;
   label?: React.LabelHTMLAttributes<HTMLLabelElement>;
 };
 
-export default function Input({ attributes }: TTMInputProps) {
+export default function Input<T>({ attributes }: TTMInputProps<T>) {
   return (
     <div className="w-72">
       <div className="relative h-10 w-full min-w-[200px]">
         <input
           {...attributes.input}
-          className="border-blue-gray-200 text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full rounded-[7px] border bg-transparent px-3 py-2.5 font-sans text-sm font-normal outline outline-0 transition-all placeholder-shown:border focus:border-2 focus:border-sky-400 focus:border-t-transparent focus:outline-0 disabled:border-0"
+          className="border-blue-gray-200 text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full rounded-[7px] border bg-transparent px-3 py-2.5 font-sans text-sm font-normal shadow-sm outline outline-0 transition-all placeholder-shown:border focus:border-2 focus:border-sky-400 focus:border-t-transparent focus:outline-0 disabled:border-0"
           placeholder=" "
         />
         <label

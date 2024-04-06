@@ -146,7 +146,6 @@ export async function create_order(
       record = await prisma.records.create({
         data: {
           clientName,
-          destination,
           dateCreated,
           authorName: String(user?.username),
           truckName,
@@ -177,7 +176,6 @@ export async function create_order(
       record = await prisma.records.create({
         data: {
           clientName,
-          destination,
           dateCreated,
           authorName: String(user?.username),
           truckName,

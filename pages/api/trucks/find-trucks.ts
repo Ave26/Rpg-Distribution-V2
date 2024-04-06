@@ -2,27 +2,25 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import {
-  getTrucks,
   getTruckStaffAccess,
   getTruckAdminAccess,
   getTruckDriverAccess,
 } from "@/lib/prisma/trucks";
 import { UserRole } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: string | JwtPayload | undefined
+  verifiedToken: JwtPayload & { roles: UserRole; id: string }
 ) {
   try {
     switch (req.method) {
       case "GET":
         let roles: UserRole = "SuperAdmin";
         let userId: string;
-        if (verifiedToken && typeof verifiedToken === "object") {
-          roles = verifiedToken.roles;
-          userId = verifiedToken.id;
-        }
+        roles = verifiedToken.roles;
+        userId = verifiedToken.id;
 
         const roleMapping = {
           Admin: getTruckAdminAccess,
@@ -36,6 +34,7 @@ async function handler(
         return error
           ? res.status(500).json({ message: "Server Error", error })
           : res.status(200).json(trucks);
+
       default:
         return res.send(`Method ${req.method} is not allowed`);
     }

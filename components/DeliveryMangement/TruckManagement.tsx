@@ -48,12 +48,12 @@ export default function TruckManagement() {
 
   return (
     <div className="flex h-full w-full animate-emerge flex-col items-center justify-center gap-2  text-xs transition-all md:flex-row md:items-start md:justify-start">
-      <div className="flex h-full w-full flex-col items-center gap-2 border border-black p-2 transition-all md:flex-row md:items-start">
+      <div className="flex h-full w-full flex-col items-center gap-2 p-2 transition-all md:flex-row md:items-start">
         <div className="justify-centerp-2 flex h-full w-fit  items-start p-[.5] drop-shadow-sm">
           {renderComponent}
         </div>
 
-        <div className="flex h-[40em] w-full flex-col gap-[1.5px] overflow-y-scroll border border-black p-2">
+        <div className="flex h-[40em] w-full flex-col gap-[1.5px] overflow-y-scroll p-2 shadow-md">
           <TruckView
             states={{
               truckComponentKey,

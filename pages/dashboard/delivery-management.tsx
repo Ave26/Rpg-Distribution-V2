@@ -6,7 +6,7 @@ import { TSelectedBTN } from "@/components/DeliveryMangement/deliveryManagementT
 import Layout from "@/components/layout";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import React, { ReactElement, useEffect, useState } from "react";
-import Location from "@/components/DeliveryMangement/Location/index";
+import Location from "@/components/DeliveryMangement/Location/Location";
 
 export default function DeliveryManagement() {
   const { globalState } = useMyContext();
