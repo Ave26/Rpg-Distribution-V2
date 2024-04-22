@@ -170,62 +170,6 @@ export default function BinsLayout({
       console.log(error);
     }
   }, [productEntry]);
-  // console.log(formData);
-
-  // function fetchSKU(SKUs: string[] | undefined, controller: AbortController) {
-  //   // find the skus
-  //   console.log("Finding SKUs");
-  //   try {
-  //     fetch("/api/SKUs-find", {
-  //       method: "POST",
-  //       signal: controller.signal,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ SKUs }),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((skus: stockKeepingUnit[]) => setSkus(skus))
-  //       .catch((error) => error);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //   if (Number(productEntry?.length) > 0) {
-  //     fetchSKU(SKUs, controller);
-  //   }
-
-  //   return () => {
-  //     controller.abort();
-  //   };
-  // }, [productEntry]);
-
-  // useEffect(() => {
-  //   if (Number(skus.length) > 0) {
-  //     for (let enteredProduct of productEntry!) {
-  //       const total = enteredProduct.totalQuantity;
-  //       for (let sku of skus) {
-  //         const weight = sku.weight;
-  //         if (enteredProduct.skuCode === sku.code) {
-  //           const totalWeight = total * weight;
-  //           // totalWeighLists.push(totalWeight);
-  //           console.log("totalWeight", totalWeight);
-  //           return setTotalWeightList((prev) => [...prev, totalWeight]);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   console.log(totalWeightLists);
-  // }, [skus]);
-
-  /* 
-    I want to 
-
-  */
 
   useEffect(() => {
     const timer = setTimeout(() => {

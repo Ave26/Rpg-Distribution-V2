@@ -1,56 +1,59 @@
 import useLocations from "@/hooks/useLocations";
 import { InputStyle } from "@/styles/style";
 import { locations, records } from "@prisma/client";
-import React from "react";
+import React, { useState } from "react";
+import { TRecord } from "./AdminRecordForm";
 
 type TSelectLocationInput = {
-  states: TStates;
-};
-
-type TStates = {
-  key: string;
-
   handleChange: (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => void;
+  states: TStates;
 };
 
-function SelectLocationInput({ states }: TSelectLocationInput) {
-  const { handleChange, key } = states;
-  const { locations } = useLocations();
-  const locationData: locations = {
-    coordinates: { latitude: 0, longitude: 0 },
-    id: "",
-    name: "Select Location",
-  };
+type TStates = {
+  key: string;
+  record: TRecord;
+};
 
-  const locationWithEmptyString: locations[] = [locationData].concat(
-    Array.isArray(locations) ? locations : []
-  );
+type TOptions = {
+  value: string;
+};
+
+function SelectLocationInput({ states, handleChange }: TSelectLocationInput) {
+  const { key, record } = states;
+  const { locations } = useLocations();
+  const [options, setOptions] = useState<TOptions[]>([]);
+
+  function handleOption() {
+    const newArray: TOptions[] =
+      (Array.isArray(locations) &&
+        locations?.map((location) => ({ value: location.name }))) ||
+      [];
+    setOptions([...newArray]);
+  }
 
   return (
     <select
-      name={key}
-      id={key}
       key={key}
-      className={InputStyle}
+      name={key}
+      value={record.locationName}
       onChange={handleChange}
+      onClick={handleOption}
+      className={InputStyle}
     >
-      {Array.isArray(locations) ? (
-        locationWithEmptyString?.map((location, index) => (
-          <option
-            key={location.id}
-            value={index === 0 ? "" : location.name}
-            className="text-xs font-bold uppercase"
-          >
-            {location.name}
+      <option value={"default"} disabled>
+        Select Location
+      </option>
+      {options.map((opt) => {
+        return (
+          <option value={opt.value} key={opt.value}>
+            {opt.value}
           </option>
-        ))
-      ) : (
-        <option disabled>Loading...</option>
-      )}
+        );
+      })}
     </select>
   );
 }

@@ -142,9 +142,9 @@ model assignedProducts {
   boxSize        BoxSize
   quality        ProductQuality
   status         productStatus  @default(Default)
+  skuCode        String         @unique
 
   sku               stockKeepingUnit @relation(fields: [skuCode], references: [code])
-  skuCode           String           @unique
   products          products?        @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId         String           @unique
   bin               bins?            @relation(fields: [binId], references: [id])
@@ -180,6 +180,10 @@ model purchaseOrderOutBound {
   poId String @unique
 }
 
+// orderedProducts     orderedProducts[]
+// purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
+// poId                  String                @unique
+
 model records {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
   clientName   String
@@ -188,13 +192,10 @@ model records {
   POO          String     @unique
   locationName String     @unique
   authorName   String?    @unique
-  truckName    String?    @unique
+  truckName    String     @unique
   locations    locations? @relation(fields: [locationName], references: [name])
   author       users?     @relation(fields: [authorName], references: [username])
   trucks       trucks?    @relation(fields: [truckName], references: [truckName])
-  // orderedProducts     orderedProducts[]
-  // purchaseOrderOutBound purchaseOrderOutBound @relation(fields: [poId], references: [poId])
-  // poId                  String                @unique
 
   orderedProductsTest orderedProductsTest[]
 }
@@ -202,7 +203,7 @@ model records {
 model orderedProductsTest {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   recordsId    String         @db.ObjectId
-  productName  String?
+  productName  String
   binLocations binLocations[]
   records      records?       @relation(fields: [recordsId], references: [id])
 }

@@ -42,22 +42,6 @@ export default function PickingAndPacking() {
   );
 }
 
-// export async function getServerSideProps() {
-//   const { trucks } = await getTrucks();
-
-//   if (!trucks) {
-//     return {
-//       props: {
-//         trucks: null,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: { trucks },
-//   };
-// }
-
 PickingAndPacking.getLayout = (page: ReactElement) => {
   return (
     <Layout>

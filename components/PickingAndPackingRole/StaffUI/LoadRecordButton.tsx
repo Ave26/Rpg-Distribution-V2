@@ -1,11 +1,10 @@
-import { orderedProducts } from "@prisma/client";
+import { orderedProducts, orderedProductsTest } from "@prisma/client";
 import React, { useState } from "react";
 import { TRecords, TTrucks } from "../PickingAndPackingType";
 import { mutate } from "swr";
-import { channel } from "diagnostics_channel";
 
 type TLoadRecordButtonProps = {
-  orderedProduct: orderedProducts;
+  orderedProduct: orderedProductsTest;
   record: TRecords;
   truck: TTrucks;
   states?: TStates;

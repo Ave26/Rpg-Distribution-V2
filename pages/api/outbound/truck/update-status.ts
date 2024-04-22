@@ -68,14 +68,16 @@ async function handler(
       }
     });
 
-    return (
-      updatedTruck &&
-      res.status(200).json({
-        message: "Truck Updated",
-        updatedTruck,
-        logs,
-      })
-    );
+    // return (
+    //   updatedTruck &&
+    //   res.status(200).json({
+    //     message: "Truck Updated",
+    //     updatedTruck,
+    //     logs,
+    //   })
+    // );
+
+    return res.send("this is the update truck");
   } catch (error) {
     return res.send(error);
   }

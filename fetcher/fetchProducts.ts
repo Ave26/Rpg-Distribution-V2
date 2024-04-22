@@ -1,12 +1,12 @@
 // useProducts.js
 import { bins, assignedProducts, products } from "@prisma/client";
 
-type TBins = bins & {
+export type TBins = bins & {
   _count: { assignedProducts: number };
   assignedProducts: TAssignedProducts[];
 };
 
-type TAssignedProducts = assignedProducts & {
+export type TAssignedProducts = assignedProducts & {
   products: products;
 };
 

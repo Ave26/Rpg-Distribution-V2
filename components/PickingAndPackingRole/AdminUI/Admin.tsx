@@ -2,16 +2,128 @@ import useLocations from "@/hooks/useLocations";
 import AdminRecordForm from "./AdminRecordForm";
 import useTrucks from "@/hooks/useTrucks";
 import InventoryView from "./InventoryView";
+import { binLocations, orderedProductsTest } from "@prisma/client";
+import { SetStateAction, useEffect, useState } from "react";
+import { TBins } from "@/fetcher/fetchBins";
+import BinSearchForm from "./BinSearchForm";
+import useBins from "@/hooks/useBins";
+import Toast, { TToast } from "../Toast";
+import ViewBinLocations from "./ViewBinLocations";
+
+export type TBinLocations = Omit<binLocations, "id" | "orderedProductsTestId">;
+export type TOrderedProductTest = orderedProductsTest & {
+  binLocations: TBinLocations[];
+};
+export type TBinLocation = {
+  searchSKU: string;
+  totalQuantity: number;
+};
+export type TOmitOrderedProducts = Omit<
+  orderedProductsTest,
+  "id" | "recordsId"
+>;
+export type TOrderedProducts = TOmitOrderedProducts;
+
+type TBinLocationss = {
+  quantity: number;
+  skuCode: string;
+  binId: string;
+};
+
+export type TCreateOrderedProduct = {
+  productName: string;
+  binLocations: TBinLoc;
+};
+export type TBinLoc = {
+  createMany: {
+    data: TBinLocationss[];
+  };
+};
 
 export default function Admin() {
+  const { bins: data } = useBins();
+  const [total, setTotal] = useState(0);
+  const [selectable, setSelectable] = useState(false);
+  const [bins, setBins] = useState<TBins[] | undefined>(undefined);
+  const [binLocations, setBinLocations] = useState<TBinLocations[]>([]);
+  const [orderedProducts, setOrderedProducts] = useState<
+    TCreateOrderedProduct[]
+  >([]);
+
+  const [toast, setToast] = useState<TToast>({
+    animate: "",
+    message: "",
+    door: false,
+  });
+  const [binLocation, setBinLocation] = useState<TBinLocation>({
+    searchSKU: "",
+    totalQuantity: 0,
+  });
+
+  useEffect(() => {
+    !binLocation.searchSKU && setBins(data);
+  }, [data, binLocation.searchSKU]);
+
+  useEffect(() => {
+    console.log(JSON.stringify(orderedProducts, null, 2));
+  }, [orderedProducts]);
+
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center  gap-2 text-black transition-all md:flex-nowrap md:items-start md:justify-start">
-      <AdminRecordForm />
-      <InventoryView />
+      <div className="flex flex-col items-center justify-center gap-2 md:items-start">
+        <BinSearchForm
+          states={{
+            binLocations,
+            setBinLocations,
+            binLocation,
+            setBinLocation,
+            bins,
+            setBins,
+            data,
+            setToast,
+            setTotal,
+            total,
+            setSelectable,
+          }}
+        />
+        <AdminRecordForm
+          states={{
+            binLocations,
+            setBinLocations,
+            orderedProducts,
+            setOrderedProducts,
+          }}
+        />
+      </div>
+      <Toast states={{ setToast, toast }} />
+      <InventoryView
+        states={{
+          setToast,
+          toast,
+          binLocations,
+          setBinLocations,
+          binLocation,
+          setBinLocation,
+          bins,
+          setTotal,
+          total,
+          setSelectable,
+          selectable,
+          orderedProducts,
+          setOrderedProducts,
+        }}
+      />
+      <ViewBinLocations binLocations={binLocations} />
     </div>
   );
 }
 
+/*   
+    the bin search form will change the state of the bins
+    if the binLocation input search is undefined | null | "" then dont change the current bins which is data
+      - fix this using function
+    if the search sku code cant find anything then just return the data otherwise return the new filteredData
+  */
 /* 
     THIS NEEDED TO IMPLEMENT
     THE API CORRELATION
@@ -140,4 +252,7 @@ export default function Admin() {
                 }}
               />
             )}
+
+
+          track the index of the binLocation 
 */

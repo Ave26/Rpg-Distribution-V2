@@ -51,6 +51,7 @@ export async function getTruckAdminAccess() {
         payloadCapacity: true,
         threshold: true,
         status: true,
+
         records: {
           where: {
             orderedProductsTest: {
@@ -67,7 +68,8 @@ export async function getTruckAdminAccess() {
             authorName: true,
             batchNumber: true,
             clientName: true,
-            orderedProductsTest: true,
+
+            orderedProductsTest: { select: { binLocations: true } },
           },
         },
       },

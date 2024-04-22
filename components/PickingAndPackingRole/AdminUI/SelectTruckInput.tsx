@@ -2,59 +2,64 @@ import useTrucks from "@/hooks/useTrucks";
 import { InputStyle } from "@/styles/style";
 import { TTrucks } from "../PickingAndPackingType";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { TRecord } from "./AdminRecordForm";
 
 type TSelectTruckInput = {
-  states: TStates;
-};
-
-type TStates = {
-  key: string;
   handleChange: (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => void;
+  states: TStates;
 };
 
-function SelectTruckInput({ states }: TSelectTruckInput) {
-  const { handleChange, key } = states;
+type TStates = {
+  record: TRecord;
+  key: string;
+};
 
+type TOptions = {
+  value: string;
+};
+
+function SelectTruckInput({ handleChange, states }: TSelectTruckInput) {
+  const { key, record } = states;
+  const [options, setOptions] = useState<TOptions[]>([]);
   const { trucks } = useTrucks();
 
-  const truckData: TTrucks = {
-    driverId: "",
-    id: "",
-    payloadCapacity: 0,
-    plate: "",
-    records: [],
-    routeClusterId: "",
-    status: "Empty",
-    threshold: 0,
-    truckName: "Select Truck",
-  };
-
-  const locationWithEmptyString: TTrucks[] = [truckData].concat(
-    Array.isArray(trucks) ? trucks : []
-  );
+  function handleOption() {
+    const newArray: TOptions[] =
+      (Array.isArray(trucks) &&
+        trucks?.map((truck) => ({
+          value: truck.truckName,
+          label: truck.truckName,
+          disabled: false,
+          selected: false,
+        }))) ||
+      [];
+    setOptions([...newArray]);
+  }
 
   return (
     <select
-      name={key}
-      id={key}
       key={key}
-      className={InputStyle}
+      name={key}
+      value={record.truckName}
       onChange={handleChange}
+      onClick={handleOption}
+      className={InputStyle}
     >
-      {locationWithEmptyString.map((truck, index) => (
-        <option
-          key={truck.id}
-          className="text-xs font-bold uppercase"
-          value={index === 0 ? "" : truck.truckName}
-        >
-          {truck.truckName}
-        </option>
-      ))}
+      <option value={"default"} disabled>
+        Select Truck
+      </option>
+      {options.map((opt) => {
+        return (
+          <option value={opt.value} key={opt.value}>
+            {opt.value}
+          </option>
+        );
+      })}
     </select>
   );
 }

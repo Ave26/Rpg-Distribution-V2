@@ -1,55 +1,45 @@
-import Input from "@/components/Parts/Input";
-import useLocations from "@/hooks/useLocations";
-import { InputStyle, buttonStyle, buttonStyleSubmit } from "@/styles/style";
-import {
-  orderedProductsTest,
-  records,
-  binLocations,
-  locations,
-  trucks,
-} from "@prisma/client";
-import React, { useEffect, useState } from "react";
-import SelectLocationInput from "./SelectLocationInput";
-import useTrucks from "@/hooks/useTrucks";
-import { TTrucks } from "../PickingAndPackingType";
-import SelectTruckInput from "./SelectTruckInput";
+import { buttonStyleSubmit } from "@/styles/style";
+import { records } from "@prisma/client";
+import React, { SetStateAction, useEffect, useState } from "react";
 import RecordInputs from "./RecordInputs";
-import { stringify } from "querystring";
-import BinLocationInputs from "./BinLocationInputs";
+import { TBinLocations, TCreateOrderedProduct } from "./Admin";
+import Loading from "@/components/Parts/Loading";
 
-type TAdminRecordForm = {};
+type TAdminRecordForm = {
+  states: TStates;
+};
 
-type TRecord = Omit<
+type TStates = {
+  binLocations: TBinLocations[];
+  setBinLocations: React.Dispatch<SetStateAction<TBinLocations[]>>;
+  orderedProducts: TCreateOrderedProduct[];
+  setOrderedProducts: React.Dispatch<
+    React.SetStateAction<TCreateOrderedProduct[]>
+  >;
+};
+
+export type TRecord = Omit<
   records,
   "id" | "dateCreated" | "batchNumber" | "authorName"
 >;
-type TLocations = Omit<locations, "id">;
-type TBinLocations = Omit<binLocations, "id" | "orderedProductsTestId">;
 
-function AdminRecordForm({}: TAdminRecordForm) {
+export default function AdminRecordForm({ states }: TAdminRecordForm) {
+  const { orderedProducts } = states;
+  const [loading, setLoading] = useState(false);
   const [record, setRecord] = useState<TRecord>({
     clientName: "",
     POO: "",
-    truckName: "",
-    locationName: "",
+    truckName: "default",
+    locationName: "default",
   });
-
-  const [binLocation, setBinLocation] = useState<TBinLocations>({
-    quantity: 0,
-    binId: "",
-    skuCode: "",
-  });
-
-  useEffect(() => {
-    console.log(record);
-  }, [record]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    fetch("", {
+    setLoading(true);
+    fetch("/api/inventory/record/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(record),
+      body: JSON.stringify({ record, orderedProducts }),
     })
       .then((res) => res.json())
       .then((data) => data)
@@ -58,29 +48,34 @@ function AdminRecordForm({}: TAdminRecordForm) {
         setRecord({
           clientName: "",
           POO: "",
-          truckName: "",
-          locationName: "",
+          truckName: "default",
+          locationName: "default",
         });
+
+        setLoading(false);
       });
   }
 
   return (
     <form
-      action=""
-      className="flex flex-col gap-2 rounded-md border border-gray-500/5 bg-white p-2 shadow-sm"
+      className="flex flex-col gap-2 rounded-md shadow-sm"
       onSubmit={handleSubmit}
     >
+      <h1>Record Details</h1>
       <RecordInputs states={{ record, setRecord }} />
-      <BinLocationInputs states={{ binLocation, setBinLocation }} />
 
       <button type="submit" className={buttonStyleSubmit}>
-        click
+        {loading ? (
+          <div className="flex h-full w-full items-center justify-center transition-all">
+            <Loading />
+          </div>
+        ) : (
+          "submit"
+        )}
       </button>
     </form>
   );
 }
-
-export default AdminRecordForm;
 
 /* 
   TODO: NEED TO SELECT THE LAST STATE OF SELECT INPUT AND NEED TO CREATE THE INPUTS FOR LOCATIONS
@@ -101,5 +96,18 @@ export default AdminRecordForm;
 
   THE INFO ON WHAT, WHEN AND WHERE WILL BE RECORDED
   IT WILL CREATE FIRST THE RECORD -> ID, DATE, TRUCKNAME, CLIENTNAME, LOCATIONNAME, [ ORDEREDPRODUCTS, [ BINLOCATIONS[] ] ] ->   
+
+
+
+  FIND THE TOTAL QUANTITY BASED ON THE SKU CODE
+
+  IF THE TOTAL QUANTITY EXEEDED || THE ORDER REACH THE MAXIMUN THRESHOLD THEN PROMPT THE USER THAT ORDER IS DENIED
+
+  PROBLEM 4 7 2024
+  NEED TO CREATE ORDER PRODUCT TO BE INPUT THE NAME OF THE PRODUCT
+  NEED TO KNOW THE TOTAL OF EACH PRODUCT 
+  
+
+
 
 */

@@ -15,10 +15,14 @@ export async function handler(
       case "GET":
         const bins = await prisma.bins.findMany({
           where: { assignedProducts: { some: {} } },
-          include: {
+          orderBy: { row: "asc" },
+          select: {
             _count: {
               select: { assignedProducts: true },
             },
+            row: true,
+            shelfLevel: true,
+            id: true,
             assignedProducts: {
               where: { status: "Default" },
               select: {
@@ -42,12 +46,5 @@ export async function handler(
     return res.json(error);
   }
 }
-
-/* 
-     binId: 
-          skuCode: sku2
-          barcode: 123
-          quantity: 
-*/
 
 export default authMiddleware(handler);

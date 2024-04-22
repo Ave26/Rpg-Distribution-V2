@@ -1,9 +1,10 @@
 import Input from "@/components/Parts/Input";
 import { InputStyle } from "@/styles/style";
 import { records } from "@prisma/client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import SelectTruckInput from "./SelectTruckInput";
 import SelectLocationInput from "./SelectLocationInput";
+import { TRecord } from "./AdminRecordForm";
 
 type TRecordInputs = {
   states: TStates;
@@ -14,13 +15,17 @@ type TStates = {
   setRecord: React.Dispatch<React.SetStateAction<TRecord>>;
 };
 
-type TRecord = Omit<
-  records,
-  "id" | "dateCreated" | "batchNumber" | "authorName"
->;
-
 function RecordInputs({ states }: TRecordInputs) {
   const { setRecord, record } = states;
+  const truckSelectRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    console.log(record);
+
+    // if (record.truckName === "") {
+    //   truckSelectRef.current?.options[0].selected;
+    // }
+  }, [record]);
 
   function handleChange(
     e:
@@ -28,6 +33,7 @@ function RecordInputs({ states }: TRecordInputs) {
       | React.ChangeEvent<HTMLSelectElement>
   ) {
     const { name, value } = e.target;
+
     setRecord({
       ...record,
       [name]: value,
@@ -61,11 +67,17 @@ function RecordInputs({ states }: TRecordInputs) {
             )}
 
             {key === "truckName" && (
-              <SelectTruckInput states={{ handleChange, key }} />
+              <SelectTruckInput
+                states={{ key, record }}
+                handleChange={handleChange}
+              />
             )}
 
             {key === "locationName" && (
-              <SelectLocationInput states={{ handleChange, key }} />
+              <SelectLocationInput
+                states={{ key, record }}
+                handleChange={handleChange}
+              />
             )}
           </div>
         );
