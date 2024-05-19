@@ -1,85 +1,55 @@
-import { authMiddleware } from "../../authMiddleware";
 import { NextApiRequest, NextApiResponse } from "next";
+import { authMiddleware } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
-import { TruckAvailability } from "@prisma/client";
+import { TUpdateTruckData } from "@/components/PickingAndPackingRole/StaffUI/LoadRecordButton";
+import { UserRole } from "@prisma/client";
+import { TUpdateTruckStatus } from "@/components/PickingAndPackingRole/StaffUI/UpdateTruckStatus";
 import prisma from "@/lib/prisma";
-import { updateTrucks } from "@/lib/prisma/trucks";
-import { stat } from "fs";
 
-async function handler(
+export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: string | JwtPayload | undefined
+  verifiedToken: JwtPayload & { roles: UserRole; id: string }
 ) {
-  const { status, truckId }: { status: TruckAvailability; truckId: string } =
-    req.body;
+  const { status, truckId }: TUpdateTruckStatus = req.body;
 
-  let userId: string = "";
-  if (verifiedToken && typeof verifiedToken === "object") {
-    userId = verifiedToken.id;
-  }
-  try {
-    let updatedTruck;
-    let logs;
+  switch (req.method) {
+    case "POST":
+      try {
+        console.log(truckId, status);
+        const userId = verifiedToken.id;
+        const updateTruck = await prisma.trucks.update({
+          where: { id: truckId },
+          data: { driverId: userId },
+          select: {
+            truckName: true,
+            assignedProducts: { select: { id: true } },
+          },
+        });
 
-    const deliveryLogs = {
-      create: {
-        driverId: userId,
-        status,
-      },
-    };
+        // const assignedProductIds = updateTruck.assignedProducts.map(
+        //   (assignedProduct) => assignedProduct.id
+        // );
 
-    await prisma.$transaction(async (tx) => {
-      const truck = await tx.trucks.findUniqueOrThrow({
-        where: { id: truckId },
-        include: { records: { include: { orderedProducts: true } } },
-      });
-      console.log(truck);
-
-      if (status === "InTransit" || status === "Delivered") {
-        // if (status === "Delivered") {
-        //   // check first if the product inside has been delivered before settings into delivered status
-        //   const productInsideTruck = prisma.trucks.findFirst({
-        //     select: {
-        //       assignedProducts: true,
+        // const updateAssginedProducts = await prisma.assignedProducts.updateMany(
+        //   {
+        //     where: {
+        //       truckName: updateTruck.truckName,
+        //       id: { in: assignedProductIds },
         //     },
-        //   });
-        //   console.log(productInsideTruck);
-        // }
-        updatedTruck = await prisma.trucks.update({
-          where: { id: truckId },
-          data: {
-            status,
-            driverId: userId,
-            deliveryLogs,
-          },
-        });
-      } else {
-        updatedTruck = await prisma.trucks.update({
-          where: { id: truckId },
-          data: {
-            status,
-            driverId: {
-              unset: true,
-            },
-            deliveryLogs,
-          },
-        });
+        //     data: { status: "OutForDelivery" },
+        //   }
+        // );
+
+        // console.log("updateAssginedProducts", updateAssginedProducts);
+        // return res
+        //   .status(200)
+        //   .json({ truckId, status, updateAssginedProducts });
+      } catch (error) {
+        return res.send(error);
       }
-    });
-
-    // return (
-    //   updatedTruck &&
-    //   res.status(200).json({
-    //     message: "Truck Updated",
-    //     updatedTruck,
-    //     logs,
-    //   })
-    // );
-
-    return res.send("this is the update truck");
-  } catch (error) {
-    return res.send(error);
+    default:
+      break;
   }
 }
 

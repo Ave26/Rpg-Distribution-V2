@@ -34,20 +34,20 @@
 // }
 
 // useTrucks.js
-import useSWR from "swr";
-import { fetchProducts } from "@/fetcher/fetchProducts";
+// import useSWR from "swr";
+// import {   } from "@/fetcher/fetchProducts";
 
-export default function useLocations() {
-  const { data, error, isLoading } = useSWR(
-    "/api/inventory/products/find",
-    fetchProducts,
-    {
-      refreshInterval: 1200,
-    }
-  );
-  return {
-    products: data,
-    isLoading,
-    error,
-  };
-}
+// export default function useLocations() {
+//   const { data, error, isLoading } = useSWR(
+//     "/api/inventory/products/find",
+//     fetchProducts,
+//     {
+//       refreshInterval: 1200,
+//     }
+//   );
+//   return {
+//     products: data,
+//     isLoading,
+//     error,
+//   };
+// }

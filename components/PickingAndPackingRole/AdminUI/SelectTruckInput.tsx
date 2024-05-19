@@ -4,6 +4,7 @@ import { TTrucks } from "../PickingAndPackingType";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { useEffect, useRef, useState } from "react";
 import { TRecord } from "./AdminRecordForm";
+import { TOptions } from "./RecordInputs";
 
 type TSelectTruckInput = {
   handleChange: (
@@ -17,26 +18,25 @@ type TSelectTruckInput = {
 type TStates = {
   record: TRecord;
   key: string;
-};
-
-type TOptions = {
-  value: string;
+  options: TOptions[];
+  setOptions: React.Dispatch<React.SetStateAction<TOptions[]>>;
 };
 
 function SelectTruckInput({ handleChange, states }: TSelectTruckInput) {
-  const { key, record } = states;
-  const [options, setOptions] = useState<TOptions[]>([]);
+  const { key, record, options, setOptions } = states;
   const { trucks } = useTrucks();
 
   function handleOption() {
     const newArray: TOptions[] =
       (Array.isArray(trucks) &&
-        trucks?.map((truck) => ({
-          value: truck.truckName,
-          label: truck.truckName,
-          disabled: false,
-          selected: false,
-        }))) ||
+        trucks
+          ?.filter((opt) => opt.status !== "FullLoad")
+          .map((truck) => {
+            return {
+              value: truck.truckName,
+              currentCapacity: truck.payloadCapacity,
+            };
+          })) ||
       [];
     setOptions([...newArray]);
   }
@@ -56,7 +56,7 @@ function SelectTruckInput({ handleChange, states }: TSelectTruckInput) {
       {options.map((opt) => {
         return (
           <option value={opt.value} key={opt.value}>
-            {opt.value}
+            {opt.value} Capacity: {opt.currentCapacity}
           </option>
         );
       })}

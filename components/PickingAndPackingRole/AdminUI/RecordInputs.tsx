@@ -1,7 +1,7 @@
 import Input from "@/components/Parts/Input";
 import { InputStyle } from "@/styles/style";
 import { records } from "@prisma/client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SelectTruckInput from "./SelectTruckInput";
 import SelectLocationInput from "./SelectLocationInput";
 import { TRecord } from "./AdminRecordForm";
@@ -12,20 +12,30 @@ type TRecordInputs = {
 
 type TStates = {
   record: TRecord;
+  isDisabled: boolean;
   setRecord: React.Dispatch<React.SetStateAction<TRecord>>;
+  currrentCapacity: number;
+  setCurrrentCapacity: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export type TOptions = {
+  value: string;
+  currentCapacity: number;
 };
 
 function RecordInputs({ states }: TRecordInputs) {
-  const { setRecord, record } = states;
-  const truckSelectRef = useRef<HTMLSelectElement>(null);
+  const {
+    setRecord,
+    record,
+    isDisabled,
+    currrentCapacity,
+    setCurrrentCapacity,
+  } = states;
+  const [options, setOptions] = useState<TOptions[]>([]);
 
   useEffect(() => {
-    console.log(record);
-
-    // if (record.truckName === "") {
-    //   truckSelectRef.current?.options[0].selected;
-    // }
-  }, [record]);
+    console.log("capacity", currrentCapacity);
+  }, [currrentCapacity]);
 
   function handleChange(
     e:
@@ -33,6 +43,14 @@ function RecordInputs({ states }: TRecordInputs) {
       | React.ChangeEvent<HTMLSelectElement>
   ) {
     const { name, value } = e.target;
+
+    if (name === "truckName") {
+      const findTruck =
+        Array.isArray(options) && options.find((opt) => opt.value === value);
+      if (findTruck) {
+        setCurrrentCapacity(findTruck.currentCapacity);
+      }
+    }
 
     setRecord({
       ...record,
@@ -52,6 +70,7 @@ function RecordInputs({ states }: TRecordInputs) {
                 key={key}
                 attributes={{
                   input: {
+                    disabled: isDisabled,
                     id: key,
                     className: InputStyle,
                     name: key === ignoreKey ? undefined : key,
@@ -68,7 +87,7 @@ function RecordInputs({ states }: TRecordInputs) {
 
             {key === "truckName" && (
               <SelectTruckInput
-                states={{ key, record }}
+                states={{ key, record, options, setOptions }}
                 handleChange={handleChange}
               />
             )}

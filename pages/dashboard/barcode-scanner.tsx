@@ -27,6 +27,7 @@ export type TAssignedProducts = Omit<
   | "damageBinId"
   | "usersId"
   | "status"
+  | "binLocationsId"
 >;
 
 type TSKU = {
@@ -302,7 +303,8 @@ export default function BarcodeScanner() {
         <span
           className={
             "block w-full appearance-none rounded border border-gray-200 bg-gray-200 px-4 py-3 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none"
-          }>
+          }
+        >
           <label htmlFor="boxSize" className={labelStyle}>
             Box Size
           </label>
@@ -311,7 +313,8 @@ export default function BarcodeScanner() {
             name="boxSize"
             className={inputStyle}
             onChange={handleChange}
-            value={assignedProduct.boxSize}>
+            value={assignedProduct.boxSize}
+          >
             {BoxSize.map((size, index) => (
               <option key={index}>{size}</option>
             ))}
@@ -353,7 +356,8 @@ export default function BarcodeScanner() {
             name="quality"
             className={inputStyle}
             onChange={handleChange}
-            value={assignedProduct.quality}>
+            value={assignedProduct.quality}
+          >
             {Quality.map((size, index) => (
               <option key={index}>{size}</option>
             ))}
@@ -373,7 +377,8 @@ export default function BarcodeScanner() {
                   : inputStyle
               }
               onChange={handleChange}
-              value={assignedProduct.skuCode}>
+              value={assignedProduct.skuCode}
+            >
               <option value="" className="uppercase" disabled hidden>
                 {SKUCode.sku.length <= 0 ? "" : "Please choose sku code"}
               </option>
@@ -395,7 +400,8 @@ export default function BarcodeScanner() {
                       ...SKUCode,
                       sku: [],
                     });
-                  }}>
+                  }}
+                >
                   X
                 </button>
               )}

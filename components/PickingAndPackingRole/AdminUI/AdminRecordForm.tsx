@@ -2,20 +2,26 @@ import { buttonStyleSubmit } from "@/styles/style";
 import { records } from "@prisma/client";
 import React, { SetStateAction, useEffect, useState } from "react";
 import RecordInputs from "./RecordInputs";
-import { TBinLocations, TCreateOrderedProduct } from "./Admin";
+import { TBinLocation, TBinLocations, TCreateOrderedProduct } from "./Admin";
 import Loading from "@/components/Parts/Loading";
+import { mutate } from "swr";
 
 type TAdminRecordForm = {
   states: TStates;
 };
 
 type TStates = {
-  binLocations: TBinLocations[];
-  setBinLocations: React.Dispatch<SetStateAction<TBinLocations[]>>;
+  setBinLocation: React.Dispatch<React.SetStateAction<TBinLocation>>;
   orderedProducts: TCreateOrderedProduct[];
+  isDisabled: boolean;
+  setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
   setOrderedProducts: React.Dispatch<
     React.SetStateAction<TCreateOrderedProduct[]>
   >;
+  currrentCapacity: number;
+  setCurrrentCapacity: React.Dispatch<React.SetStateAction<number>>;
+  record: TRecord;
+  setRecord: React.Dispatch<SetStateAction<TRecord>>;
 };
 
 export type TRecord = Omit<
@@ -24,14 +30,18 @@ export type TRecord = Omit<
 >;
 
 export default function AdminRecordForm({ states }: TAdminRecordForm) {
-  const { orderedProducts } = states;
+  const {
+    orderedProducts,
+    setOrderedProducts,
+    setBinLocation,
+    isDisabled,
+    setIsDisabled,
+    currrentCapacity,
+    setCurrrentCapacity,
+    setRecord,
+    record,
+  } = states;
   const [loading, setLoading] = useState(false);
-  const [record, setRecord] = useState<TRecord>({
-    clientName: "",
-    POO: "",
-    truckName: "default",
-    locationName: "default",
-  });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,7 +52,14 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
       body: JSON.stringify({ record, orderedProducts }),
     })
       .then((res) => res.json())
-      .then((data) => data)
+      .then((data) => {
+        // reset the ordered products
+
+        if (data) {
+          setOrderedProducts([]);
+          mutate("/api/inventory/bins/find");
+        }
+      })
       .catch((error) => error)
       .finally(() => {
         setRecord({
@@ -52,6 +69,11 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
           locationName: "default",
         });
 
+        setBinLocation({
+          searchSKU: "",
+          totalQuantity: 0,
+        });
+        setIsDisabled(false);
         setLoading(false);
       });
   }
@@ -62,7 +84,15 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
       onSubmit={handleSubmit}
     >
       <h1>Record Details</h1>
-      <RecordInputs states={{ record, setRecord }} />
+      <RecordInputs
+        states={{
+          record,
+          setRecord,
+          isDisabled,
+          currrentCapacity,
+          setCurrrentCapacity,
+        }}
+      />
 
       <button type="submit" className={buttonStyleSubmit}>
         {loading ? (
@@ -70,7 +100,7 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
             <Loading />
           </div>
         ) : (
-          "submit"
+          "Submit"
         )}
       </button>
     </form>

@@ -34,7 +34,7 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
     (key) => TruckAvailability[key as TruckAvailability] // convert enums to array
   );
   const [form, setForm] = useState<TFormExtend>({
-    truckName: "",
+    truckName: selectedTruck.truckName,
     plate: "",
     payloadCapacity: 0,
     status: selectedTruck.truckStatus, // need initial value to be based on the swr data
@@ -94,15 +94,6 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
         </button>
       </div>
 
-      <div className="flex flex-row gap-2 p-2">
-        <div className="flex flex-shrink flex-wrap p-2">
-          <p>ID:</p> <p className="font-light">{selectedTruck.id}</p>
-        </div>
-        <div className="flex flex-shrink flex-wrap p-2">
-          <p>Truck Name:</p>
-          <p className="font-light">{selectedTruck.truckName}</p>
-        </div>
-      </div>
       {Object.keys(form).map((key) => (
         <div key={key}>
           {key === "status" && (

@@ -19,7 +19,7 @@ export default function Toast({ states }: ToastPropsTypes) {
   const { setToast, toast } = states;
 
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout;
     if (toast.animate === "animate-fade") {
       timer = setTimeout(() => {
         setToast({

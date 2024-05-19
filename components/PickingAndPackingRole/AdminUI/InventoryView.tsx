@@ -1,6 +1,6 @@
-import { TBins } from "@/fetcher/fetchProducts";
+import { TBins } from "@/fetcher/fetchBins";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AssignedProductDetails from "./AssignedProductDetails";
 import {
   TBinLocation,
@@ -10,109 +10,80 @@ import {
 } from "./Admin";
 import { buttonStyleEdge } from "@/styles/style";
 import { TToast } from "../Toast";
+import { checkError } from "@/helper/_helper";
+import { TRecord } from "./AdminRecordForm";
 
 type TInventoryView = {
   states: TStates;
 };
 
-type TStates = {
+export type TStates = {
   total: number;
   toast: TToast;
-  selectable: boolean;
   bins: TBins[] | undefined;
   binLocation: TBinLocation;
   binLocations: TBinLocations[];
   orderedProducts: TCreateOrderedProduct[];
   setTotal: React.Dispatch<React.SetStateAction<number>>;
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
-  setSelectable: React.Dispatch<React.SetStateAction<boolean>>;
   setBinLocation: React.Dispatch<React.SetStateAction<TBinLocation>>;
   setBinLocations: React.Dispatch<React.SetStateAction<TBinLocations[]>>;
+  setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isDisabled: boolean;
   setOrderedProducts: React.Dispatch<
     React.SetStateAction<TCreateOrderedProduct[]>
   >;
+  record: TRecord;
 };
 
+type TStruck = "FILTER" | "INSERT" | "ADD" | undefined;
+
 export default function InventoryView({ states }: TInventoryView) {
-  const { setOrderedProducts, orderedProducts } = states;
-  const [threshold, setThreshold] = useState(0);
+  const { setOrderedProducts, orderedProducts, binLocation, setToast, record } =
+    states;
+  const [threshold, setThreshold] = useState(binLocation.totalQuantity);
+
+  useEffect(() => {
+    setThreshold(binLocation.totalQuantity);
+  }, [binLocation.totalQuantity]);
+
+  // useEffect(() => {
+  //   console.log("orderedProducts", JSON.stringify(orderedProducts, null, 2));
+  // }, [orderedProducts]);
 
   // useEffect(() => {
   //   console.log("threshold", threshold);
   // }, [threshold]);
 
-  useEffect(() => {
-    setThreshold(states.binLocation.totalQuantity);
-  }, [states.binLocation.totalQuantity]);
-
-  function checkError() {
-    !states.binLocation.searchSKU &&
-      states.setToast({
-        animate: "animate-emerge",
-        door: true,
-        message: "Empty Filled for search SKU and quantity",
-      });
-  }
-
-  // function negate(value: TBins) {
-  //   const binCount = value._count.assignedProducts;
-  //   const count = Math.min(threshold, binCount);
-  //   setThreshold(threshold - count);
-  //   return count;
-  // }
-
-  function validateBinSelection(value: TBins) {
-    const hasValue = states.binLocations.find((binLocation) => {
-      binLocation.binId === value.id &&
-        setThreshold(threshold + binLocation.quantity);
-      return binLocation.binId === value.id;
-    });
-
-    const isValid =
-      !states.selectable ||
-      !states.binLocation.searchSKU ||
-      !states.binLocation.totalQuantity ||
-      hasValue ||
-      threshold === 0;
-
-    return isValid
-      ? states.setBinLocations(
-          states.binLocations.filter((bin) => {
-            return bin.binId !== value.id;
-          })
-        )
-      : states.setBinLocations([
-          ...states.binLocations,
-          {
-            binId: value.id,
-            quantity: 0,
-            skuCode: value.assignedProducts[0].skuCode,
-          },
-        ]);
+  function findIndex(value: string) {
+    const existingProductIndex = orderedProducts.findIndex(
+      (product) => product.productName === value
+    );
+    return { existingProductIndex };
   }
 
   function handleBinSelection(value: TBins) {
+    checkError(states.binLocation, states.setToast);
     const binId = value.id;
     const skuCode = value.assignedProducts[0].skuCode;
     const productName = value.assignedProducts[0].products.productName;
+    const count = Math.min(threshold, value._count.assignedProducts);
+    const { existingProductIndex } = findIndex(productName);
+    let quantityPocket: number = 0;
+    const orderedProductsExists = existingProductIndex !== -1;
 
-    const existingProductIndex = orderedProducts.findIndex(
-      (product) => product.productName === productName
-    );
+    if (orderedProductsExists) {
+      const binLocationIndex = orderedProducts[
+        existingProductIndex
+      ].binLocations.createMany.data.findIndex(
+        (binLocation) => binLocation.binId === binId
+      );
 
-    if (existingProductIndex !== -1) {
-      setOrderedProducts((prevOrderedProduct) => {
-        const updatedProducts = [...prevOrderedProduct];
-
-        const getBinLocationIndex = updatedProducts[
-          existingProductIndex
-        ].binLocations.createMany.data.findIndex((bin) => {
-          bin.binId === value.id && setThreshold(threshold + bin.quantity);
-          return bin.binId === binId;
-        });
-
-        if (getBinLocationIndex !== -1) {
-          console.log("filtering binLocation...");
+      const binLocationExists = binLocationIndex !== -1;
+      if (binLocationExists) {
+        // FILTER
+        setOrderedProducts((prevState) => {
+          const updatedProducts = [...prevState];
 
           updatedProducts[existingProductIndex] = {
             ...updatedProducts[existingProductIndex],
@@ -120,74 +91,114 @@ export default function InventoryView({ states }: TInventoryView) {
               createMany: {
                 data: updatedProducts[
                   existingProductIndex
-                ].binLocations.createMany.data.filter(
-                  (bin) => bin.binId !== binId
-                ),
+                ].binLocations.createMany.data.filter((bin) => {
+                  if (bin.binId === binId) {
+                    quantityPocket = bin.quantity;
+                  }
+
+                  return bin.binId !== binId;
+                }),
               },
             },
           };
+
           if (
             updatedProducts[existingProductIndex].binLocations.createMany.data
               .length === 0
           ) {
+            // If so, remove the entire product
+            states.setIsDisabled(false);
             updatedProducts.splice(existingProductIndex, 1);
           }
-        } else {
-          console.log("adding binLocation...");
 
-          updatedProducts[existingProductIndex] = {
-            ...updatedProducts[existingProductIndex],
-            binLocations: {
-              createMany: {
-                data: [
-                  ...updatedProducts[existingProductIndex].binLocations
-                    .createMany.data,
-                  {
-                    binId,
-                    quantity: 0,
-                    skuCode,
-                  },
-                ],
-              },
+          return updatedProducts;
+        });
+
+        return setThreshold((prevState) => prevState + quantityPocket);
+      }
+      // INSERT
+      setThreshold((prevState) => prevState - count);
+      setOrderedProducts((prevState) => {
+        const updatedProducts = [...prevState];
+        updatedProducts[existingProductIndex] = {
+          ...updatedProducts[existingProductIndex],
+          binLocations: {
+            createMany: {
+              data: [
+                ...updatedProducts[existingProductIndex].binLocations.createMany
+                  .data,
+                {
+                  binId,
+                  quantity: count,
+                  skuCode,
+                },
+              ],
             },
-          };
-        }
+          },
+        };
 
         return updatedProducts;
       });
     } else {
-      console.log("create new");
+      // ADD
+      states.setIsDisabled(true);
       setOrderedProducts((prevState) => [
         ...prevState,
         {
           productName,
           binLocations: {
             createMany: {
-              data: [{ binId, quantity: 0, skuCode }],
+              data: [{ binId, quantity: count, skuCode }],
             },
           },
         },
       ]);
+      return setThreshold((prevState) => prevState - count);
     }
 
-    // checkError();
-    // validateBinSelection(value);
+    console.log("count", count);
+    console.log("pocket", quantityPocket);
   }
 
   return (
     <div className="relative flex h-72 w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md border border-slate-200 p-2 text-center shadow-md transition-all md:h-full">
       {Array.isArray(states.bins) &&
-        states.bins.map((bin) => {
+        states.bins.map((bin, index) => {
+          const binId = bin.id;
+          const isExists = states.orderedProducts.some((product) =>
+            product.binLocations.createMany.data.some(
+              (bin) => bin.binId === binId
+            )
+          );
           return (
             <React.Fragment key={bin.id}>
               <div
                 onClick={() => {
-                  handleBinSelection(bin);
+                  const isExists = states.orderedProducts.some((product) =>
+                    product.binLocations.createMany.data.some(
+                      (bin) => bin.binId === binId
+                    )
+                  );
+
+                  const hasValue = Object.values(record).every(Boolean);
+
+                  if (
+                    (states.binLocation.searchSKU &&
+                      states.binLocation.totalQuantity &&
+                      isExists) ||
+                    hasValue
+                  ) {
+                    handleBinSelection(bin);
+                  } else {
+                    setToast({
+                      animate: "animate-emerge",
+                      door: true,
+                      message: "Incomplete Field",
+                    });
+                  }
                 }}
                 className={`${
-                  states.binLocations.find(
-                    (binLocation) => binLocation.binId === bin.id
-                  ) && "bg-sky-400/30"
+                  isExists && "bg-sky-400/30"
                 } text-xshover:bg-transparent flex select-none flex-wrap justify-between rounded-md border border-slate-400/25 hover:border-slate-400/50 active:bg-slate-300/50 md:flex-nowrap md:whitespace-nowrap`}
               >
                 <h1 className="flex items-center justify-center p-2">
@@ -218,35 +229,3 @@ export default function InventoryView({ states }: TInventoryView) {
     </div>
   );
 }
-
-/* 
-   highlight the selected product 
-    make a hightlited border based on the total quantity
-    reduce the array count to get the total count
-    TODO: delete the selected id in the array if its already bin there
-
-       SEARCH PRODUCT USING SKU CODE
-
-    TODO:
-      - if the bin data array is empty then remove the ordered product
-      - Need to negate quantity
-      - find out where the setQuantity will be executed 
-  
-
-
-   
-.*/
-
-// useEffect(() => {
-//   const totalQuantity = Array.isArray(bins)
-//     ? bins.reduce((accumulator, initial: TBins) => {
-//         return accumulator + initial._count.assignedProducts;
-//       }, 0)
-//     : 0;
-//   console.log(totalQuantity);
-//   return setTotal(totalQuantity);
-// }, [binLocation.totalQuantity]);
-
-// useEffect(() => {
-//   console.log("total", total);
-// }, [binLocation.totalQuantity, total]);

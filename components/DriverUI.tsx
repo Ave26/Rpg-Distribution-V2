@@ -5,7 +5,7 @@ import {
   TLocationEntry,
   TCoordinates,
 } from "@/types/deliveryTypes";
-import { getTrucks } from "@/lib/prisma/trucks";
+// import { getTrucks } from "@/lib/prisma/trucks";
 import { trucks as TTrucks } from "@prisma/client";
 import MapRealTimeUpdate from "./MapRealTimeUpdate";
 import useSWR from "swr";
@@ -59,7 +59,8 @@ function DriverUI({
           name="truck"
           value={truckName}
           onChange={(e) => setTruckName(e.target.value)}
-          className="block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+          className="block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        >
           {trucks?.map((truck: TTrucks) => {
             return <option key={truck?.id}>{truck.truckName}</option>;
           })}
@@ -77,7 +78,8 @@ function DriverUI({
           className={`${
             !deliveryTrigger.hasStart ? " bg-white/75" : " bg-pink-500"
           }  flex animate-emerge items-center justify-center rounded-md  border p-2 py-2 text-[6] transition-all hover:border hover:bg-transparent
-  `}>
+  `}
+        >
           <p className="animate-emerge">{deliveryTrigger.name}</p>
         </button>
       </div>
@@ -97,7 +99,8 @@ function DriverUI({
           //   frameBorder="0"
           src={`https://maps.google.com/maps?q=${coordinates?.latitude},${coordinates?.longitude}&output=embed`}
           allowFullScreen
-          style={{ zIndex: 0 }}></iframe>
+          style={{ zIndex: 0 }}
+        ></iframe>
       </div>
     </div>
   );

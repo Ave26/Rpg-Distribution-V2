@@ -4,7 +4,7 @@ import { EntriesTypes } from "@/types/binEntries";
 import { JwtPayload } from "jsonwebtoken";
 
 import { TFormData } from "@/types/inputTypes";
-import { get_order } from "@/lib/prisma/order";
+// import { get_order } from "@/lib/prisma/order";
 import { scan_barcode } from "@/lib/prisma/scan";
 import { assignedProducts } from "@prisma/client";
 import prisma from "@/lib/prisma";

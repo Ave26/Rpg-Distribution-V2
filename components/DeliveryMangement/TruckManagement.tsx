@@ -15,6 +15,7 @@ export default function TruckManagement() {
     truckName: "",
     truckStatus: "Empty",
   });
+
   const [truckComponentKey, setTruckComponentKey] =
     useState<TTruckComponent>("create");
 

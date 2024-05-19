@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import {
   TRecords,
   TTrucks,
@@ -24,45 +24,42 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
   const isDriver = role === "Driver";
   const { record, truck } = data;
 
-  useEffect(() => {
-    console.log({ truck: truck });
-  }, [truck]);
-
   return (
     <>
       <div className="flex flex-col items-start justify-center gap-[.5px] border border-dotted border-red-600 p-[2px]">
         <h1 className="text-lg">Record Details</h1>
-
         <ul>Batch Number: {record.batchNumber}</ul>
         <ul>Purchase Order: {record.POO}</ul>
         <ul>Desitnation: {record.locationName}</ul>
-        <ul>Route: {"<Point of Location>"}</ul>
         <ul>Client: {record.clientName}</ul>
       </div>
       <div className="h-[11em] overflow-y-scroll border border-black">
         {record.orderedProductsTest.map((orderedProduct) => (
           <div
             key={orderedProduct.id}
-            className="flex h-fit flex-row justify-between gap-1 p-2"
+            className="flex h-fit flex-col justify-between gap-1 p-2"
           >
-            <li className="flex w-full items-center justify-start gap-2 border-y-2 border-dotted border-slate-900 p-1">
-              <ul>
-                <OrderedProduct
-                  orderedProduct={orderedProduct}
-                  record={record}
-                />
-              </ul>
-            </li>
+            <h1 className="uppercase">Ordered Products</h1>
+            <div>
+              <li className="flex w-full flex-col items-start justify-start gap-2 border-y-2 border-dotted border-slate-900 p-1">
+                <ul className="">
+                  <OrderedProduct
+                    orderedProduct={orderedProduct}
+                    record={record}
+                  />
+                </ul>
+              </li>
 
-            {isStaff && (
-              <div className="flex items-center justify-center py-3">
-                <LoadRecordButton
-                  truck={truck}
-                  orderedProduct={orderedProduct}
-                  record={record}
-                />
-              </div>
-            )}
+              {isStaff && (
+                <div className="sticky flex items-center justify-center py-3">
+                  <LoadRecordButton
+                    truck={truck}
+                    orderedProduct={orderedProduct}
+                    record={record}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

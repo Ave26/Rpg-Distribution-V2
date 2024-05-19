@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { TBinLocation, TBinLocations } from "./Admin";
+import React, { useEffect, useState } from "react";
+import { TBinLocation, TBinLocations, TCreateOrderedProduct } from "./Admin";
 import Input from "@/components/Parts/Input";
 import { buttonStyleEdge, buttonStyleSubmit } from "@/styles/style";
 import { TBins } from "@/fetcher/fetchBins";
@@ -18,9 +18,11 @@ type TStates = {
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
   setTotal: React.Dispatch<React.SetStateAction<number>>;
   total: number;
-  setSelectable: React.Dispatch<React.SetStateAction<boolean>>;
   setBinLocations: React.Dispatch<React.SetStateAction<TBinLocations[]>>;
   binLocations: TBinLocations[];
+  currrentCapacity: number;
+  weight: number;
+  setWeight: React.Dispatch<React.SetStateAction<number>>;
 };
 export default function BinSearchForm({ states }: TBinSearchForm) {
   const {
@@ -31,20 +33,36 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
     setToast,
     setTotal,
     binLocation,
-    binLocations,
-    setSelectable,
     setBinLocation,
-    setBinLocations,
+    currrentCapacity,
+    weight,
   } = states;
+
+  useEffect(() => {
+    if (currrentCapacity !== 0) {
+      const netWeight = binLocation.totalQuantity * weight;
+      console.log({
+        netWeight,
+        totalQuantity: binLocation.totalQuantity,
+        w: weight,
+      });
+      if (currrentCapacity < netWeight) {
+        setToast({
+          animate: "animate-emerge",
+          door: true,
+          message: "Truck Capacity Exceeded",
+        });
+        setBinLocation({
+          ...binLocation,
+          totalQuantity: 0,
+        });
+      }
+    }
+  }, [currrentCapacity, binLocation.totalQuantity]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
-    // if (!value) {
-    //   setBinLocations([]);
-    // }
-
-    // Calculate total quantity
     const totalQuantity = Array.isArray(bins)
       ? bins.reduce(
           (accumulator, initial: TBins) =>
@@ -68,15 +86,14 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
 
     // Conditionally trigger the toast if the value exceeds the total quantity or falls below
 
-    if (
-      name === "totalQuantity" &&
-      (parseFloat(value) > totalQuantity || parseFloat(value) < 0)
-    ) {
-      setToast({
-        animate: "animate-emerge",
-        door: true,
-        message: "Reach Maximum Quantity",
-      });
+    if (name === "totalQuantity") {
+      if (parseFloat(value) > totalQuantity || parseFloat(value) < 0) {
+        setToast({
+          animate: "animate-emerge",
+          door: true,
+          message: "Reach Maximum Quantity",
+        });
+      }
     }
 
     setTotal(totalQuantity);
@@ -84,12 +101,17 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
 
   function handleFilter(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setBinLocation({
+      ...binLocation,
+      totalQuantity: 0,
+    });
 
     const filteredBins = bins?.filter((bin) => {
       return bin.assignedProducts.some(
         (assignedProduct) => assignedProduct.skuCode === binLocation.searchSKU
       );
     });
+
     return (
       binLocation.searchSKU &&
       setBins(
@@ -103,12 +125,16 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
               return data;
             }
           : () => {
-              setSelectable(true);
               return filteredBins;
             }
       )
     );
   }
+
+  /* 
+    if totalQuantity is greater than select trucks current capacity then reset the total quantity into zero then make a toast for message exceed
+  
+  */
 
   useEffect(() => {
     !binLocation.searchSKU &&

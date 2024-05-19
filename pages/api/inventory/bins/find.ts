@@ -14,11 +14,11 @@ export async function handler(
     switch (req.method) {
       case "GET":
         const bins = await prisma.bins.findMany({
-          where: { assignedProducts: { some: {} } },
+          where: { assignedProducts: { some: { status: "Default" } } },
           orderBy: { row: "asc" },
           select: {
             _count: {
-              select: { assignedProducts: true },
+              select: { assignedProducts: { where: { status: "Default" } } },
             },
             row: true,
             shelfLevel: true,
@@ -29,6 +29,7 @@ export async function handler(
                 binId: true,
                 skuCode: true,
                 barcodeId: true,
+                sku: { select: { weight: true } },
                 products: {
                   select: { category: true, productName: true, price: true },
                 },
@@ -37,8 +38,8 @@ export async function handler(
             },
           },
         });
+        console.log(bins);
         return res.status(200).json(bins);
-
       default:
         return res.status(500).json({ message: `${req.method} forbidden` });
     }

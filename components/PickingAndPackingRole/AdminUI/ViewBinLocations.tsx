@@ -1,20 +1,36 @@
 import React from "react";
-import { TBinLocation, TBinLocations } from "./Admin";
+import { TBinLocation, TBinLocations, TCreateOrderedProduct } from "./Admin";
 
-type ViewBinLocationsProps = { binLocations: TBinLocations[] };
+type ViewBinLocationsProps = {
+  binLocations: TBinLocations[];
+  orderedProducts: TCreateOrderedProduct[];
+};
 
-function ViewBinLocations({ binLocations }: ViewBinLocationsProps) {
+function ViewBinLocations({
+  binLocations,
+  orderedProducts,
+}: ViewBinLocationsProps) {
   return (
-    <div>
-      {Array.isArray(binLocations) ? (
-        binLocations.map((binLocation) => {
+    <div className="flex w-fit flex-col">
+      {Array.isArray(orderedProducts) ? (
+        orderedProducts.map((orderedProduct, index) => {
           return (
             <div
-              key={binLocation.binId}
-              className="flex flex-col items-center justify-center gap-2 border border-black p-2 text-xs transition-all md:flex-row"
+              key={index}
+              className="flex w-[35em]  flex-col gap-2 border border-black p-2 text-xs transition-all"
             >
-              <h1>{binLocation.quantity}</h1>
-              <h1>{binLocation.skuCode}</h1>
+              <p>{orderedProduct.productName}</p>
+              {orderedProduct.binLocations.createMany.data.map(
+                (binLocation, index) => {
+                  return (
+                    <div key={index}>
+                      <h1>Bin ID: {binLocation.binId}</h1>
+                      <h1>Quantity: {binLocation.quantity}</h1>
+                      <h1>SKU Code: {binLocation.skuCode}</h1>
+                    </div>
+                  );
+                }
+              )}
             </div>
           );
         })

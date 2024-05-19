@@ -1,44 +1,5 @@
 import prisma from ".";
 
-// export async function getSpecificTrucks() {
-//   try {
-//     const trucks = await prisma.trucks.findMany({
-//       include: {
-//         records: true,
-//       },
-//     });
-//   } catch (e) {
-//     console.log(e);
-//   }
-// }
-
-// export async function getTrucks() {
-//   try {
-//     const trucks = await prisma.trucks.findMany({
-//       select: {
-//         id: true,
-//         truckName: true,
-//         plate: true,
-//         payloadCapacity: true,
-//         status: true,
-//         records: {
-//           select: {
-//             poId: true,
-//             id: true,
-//             authorName: true,
-//             batchNumber: true,
-//             orderedProducts: true,
-//           },
-//         },
-//       },
-//     });
-
-//     return { trucks };
-//   } catch (error) {
-//     return { error };
-//   }
-// }
-
 export async function getTruckAdminAccess() {
   console.log("truck admin access..");
 
@@ -55,9 +16,13 @@ export async function getTruckAdminAccess() {
         records: {
           where: {
             orderedProductsTest: {
-              some: {
+              every: {
                 binLocations: {
-                  every: { assignedProducts: { every: { status: "Loaded" } } },
+                  every: {
+                    assignedProducts: {
+                      every: { status: "Loaded" },
+                    },
+                  },
                 },
               },
             },
@@ -68,15 +33,19 @@ export async function getTruckAdminAccess() {
             authorName: true,
             batchNumber: true,
             clientName: true,
-
-            orderedProductsTest: { select: { binLocations: true } },
+            orderedProductsTest: {
+              select: {
+                binLocations: {
+                  include: { stockKeepingUnit: { select: { weight: true } } },
+                },
+              },
+            },
           },
         },
       },
     });
-
-    return { trucks };
     console.log(trucks);
+    return { trucks };
   } catch (error) {
     return { error };
   }
@@ -123,20 +92,41 @@ export async function getTruckStaffAccess() {
         plate: true,
         payloadCapacity: true,
         status: true,
+        threshold: true,
+        assignedProducts: true,
         records: {
           where: {
-            orderedProducts: {
-              every: {
-                assignedProducts: { some: { status: "Queuing" } },
+            orderedProductsTest: {
+              some: {
+                binLocations: {
+                  some: { assignedProducts: { every: { status: "Queuing" } } },
+                },
               },
             },
           },
           select: {
-            poId: true,
+            POO: true,
             id: true,
             authorName: true,
             batchNumber: true,
-            orderedProducts: true,
+            clientName: true,
+            locationName: true,
+
+            orderedProductsTest: {
+              where: {
+                binLocations: {
+                  some: { assignedProducts: { every: { status: "Queuing" } } },
+                },
+              },
+              include: {
+                binLocations: {
+                  include: {
+                    assignedProducts: { select: { id: true } },
+                    stockKeepingUnit: { select: { weight: true } },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -177,17 +167,37 @@ export async function getTruckDriverAccess(id: string) {
         driverId: true,
         records: {
           where: {
-            orderedProducts: {
-              every: { assignedProducts: { some: { status: "Loaded" } } },
+            orderedProductsTest: {
+              some: {
+                binLocations: {
+                  every: { assignedProducts: { every: { status: "Loaded" } } },
+                },
+              },
             },
           },
           select: {
-            poId: true,
+            POO: true,
             id: true,
             authorName: true,
             batchNumber: true,
             clientName: true,
-            orderedProducts: true,
+            locationName: true,
+
+            orderedProductsTest: {
+              where: {
+                binLocations: {
+                  some: { assignedProducts: { every: { status: "Loaded" } } },
+                },
+              },
+              include: {
+                binLocations: {
+                  include: {
+                    assignedProducts: { select: { id: true } },
+                    stockKeepingUnit: { select: { weight: true } },
+                  },
+                },
+              },
+            },
           },
         },
       },

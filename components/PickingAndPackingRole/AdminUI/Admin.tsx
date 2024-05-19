@@ -1,14 +1,15 @@
 import useLocations from "@/hooks/useLocations";
-import AdminRecordForm from "./AdminRecordForm";
+import AdminRecordForm, { TRecord } from "./AdminRecordForm";
 import useTrucks from "@/hooks/useTrucks";
 import InventoryView from "./InventoryView";
 import { binLocations, orderedProductsTest } from "@prisma/client";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState, useMemo } from "react";
 import { TBins } from "@/fetcher/fetchBins";
 import BinSearchForm from "./BinSearchForm";
 import useBins from "@/hooks/useBins";
 import Toast, { TToast } from "../Toast";
 import ViewBinLocations from "./ViewBinLocations";
+import React from "react";
 
 export type TBinLocations = Omit<binLocations, "id" | "orderedProductsTestId">;
 export type TOrderedProductTest = orderedProductsTest & {
@@ -39,22 +40,30 @@ export type TBinLoc = {
     data: TBinLocationss[];
   };
 };
-
 export default function Admin() {
   const { bins: data } = useBins();
   const [total, setTotal] = useState(0);
-  const [selectable, setSelectable] = useState(false);
   const [bins, setBins] = useState<TBins[] | undefined>(undefined);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [currrentCapacity, setCurrrentCapacity] = useState<number>(0);
   const [binLocations, setBinLocations] = useState<TBinLocations[]>([]);
+  const [weight, setWeight] = useState(0);
   const [orderedProducts, setOrderedProducts] = useState<
     TCreateOrderedProduct[]
   >([]);
+  const [record, setRecord] = useState<TRecord>({
+    clientName: "",
+    POO: "",
+    truckName: "default",
+    locationName: "default",
+  });
 
   const [toast, setToast] = useState<TToast>({
     animate: "",
     message: "",
     door: false,
   });
+
   const [binLocation, setBinLocation] = useState<TBinLocation>({
     searchSKU: "",
     totalQuantity: 0,
@@ -62,17 +71,23 @@ export default function Admin() {
 
   useEffect(() => {
     !binLocation.searchSKU && setBins(data);
+    Array.isArray(data) &&
+      data.find((v) => {
+        v.assignedProducts[0]?.skuCode === binLocation.searchSKU;
+        const w = v.assignedProducts[0].sku.weight;
+        setWeight(w);
+        console.log("weight", weight);
+        return weight;
+      });
   }, [data, binLocation.searchSKU]);
-
-  useEffect(() => {
-    console.log(JSON.stringify(orderedProducts, null, 2));
-  }, [orderedProducts]);
 
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center  gap-2 text-black transition-all md:flex-nowrap md:items-start md:justify-start">
       <div className="flex flex-col items-center justify-center gap-2 md:items-start">
         <BinSearchForm
           states={{
+            setWeight,
+            weight,
             binLocations,
             setBinLocations,
             binLocation,
@@ -83,21 +98,29 @@ export default function Admin() {
             setToast,
             setTotal,
             total,
-            setSelectable,
+            currrentCapacity,
           }}
         />
         <AdminRecordForm
           states={{
-            binLocations,
-            setBinLocations,
+            setBinLocation,
             orderedProducts,
             setOrderedProducts,
+            isDisabled,
+            setIsDisabled,
+            currrentCapacity,
+            setCurrrentCapacity,
+            record,
+            setRecord,
           }}
         />
       </div>
       <Toast states={{ setToast, toast }} />
       <InventoryView
         states={{
+          record,
+          isDisabled,
+          setIsDisabled,
           setToast,
           toast,
           binLocations,
@@ -107,13 +130,20 @@ export default function Admin() {
           bins,
           setTotal,
           total,
-          setSelectable,
-          selectable,
+
           orderedProducts,
           setOrderedProducts,
         }}
       />
-      <ViewBinLocations binLocations={binLocations} />
+      {orderedProducts.length !== 0 && (
+        <div className="flex flex-col gap-2 border border-slate-200 p-2 shadow-md">
+          <h1>On Queue</h1>
+          <ViewBinLocations
+            binLocations={binLocations}
+            orderedProducts={orderedProducts}
+          />
+        </div>
+      )}
     </div>
   );
 }

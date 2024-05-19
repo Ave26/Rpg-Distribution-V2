@@ -1,3 +1,5 @@
+import { TBinLocation } from "@/components/PickingAndPackingRole/AdminUI/Admin";
+import { TToast } from "@/components/PickingAndPackingRole/Toast";
 import { TAssignedProducts } from "@/pages/api/inbound/scan";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -26,37 +28,6 @@ export const setTime = () => {
 
   return { date, newDate };
 };
-
-// export function createNewData(
-//   assignedProduct: TAssignedProducts,
-//   binId: string,
-//   usersId: string
-// ) {
-//   const {
-//     barcodeId,
-//     boxSize,
-//     purchaseOrder,
-//     expirationDate,
-//     quality,
-//     skuCode,
-//     status,
-//   } = assignedProduct;
-//   const { DateExpiry, DateReceive } = convertTime(expirationDate);
-//   const newData = {
-//     boxSize,
-//     dateReceive: DateReceive,
-//     purchaseOrder,
-//     expirationDate: DateExpiry,
-//     status,
-//     quality,
-//     barcodeId,
-//     skuCode,
-//     binId,
-//     usersId,
-//   };
-
-//   return { newData };
-// }
 
 export const convertTime = (expiry: Date | null) => {
   let DateReceive = new Date();
@@ -88,3 +59,31 @@ export const getId = (verifiedToken: string | JwtPayload | undefined) => {
 
   return { userId };
 };
+
+export function checkError(
+  binLocation: TBinLocation,
+  setToast: React.Dispatch<React.SetStateAction<TToast>>
+) {
+  const searchSKU = binLocation.searchSKU;
+  const totalQuantity = binLocation.totalQuantity;
+
+  if (!searchSKU && !totalQuantity) {
+    setToast({
+      animate: "animate-emerge",
+      door: true,
+      message: "Empty Filled for searchSKU and quantity",
+    });
+  } else if (!totalQuantity) {
+    setToast({
+      animate: "animate-emerge",
+      door: true,
+      message: "Empty Filled for quantity",
+    });
+  } else if (!searchSKU) {
+    setToast({
+      animate: "animate-emerge",
+      door: true,
+      message: "Empty Filled for searchSKU",
+    });
+  }
+}

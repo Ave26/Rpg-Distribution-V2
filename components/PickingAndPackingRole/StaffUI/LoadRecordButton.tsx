@@ -1,10 +1,19 @@
-import { orderedProducts, orderedProductsTest } from "@prisma/client";
-import React, { useState } from "react";
-import { TRecords, TTrucks } from "../PickingAndPackingType";
+import {
+  TruckAvailability,
+  orderedProducts,
+  orderedProductsTest,
+  stockKeepingUnit,
+} from "@prisma/client";
+import React, { useEffect, useState } from "react";
+import {
+  TOrderedProductsTestWBinLocations,
+  TRecords,
+  TTrucks,
+} from "../PickingAndPackingType";
 import { mutate } from "swr";
 
 type TLoadRecordButtonProps = {
-  orderedProduct: orderedProductsTest;
+  orderedProduct: TOrderedProductsTestWBinLocations;
   record: TRecords;
   truck: TTrucks;
   states?: TStates;
@@ -12,26 +21,50 @@ type TLoadRecordButtonProps = {
 
 type TStates = {};
 
-function LoadRecordButton({
-  orderedProduct,
-  record,
-  truck,
-}: TLoadRecordButtonProps) {
+export type TUpdateTruckData = {
+  status: TruckAvailability;
+  capacity: number;
+};
+
+export type TUpdateTrucks = {
+  capacity: number;
+  status: TruckAvailability;
+  assignedProductIds: string[];
+  truckId: string;
+};
+
+function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [animate, setAnimate] = useState<"animate-emerge" | "animate-fade">(
     "animate-fade"
   );
+  const [percentage, setPercentage] = useState(0);
+
   function setRecordToLoad() {
+    const { assignedProductIds, total } = getAssignedProducts();
+    const { capacity, status } = setTruckStatus(total);
+    // do something
+    const data = {
+      capacity: capacity,
+      status: status,
+      assignedProductIds: assignedProductIds,
+      truckId: truck.id,
+    };
+    // console.log({
+    //   capacity: capacity,
+    //   status: status,
+    //   assignedProductIds: assignedProductIds,
+    //   truckId: truck.id,
+    //   total,
+    // });
     console.log("click set record to load");
     fetch("/api/outbound/update-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        orderId: record?.id,
-      }),
+      body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -40,36 +73,72 @@ function LoadRecordButton({
         //   message: data.message,
         //   show: true,
         // });
-
-        mutate("/api/trucks/find-trucks");
       })
       .catch((e) => console.log(e))
       .finally(() => setAnimate("animate-fade"));
   }
 
   /* 
-   To find the current capacity, simply negate the current capacity into payloadCapacity
+    To find the current capacity, simply negate the current capacity into payloadCapacity
   */
-  // function test
-  function setTruckStatus(currentCapacity: number, threshold: number): string {
-    const percentage = (currentCapacity / threshold) * 100;
+
+  // NOTE: THE CURRENT CAPACITY WILL BE THE TOTAL ACCUMULATED IN ONE RECORD
+  function setTruckStatus(total: number): TUpdateTruckData {
+    const newCapacity = truck.payloadCapacity - total;
+    const percentage = (1 - newCapacity / truck.threshold) * 100;
+    console.log(percentage);
     if (percentage === 0) {
-      console.log("empty");
-      return "empty";
+      return { capacity: newCapacity, status: "Empty" };
     } else if (percentage < 50) {
-      console.log("partial");
-      return "partial";
-    } else if (percentage === 50) {
-      console.log("halfFull");
-      return "halfFull";
+      return { capacity: newCapacity, status: "PartialLoad" };
+    } else if (percentage < 100) {
+      return { capacity: newCapacity, status: "HalfFull" };
     } else {
-      console.log("full");
-      return "full";
+      return { capacity: newCapacity, status: "FullLoad" };
     }
   }
 
+  function getAssignedProducts() {
+    const result = orderedProduct.binLocations.reduce(
+      (
+        accumulator: { assignedProductIds: string[]; total: number },
+        binLocation
+      ) => {
+        // Extract product IDs and add them to the assignedProductIds array
+        const productIds = binLocation.assignedProducts.map(
+          (assignedProduct) => assignedProduct.id
+        );
+        accumulator.assignedProductIds.push(...productIds);
+
+        // Calculate the total weight
+        accumulator.total +=
+          binLocation.quantity * binLocation.stockKeepingUnit.weight;
+
+        return accumulator;
+      },
+      { assignedProductIds: [], total: 0 }
+    );
+    return result;
+  }
+
+  /* 
+    currentCapacity = quantity * threshold
+   TODO: UPDATE -> status && payloadCapacity
+
+   after updating the trucks
+
+   put the name of the trucks in the assignedProducts
+   update the status of the assignedProducts
+
+   status  || capacity  || assignedProductIds
+
+  */
   const buttonStyle =
     "rounded-sm bg-sky-300/40 w-full h-full p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase font-black";
+
+  useEffect(() => {
+    console.log(JSON.stringify(orderedProduct, null, 2));
+  }, []);
 
   return (
     <>
@@ -88,7 +157,11 @@ function LoadRecordButton({
           </button>
           <button
             className={buttonStyle}
-            onClick={() => setTruckStatus(1600, 3200)}
+            onClick={() => {
+              setRecordToLoad();
+
+              // set a new map that consist of assignedProducts and calclate the netweight using reduce
+            }}
           >
             Confirm
           </button>
@@ -113,3 +186,14 @@ function LoadRecordButton({
 }
 
 export default LoadRecordButton;
+
+/* 
+   TODO: NEED TO UPDATE ALL THE ASSIGNED PRODUCT INSIDE THE BINLOCATIONS
+  MAKE THE BIN LOCATIONS SELECTABLE SO THAT THE USER WILL HAVE TO CHOOSE WANT TO LOAD
+
+  
+  CHALLENGES: IS IT GOING TO LOAD ALL THE ASSIGNED PRODUCT COMING FROM THE BINS LOCATIONS BASED ON THE PRDERED PRODUCTS
+  THE PLAN IS TO TAKE THE IDs OF ASSIGNED PRODUCT AND MAKE A NEW MAP FOR IT
+  AND SEND IT TO THE SERVER TO FURTHER PROCESS IT
+
+*/

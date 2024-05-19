@@ -12,6 +12,11 @@ type TUpdateTruckStatusProps = {
 
 type TStates = {};
 
+export type TUpdateTruckStatus = {
+  status: TruckAvailability;
+  truckId: string;
+};
+
 type TButtonName =
   | "Complete the Delivery"
   | "Return"
@@ -41,7 +46,7 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
     Empty: "Start Deliver",
     PartialLoad: "Start Deliver",
     FullLoad: "Start Deliver",
-    HalfFull: null,
+    HalfFull: "Start Deliver",
     Delivered: "Return",
     ScheduledforPickup: null,
     OnHold: null,
