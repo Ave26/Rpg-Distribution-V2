@@ -19,6 +19,8 @@ export async function handler(
       try {
         const userId = verifiedToken.id;
 
+        //  implement if the product is destroyed while in the truck
+
         const assignedProducts = await prisma.assignedProducts.findMany({
           where: { truckName },
           select: { status: true },
@@ -34,12 +36,10 @@ export async function handler(
           });
         }
 
-        console.log(checkProductStatus);
-
         const updatedTruck = await prisma.trucks.update({
           where: { id: truckId },
           data: {
-            driverId: userId,
+            driverId: status === "Empty" ? { unset: true } : userId, // unset the driver id if the status has now become empty
             status:
               status === "Delivered" && checkProductStatus
                 ? "Delivered"
@@ -51,10 +51,8 @@ export async function handler(
             status: true,
             driverId: true,
             id: true,
-            // assignedProducts: { select: { id: true } },
           },
         });
-        console.log(updatedTruck);
 
         const { driverId, id, status: sts } = updatedTruck;
 
@@ -68,17 +66,11 @@ export async function handler(
           });
         }
 
-        // before comlete  deliver, the all the package should have status of Delivered, then the truck can now complete the order
-
         /* 
           if got an emergenct stop then the changes of the truck status will be commit.
         
         */
 
-        // console.log("updateAssginedProducts", updateAssginedProducts);
-        // return res
-        //   .status(200)
-        //   .json({ truckId, status, updateAssginedProducts });
         return res
           .status(200)
           .json({ message: "Update Succesfull", updatedTruck });

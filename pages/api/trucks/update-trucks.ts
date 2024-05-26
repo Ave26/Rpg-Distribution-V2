@@ -21,6 +21,12 @@ async function handler(
           return res.status(200).send({ message: "Empty Fields" });
         }
 
+        // find the truckName if there is the same throw an error
+
+        const truckFound = await prisma.trucks.findUnique({
+          where: { truckName: rest.truckName },
+        });
+
         const dataToUpdate: Record<string, number | string> = {
           truckName: rest.truckName,
           plate: rest.plate,
@@ -29,7 +35,7 @@ async function handler(
 
         const filteredData: Record<string, number | string> = {};
         Object.entries(dataToUpdate).forEach(([key, value]) => {
-          if (value) {
+          if (value && (key !== "truckName" || !truckFound)) {
             filteredData[key] = value;
           }
         });
@@ -46,7 +52,12 @@ async function handler(
 
         return res
           .status(200)
-          .json({ updatedTruck, message: "Product Updated" });
+          .json({
+            updatedTruck,
+            message: truckFound
+              ? "Product Updated, Truck Name must be unique"
+              : "Product Updated",
+          });
 
       default:
         return res.send(`Method ${req.method} is not allowed`);

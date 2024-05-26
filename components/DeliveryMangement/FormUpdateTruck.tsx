@@ -71,6 +71,7 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
       })
       .catch((error) => console.log(error))
       .finally(() => {
+        setTruckComponentKey("create");
         setLoading(false);
       });
   }

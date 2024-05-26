@@ -30,7 +30,9 @@ function SelectTruckInput({ handleChange, states }: TSelectTruckInput) {
     const newArray: TOptions[] =
       (Array.isArray(trucks) &&
         trucks
-          ?.filter((opt) => opt.status !== "FullLoad")
+          ?.filter(
+            (opt) => opt.status !== "FullLoad" && opt.status !== "InTransit"
+          )
           .map((truck) => {
             return {
               value: truck.truckName,
