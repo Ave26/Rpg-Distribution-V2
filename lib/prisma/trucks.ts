@@ -165,6 +165,7 @@ export async function getTruckDriverAccess(id: string) {
         threshold: true,
         status: true,
         driverId: true,
+        _count: { select: { assignedProducts: true } },
         records: {
           where: {
             orderedProductsTest: {

@@ -6,6 +6,8 @@ import { useMyContext } from "@/contexts/AuthenticationContext";
 import EmergencyStopButton from "../PickingAndPackingRole/StaffUI/EmergencyStopButton";
 import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
 import TruckDetails from "./TruckDetails";
+import Toast, { TToast } from "../PickingAndPackingRole/Toast";
+import { SetStateAction, useState } from "react";
 
 type TTruckSelectionProps = {
   states: TStates;
@@ -20,8 +22,12 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
   const { globalState } = useMyContext();
   const role: string | undefined = globalState?.verifiedToken?.roles;
   const id: string | undefined = globalState?.verifiedToken?.id;
-
   const { selectedId, setSelectedId } = states;
+  const [toast, setToast] = useState<TToast>({
+    animate: "animate-fade",
+    door: false,
+    message: "",
+  });
   const { trucks } = useTrucks();
 
   function selectId(truckId: string) {
@@ -47,7 +53,8 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                   <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
                     <GasStopButton />
                     <EmergencyStopButton />
-                    <UpdateTruckStatus truck={truck} />
+                    <UpdateTruckStatus truck={truck} states={{ setToast }} />
+
                     {/* currently WORK IN
                     PROGRESS 
 
@@ -77,7 +84,11 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 <div>({truck.records.length})</div>
               </div>
               <div className="flex items-center justify-center">
-                <RecordsView selectedId={selectedId} truck={truck} />
+                <RecordsView
+                  selectedId={selectedId}
+                  truck={truck}
+                  setToast={setToast}
+                />
               </div>
             </div>
           );
@@ -87,6 +98,13 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
           <Loading />
         </div>
       )}
+
+      <Toast
+        states={{
+          setToast,
+          toast,
+        }}
+      />
     </>
   );
 }

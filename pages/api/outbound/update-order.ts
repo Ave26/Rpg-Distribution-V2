@@ -17,25 +17,32 @@ type TIncludeAssignedProductIds = TUpdateTruckData & {
   assignedProductIds: string[];
   truckId: string;
 };
+
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & { roles: UserRole; id: string }
 ) {
-  const { assignedProductIds, capacity, status, truckId }: TUpdateTrucks =
+  const { assignedProductIds, total, status, truckId }: TUpdateTrucks =
     req.body;
 
   switch (req.method) {
     case "POST":
       try {
-        // await update_order(orderId);
-        // return res.status(200).json({
-        //   message: "Loaded On Truck",
-        // });\
-
         const updateTruck = await prisma.trucks.update({
           where: { id: truckId },
-          data: { status, payloadCapacity: capacity },
+          data: {
+            status,
+            payloadCapacity: { decrement: total },
+            assignedProducts: {
+              updateMany: {
+                where: { id: { in: assignedProductIds } },
+                data: {
+                  status: "Loaded",
+                },
+              },
+            },
+          },
         });
 
         const updateAssignedProducts = await prisma.assignedProducts.updateMany(
@@ -45,7 +52,7 @@ export async function handler(
           }
         );
 
-        return res.send({
+        return res.status(200).json({
           message: "order updated",
           updateTruck,
           updateAssignedProducts,

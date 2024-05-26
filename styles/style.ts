@@ -1,5 +1,5 @@
 export const buttonStyle =
-  "select-none rounded-sm whitespace-nowrap bg-sky-300/40 w-fit h-full flex justify-center items-center text-center p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase font-black";
+  "select-none rounded-sm whitespace-nowrap bg-sky-300/40 w-full h-full flex justify-center items-center text-center p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase font-black";
 
 export const buttonStyleEdge =
   "select-none p-3 border border-black rounded-lg rounded-br-none outline-none shadow-lg hover:shadow-xl hover:rounded-tl-none hover:rounded-br-lg duration-200";

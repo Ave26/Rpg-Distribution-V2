@@ -39,6 +39,7 @@ export async function handler(
         const everyRecordIsEmpty = !Object.values(record).every(
           (value) => value !== "default" && Boolean(value)
         );
+
         const orderedProductsIsEmpty = orderedProductslength === 0;
 
         if (everyRecordIsEmpty || orderedProductsIsEmpty) {

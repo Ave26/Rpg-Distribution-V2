@@ -13,6 +13,11 @@ export async function handler(
   switch (req.method) {
     case "POST":
       try {
+        /* 
+          
+            AS OF NOW 5 - 19 -34 PRODUCT SORT IS DANGEROUS
+          */
+
         const qeuedProducts = await prisma.assignedProducts.findFirst({
           where: {
             status: "Queuing",

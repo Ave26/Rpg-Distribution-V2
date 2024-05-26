@@ -1,13 +1,19 @@
 import React from "react";
 import { TTrucks } from "../PickingAndPackingType";
 import RecordSelection from "../../ReusableComponent/RecordSelection";
+import { TToast } from "../Toast";
 
 type TRecordsViewProps = {
   truck: TTrucks;
   selectedId: string[];
+  setToast: React.Dispatch<React.SetStateAction<TToast>>;
 };
 
-export default function RecordsView({ truck, selectedId }: TRecordsViewProps) {
+export default function RecordsView({
+  truck,
+  selectedId,
+  setToast,
+}: TRecordsViewProps) {
   return (
     <div
       className={`mb-2 flex ${
@@ -22,7 +28,7 @@ export default function RecordsView({ truck, selectedId }: TRecordsViewProps) {
             key={record.id}
             className="flex w-full flex-col gap-2 border border-black border-x-transparent p-2"
           >
-            <RecordSelection data={{ record, truck }} />
+            <RecordSelection data={{ record, truck, setToast }} />
           </div>
         ))
       ) : (

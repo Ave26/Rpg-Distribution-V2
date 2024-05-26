@@ -1,16 +1,11 @@
-import {
-  TruckAvailability,
-  orderedProducts,
-  orderedProductsTest,
-  stockKeepingUnit,
-} from "@prisma/client";
+import { TruckAvailability } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import {
   TOrderedProductsTestWBinLocations,
   TRecords,
   TTrucks,
 } from "../PickingAndPackingType";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 
 type TLoadRecordButtonProps = {
   orderedProduct: TOrderedProductsTestWBinLocations;
@@ -23,11 +18,10 @@ type TStates = {};
 
 export type TUpdateTruckData = {
   status: TruckAvailability;
-  capacity: number;
 };
 
 export type TUpdateTrucks = {
-  capacity: number;
+  total: number;
   status: TruckAvailability;
   assignedProductIds: string[];
   truckId: string;
@@ -43,21 +37,15 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
 
   function setRecordToLoad() {
     const { assignedProductIds, total } = getAssignedProducts();
-    const { capacity, status } = setTruckStatus(total);
+    const { status } = setTruckStatus(total);
     // do something
-    const data = {
-      capacity: capacity,
-      status: status,
+    const data: TUpdateTrucks = {
+      total,
+      status,
       assignedProductIds: assignedProductIds,
       truckId: truck.id,
     };
-    // console.log({
-    //   capacity: capacity,
-    //   status: status,
-    //   assignedProductIds: assignedProductIds,
-    //   truckId: truck.id,
-    //   total,
-    // });
+
     console.log("click set record to load");
     fetch("/api/outbound/update-order", {
       method: "POST",
@@ -68,11 +56,14 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
     })
       .then((response) => response.json())
       .then((data) => {
-        // setToastData({
-        //   ...toastData,
-        //   message: data.message,
-        //   show: true,
-        // });
+        if (data) {
+          mutate("/api/trucks/find-trucks");
+          // setToastData({
+          //   ...toastData,
+          //   message: data.message,
+          //   show: true,
+          // });
+        }
       })
       .catch((e) => console.log(e))
       .finally(() => setAnimate("animate-fade"));
@@ -88,13 +79,13 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
     const percentage = (1 - newCapacity / truck.threshold) * 100;
     console.log(percentage);
     if (percentage === 0) {
-      return { capacity: newCapacity, status: "Empty" };
+      return { status: "Empty" };
     } else if (percentage < 50) {
-      return { capacity: newCapacity, status: "PartialLoad" };
+      return { status: "PartialLoad" };
     } else if (percentage < 100) {
-      return { capacity: newCapacity, status: "HalfFull" };
+      return { status: "HalfFull" };
     } else {
-      return { capacity: newCapacity, status: "FullLoad" };
+      return { status: "FullLoad" };
     }
   }
 
@@ -158,6 +149,11 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
           <button
             className={buttonStyle}
             onClick={() => {
+              if (truck.status === "InTransit") {
+                setAnimate("animate-fade");
+
+                return console.log("can't load while in transit");
+              }
               setRecordToLoad();
 
               // set a new map that consist of assignedProducts and calclate the netweight using reduce

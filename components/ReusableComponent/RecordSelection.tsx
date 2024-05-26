@@ -7,6 +7,7 @@ import OrderedProduct from "../PickingAndPackingRole/StaffUI/OrderedProduct";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import LoadRecordButton from "../PickingAndPackingRole/StaffUI/LoadRecordButton";
 import DeliverButton from "../DeliveryMangement/Driver/DeliverButton";
+import { TToast } from "../PickingAndPackingRole/Toast";
 
 type TRecordSelectionProps = {
   data: TData;
@@ -15,6 +16,7 @@ type TRecordSelectionProps = {
 type TData = {
   record: TRecords;
   truck: TTrucks;
+  setToast: React.Dispatch<React.SetStateAction<TToast>>;
 };
 
 export default function RecordSelection({ data }: TRecordSelectionProps) {
@@ -22,7 +24,7 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
   const role: string | undefined = globalState?.verifiedToken?.roles;
   const isStaff = role === "Staff";
   const isDriver = role === "Driver";
-  const { record, truck } = data;
+  const { record, truck, setToast } = data;
 
   return (
     <>
@@ -30,7 +32,7 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
         <h1 className="text-lg">Record Details</h1>
         <ul>Batch Number: {record.batchNumber}</ul>
         <ul>Purchase Order: {record.POO}</ul>
-        <ul>Desitnation: {record.locationName}</ul>
+        <ul>Destination: {record.locationName}</ul>
         <ul>Client: {record.clientName}</ul>
       </div>
       <div className="h-[11em] overflow-y-scroll border border-black">
@@ -63,7 +65,8 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
           </div>
         ))}
       </div>
-      {isDriver && <DeliverButton />} {/* this will deliver the product */}
+      {isDriver && <DeliverButton states={{ record, truck, setToast }} />}
+      {/* this will deliver the product */}
     </>
   );
 }

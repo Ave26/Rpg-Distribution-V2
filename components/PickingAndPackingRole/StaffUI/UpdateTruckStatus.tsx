@@ -4,17 +4,21 @@ import Loading from "@/components/Parts/Loading";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle } from "@/styles/style";
 import { mutate } from "swr";
+import { TToast } from "../Toast";
 
 type TUpdateTruckStatusProps = {
-  states?: TStates;
+  states: TStates;
   truck: trucks;
 };
 
-type TStates = {};
+type TStates = {
+  setToast: React.Dispatch<React.SetStateAction<TToast>>;
+};
 
 export type TUpdateTruckStatus = {
   status: TruckAvailability;
   truckId: string;
+  truckName: string;
 };
 
 type TButtonName =
@@ -24,19 +28,35 @@ type TButtonName =
   | "Delivery Completed"
   | null;
 
-export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
+export default function UpdateTruckStatus({
+  truck,
+  states,
+}: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<TruckAvailability | null>(null);
-
+  const { setToast } = states;
   function handleRequest() {
     setLoading(true);
     fetch("/api/outbound/truck/update-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, truckId: truck.id }),
+      body: JSON.stringify({
+        status,
+        truckId: truck.id,
+        truckName: truck.truckName,
+      }),
     })
       .then((res) => res.json())
-      .then((data) => data && mutate("/api/trucks/find-trucks"))
+      .then((data) => {
+        if (data)
+          setToast({
+            animate: "animate-emerge",
+            door: true,
+            message: data.message,
+          });
+
+        return data && mutate("/api/trucks/find-trucks");
+      })
       .catch((e) => console.log(e))
       .finally(() => setLoading(false));
   }
@@ -78,7 +98,7 @@ export default function UpdateTruckStatus({ truck }: TUpdateTruckStatusProps) {
       className={buttonStyle}
       onClick={(e) => {
         e.stopPropagation();
-        handleRequest();
+        !loading && handleRequest();
       }}
     >
       {loading ? (
