@@ -238,12 +238,13 @@ type DeliveryMessage {
 }
 
 model deliveryLogs {
-  id       String            @id @default(auto()) @map("_id") @db.ObjectId
-  status   TruckAvailability
-  trucks   trucks?           @relation(fields: [trucksId], references: [id])
-  trucksId String?           @db.ObjectId
-  users    users?            @relation(fields: [driverId], references: [id])
-  driverId String?           @db.ObjectId
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  status    TruckAvailability
+  trucks    trucks?           @relation(fields: [trucksId], references: [id])
+  trucksId  String?           @db.ObjectId
+  users     users?            @relation(fields: [driverId], references: [id])
+  driverId  String?           @db.ObjectId
+  timeStamp DateTime
 }
 
 enum TruckAvailability {

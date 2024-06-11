@@ -6,7 +6,7 @@ import { buttonStyle } from "@/styles/style";
 import { mutate } from "swr";
 import { TToast } from "../Toast";
 
-type TUpdateTruckStatusProps = {
+export type TUpdateTruckStatusProps = {
   states: TStates;
   truck: trucks;
 };
@@ -35,8 +35,10 @@ export default function UpdateTruckStatus({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<TruckAvailability | null>(null);
   const { setToast } = states;
+
   function handleRequest() {
     setLoading(true);
+
     fetch("/api/outbound/truck/update-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,8 +72,8 @@ export default function UpdateTruckStatus({
     Delivered: "Return",
     ScheduledforPickup: null,
     OnHold: null,
-    EmergencyStop: null,
-    GasStop: null,
+    EmergencyStop: "Start Deliver",
+    GasStop: "Start Deliver",
   };
 
   const renderButtonName = mappedComponent[truck.status];

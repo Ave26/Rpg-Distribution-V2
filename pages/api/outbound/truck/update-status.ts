@@ -20,6 +20,15 @@ export async function handler(
         const userId = verifiedToken.id;
 
         //  implement if the product is destroyed while in the truck
+        //  implement status for emergency and gas stop
+        //  implement delivery logs
+
+        /* 
+          if product is destroyed
+          -- full proof: Image | video
+          -- 
+        
+        */
 
         const assignedProducts = await prisma.assignedProducts.findMany({
           where: { truckName },
@@ -60,15 +69,16 @@ export async function handler(
           await prisma.deliveryLogs.create({
             data: {
               status: sts,
-              driverId,
+              driverId: driverId || userId,
               trucksId: id,
+              timeStamp: new Date(),
             },
           });
         }
 
         /* 
           if got an emergenct stop then the changes of the truck status will be commit.
-        
+
         */
 
         return res

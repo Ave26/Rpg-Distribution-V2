@@ -51,8 +51,8 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 </div>
                 {role === "Driver" && (
                   <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
-                    <GasStopButton />
-                    <EmergencyStopButton />
+                    <GasStopButton truck={truck} states={{ setToast }} />
+                    <EmergencyStopButton truck={truck} states={{ setToast }} />
                     <UpdateTruckStatus truck={truck} states={{ setToast }} />
 
                     {/* currently WORK IN
