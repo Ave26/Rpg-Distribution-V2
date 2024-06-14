@@ -238,13 +238,15 @@ type DeliveryMessage {
 }
 
 model deliveryLogs {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
-  status    TruckAvailability
-  trucks    trucks?           @relation(fields: [trucksId], references: [id])
-  trucksId  String?           @db.ObjectId
-  users     users?            @relation(fields: [driverId], references: [id])
-  driverId  String?           @db.ObjectId
-  timeStamp DateTime
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  status      TruckAvailability
+  trucks      trucks?           @relation(fields: [trucksId], references: [id])
+  trucksId    String?           @db.ObjectId
+  users       users?            @relation(fields: [driverId], references: [id])
+  driverId    String?           @db.ObjectId
+  timeStamp   DateTime
+  coordinates Coordinates
+  locations   locations?
 }
 
 enum TruckAvailability {
@@ -300,8 +302,10 @@ type Coordinates {
 }
 
 model locations {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  name        String      @unique
-  coordinates Coordinates
-  records     records?
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String        @unique
+  coordinates    Coordinates
+  records        records?
+  deliveryLogs   deliveryLogs? @relation(fields: [deliveryLogsId], references: [id])
+  deliveryLogsId String?       @unique @db.ObjectId
 }

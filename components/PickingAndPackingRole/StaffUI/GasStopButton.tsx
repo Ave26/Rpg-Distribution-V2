@@ -11,10 +11,10 @@ export default function GasStopButton({
   states,
   truck,
 }: TUpdateTruckStatusProps) {
-  const { setToast } = states;
+  const { setToast, coordinates } = states;
   const { truckName, id: truckId } = truck;
   const [loading, setLoading] = useState(false);
- 
+
   // can only change while in transit
 
   function handleRequest() {
@@ -22,6 +22,7 @@ export default function GasStopButton({
       status: "GasStop",
       truckId,
       truckName,
+      coordinates,
     };
     const requestBody = JSON.stringify(truckStatus);
 

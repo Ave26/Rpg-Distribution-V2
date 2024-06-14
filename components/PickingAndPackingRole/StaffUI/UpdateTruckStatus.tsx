@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { TruckAvailability, productStatus, trucks } from "@prisma/client";
+import {
+  Coordinates,
+  TruckAvailability,
+  productStatus,
+  trucks,
+} from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle } from "@/styles/style";
@@ -13,12 +18,14 @@ export type TUpdateTruckStatusProps = {
 
 type TStates = {
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
+  coordinates: Coordinates;
 };
 
 export type TUpdateTruckStatus = {
   status: TruckAvailability;
   truckId: string;
   truckName: string;
+  coordinates: Coordinates;
 };
 
 type TButtonName =
@@ -34,7 +41,7 @@ export default function UpdateTruckStatus({
 }: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<TruckAvailability | null>(null);
-  const { setToast } = states;
+  const { setToast, coordinates } = states;
 
   function handleRequest() {
     setLoading(true);
@@ -46,6 +53,7 @@ export default function UpdateTruckStatus({
         status,
         truckId: truck.id,
         truckName: truck.truckName,
+        coordinates,
       }),
     })
       .then((res) => res.json())

@@ -6,7 +6,11 @@ import { mutate } from "swr";
 import { Coordinates, locations } from "@prisma/client";
 import LocationButtonSubmit from "./LocationButtonSubmit";
 
-type TOmitLocation = Omit<locations, "id" | "recordId" | "coordinates">;
+type TOmitLocation = Omit<
+  locations,
+  "id" | "recordId" | "coordinates" | "deliveryLogsId"
+>;
+
 type TLocation = TOmitLocation & Coordinates;
 
 export default function LocationForm() {
@@ -19,10 +23,10 @@ export default function LocationForm() {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    if (name !== "name" && value.length > 8) {
+    if (name !== "name" && value.length > 9) {
       setLocation({
         ...location,
-        [name]: value.slice(9),
+        [name]: value.slice(10),
       });
     } else {
       setLocation({
@@ -68,7 +72,6 @@ export default function LocationForm() {
                 type: key === "name" ? "text" : "number",
                 step: key === "name" ? undefined : "any", // Allow any step value, including decimal numbers, for numeric fields
                 value: location[key as keyof TLocation],
-                // maxLength: key === "name" ? undefined : 8,
                 onChange: handleChange,
               },
               label: {
@@ -79,6 +82,7 @@ export default function LocationForm() {
           />
         );
       })}
+
       <div className="relative flex w-full gap-2">
         <LocationButtonSubmit states={{ loading }} />
         <button className={buttonStyleSubmit} type="button">

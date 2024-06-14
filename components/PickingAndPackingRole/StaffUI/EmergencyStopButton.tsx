@@ -11,7 +11,7 @@ export default function EmergencyStopButton({
   states,
   truck,
 }: TUpdateTruckStatusProps) {
-  const { setToast } = states;
+  const { setToast, coordinates } = states;
   const { truckName, id: truckId } = truck;
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +20,7 @@ export default function EmergencyStopButton({
       status: "EmergencyStop",
       truckId,
       truckName,
+      coordinates,
     };
     const requestBody = JSON.stringify(truckStatus);
 

@@ -7,7 +7,8 @@ import EmergencyStopButton from "../PickingAndPackingRole/StaffUI/EmergencyStopB
 import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
 import TruckDetails from "./TruckDetails";
 import Toast, { TToast } from "../PickingAndPackingRole/Toast";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
+import { Coordinates } from "@prisma/client";
 
 type TTruckSelectionProps = {
   states: TStates;
@@ -36,6 +37,49 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
       : setSelectedId([...selectedId, truckId]);
   }
 
+  const [coordinates, setCoordinates] = useState<Coordinates>({
+    latitude: 0,
+    longitude: 0,
+  });
+  useEffect(() => {
+    if (navigator.geolocation) {
+      console.log(true);
+      const successHandler = (position: GeolocationPosition) => {
+        setCoordinates({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      };
+
+      const errorHandler = (error: GeolocationPositionError) => {
+        // setError(error.message);
+        console.log(error);
+      };
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+
+      // Get the initial position
+      navigator.geolocation.getCurrentPosition(
+        successHandler,
+        errorHandler,
+        options
+      );
+
+      const watcherId = navigator.geolocation.watchPosition(
+        successHandler,
+        errorHandler,
+        options
+      );
+      return () => {
+        navigator.geolocation.clearWatch(watcherId);
+      };
+    }
+  }, []);
+
   return (
     <>
       {Array.isArray(trucks) ? (
@@ -51,9 +95,18 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 </div>
                 {role === "Driver" && (
                   <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
-                    <GasStopButton truck={truck} states={{ setToast }} />
-                    <EmergencyStopButton truck={truck} states={{ setToast }} />
-                    <UpdateTruckStatus truck={truck} states={{ setToast }} />
+                    <GasStopButton
+                      truck={truck}
+                      states={{ setToast, coordinates }}
+                    />
+                    <EmergencyStopButton
+                      truck={truck}
+                      states={{ setToast, coordinates }}
+                    />
+                    <UpdateTruckStatus
+                      truck={truck}
+                      states={{ setToast, coordinates }}
+                    />
 
                     {/* currently WORK IN
                     PROGRESS 

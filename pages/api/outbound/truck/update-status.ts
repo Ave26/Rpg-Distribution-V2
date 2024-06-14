@@ -11,15 +11,16 @@ export async function handler(
   res: NextApiResponse,
   verifiedToken: JwtPayload & { roles: UserRole; id: string }
 ) {
-  const { status, truckId, truckName }: TUpdateTruckStatus = req.body;
-  console.log(truckId, status, truckName);
+  const { status, truckId, truckName, coordinates }: TUpdateTruckStatus =
+    req.body;
+  console.log(truckId, status, truckName, coordinates);
 
   switch (req.method) {
     case "POST":
       try {
-        const userId = verifiedToken.id;
+        const userId = verifiedToken.id; // driver
 
-        //  implement if the product is destroyed while in the truck
+        //  implement if the product is destroyed while in the truck | outbound damage goods
         //  implement status for emergency and gas stop
         //  implement delivery logs
 
@@ -28,6 +29,8 @@ export async function handler(
           -- full proof: Image | video
           -- 
         
+
+      
         */
 
         const assignedProducts = await prisma.assignedProducts.findMany({
@@ -53,6 +56,14 @@ export async function handler(
               status === "Delivered" && checkProductStatus
                 ? "Delivered"
                 : status,
+            deliveryLogs: {
+              create: {
+                status,
+                driverId: userId,
+                timeStamp: new Date(),
+                coordinates,
+              },
+            },
           },
           select: {
             truckName: true,
@@ -63,22 +74,30 @@ export async function handler(
           },
         });
 
-        const { driverId, id, status: sts } = updatedTruck;
+        console.log(updatedTruck);
 
-        if (updatedTruck) {
-          await prisma.deliveryLogs.create({
-            data: {
-              status: sts,
-              driverId: driverId || userId,
-              trucksId: id,
-              timeStamp: new Date(),
-            },
-          });
-        }
+        // const { driverId, id, status: sts } = updatedTruck;
+
+        // if (updatedTruck) {
+        //   await prisma.deliveryLogs.create({
+        //     data: {
+        //       status: sts,
+        //       driverId: driverId || userId,
+        //       trucksId: id,
+        //       timeStamp: new Date(),
+        //       locations: {
+        //         create: {
+        //           coordinates: { longitude: 0, latitude: 0 },
+        //           name: "",
+        //         },
+        //       },
+        //     },
+        //   });
+        // }
 
         /* 
           if got an emergenct stop then the changes of the truck status will be commit.
-
+          
         */
 
         return res
