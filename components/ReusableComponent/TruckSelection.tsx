@@ -42,6 +42,8 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     longitude: 0,
   });
 
+  // need to trigger geolocation manually
+
   useEffect(() => {
     // FOR TRACKING LOCATION
     console.log("geolocation is working");
@@ -85,8 +87,78 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     }
   }, [role]);
 
+  function enableGeolocation() {
+    console.log("geolocation is working");
+    if (role === "Driver") {
+      if (navigator.geolocation) {
+        console.log(true);
+        const successHandler = (position: GeolocationPosition) => {
+          setCoordinates({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        };
+
+        const errorHandler = (error: GeolocationPositionError) => {
+          // setError(error.message);
+          console.log(error);
+        };
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        };
+
+        // Get the initial position
+        navigator.geolocation.getCurrentPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
+
+        const watcherId = navigator.geolocation.watchPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
+        return () => {
+          navigator.geolocation.clearWatch(watcherId);
+        };
+      }
+    }
+  }
+
   return (
     <>
+      <button
+        onClick={() => {
+          if (navigator.geolocation) {
+            console.log("Button clicked: requesting geolocation");
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                console.log("Geolocation success", position);
+                setCoordinates({
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                });
+              },
+              (error) => {
+                console.error("Geolocation error", error);
+              },
+              {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0,
+              }
+            );
+          } else {
+            console.warn("Geolocation is not supported by this browser.");
+          }
+        }}
+      >
+        Get Location
+      </button>
       {Array.isArray(trucks) ? (
         trucks?.map((truck) => {
           return (
@@ -101,16 +173,19 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 {role === "Driver" && (
                   <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
                     <GasStopButton
+                      enableGeolocation={enableGeolocation}
                       truck={truck}
                       states={{ setToast, coordinates }}
                     />
                     <EmergencyStopButton
+                      enableGeolocation={enableGeolocation}
                       truck={truck}
                       states={{ setToast, coordinates }}
                     />
                     <UpdateTruckStatus
                       truck={truck}
                       states={{ setToast, coordinates }}
+                      enableGeolocation={enableGeolocation}
                     />
 
                     {/* currently WORK IN
@@ -156,7 +231,6 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
           <Loading />
         </div>
       )}
-
       <Toast
         states={{
           setToast,
@@ -170,6 +244,10 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
 /* 
   beofre set the truck status to be delivered, check first the products inside if all of those are delivered
   every product that has been delivered has a logs records so the it can be track the info later
-  
 
+  IMPLEMENT: 
+  DEPLOYED VERSION OF GEOLOCATION TO BE ENABLED 
+  OUTOBUND DAMAGE PRODUCT | REPORT
+  INVENTORY DAMAGE PRODUCT | REPORT
+  REPLENISHMENT AND SORTING
 */

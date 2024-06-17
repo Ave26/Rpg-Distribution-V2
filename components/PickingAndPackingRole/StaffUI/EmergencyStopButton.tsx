@@ -10,6 +10,7 @@ import Loading from "@/components/Parts/Loading";
 export default function EmergencyStopButton({
   states,
   truck,
+  enableGeolocation,
 }: TUpdateTruckStatusProps) {
   const { setToast, coordinates } = states;
   const { truckName, id: truckId } = truck;
