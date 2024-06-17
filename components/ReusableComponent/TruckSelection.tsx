@@ -44,6 +44,7 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
 
   useEffect(() => {
     // FOR TRACKING LOCATION
+    console.log("geolocation is working");
     if (role === "Driver") {
       if (navigator.geolocation) {
         console.log(true);
@@ -82,7 +83,7 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
         };
       }
     }
-  }, []);
+  }, [role]);
 
   return (
     <>

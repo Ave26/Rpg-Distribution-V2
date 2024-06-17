@@ -19,19 +19,10 @@ export async function handler(
     case "POST":
       try {
         const userId = verifiedToken.id; // driver
-
-        //  implement if the product is destroyed while in the truck | outbound damage goods
-        //  implement status for emergency and gas stop
-        //  implement delivery logs
-
-        /* 
-          if product is destroyed
-          -- full proof: Image | video
-          -- 
-        
-
-      
-        */
+        // const { latitude, longitude } = coordinates;
+        // if (status && truckId && truckName && latitude && longitude) {
+        //   return res.status(404).json({ message: "Incomplete Field" });
+        // }
 
         const assignedProducts = await prisma.assignedProducts.findMany({
           where: { truckName },
