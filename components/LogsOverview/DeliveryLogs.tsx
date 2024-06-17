@@ -32,10 +32,10 @@ function DeliveryLogs() {
                 </h3>
                 <h3 className="self-center">has been initiated</h3>
                 <h3 className="place-self-center">
-                  Latitude: {v.coordinates.latitude}
+                  Latitude: {v.coordinates?.latitude}
                 </h3>
                 <h3 className="place-self-center">
-                  Longitude: {v.coordinates.longitude}
+                  Longitude: {v.coordinates?.longitude}
                 </h3>
               </div>
             );

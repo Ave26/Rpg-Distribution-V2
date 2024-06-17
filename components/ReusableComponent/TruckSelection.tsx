@@ -47,87 +47,44 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
   useEffect(() => {
     // FOR TRACKING LOCATION
     console.log("geolocation is working");
-    if (role === "Driver") {
-      if (navigator.geolocation) {
-        console.log(true);
-        const successHandler = (position: GeolocationPosition) => {
-          setCoordinates({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        };
 
-        const errorHandler = (error: GeolocationPositionError) => {
-          // setError(error.message);
-          console.log(error);
-        };
+    if (navigator.geolocation) {
+      console.log(true);
+      const successHandler = (position: GeolocationPosition) => {
+        setCoordinates({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      };
 
-        const options = {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        };
+      const errorHandler = (error: GeolocationPositionError) => {
+        // setError(error.message);
+        console.log(error);
+      };
 
-        // Get the initial position
-        navigator.geolocation.getCurrentPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
 
-        const watcherId = navigator.geolocation.watchPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
-        return () => {
-          navigator.geolocation.clearWatch(watcherId);
-        };
-      }
+      // Get the initial position
+      navigator.geolocation.getCurrentPosition(
+        successHandler,
+        errorHandler,
+        options
+      );
+
+      const watcherId = navigator.geolocation.watchPosition(
+        successHandler,
+        errorHandler,
+        options
+      );
+      return () => {
+        navigator.geolocation.clearWatch(watcherId);
+      };
     }
-  }, [role]);
-
-  function enableGeolocation() {
-    console.log("geolocation is working");
-    if (role === "Driver") {
-      if (navigator.geolocation) {
-        console.log(true);
-        const successHandler = (position: GeolocationPosition) => {
-          setCoordinates({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        };
-
-        const errorHandler = (error: GeolocationPositionError) => {
-          // setError(error.message);
-          console.log(error);
-        };
-
-        const options = {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        };
-
-        // Get the initial position
-        navigator.geolocation.getCurrentPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
-
-        const watcherId = navigator.geolocation.watchPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
-        return () => {
-          navigator.geolocation.clearWatch(watcherId);
-        };
-      }
-    }
-  }
+  }, []);
 
   return (
     <>
@@ -173,19 +130,19 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                 {role === "Driver" && (
                   <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
                     <GasStopButton
-                      enableGeolocation={enableGeolocation}
+                      // enableGeolocation={enableGeolocation}
                       truck={truck}
                       states={{ setToast, coordinates }}
                     />
                     <EmergencyStopButton
-                      enableGeolocation={enableGeolocation}
+                      // enableGeolocation={enableGeolocation}
                       truck={truck}
                       states={{ setToast, coordinates }}
                     />
                     <UpdateTruckStatus
                       truck={truck}
                       states={{ setToast, coordinates }}
-                      enableGeolocation={enableGeolocation}
+                      // enableGeolocation={enableGeolocation}
                     />
 
                     {/* currently WORK IN
@@ -247,7 +204,56 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
 
   IMPLEMENT: 
   DEPLOYED VERSION OF GEOLOCATION TO BE ENABLED 
-  OUTOBUND DAMAGE PRODUCT | REPORT
-  INVENTORY DAMAGE PRODUCT | REPORT
+  OUTOBUND DAMAGE PRODUCT | REPORT  -- DONWLODABLE 
+  INVENTORY DAMAGE PRODUCT | REPORT -- DOWNLODABLE
   REPLENISHMENT AND SORTING
+
+  REPORTTEMPLATE
+  PRODUCT, TOTAL QUANTITY SCANNED, POO, DATE
+  DOWNLOADABLE DESGINED PDF
+*/
+
+/* 
+ function enableGeolocation() {
+    console.log("geolocation is working");
+    if (role === "Driver") {
+      if (navigator.geolocation) {
+        console.log(true);
+        const successHandler = (position: GeolocationPosition) => {
+          setCoordinates({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        };
+
+        const errorHandler = (error: GeolocationPositionError) => {
+          // setError(error.message);
+          console.log(error);
+        };
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        };
+
+        // Get the initial position
+        navigator.geolocation.getCurrentPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
+
+        const watcherId = navigator.geolocation.watchPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
+        return () => {
+          navigator.geolocation.clearWatch(watcherId);
+        };
+      }
+    }
+  }
+
 */

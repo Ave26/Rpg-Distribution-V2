@@ -14,7 +14,7 @@ import { TToast } from "../Toast";
 export type TUpdateTruckStatusProps = {
   states: TStates;
   truck: trucks;
-  enableGeolocation: () => void;
+  enableGeolocation?: () => void;
 };
 
 type TStates = {
@@ -110,7 +110,7 @@ export default function UpdateTruckStatus({
       className={buttonStyle}
       onClick={(e) => {
         e.stopPropagation();
-        enableGeolocation();
+        // enableGeolocation();
         !loading && handleRequest();
       }}
     >
