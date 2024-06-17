@@ -41,42 +41,46 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     latitude: 0,
     longitude: 0,
   });
+
   useEffect(() => {
-    if (navigator.geolocation) {
-      console.log(true);
-      const successHandler = (position: GeolocationPosition) => {
-        setCoordinates({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      };
+    // FOR TRACKING LOCATION
+    if (role === "Driver") {
+      if (navigator.geolocation) {
+        console.log(true);
+        const successHandler = (position: GeolocationPosition) => {
+          setCoordinates({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        };
 
-      const errorHandler = (error: GeolocationPositionError) => {
-        // setError(error.message);
-        console.log(error);
-      };
+        const errorHandler = (error: GeolocationPositionError) => {
+          // setError(error.message);
+          console.log(error);
+        };
 
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      };
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        };
 
-      // Get the initial position
-      navigator.geolocation.getCurrentPosition(
-        successHandler,
-        errorHandler,
-        options
-      );
+        // Get the initial position
+        navigator.geolocation.getCurrentPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
 
-      const watcherId = navigator.geolocation.watchPosition(
-        successHandler,
-        errorHandler,
-        options
-      );
-      return () => {
-        navigator.geolocation.clearWatch(watcherId);
-      };
+        const watcherId = navigator.geolocation.watchPosition(
+          successHandler,
+          errorHandler,
+          options
+        );
+        return () => {
+          navigator.geolocation.clearWatch(watcherId);
+        };
+      }
     }
   }, []);
 

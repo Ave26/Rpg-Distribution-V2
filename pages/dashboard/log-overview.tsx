@@ -15,10 +15,10 @@ export default function LogOverview() {
       <OrderQueue />
       <DeliveryLogs /> */}
       <div className="col-span-1 flex flex-col gap-2 border border-slate-200 p-2 shadow-md transition-all">
-        <h1 className="uppercase">Order Queue</h1>
-        <div className="h-[25em] overflow-y-scroll"></div>
+        <h1 className="abosolute uppercase">Order Queue</h1>
+        <OrderQueue />
       </div>
-      <div className="row-span-2 flex flex-col gap-2 border border-slate-200 bg-green-400 p-2 shadow-md transition-all">
+      <div className="row-span-2 flex flex-col gap-2 border border-slate-200 shadow-md transition-all">
         <h1 className="uppercase">Reports</h1>
       </div>
       <div className="relative col-span-1 flex flex-col gap-2 border border-slate-200 p-2 shadow-md transition-all">

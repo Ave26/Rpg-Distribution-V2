@@ -93,19 +93,13 @@ export async function handler(
             select: { id: true },
           });
 
-          console.log(assignedProduct);
-
           const updateAssignedProductIds = assignedProduct.map((p) => p.id);
 
           const product = await prisma.assignedProducts.updateMany({
             where: { id: { in: updateAssignedProductIds } },
             data: { status: "Queuing", binLocationsId: id },
           });
-
-          console.log(product);
         });
-
-        console.log(binLocations);
 
         return res
           .status(200)

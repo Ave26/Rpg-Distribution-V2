@@ -13,9 +13,10 @@ export async function handler(
       try {
         const deliveryLogs = await prisma.deliveryLogs.findMany({
           include: { trucks: { select: { truckName: true } } },
+          orderBy: { timeStamp: "desc" },
+          take: 150,
         });
 
-        console.log(deliveryLogs);
         return res.json(deliveryLogs);
       } catch (error) {
         return res.json(error);

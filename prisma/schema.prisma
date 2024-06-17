@@ -62,7 +62,7 @@ model products {
   barcodeId         String             @unique
   category          Category
   image             String?
-  price             Float?
+  price             Float
   productName       String             @unique
   discontinued      Boolean?           @default(false)
   sku               stockKeepingUnit[]
