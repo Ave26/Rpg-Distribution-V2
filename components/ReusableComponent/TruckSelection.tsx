@@ -8,7 +8,7 @@ import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
 import TruckDetails from "./TruckDetails";
 import Toast, { TToast } from "../PickingAndPackingRole/Toast";
 import { SetStateAction, useEffect, useState } from "react";
-import { Coordinates } from "@prisma/client";
+import { Coordinates, UserRole } from "@prisma/client";
 
 type TTruckSelectionProps = {
   states: TStates;
@@ -21,7 +21,8 @@ type TStates = {
 
 export default function TruckSelection({ states }: TTruckSelectionProps) {
   const { globalState } = useMyContext();
-  const role: string | undefined = globalState?.verifiedToken?.roles;
+  const role: UserRole | undefined = globalState?.verifiedToken?.roles;
+  console.log(role);
   const id: string | undefined = globalState?.verifiedToken?.id;
   const { selectedId, setSelectedId } = states;
   const [toast, setToast] = useState<TToast>({
@@ -42,13 +43,10 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     longitude: 0,
   });
 
-  // need to trigger geolocation manually
-
   useEffect(() => {
-    // FOR TRACKING LOCATION
     console.log("geolocation is working");
 
-    if (navigator.geolocation) {
+    if (navigator.geolocation && role === "Driver") {
       console.log(true);
       const successHandler = (position: GeolocationPosition) => {
         setCoordinates({
@@ -88,34 +86,6 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
 
   return (
     <>
-      <button
-        onClick={() => {
-          if (navigator.geolocation) {
-            console.log("Button clicked: requesting geolocation");
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                console.log("Geolocation success", position);
-                setCoordinates({
-                  latitude: position.coords.latitude,
-                  longitude: position.coords.longitude,
-                });
-              },
-              (error) => {
-                console.error("Geolocation error", error);
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0,
-              }
-            );
-          } else {
-            console.warn("Geolocation is not supported by this browser.");
-          }
-        }}
-      >
-        Get Location
-      </button>
       {Array.isArray(trucks) ? (
         trucks?.map((truck) => {
           return (
@@ -211,49 +181,7 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
   REPORTTEMPLATE
   PRODUCT, TOTAL QUANTITY SCANNED, POO, DATE
   DOWNLOADABLE DESGINED PDF
-*/
 
-/* 
- function enableGeolocation() {
-    console.log("geolocation is working");
-    if (role === "Driver") {
-      if (navigator.geolocation) {
-        console.log(true);
-        const successHandler = (position: GeolocationPosition) => {
-          setCoordinates({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        };
 
-        const errorHandler = (error: GeolocationPositionError) => {
-          // setError(error.message);
-          console.log(error);
-        };
-
-        const options = {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        };
-
-        // Get the initial position
-        navigator.geolocation.getCurrentPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
-
-        const watcherId = navigator.geolocation.watchPosition(
-          successHandler,
-          errorHandler,
-          options
-        );
-        return () => {
-          navigator.geolocation.clearWatch(watcherId);
-        };
-      }
-    }
-  }
-
+  ADDED TODO: THE FILL METHOD NEEDS A SIZE IN IMAGE && CHANGE THE PATH IN TO URL
 */

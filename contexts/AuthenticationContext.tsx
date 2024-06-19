@@ -16,6 +16,7 @@ export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const updateGlobalState = (newValue: AuthProps) => {
     setGlobalState(newValue);
   };
+
   return (
     <MyContext.Provider value={{ globalState, updateGlobalState }}>
       {children}

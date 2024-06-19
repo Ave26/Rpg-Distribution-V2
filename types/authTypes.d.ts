@@ -1,3 +1,5 @@
+import { UserRole } from "@prisma/client";
+
 interface AuthProps {
   authenticated?: boolean;
   verifiedToken?: VerifyToken;
@@ -5,7 +7,7 @@ interface AuthProps {
 
 interface VerifyToken {
   id?: string;
-  roles?: string;
+  roles?: UserRole;
   iat?: number;
   exp?: number;
 }
