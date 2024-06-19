@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="transition-all">
       <Header />
-      <main className="h-full w-full bg-slate-200">{children}</main>
+      <main className="h-full w-full bg-[#efbf04]">{children}</main>
       <Footer />
     </div>
   );

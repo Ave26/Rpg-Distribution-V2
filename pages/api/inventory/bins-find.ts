@@ -27,9 +27,14 @@ export async function handler(
                 bins: {
                   include: {
                     _count: {
-                      select: { assignedProducts: true },
+                      select: {
+                        assignedProducts: {
+                          where: { status: { not: "Delivered" } },
+                        },
+                      },
                     },
                     assignedProducts: {
+                      where: { status: { not: "Delivered" } },
                       select: {
                         id: true,
                         purchaseOrder: true,

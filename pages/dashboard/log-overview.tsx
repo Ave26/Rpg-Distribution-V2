@@ -3,9 +3,11 @@ import PickingAndPacking from "./picking-and-packing";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import { setTime } from "@/helper/_helper";
-import Logs from "@/components/LogsOverview/Logs";
 import DeliveryLogs from "@/components/LogsOverview/DeliveryLogs";
 import OrderQueue from "@/components/LogsOverview/OrderQueue";
+import Reports from "@/components/LogsOverview/Reports";
+import GenerateReport from "../api/generateReport";
+import MyDocument from "@/components/MyDocument";
 
 export default function LogOverview() {
   return (
@@ -14,14 +16,14 @@ export default function LogOverview() {
 
       <OrderQueue />
       <DeliveryLogs /> */}
-      <div className="col-span-1 flex flex-col gap-2 border border-slate-200 p-2 shadow-md transition-all">
+      <div className="col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Order Queue</h1>
         <OrderQueue />
       </div>
-      <div className="row-span-2 flex flex-col gap-2 border border-slate-200 shadow-md transition-all">
-        <h1 className="uppercase">Reports</h1>
+      <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
+        <Reports />
       </div>
-      <div className="relative col-span-1 flex flex-col gap-2 border border-slate-200 p-2 shadow-md transition-all">
+      <div className="relative col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Delivery Logs</h1>
         <DeliveryLogs />
       </div>

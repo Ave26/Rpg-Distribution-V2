@@ -15,7 +15,7 @@ export default function StaffUI() {
 
   return (
     <section className="flex flex-col items-center justify-center md:flex-row md:justify-start">
-      <div className="relative h-[60.8em] w-full overflow-y-scroll  bg-white/30  p-2 shadow-md md:w-full">
+      <div className="relative h-[60.8em] w-full overflow-y-scroll  bg-white  p-2 shadow-md md:w-full">
         <div className="sticky top-0 flex  select-none justify-end pb-1">
           <CloseAllButton setSelectedId={setSelectedId} />
         </div>

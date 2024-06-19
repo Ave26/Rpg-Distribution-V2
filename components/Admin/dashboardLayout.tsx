@@ -66,7 +66,7 @@ export function Aside({
   router: NextRouter;
 }) {
   return (
-    <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/30 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
+    <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
       {mapRoutes &&
         mapRoutes.length > 0 &&
         mapRoutes.map((route, index) => (

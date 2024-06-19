@@ -29,7 +29,7 @@ export default function DeliveryManagementButtonSelection({
   const buttonsToRender = buttonSelections[role as TRole] || [];
 
   return (
-    <div className="flex w-full items-center justify-center gap-2 p-2 text-xs font-bold md:w-fit">
+    <div className="flex w-full items-center justify-start gap-2 rounded-md bg-white p-2 text-xs font-bold ">
       {buttonsToRender.map((btn, index) => {
         return (
           <button

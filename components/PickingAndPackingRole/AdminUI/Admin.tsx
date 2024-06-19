@@ -82,8 +82,8 @@ export default function Admin() {
   }, [data, binLocation.searchSKU]);
 
   return (
-    <div className="flex h-full w-full flex-wrap items-center justify-center  gap-2 text-black transition-all md:flex-nowrap md:items-start md:justify-start">
-      <div className="flex flex-col items-center justify-center gap-2 md:items-start">
+    <div className="flex h-full w-full flex-wrap items-center justify-center gap-2  text-black transition-all transition-all md:flex-nowrap md:items-start md:justify-start">
+      <div className="flex h-full w-full flex-col justify-start gap-2 rounded-md bg-white p-2 md:max-w-sm md:items-start">
         <BinSearchForm
           states={{
             setWeight,

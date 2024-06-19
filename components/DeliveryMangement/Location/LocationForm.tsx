@@ -58,7 +58,7 @@ export default function LocationForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex w-fit animate-emerge flex-col gap-2"
+      className="relative flex w-full flex-col gap-2 rounded-md bg-white p-2 md:max-w-fit"
     >
       <h1 className="w-full text-center uppercase">Add Location</h1>
       {Object.keys(location).map((key) => {

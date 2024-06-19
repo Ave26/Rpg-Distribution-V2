@@ -27,7 +27,7 @@ export default function DeliveryManagement() {
 
   const renderComponent = componentMapping[selectedButton];
   return (
-    <section className="flex h-full w-full flex-col items-start justify-start gap-3">
+    <section className="flex h-full w-full flex-col items-start justify-start gap-2">
       <DeliveryManagementButtonSelection
         role={role}
         states={{

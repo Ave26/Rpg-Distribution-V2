@@ -161,7 +161,7 @@ export default function InventoryView({ states }: TInventoryView) {
   }
 
   return (
-    <div className="relative flex h-72 w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md border border-slate-200 p-2 text-center shadow-md transition-all md:h-full">
+    <div className="relative flex h-72 w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md border border-slate-200 bg-white p-2 text-center shadow-md transition-all md:h-full">
       {Array.isArray(states.bins) &&
         states.bins.map((bin, index) => {
           const binId = bin.id;
