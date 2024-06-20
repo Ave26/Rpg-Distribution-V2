@@ -10,6 +10,10 @@ type TReport = {
 
 function Reports() {
   const date = new Date().toLocaleDateString();
+  /* 
+    Need polling checker continuesly to product the product a replenishement report and date
+  */
+
   return (
     <div className="flex gap-2">
       <h3>Inventory Summary Report</h3>

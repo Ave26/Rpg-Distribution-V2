@@ -2,6 +2,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { renderToStream } from "@react-pdf/renderer";
 import MyDocument from "@/components/MyDocument";
+import prisma from "@/lib/prisma";
+import { authMiddleware } from "./authMiddleware";
 
 export type TReportData = {
   product: string;
@@ -10,6 +12,7 @@ export type TReportData = {
   date: Date;
 };
 
+// export default authMiddleware(
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const reportData: TReportData = {
     product: "Sample Product",
@@ -18,8 +21,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     date: new Date(),
   };
 
+  const product = await prisma.assignedProducts.findMany({
+    where: { status: "Delivered" },
+    select: { skuCode: true },
+  });
+
   const pdfStream = await renderToStream(
-    <MyDocument reportData={reportData} />
+    <MyDocument reportData={reportData} product={product} />
   );
 
   res.setHeader("Content-Type", "application/pdf");
@@ -30,3 +38,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   pdfStream.pipe(res);
 };
+// );

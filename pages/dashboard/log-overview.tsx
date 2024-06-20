@@ -13,7 +13,7 @@ export default function LogOverview() {
   return (
     <section className="grid h-full grid-cols-1 gap-2 md:grid-cols-2">
       {/* <Logs />
-
+        
       <OrderQueue />
       <DeliveryLogs /> */}
       <div className="col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
@@ -22,6 +22,7 @@ export default function LogOverview() {
       </div>
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <Reports />
+        {/* <Test /> */}
       </div>
       <div className="relative col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Delivery Logs</h1>
