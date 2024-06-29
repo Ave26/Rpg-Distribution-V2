@@ -1,5 +1,9 @@
+import useProductReport from "@/hooks/useFetchProductReport";
+import { BlobProvider, PDFViewer } from "@react-pdf/renderer";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import MyDocument from "../MyDocument";
+import OrderReport from "../Report/OrderDocument";
 
 type TReport = {
   product: string;
@@ -8,21 +12,33 @@ type TReport = {
   date: Date;
 };
 
+type TReportType = "productReplenishment" | "others";
+
 function Reports() {
   const date = new Date().toLocaleDateString();
+  const { product, error, isLoading } = useProductReport();
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   /* 
     Need polling checker continuesly to product the product a replenishement report and date
-  */
+    can only be seen in the report if the products threshold has been change
+    THOUGHT PROCESS:
+      - Create key value mapping
+      - Only display the report if one users triggers it
+  
+    */
+  // const generatePdfBlob = () => (
+  //   <BlobProvider document={<MyDocument />}>
+  //     {({ blob, url, loading, error }) => {
+  //       if (blob) {
+  //         setPdfBlob(blob);
+  //       }
+  //       return <div>{loading ? "Loading document..." : ""}</div>;
+  //     }}
+  //   </BlobProvider>
+  // );
 
-  return (
-    <div className="flex gap-2">
-      <h3>Inventory Summary Report</h3>
-      <Link href="/api/generateReport" download className="text-sky-600">
-        Product Report
-      </Link>
-      <h3>Date: {date}</h3>
-    </div>
-  );
+  console.log(product);
+  return <div className=""></div>;
 }
 
 export default Reports;

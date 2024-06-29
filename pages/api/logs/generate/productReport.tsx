@@ -1,9 +1,8 @@
 // pages/api/generateReport.js
 import { NextApiRequest, NextApiResponse } from "next";
 import { renderToStream } from "@react-pdf/renderer";
-import MyDocument from "@/components/MyDocument";
 import prisma from "@/lib/prisma";
-import { authMiddleware } from "./authMiddleware";
+import MyDocument from "@/components/MyDocument";
 
 export type TReportData = {
   product: string;

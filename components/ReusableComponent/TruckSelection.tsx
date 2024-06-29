@@ -167,24 +167,3 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     </>
   );
 }
-
-/* 
-  beofre set the truck status to be delivered, check first the products inside if all of those are delivered
-  every product that has been delivered has a logs records so the it can be track the info later
-
-  IMPLEMENT: 
-  DEPLOYED VERSION OF GEOLOCATION TO BE ENABLED √
-  OUTOBUND DAMAGE PRODUCT | REPORT  -- DONWLODABLE 
-  INVENTORY DAMAGE PRODUCT | REPORT -- DOWNLODABLE
-  REPLENISHMENT AND SORTING
-    - POLLING THE PRODUCT TO BE REPLENISH
-
-  REPORT TEMPLATE
-  PRODUCT, TOTAL QUANTITY SCANNED, POO, DATE
-  DOWNLOADABLE DESGINED PDF
-
-
-  ADDED TODO: 
-  CREATE LINK TO DISPLAY MAP
-  THE FILL METHOD NEEDS A SIZE IN IMAGE && CHANGE THE PATH IN TO URL
-*/

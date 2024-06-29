@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 
@@ -11,6 +10,8 @@ export default async function handler(
   switch (req.method) {
     case "GET":
       try {
+        /* taking the product that has been taken by the binslocation */
+
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
 
@@ -18,38 +19,27 @@ export default async function handler(
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        const records = await prisma.records.findMany({
-          where: {
-            dateCreated: {
-              // gte: startOfDay,
-              lte: endOfDay,
-            },
-          },
-          select: {
-            _count: true,
-            id: true,
-            clientName: true,
-            dateCreated: true,
-            // trucks: { select: { status: true } },
-            POO: true,
+        const record = await prisma.records.findMany({
+          where: { dateCreated: { gte: startOfDay, lte: endOfDay } },
+          include: {
             orderedProductsTest: {
               select: {
-                _count: true,
                 productName: true,
+                _count: true,
                 binLocations: {
                   select: {
-                    assignedProducts: { select: { status: true }, take: 1 },
-                    quantity: true,
-                    stockKeepingUnit: {
-                      select: { products: { select: { price: true } } },
-                    },
+                    _count: true,
+                    assignedProducts: { select: { id: true } },
                   },
                 },
               },
             },
           },
         });
-        return res.json(records);
+
+        console.log(record);
+
+        return res.send(record);
       } catch (error) {
         return res.json(error);
       }
