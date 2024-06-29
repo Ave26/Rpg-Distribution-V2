@@ -62,12 +62,12 @@ function OrderQueue() {
                     );
                   }, 0)
                   .toLocaleString()}
-                {/* <Link
+                <Link
                   href={`/api/logs/generate/orderReport?id=${record.id}`}
                   className="text-sky-500 underline"
                 >
                   Downlod File
-                </Link> */}
+                </Link>
               </td>
             </tr>
           ))}
