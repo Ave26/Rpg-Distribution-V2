@@ -29,17 +29,8 @@ Font.register({
   src: "https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5Q.ttf",
 });
 
-interface TableRow {
-  barcode: string;
-  description: string;
-  sku: string;
-  bin: string;
-  quantity: number;
-  remarks: string;
-}
-
 type TOrderReportProps = {
-  record: TRecordPick | null;
+  records: TRecordPick[] | null;
 };
 
 type TRecordPick = Pick<
@@ -72,7 +63,7 @@ type TBinLocationsPick = Pick<TBinLocations, "stockKeepingUnit" | "quantity">;
 
 type TOrderedProductsTestPick = Pick<TOrderedProductsTest, "binLocations">;
 
-export default function OrderReport({ record }: TOrderReportProps) {
+export default function OrderReports({ records }: TOrderReportProps) {
   const Titles = [
     "Order Id",
     "Customer Name",
@@ -85,11 +76,9 @@ export default function OrderReport({ record }: TOrderReportProps) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.titleSection}>
-          <Text style={styles.title}>
-            Details for Customer Order: {record?.id}
-          </Text>
+          <Text style={styles.title}>Customer Order For This Month</Text>
           <Text style={styles.date}>
-            Downloaded At {new Date().toLocaleString()}
+            {/* Downloaded At {new Date().toLocaleString()} */}
           </Text>
         </View>
         <View style={styles.table}>
@@ -102,94 +91,98 @@ export default function OrderReport({ record }: TOrderReportProps) {
               );
             })}
           </View>
+          {Array.isArray(records) &&
+            records.map((record) => {
+              return (
+                <View style={styles.tableRow} key={record.id}>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    {record?.id}
+                  </Text>
 
-          <View style={styles.tableRow}>
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              {record?.id}
-            </Text>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    {record?.clientName}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    {record?.dateCreated?.toLocaleString()}
+                    <Text
+                      style={[
+                        styles.tableCol,
+                        { flexDirection: "column" },
+                        styles.productDetails,
+                      ]}
+                    >
+                      {record?._count.orderedProductsTest}
+                    </Text>
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    {record?._count.orderedProductsTest}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    {record?.orderedProductsTest.reduce((acc, initial) => {
+                      return (
+                        acc +
+                        initial.binLocations.reduce((acc, initial) => {
+                          return acc + initial.quantity;
+                        }, 0)
+                      );
+                    }, 0)}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tableCol,
+                      { flexDirection: "column" },
+                      styles.productDetails,
+                    ]}
+                  >
+                    ₱
+                    {record?.orderedProductsTest
+                      .reduce((acc, initial) => {
+                        return (
+                          acc +
+                          initial.binLocations.reduce((acc, initial) => {
+                            const price =
+                              initial.stockKeepingUnit?.products?.price || 0;
 
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              {record?.clientName}
-            </Text>
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              {record?.dateCreated?.toLocaleString()}
-              <Text
-                style={[
-                  styles.tableCol,
-                  { flexDirection: "column" },
-                  styles.productDetails,
-                ]}
-              >
-                {record?._count.orderedProductsTest}
-              </Text>
-            </Text>
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              {record?._count.orderedProductsTest}
-            </Text>
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              {record?.orderedProductsTest.reduce((acc, initial) => {
-                return (
-                  acc +
-                  initial.binLocations.reduce((acc, initial) => {
-                    return acc + initial.quantity;
-                  }, 0)
-                );
-              }, 0)}
-            </Text>
-            <Text
-              style={[
-                styles.tableCol,
-                { flexDirection: "column" },
-                styles.productDetails,
-              ]}
-            >
-              ₱
-              {record?.orderedProductsTest
-                .reduce((acc, initial) => {
-                  return (
-                    acc +
-                    initial.binLocations.reduce((acc, initial) => {
-                      const price =
-                        initial.stockKeepingUnit?.products?.price || 0;
-
-                      const totalPrice = price * initial.quantity;
-                      return acc + totalPrice;
-                    }, 0)
-                  );
-                }, 0)
-                .toLocaleString()}
-            </Text>
-          </View>
+                            const totalPrice = price * initial.quantity;
+                            return acc + totalPrice;
+                          }, 0)
+                        );
+                      }, 0)
+                      .toLocaleString()}
+                  </Text>
+                </View>
+              );
+            })}
         </View>
       </Page>
     </Document>
@@ -208,8 +201,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontFamily: "Roboto",
     fontWeight: "bold",
+    fontFamily: "Roboto",
   },
   date: {
     fontSize: 10,

@@ -18,14 +18,15 @@ export default function LogOverview() {
         
       <OrderQueue />
       <DeliveryLogs /> */}
-      <div className="relative col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
+      <div className="relative col-span-1 flex flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Order Queue</h1>
+
         <OrderQueue />
         <Link
-          href={"/api/logs/generate/orderReport"}
-          className="absolute bottom-2 right-2"
+          href={"/api/logs/generate/orderReports"}
+          className="absolute right-2 top-2 uppercase text-sky-500 underline"
         >
-          Generate Order
+          Generate Orders For This Month
         </Link>
       </div>
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
