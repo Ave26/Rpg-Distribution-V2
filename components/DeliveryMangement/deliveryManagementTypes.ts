@@ -5,10 +5,8 @@ export type TSelectedBTN =
   | "Truck Management"
   | "View Truck Loads"
   | "Manage Location";
-export type TForm = Omit<
-  trucks,
-  "id" | "status" | "driverId" | "routeClusterId" | "threshold"
->;
+
+export type TForm = Pick<trucks, "truckName" | "plate" | "payloadCapacity">;
 export type TFormExtend = TForm & {
   status: TruckAvailability;
 };

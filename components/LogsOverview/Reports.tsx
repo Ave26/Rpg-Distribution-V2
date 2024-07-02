@@ -17,7 +17,6 @@ type TReportType = "productReplenishment" | "others";
 function Reports() {
   const date = new Date().toLocaleDateString();
   const { product, error, isLoading } = useProductReport();
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   /* 
     Need polling checker continuesly to product the product a replenishement report and date
     can only be seen in the report if the products threshold has been change
@@ -26,18 +25,8 @@ function Reports() {
       - Only display the report if one users triggers it
   
     */
-  // const generatePdfBlob = () => (
-  //   <BlobProvider document={<MyDocument />}>
-  //     {({ blob, url, loading, error }) => {
-  //       if (blob) {
-  //         setPdfBlob(blob);
-  //       }
-  //       return <div>{loading ? "Loading document..." : ""}</div>;
-  //     }}
-  //   </BlobProvider>
-  // );
 
-  console.log(product);
+  console.log(JSON.stringify(product, null, 2));
   return <div className=""></div>;
 }
 

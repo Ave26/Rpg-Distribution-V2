@@ -15,19 +15,14 @@ import noImage from "@/public/assets/products/noProductDisplay.png";
 import Loading from "@/components/Parts/Loading";
 import Toast from "@/components/Parts/Toast";
 
-export type TAssignedProducts = Omit<
+export type TAssignedProducts = Pick<
   assignedProducts,
-  | "id"
-  | "dateReceive"
-  | "binId"
-  | "orderedProductsId"
-  | "ordersId"
-  | "truckName"
-  | "productId"
-  | "damageBinId"
-  | "usersId"
-  | "status"
-  | "binLocationsId"
+  | "barcodeId"
+  | "boxSize"
+  | "expirationDate"
+  | "purchaseOrder"
+  | "quality"
+  | "skuCode"
 >;
 
 type TSKU = {

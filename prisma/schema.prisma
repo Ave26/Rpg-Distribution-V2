@@ -135,15 +135,15 @@ enum BoxSize {
 }
 
 model assignedProducts {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
-  dateReceive    DateTime
-  purchaseOrder  String
-  expirationDate DateTime?
-  boxSize        BoxSize
-  quality        ProductQuality
-  status         productStatus  @default(Default)
-  skuCode        String         @unique
-
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  dateReceive       DateTime
+  purchaseOrder     String
+  expirationDate    DateTime?
+  boxSize           BoxSize
+  quality           ProductQuality
+  status            productStatus    @default(Default)
+  skuCode           String           @unique
+  version           Int              @default(0)
   sku               stockKeepingUnit @relation(fields: [skuCode], references: [code])
   products          products?        @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId         String           @unique
@@ -266,6 +266,7 @@ model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   truckName        String             @unique
   plate            String             @unique
+  version          Int                @default(0)
   status           TruckAvailability  @default(Empty)
   payloadCapacity  Int
   threshold        Int
