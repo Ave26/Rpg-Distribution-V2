@@ -82,7 +82,7 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
         navigator.geolocation.clearWatch(watcherId);
       };
     }
-  }, []);
+  }, [role]);
 
   return (
     <>

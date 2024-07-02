@@ -89,11 +89,11 @@ export async function getTruckStaffAccess() {
       select: {
         id: true,
         truckName: true,
-        plate: true,
+        // plate: true,
         payloadCapacity: true,
         status: true,
         threshold: true,
-        assignedProducts: true,
+        // assignedProducts: true,
         records: {
           where: {
             orderedProductsTest: {
@@ -118,9 +118,11 @@ export async function getTruckStaffAccess() {
                   some: { assignedProducts: { every: { status: "Queuing" } } },
                 },
               },
-              include: {
+              select: {
                 binLocations: {
-                  include: {
+                  select: {
+                    quantity: true,
+                    skuCode: true,
                     assignedProducts: { select: { id: true } },
                     stockKeepingUnit: { select: { weight: true } },
                   },
