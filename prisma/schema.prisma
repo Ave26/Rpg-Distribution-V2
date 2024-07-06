@@ -126,12 +126,20 @@ enum productStatus {
 enum ProductQuality {
   Good
   Damage
+  skwak
 }
 
 enum BoxSize {
   Small
   Medium
   Large
+}
+
+enum DamageCategory {
+  Default
+  ForReturnToSupplier
+  Replacement
+  ForReturnFromClient
 }
 
 model assignedProducts {
@@ -141,6 +149,7 @@ model assignedProducts {
   expirationDate    DateTime?
   boxSize           BoxSize
   quality           ProductQuality
+  damageCategory    DamageCategory   @default(Default)
   status            productStatus    @default(Default)
   skuCode           String           @unique
   version           Int              @default(0)
@@ -294,8 +303,14 @@ model routeCluster {
 
 model damageBin {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  dateCreated      DateTime
+  barcodeId        String             @unique
+  skuName          String             @unique
+  quantity         Int
   assignedProducts assignedProducts[]
 }
+
+// this is to mark the product to be damage
 
 type Coordinates {
   longitude Float

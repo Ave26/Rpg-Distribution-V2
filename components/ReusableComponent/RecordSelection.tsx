@@ -66,7 +66,6 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
         ))}
       </div>
       {isDriver && <DeliverButton states={{ record, truck, setToast }} />}
-      {/* this will deliver the product */}
     </>
   );
 }

@@ -35,6 +35,7 @@ export async function handler(
             },
             select: { truckName: true },
           });
+          console.log(updateTruck);
 
           const updateAssingedProducts = assignedProducts.map(
             async (product) => {
@@ -51,8 +52,8 @@ export async function handler(
               });
             }
           );
-
-          await Promise.all(updateAssingedProducts);
+          const data = await Promise.all(updateAssingedProducts);
+          console.log(data);
         });
 
         return res.json({

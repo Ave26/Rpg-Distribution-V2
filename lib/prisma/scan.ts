@@ -233,7 +233,7 @@ async function setMethod(
           id: binId,
           isAvailable: true,
           assignedProducts: {
-            every: {
+            some: {
               barcodeId: {
                 equals: assignedProduct.barcodeId,
               },

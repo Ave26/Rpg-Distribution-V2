@@ -89,11 +89,9 @@ export async function getTruckStaffAccess() {
       select: {
         id: true,
         truckName: true,
-        // plate: true,
         payloadCapacity: true,
         status: true,
         threshold: true,
-        // assignedProducts: true,
         records: {
           where: {
             orderedProductsTest: {
