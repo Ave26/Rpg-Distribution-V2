@@ -52,8 +52,7 @@ export async function handler(
               });
             }
           );
-          const data = await Promise.all(updateAssingedProducts);
-          console.log(data);
+          await Promise.all(updateAssingedProducts);
         });
 
         return res.json({

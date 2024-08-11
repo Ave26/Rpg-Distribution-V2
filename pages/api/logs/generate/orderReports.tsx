@@ -34,9 +34,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       id: true,
       clientName: true,
       dateCreated: true,
-      POO: true,
-      _count: { select: { orderedProductsTest: true } },
-      orderedProductsTest: {
+      SO: true,
+      _count: { select: { orderedProducts: true } },
+      orderedProducts: {
         select: {
           binLocations: {
             select: {

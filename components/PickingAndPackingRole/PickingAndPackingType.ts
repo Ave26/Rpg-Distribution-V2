@@ -2,7 +2,6 @@ import {
   assignedProducts,
   binLocations,
   orderedProducts,
-  orderedProductsTest,
   records,
   stockKeepingUnit,
   trucks,
@@ -13,10 +12,10 @@ export type TTrucks = trucks & {
 };
 
 export type TRecords = records & {
-  orderedProductsTest: TOrderedProductsTestWBinLocations[];
+  orderedProducts: TOrderedProductsWBinLocations[];
 };
 
-export type TOrderedProductsTestWBinLocations = orderedProductsTest & {
+export type TOrderedProductsWBinLocations = orderedProducts & {
   binLocations: TBinLocations[];
 };
 

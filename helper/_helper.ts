@@ -3,7 +3,7 @@ import { TToast } from "@/components/PickingAndPackingRole/Toast";
 import { TAssignedProducts } from "@/pages/api/inbound/scan";
 import { JwtPayload } from "jsonwebtoken";
 
-export const setTime = () => {
+export const setTime = (initialDate?: Date) => {
   let date = new Date();
 
   // Set the time component to zero

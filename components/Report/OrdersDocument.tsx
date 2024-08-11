@@ -12,12 +12,13 @@ import { TReportData } from "@/pages/api/generateReport";
 import {
   assignedProducts,
   binLocations,
-  orderedProductsTest,
+  orderedProducts,
   products,
   records,
   stockKeepingUnit,
 } from "@prisma/client";
 import MyDocument from "../MyDocument";
+import { TRecordPick } from "./OrderDocument";
 
 Font.register({
   family: "OpenSans",
@@ -33,35 +34,35 @@ type TOrderReportProps = {
   records: TRecordPick[] | null;
 };
 
-type TRecordPick = Pick<
-  TRecord,
-  "POO" | "_count" | "clientName" | "dateCreated" | "id" | "orderedProductsTest"
->;
+// type TRecordPick = Pick<
+//   TRecord,
+//   "SO" | "_count" | "clientName" | "dateCreated" | "id" | "orderedProducts"
+// >;
 
-type TRecord = records & {
-  _count: { orderedProductsTest: number };
-  orderedProductsTest: TOrderedProductsTestPick[];
-};
+// type TRecord = records & {
+//   _count: { orderedProductsTest: number };
+//   orderedProductsTest: TOrderedProductsTestPick[];
+// };
 
-type TOrderedProductsTest = orderedProductsTest & {
-  binLocations: TBinLocationsPick[];
-};
+// type TOrderedProductsTest = orderedProducts & {
+//   binLocations: TBinLocationsPick[];
+// };
 
-type TBinLocations = binLocations & {
-  stockKeepingUnit: TStockKeepingUnitPick | null;
-};
+// type TBinLocations = binLocations & {
+//   stockKeepingUnit: TStockKeepingUnitPick | null;
+// };
 
-type TStockKeepingUnit = stockKeepingUnit & {
-  products: TProductsPick | null;
-};
+// type TStockKeepingUnit = stockKeepingUnit & {
+//   products: TProductsPick | null;
+// };
 
-type TProductsPick = Pick<products, "price">;
+// type TProductsPick = Pick<products, "price">;
 
-type TStockKeepingUnitPick = Pick<TStockKeepingUnit, "products">;
+// type TStockKeepingUnitPick = Pick<TStockKeepingUnit, "products">;
 
-type TBinLocationsPick = Pick<TBinLocations, "stockKeepingUnit" | "quantity">;
+// type TBinLocationsPick = Pick<TBinLocations, "stockKeepingUnit" | "quantity">;
 
-type TOrderedProductsTestPick = Pick<TOrderedProductsTest, "binLocations">;
+// type TOrderedProductsPick = Pick<TOrderedProducts, "binLocations">;
 
 export default function OrderReports({ records }: TOrderReportProps) {
   const Titles = [
@@ -129,7 +130,7 @@ export default function OrderReports({ records }: TOrderReportProps) {
                         styles.productDetails,
                       ]}
                     >
-                      {record?._count.orderedProductsTest}
+                      {record?._count.orderedProducts}
                     </Text>
                   </Text>
                   <Text
@@ -139,7 +140,7 @@ export default function OrderReports({ records }: TOrderReportProps) {
                       styles.productDetails,
                     ]}
                   >
-                    {record?._count.orderedProductsTest}
+                    {record?._count.orderedProducts}
                   </Text>
                   <Text
                     style={[
@@ -148,7 +149,7 @@ export default function OrderReports({ records }: TOrderReportProps) {
                       styles.productDetails,
                     ]}
                   >
-                    {record?.orderedProductsTest.reduce((acc, initial) => {
+                    {record?.orderedProducts.reduce((acc, initial) => {
                       return (
                         acc +
                         initial.binLocations.reduce((acc, initial) => {
@@ -165,7 +166,7 @@ export default function OrderReports({ records }: TOrderReportProps) {
                     ]}
                   >
                     ₱
-                    {record?.orderedProductsTest
+                    {record?.orderedProducts
                       .reduce((acc, initial) => {
                         return (
                           acc +

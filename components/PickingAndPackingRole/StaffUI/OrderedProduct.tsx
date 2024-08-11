@@ -2,13 +2,12 @@ import {
   UserRole,
   binLocations,
   orderedProducts,
-  orderedProductsTest,
   stockKeepingUnit,
 } from "@prisma/client";
 import React, { useContext, useEffect, useState } from "react";
 import LoadRecordButton from "./LoadRecordButton";
 import {
-  TOrderedProductsTestWBinLocations,
+  TOrderedProductsWBinLocations,
   TRecords,
 } from "../PickingAndPackingType";
 import { useMyContext } from "@/contexts/AuthenticationContext";
@@ -16,7 +15,7 @@ import { TOrderedProductTest } from "../AdminUI/Admin";
 
 type TOrderedProductProps = {
   record: TRecords;
-  orderedProduct: TOrderedProductsTestWBinLocations;
+  orderedProduct: TOrderedProductsWBinLocations;
 };
 
 // type TOrderedProductsTestWBinLocations = orderedProductsTest & {

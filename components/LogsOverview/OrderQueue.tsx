@@ -36,9 +36,9 @@ function OrderQueue() {
               <td>{record.id}</td>
               <td>{record.clientName}</td>
               <td>{record.dateCreated?.toLocaleString()}</td>
-              <td>{record._count.orderedProductsTest}</td>
+              <td>{record._count.orderedProducts}</td>
               <td>
-                {record.orderedProductsTest.reduce((acc, initial) => {
+                {record.orderedProducts.reduce((acc, initial) => {
                   return (
                     acc +
                     initial.binLocations.reduce((acc, initial) => {
@@ -49,7 +49,7 @@ function OrderQueue() {
               </td>
               <td className="flex gap-2">
                 ₱
-                {record.orderedProductsTest
+                {record.orderedProducts
                   .reduce((acc, initial) => {
                     return (
                       acc +

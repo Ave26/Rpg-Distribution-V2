@@ -2,7 +2,6 @@ import prisma from ".";
 
 export async function getTruckAdminAccess() {
   console.log("truck admin access..");
-
   try {
     const trucks = await prisma.trucks.findMany({
       select: {
@@ -15,25 +14,26 @@ export async function getTruckAdminAccess() {
 
         records: {
           where: {
-            orderedProductsTest: {
-              every: {
-                binLocations: {
-                  every: {
-                    assignedProducts: {
-                      every: { status: "Loaded" },
-                    },
-                  },
-                },
-              },
-            },
+            // need to have status loaded
+            // orderedProducts: {
+            //   every: {
+            //     binLocations: {
+            //       some: {
+            //         assignedProducts: {
+            //           some: { status: "Loaded" },
+            //         },
+            //       },
+            //     },
+            //   },
+            // },
           },
           select: {
             id: true,
-            POO: true,
+            SO: true,
             authorName: true,
             batchNumber: true,
             clientName: true,
-            orderedProductsTest: {
+            orderedProducts: {
               select: {
                 binLocations: {
                   include: { stockKeepingUnit: { select: { weight: true } } },
@@ -44,43 +44,14 @@ export async function getTruckAdminAccess() {
         },
       },
     });
-    console.log(trucks);
+    // console.log(trucks);
     return { trucks };
   } catch (error) {
+    console.log(error);
     return { error };
   }
-
-  // try {
-  //   const trucks = await prisma.trucks.findMany({
-  //     select: {
-  //       id: true,
-  //       truckName: true,
-  //       plate: true,
-  //       payloadCapacity: true,
-  //       threshold: true,
-  //       status: true,
-  //       records: {
-  //         where: {
-  //           orderedProducts: {
-  //             every: { assignedProducts: { some: { status: "Loaded" } } },
-  //           },
-  //         },
-  //         select: {
-  //           poId: true,
-  //           id: true,
-  //           authorName: true,
-  //           batchNumber: true,
-  //           clientName: true,
-  //           orderedProducts: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  //   return { trucks };
-  // } catch (error) {
-  //   return { error };
-  // }
 }
+
 export async function getTruckStaffAccess() {
   console.log("truck staff access..");
 
@@ -94,7 +65,7 @@ export async function getTruckStaffAccess() {
         threshold: true,
         records: {
           where: {
-            orderedProductsTest: {
+            orderedProducts: {
               some: {
                 binLocations: {
                   some: { assignedProducts: { every: { status: "Queuing" } } },
@@ -103,14 +74,14 @@ export async function getTruckStaffAccess() {
             },
           },
           select: {
-            POO: true,
+            SO: true,
             id: true,
             authorName: true,
             batchNumber: true,
             clientName: true,
             locationName: true,
 
-            orderedProductsTest: {
+            orderedProducts: {
               where: {
                 binLocations: {
                   some: { assignedProducts: { every: { status: "Queuing" } } },
@@ -168,7 +139,7 @@ export async function getTruckDriverAccess(id: string) {
         _count: { select: { assignedProducts: true } },
         records: {
           where: {
-            orderedProductsTest: {
+            orderedProducts: {
               some: {
                 binLocations: {
                   every: { assignedProducts: { every: { status: "Loaded" } } },
@@ -177,14 +148,14 @@ export async function getTruckDriverAccess(id: string) {
             },
           },
           select: {
-            POO: true,
+            SO: true,
             id: true,
             authorName: true,
             batchNumber: true,
             clientName: true,
             locationName: true,
 
-            orderedProductsTest: {
+            orderedProducts: {
               where: {
                 binLocations: {
                   some: { assignedProducts: { every: { status: "Loaded" } } },

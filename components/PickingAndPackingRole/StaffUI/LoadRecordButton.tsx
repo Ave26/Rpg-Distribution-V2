@@ -1,14 +1,14 @@
 import { TruckAvailability } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import {
-  TOrderedProductsTestWBinLocations,
+  TOrderedProductsWBinLocations,
   TRecords,
   TTrucks,
 } from "../PickingAndPackingType";
 import useSWR, { mutate } from "swr";
 
 type TLoadRecordButtonProps = {
-  orderedProduct: TOrderedProductsTestWBinLocations;
+  orderedProduct: TOrderedProductsWBinLocations;
   record: TRecords;
   truck: TTrucks;
   states?: TStates;

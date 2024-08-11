@@ -34,9 +34,9 @@ export default function DeliverButton({ states }: TDeliveryButton) {
 
   function changeProductStatus() {
     setLoading(true);
-    const takeTotalAndBinLocId = record.orderedProductsTest.flatMap(
-      (orderedProductTest) =>
-        orderedProductTest.binLocations.map((binLocation) => ({
+    const takeTotalAndBinLocId = record.orderedProducts.flatMap(
+      (orderedProduct) =>
+        orderedProduct.binLocations.map((binLocation) => ({
           binLocId: binLocation.id,
           result: binLocation.stockKeepingUnit.weight * binLocation.quantity,
         }))

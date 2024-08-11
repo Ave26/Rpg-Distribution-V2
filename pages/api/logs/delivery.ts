@@ -16,7 +16,7 @@ export default async function handler(
           orderBy: { timeStamp: "desc" },
           take: 150,
         });
-        console.log(deliveryLogs);
+        // console.log(deliveryLogs);
         return res.json(deliveryLogs);
       } catch (error) {
         return res.json(error);

@@ -53,8 +53,8 @@ export default async function handler(
         });
 
         const result = setPrompt(products);
-        console.log(result);
-        console.log(products);
+        // console.log(result);
+        // console.log(products);
 
         return res.json(products);
       } catch (error) {

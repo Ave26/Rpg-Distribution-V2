@@ -171,10 +171,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@prisma/client@^5.11.0":
-  version "5.11.0"
-  resolved "https://registry.npmjs.org/@prisma/client/-/client-5.11.0.tgz"
-  integrity sha512-SWshvS5FDXvgJKM/a0y9nDC1rqd7KG0Q6ZVzd+U7ZXK5soe73DJxJJgbNBt2GNXOa+ysWB4suTpdK5zfFPhwiw==
+"@prisma/client@^5.18.0":
+  version "5.18.0"
+  resolved "https://registry.npmjs.org/@prisma/client/-/client-5.18.0.tgz"
+  integrity sha512-BWivkLh+af1kqC89zCJYkHsRcyWsM8/JHpsDMM76DjP3ZdEquJhXa4IeX+HkWPnwJ5FanxEJFZZDTWiDs/Kvyw==
 
 "@prisma/debug@5.11.0":
   version "5.11.0"

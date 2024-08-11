@@ -31,8 +31,8 @@ export default async function handler(
             clientName: true,
             dateCreated: true,
             // trucks: { select: { status: true } },
-            POO: true,
-            orderedProductsTest: {
+            SO: true,
+            orderedProducts: {
               select: {
                 _count: true,
                 productName: true,

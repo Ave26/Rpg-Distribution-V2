@@ -2,7 +2,7 @@
 import {
   assignedProducts,
   binLocations,
-  orderedProductsTest,
+  orderedProducts,
   products,
   records,
   stockKeepingUnit,
@@ -10,11 +10,11 @@ import {
 } from "@prisma/client";
 
 export type TRecords = records & {
-  _count: { orderedProductsTest: true };
-  orderedProductsTest: TOrderedProductsTest[];
+  _count: { orderedProducts: true };
+  orderedProducts: TOrderedProducts[];
   // trucks: trucks;
 };
-type TOrderedProductsTest = orderedProductsTest & {
+type TOrderedProducts = orderedProducts & {
   binLocations: TBinLocations[];
 };
 

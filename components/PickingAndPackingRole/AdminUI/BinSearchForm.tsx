@@ -131,11 +131,6 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
     );
   }
 
-  /* 
-    if totalQuantity is greater than select trucks current capacity then reset the total quantity into zero then make a toast for message exceed
-  
-  */
-
   useEffect(() => {
     !binLocation.searchSKU &&
       setBinLocation({ ...binLocation, totalQuantity: 0 });

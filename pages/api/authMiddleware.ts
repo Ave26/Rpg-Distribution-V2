@@ -5,11 +5,9 @@ import { UserRole } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
-interface Token {
+export interface UserToken {
   id: string;
   roles: string;
-  iat: number;
-  exp: number;
 }
 
 export const authMiddleware =
@@ -17,7 +15,7 @@ export const authMiddleware =
     handler: (
       req: NextApiRequest,
       res: NextApiResponse,
-      verifiedToken: JwtPayload & { roles: UserRole; id: string }
+      verifiedToken: JwtPayload & UserToken
     ) => Promise<void>
   ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {

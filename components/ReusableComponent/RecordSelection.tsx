@@ -31,12 +31,12 @@ export default function RecordSelection({ data }: TRecordSelectionProps) {
       <div className="flex flex-col items-start justify-center gap-[.5px] border border-dotted border-red-600 p-[2px]">
         <h1 className="text-lg">Record Details</h1>
         <ul>Batch Number: {record.batchNumber}</ul>
-        <ul>Purchase Order: {record.POO}</ul>
+        <ul>Purchase Order: {record.SO}</ul>
         <ul>Destination: {record.locationName}</ul>
         <ul>Client: {record.clientName}</ul>
       </div>
       <div className="h-[11em] overflow-y-scroll border border-black">
-        {record.orderedProductsTest.map((orderedProduct) => (
+        {record.orderedProducts.map((orderedProduct) => (
           <div
             key={orderedProduct.id}
             className="flex h-fit flex-col justify-between gap-1 p-2"

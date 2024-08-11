@@ -12,7 +12,7 @@ import { TReportData } from "@/pages/api/generateReport";
 import {
   assignedProducts,
   binLocations,
-  orderedProductsTest,
+  orderedProducts,
   products,
   records,
   stockKeepingUnit,
@@ -42,17 +42,17 @@ type TOrderReportProps = {
   record: TRecordPick | null;
 };
 
-type TRecordPick = Pick<
+export type TRecordPick = Pick<
   TRecord,
-  "POO" | "_count" | "clientName" | "dateCreated" | "id" | "orderedProductsTest"
+  "SO" | "_count" | "clientName" | "dateCreated" | "id" | "orderedProducts"
 >;
 
 type TRecord = records & {
-  _count: { orderedProductsTest: number };
-  orderedProductsTest: TOrderedProductsTestPick[];
+  _count: { orderedProducts: number };
+  orderedProducts: TOrderedProductsPick[];
 };
 
-type TOrderedProductsTest = orderedProductsTest & {
+type TOrderedProducts = orderedProducts & {
   binLocations: TBinLocationsPick[];
 };
 
@@ -70,7 +70,7 @@ type TStockKeepingUnitPick = Pick<TStockKeepingUnit, "products">;
 
 type TBinLocationsPick = Pick<TBinLocations, "stockKeepingUnit" | "quantity">;
 
-type TOrderedProductsTestPick = Pick<TOrderedProductsTest, "binLocations">;
+type TOrderedProductsPick = Pick<TOrderedProducts, "binLocations">;
 
 export default function OrderReport({ record }: TOrderReportProps) {
   const Titles = [
@@ -138,7 +138,7 @@ export default function OrderReport({ record }: TOrderReportProps) {
                   styles.productDetails,
                 ]}
               >
-                {record?._count.orderedProductsTest}
+                {record?._count.orderedProducts}
               </Text>
             </Text>
             <Text
@@ -148,7 +148,7 @@ export default function OrderReport({ record }: TOrderReportProps) {
                 styles.productDetails,
               ]}
             >
-              {record?._count.orderedProductsTest}
+              {record?._count.orderedProducts}
             </Text>
             <Text
               style={[
@@ -157,7 +157,7 @@ export default function OrderReport({ record }: TOrderReportProps) {
                 styles.productDetails,
               ]}
             >
-              {record?.orderedProductsTest.reduce((acc, initial) => {
+              {record?.orderedProducts.reduce((acc, initial) => {
                 return (
                   acc +
                   initial.binLocations.reduce((acc, initial) => {
@@ -174,7 +174,7 @@ export default function OrderReport({ record }: TOrderReportProps) {
               ]}
             >
               ₱
-              {record?.orderedProductsTest
+              {record?.orderedProducts
                 .reduce((acc, initial) => {
                   return (
                     acc +

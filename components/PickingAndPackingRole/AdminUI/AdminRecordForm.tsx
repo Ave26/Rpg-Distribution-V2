@@ -64,7 +64,7 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
       .finally(() => {
         setRecord({
           clientName: "",
-          POO: "",
+          SO: "",
           truckName: "default",
           locationName: "default",
         });
