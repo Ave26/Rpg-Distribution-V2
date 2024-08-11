@@ -46,7 +46,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // const { filteredUser } = await findUserFilterPassword(
         //   String(user.username)
         // );
-        const { id, roles } = user;
+        const { id, roles, ...rest } = user;
         const filteredUser = {
           id,
           roles,
@@ -60,7 +60,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           message: "login succesfully",
           user: filteredUser,
         };
-
+        console.log(userData);
         return res.status(200).json(userData);
       } catch (e) {
         return res.status(500).json({
