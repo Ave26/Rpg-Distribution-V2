@@ -31,7 +31,7 @@ export default async function handler(
   try {
     const { productInfo } = await getProductInfo(barcodeId);
     console.log(productInfo);
-    return res.status(200).json(productInfo);
+    return productInfo ? res.status(200).json(productInfo) : {};
   } catch (error) {
     console.log(error);
     return res.status(404).json(error);

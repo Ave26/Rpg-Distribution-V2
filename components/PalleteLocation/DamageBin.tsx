@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Category, damageBin, DamageCategory } from "@prisma/client";
+import { DamageCategory } from "@prisma/client";
 import Input from "../Parts/Input";
 import { TChangeEventType } from "@/pages/dashboard/barcode-scanner";
 import { buttonStyle, buttonStyleSubmit, InputStyle } from "@/styles/style";

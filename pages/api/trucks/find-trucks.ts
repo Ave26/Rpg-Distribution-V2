@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
+import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import {
   getTruckStaffAccess,
@@ -12,15 +12,15 @@ import prisma from "@/lib/prisma";
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   try {
     switch (req.method) {
       case "GET":
-        let roles: UserRole = "SuperAdmin";
-        let userId: string;
-        roles = verifiedToken.roles;
-        userId = verifiedToken.id;
+        // let roles: UserRole = "SuperAdmin";
+        // let userId: string;
+        let roles = verifiedToken.roles;
+        let userId = verifiedToken.id;
 
         const roleMapping = {
           Admin: getTruckAdminAccess,

@@ -3,7 +3,7 @@ import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { DamageBin } from "@/components/PalleteLocation/DamageBin";
 import prisma from "@/lib/prisma";
-import { Category, damageBin, Prisma } from "@prisma/client";
+import { Category, damageBins, DamageCategory, Prisma } from "@prisma/client";
 
 export async function handler(
   req: NextApiRequest,
@@ -13,12 +13,12 @@ export async function handler(
   const { binQuantity, ...rest }: DamageBin = req.body;
 
   try {
-    if (!Object.values(rest).every(Boolean) || rest.category === "default") {
+    if (!Object.values(rest).every(Boolean) || rest.category === "Default") {
       return res.json({ message: "Incomplete Field" });
     }
 
     // Retrieve the current highest section value
-    const maxSectionBin = await prisma.damageBin.findFirst({
+    const maxSectionBin = await prisma.damageBins.findFirst({
       where: { category: rest.category },
       orderBy: {
         section: "desc",
@@ -29,15 +29,15 @@ export async function handler(
     let nextSection = maxSectionBin ? maxSectionBin.section + 1 : 1;
 
     const damageBins = Array.from({ length: binQuantity }, () => {
-      const bin: Prisma.damageBinCreateManyInput = {
+      const bin: Prisma.damageBinsCreateManyInput = {
         ...rest,
         section: nextSection++,
-        category: rest.category as Category, // Explicitly cast or ensure the correct type here
+        category: rest.category as DamageCategory, // Explicitly cast or ensure the correct type here
       };
       return bin;
     });
 
-    const createBin = await prisma.damageBin.createMany({
+    const createBin = await prisma.damageBins.createMany({
       data: damageBins,
     });
     return res.json(createBin);

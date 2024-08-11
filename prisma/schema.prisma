@@ -126,12 +126,14 @@ model bins {
   binLocations      binLocations[]
 }
 
-model damageBin {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+model damageBins {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   // category         Category           @unique
-  category         DamageCategory
-  capacity         Int
-  section          Int
+  category    DamageCategory
+  capacity    Int
+  section     Int
+  isAvailable Boolean        @default(true)
+
   // dateCreated      DateTime
   // version          Int?
   // quantity         Int
@@ -180,7 +182,7 @@ model assignedProducts {
   binId          String?          @db.ObjectId
   users          users?           @relation(fields: [usersId], references: [id])
   usersId        String?          @db.ObjectId
-  damageBin      damageBin?       @relation(fields: [damageBinId], references: [id])
+  damageBins     damageBins?      @relation(fields: [damageBinId], references: [id])
   damageBinId    String?          @db.ObjectId
   trucks         trucks?          @relation(fields: [truckName], references: [truckName])
   truckName      String?          @unique

@@ -36,6 +36,9 @@ export async function handler(
     const user = verifiedToken as UserToken;
     const data = await scanBarcode(scanData, user.id);
 
+    console.log(data);
+
+    return;
     return res.json(data);
   } catch (error) {
     return res.send(error);

@@ -1,14 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../../authMiddleware";
+import { authMiddleware, UserToken } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
-import { UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { TRequest } from "@/components/DeliveryMangement/Driver/DeliverButton";
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   const { data, truckId }: TRequest = req.body;
   console.log(data, truckId);

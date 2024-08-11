@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
+import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
@@ -7,7 +7,7 @@ import { UserRole } from "@prisma/client";
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   try {
     const role = verifiedToken.roles;

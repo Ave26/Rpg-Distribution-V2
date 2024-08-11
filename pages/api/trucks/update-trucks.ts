@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
+import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { TFormExtend } from "@/components/DeliveryMangement/deliveryManagementTypes";
@@ -10,7 +10,7 @@ type TBody = { form: TFormExtend; id: string };
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   const { form, id }: TBody = req.body;
   const { status, ...rest } = form;
@@ -50,14 +50,12 @@ async function handler(
           },
         });
 
-        return res
-          .status(200)
-          .json({
-            updatedTruck,
-            message: truckFound
-              ? "Product Updated, Truck Name must be unique"
-              : "Product Updated",
-          });
+        return res.status(200).json({
+          updatedTruck,
+          message: truckFound
+            ? "Product Updated, Truck Name must be unique"
+            : "Product Updated",
+        });
 
       default:
         return res.send(`Method ${req.method} is not allowed`);

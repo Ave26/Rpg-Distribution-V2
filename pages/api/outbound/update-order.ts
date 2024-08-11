@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
+import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { UserRole } from "@prisma/client";
 import { TUpdateTrucks } from "@/components/PickingAndPackingRole/StaffUI/LoadRecordButton";
@@ -8,7 +8,7 @@ import prisma from "@/lib/prisma";
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   const { assignedProductIds, total, status, truckId }: TUpdateTrucks =
     req.body;

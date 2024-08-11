@@ -132,9 +132,9 @@ export async function findBin(barcodeId: string) {
       },
       include: {
         bins: {
-          where: {
-            isSelected: false,
-          },
+          // where: {
+          //   isSelected: false,
+          // },
           include: {
             _count: {
               select: {

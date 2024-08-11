@@ -39,7 +39,7 @@ export async function handler(
                         id: true,
                         purchaseOrder: true,
                         skuCode: true,
-                        dateReceive: true,
+                        dateReceived: true,
                         expirationDate: true,
                         quality: true,
                         status: true,

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMiddleware } from "../authMiddleware";
+import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { Coordinates, UserRole, locations } from "@prisma/client";
@@ -11,7 +11,7 @@ type TLocation = TOmit & Coordinates;
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   const { latitude, longitude, name }: TLocation = req.body;
 

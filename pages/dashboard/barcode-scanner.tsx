@@ -320,6 +320,7 @@ export default function BarcodeScanner() {
       .then((res) => res.json())
       .then((data: TProductData) => {
         setProductData(data);
+        setLoading(false);
       })
       .catch((e) => console.log(e))
       .finally(() => setLoading(false));

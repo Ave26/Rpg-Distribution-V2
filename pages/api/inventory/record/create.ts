@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import { authMiddleware } from "../../authMiddleware";
-import { UserRole, binLocations } from "@prisma/client";
+import { authMiddleware, UserToken } from "../../authMiddleware";
 import {
   TBinLocations,
   TOrderedProductTest,
@@ -26,15 +25,16 @@ type TBody = {
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   try {
     switch (req.method) {
       case "POST":
-        const id = verifiedToken.id;
+        const userToken = verifiedToken as UserToken;
+
         const { orderedProducts, record }: TBody = req.body;
         const orderedProductslength = orderedProducts.length;
-        const { POO, clientName, locationName, truckName } = record;
+        const { SO, clientName, locationName, truckName } = record;
 
         const everyRecordIsEmpty = !Object.values(record).every(
           (value) => value !== "default" && Boolean(value)
@@ -48,12 +48,12 @@ export async function handler(
 
         const user = await prisma.users.findUnique({
           where: {
-            id,
+            id: userToken.id,
           },
         });
 
         const takeLast = await prisma.records.findFirst({
-          where: { POO },
+          where: { SO },
           select: { batchNumber: true },
           orderBy: { batchNumber: "desc" },
           take: 1,
@@ -62,17 +62,17 @@ export async function handler(
         const createdRecord = await prisma.records.create({
           data: {
             clientName,
-            POO,
+            SO,
             truckName,
             locationName,
             authorName: user?.username,
             dateCreated: new Date(),
             batchNumber: takeLast?.batchNumber && takeLast?.batchNumber + 1,
-            orderedProductsTest: { create: orderedProducts },
+            orderedProducts: { create: orderedProducts },
           },
           include: {
             trucks: true,
-            orderedProductsTest: { include: { binLocations: true } },
+            orderedProducts: { include: { binLocations: true } },
           },
         });
 

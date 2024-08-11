@@ -155,22 +155,22 @@ export async function findBinsByUniqueIds(
 //   }
 // }
 
-export async function updateSelectedBin(binId: string) {
-  try {
-    await prisma.bins.update({
-      where: {
-        id: binId,
-      },
-      data: {
-        isSelected: true,
-      },
-    });
+// export async function updateSelectedBin(binId: string) {
+//   try {
+//     await prisma.bins.update({
+//       where: {
+//         id: binId,
+//       },
+//       data: {
+//         isSelected: true,
+//       },
+//     });
 
-    return { message: "Bin is selected" };
-  } catch (error) {
-    return { error };
-  }
-}
+//     return { message: "Bin is selected" };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
 
 interface Prams {
   selectedBins?: string[];
@@ -219,44 +219,44 @@ export async function eliminator(binId: string, quantity: string) {
   // I have the marked the assignments
 }
 
-export async function selectBin(binId: string) {
-  try {
-    const bin = await prisma.bins.findUnique({
-      where: {
-        id: binId,
-      },
-    });
+// export async function selectBin(binId: string) {
+//   try {
+//     const bin = await prisma.bins.findUnique({
+//       where: {
+//         id: binId,
+//       },
+//     });
 
-    const newSelectedBin = !bin?.isSelected;
-    const selectedBin = await prisma.bins.update({
-      where: {
-        id: binId,
-      },
-      data: {
-        isSelected: newSelectedBin,
-      },
-    });
+//     const newSelectedBin = !bin?.isSelected;
+//     const selectedBin = await prisma.bins.update({
+//       where: {
+//         id: binId,
+//       },
+//       data: {
+//         isSelected: newSelectedBin,
+//       },
+//     });
 
-    // setTimeout(async () => {
-    //   const updatedBin = await prisma.bin.update({
-    //     where: {
-    //       id: binId,
-    //     },
-    //     data: {
-    //       isSelected: false,
-    //     },
-    //   });
-    //   console.log(
-    //     "isSelected set back to false after 5 seconds for bin:",
-    //     updatedBin.id
-    //   );
-    // }, 5000); // 5000 milliseconds = 5 seconds
+//     // setTimeout(async () => {
+//     //   const updatedBin = await prisma.bin.update({
+//     //     where: {
+//     //       id: binId,
+//     //     },
+//     //     data: {
+//     //       isSelected: false,
+//     //     },
+//     //   });
+//     //   console.log(
+//     //     "isSelected set back to false after 5 seconds for bin:",
+//     //     updatedBin.id
+//     //   );
+//     // }, 5000); // 5000 milliseconds = 5 seconds
 
-    return { selectedBin };
-  } catch (error) {
-    return { error };
-  }
-}
+//     return { selectedBin };
+//   } catch (error) {
+//     return { error };
+//   }
+// }
 
 // export async function markAssignmentByBins(
 //   barcodeId: string,

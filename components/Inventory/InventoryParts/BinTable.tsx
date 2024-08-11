@@ -72,7 +72,8 @@ const BinTable = ({ bins }: TBinTableProps) => {
                 <select
                   name=""
                   id=""
-                  className="w-24 appearance-none border border-black text-center">
+                  className="w-24 appearance-none border border-black text-center"
+                >
                   {bin.assignedProducts.map((assignedProduct, index) => (
                     <option key={index}>{assignedProduct.purchaseOrder}</option>
                   ))}
@@ -92,7 +93,7 @@ const BinTable = ({ bins }: TBinTableProps) => {
                 {
                   bin.assignedProducts.map((assignedProduct) => (
                     <p key={assignedProduct.id}>
-                      {String(assignedProduct?.dateReceive).split("T")[0]}
+                      {String(assignedProduct?.dateReceived).split("T")[0]}
                     </p>
                   ))[0]
                 }

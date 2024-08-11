@@ -206,8 +206,8 @@ function isSameAssignedProductData(
           return (
             currentProduct.barcodeId === prevProduct.barcodeId &&
             currentProduct.skuCode === prevProduct.skuCode &&
-            currentProduct.dateReceive?.getTime() ===
-              prevProduct.dateReceive?.getTime()
+            currentProduct.dateReceived?.getTime() ===
+              prevProduct.dateReceived?.getTime()
           );
         })
       ));

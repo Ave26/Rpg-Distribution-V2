@@ -1,6 +1,12 @@
 import prisma from ".";
 import { TScanDataFinal } from "@/pages/api/inbound/scan";
-import { BoxSize, ProductQuality, bins, productStatus } from "@prisma/client";
+import {
+  BoxSize,
+  Category,
+  ProductQuality,
+  bins,
+  productStatus,
+} from "@prisma/client";
 
 function setMethod(category: string | null | undefined): "FIFO" | "FEFO" {
   const categoryToMethodMap: { [key: string]: "FIFO" | "FEFO" } = {
@@ -20,30 +26,107 @@ export async function scanBarcode(
   const { category, quantity, date: dt, threshold, ...rest } = assignedProduct;
 
   const date = `${dt.toLocaleString().split("T")[0]}T00:00:00.000+00:00`; // convert date into mongo db iso
+  console.log(date);
 
-  const bins = await prisma.bins.findMany({
-    where: {
-      racks: { categories: { category } },
-      isAvailable: true,
-    },
-  });
+  const models: Record<ProductQuality, any> = {
+    Damage: await prisma.damageBins.findMany({
+      where: {
+        category: "ForReturnToSupplier",
+        isAvailable: true,
+      },
+    }),
+    Good: await prisma.bins.findMany({
+      where: {
+        racks: { categories: { category } },
+        isAvailable: true,
+      },
+    }),
+    Default: "",
+  };
+
+  const bins = models[rest.quality];
 
   let binIdPocket: string | undefined;
+
+  const method = setMethod(category);
+
+  const dateField = {
+    FEFO: "expirationDate",
+    FIFO: "dateReceived",
+  };
+  const field = dateField[method];
+  console.log(field);
+
   if (rest.quality === "Damage") {
     console.log("inserted in Damage Bin");
+    // insert it into damage bin
 
-    // Create a damagebin and bin report
+    // const damageBins = await prisma.damageBins.findMany({
+    //   where: { category: "ForReturnToSupplier" },
+    // });
+
+    for (const bin of bins) {
+      const b = await prisma.damageBins.findUnique({
+        where: { id: bin.id },
+        include: { _count: { select: { assignedProducts: true } } },
+      });
+
+      const hasSameProduct = await prisma.damageBins // kaparehas
+        .findUnique({
+          where: {
+            id: bin.id,
+            assignedProducts: {
+              every: {
+                barcodeId: rest.barcodeId,
+                skuCode: rest.skuCode,
+                [field]: date,
+              },
+            },
+          },
+        })
+        .catch((e) => console.log(e));
+
+      console.log(hasSameProduct);
+
+      if (!b) {
+        return;
+      }
+      if (b?.capacity > b?._count.assignedProducts) {
+        if (bin.isAvailable && hasSameProduct) {
+          const product = await prisma.assignedProducts.create({
+            data: {
+              ...rest,
+              binId: bin.id,
+              expirationDate: date,
+              dateReceived: date,
+            },
+          });
+          console.log(product);
+          return;
+          break;
+        } else {
+          continue;
+        }
+      } else {
+        await prisma.damageBins.update({
+          where: {
+            id: bin.id,
+          },
+          data: {
+            isAvailable: false,
+          },
+        });
+      }
+    }
+
+    return {
+      message: "inserted into damage bin and it is for return to supplier",
+    };
   } else {
     for (const bin of bins) {
+      // this bin doesn break for now
       // binIdPocket = bin.id;
-      const method = setMethod(category);
 
-      const dateField = {
-        FEFO: "expirationDate",
-        FIFO: "recievedDate",
-      };
-      const field = dateField[method];
-      console.log(field);
       const b = await prisma.bins
         .findUnique({
           where: {
@@ -105,6 +188,7 @@ export async function scanBarcode(
       }
     }
   }
+
   const count = await prisma.assignedProducts.count({
     where: { binId: binIdPocket },
   });

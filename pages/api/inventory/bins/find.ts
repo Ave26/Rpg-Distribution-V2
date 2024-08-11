@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import { authMiddleware } from "../../authMiddleware";
+import { authMiddleware, UserToken } from "../../authMiddleware";
 import { UserRole } from "@prisma/client";
 import Products from "@/pages/products";
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-  verifiedToken: JwtPayload & { roles: UserRole; id: string }
+  verifiedToken: JwtPayload & UserToken
 ) {
   try {
     switch (req.method) {
