@@ -112,8 +112,6 @@ export default function BarcodeScanner() {
     category: "",
   });
 
-  console.log(scanData);
-
   // const [toastData, setToastData] = useState<TToast>({
   //   isShow: false,
   //   message: "",
@@ -323,7 +321,21 @@ export default function BarcodeScanner() {
         setLoading(false);
       })
       .catch((e) => console.log(e))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        // setScanData((prev) => {
+        //   return {
+        //     ...prev,
+        //     supplierName: "",
+        //     boxSize: "Small",
+        //     date: new Date(),
+        //     purchaseOrder: "",
+        //     quality: "Default",
+        //     quantity: 0,
+        //     skuCode: "",
+        //   };
+        // });
+        setLoading(false);
+      });
   };
 
   const scanBarcodeTest = () => {
@@ -672,7 +684,7 @@ export default function BarcodeScanner() {
           </button>
         </div>
       </div>
-      {/* <div>{JSON.stringify(serverData, null, 2)}</div> */}
+      <span>{JSON.stringify(scanData, null, 2)}</span>
     </section>
   );
 }
