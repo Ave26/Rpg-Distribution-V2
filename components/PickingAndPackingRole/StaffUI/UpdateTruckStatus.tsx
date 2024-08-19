@@ -10,11 +10,11 @@ import {
   trucks,
 } from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
-import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle } from "@/styles/style";
 import { mutate } from "swr";
 import { TToast } from "../Toast";
-import { ProductData, Truck } from "@/pages/api/outbound/update-status-truck";
+import { Truck } from "@/pages/api/outbound/truck/update-status";
+import { ProductData } from "@/pages/api/outbound/product/update-status";
 
 export type TUpdateTruckStatusProps = {
   states: TStates;
