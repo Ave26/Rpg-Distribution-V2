@@ -6,7 +6,8 @@ import CloseAllButton from "./CloseAllButton";
 import Toast, { TToast } from "../Toast";
 
 export default function StaffUI() {
-  const [selectedId, setSelectedId] = useState<string[]>([]);
+  // const [selectedId, setSelectedId] = useState<string[]>([]);
+  const [selectedId, setSelectedId] = useState("");
   const [toast, setToast] = useState<TToast>({
     animate: "animate-emerge",
     door: true,

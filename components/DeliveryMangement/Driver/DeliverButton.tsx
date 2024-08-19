@@ -4,6 +4,7 @@ import {
   TTrucks,
 } from "@/components/PickingAndPackingRole/PickingAndPackingType";
 import { TToast } from "@/components/PickingAndPackingRole/Toast";
+import { UpdateProduct } from "@/pages/api/outbound/product/update-status";
 import { buttonStyle, buttonStyleSubmit } from "@/styles/style";
 import React, { useEffect, useState } from "react";
 import { mutate } from "swr";
@@ -42,6 +43,7 @@ export default function DeliverButton({ states }: TDeliveryButton) {
         }))
     );
 
+    console.log(takeTotalAndBinLocId);
     const accumulateIntoOne = takeTotalAndBinLocId.reduce(
       (accumulator: TData, initial) => {
         accumulator.total += initial.result;
@@ -51,10 +53,12 @@ export default function DeliverButton({ states }: TDeliveryButton) {
       { total: 0, binLocationIds: [] }
     );
 
-    const sendData: TRequest = {
+    const sendData: UpdateProduct = {
       truckId: truck.id,
-      data: accumulateIntoOne,
+      productData: accumulateIntoOne,
     };
+
+    console.log(accumulateIntoOne);
 
     console.log("changing product status");
     fetch("/api/outbound/product/update-status", {
@@ -69,14 +73,6 @@ export default function DeliverButton({ states }: TDeliveryButton) {
       })
       .finally(() => setLoading(false));
   }
-
-  useEffect(() => {
-    // selected record has consist  of ordered products
-    // I need to extract all the orderedProducts Test assignedProduct to be udpate with there record
-    // or I will just need to pull out the binLocation id in the ordered products id
-    // Make a flat map for that
-    // console.log(record);
-  }, [record]);
 
   return (
     <button className={buttonStyle} onClick={changeProductStatus}>

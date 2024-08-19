@@ -5,7 +5,7 @@ import { TToast } from "../Toast";
 
 type TRecordsViewProps = {
   truck: TTrucks;
-  selectedId: string[];
+  selectedId: string;
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
 };
 
@@ -17,7 +17,7 @@ export default function RecordsView({
   return (
     <div
       className={`mb-2 flex ${
-        selectedId.find((i) => i === truck.id)
+        selectedId === truck.id
           ? "h-fit overflow-y-scroll border border-dotted border-x-slate-900 border-y-transparent py-2"
           : "max-h-0 overflow-hidden"
       } w-full flex-col items-center justify-center gap-[2px] rounded-sm border border-transparent transition-all`}

@@ -127,6 +127,7 @@ export async function getTruckDriverAccess(id: string) {
         };
 
     const trucks = await prisma.trucks.findMany({
+      // display the record based on the product status
       where: driverFilter,
       select: {
         id: true,
@@ -142,7 +143,11 @@ export async function getTruckDriverAccess(id: string) {
             orderedProducts: {
               some: {
                 binLocations: {
-                  every: { assignedProducts: { every: { status: "Loaded" } } },
+                  every: {
+                    assignedProducts: {
+                      every: { status: { in: ["OutForDelivery", "Loaded"] } },
+                    },
+                  },
                 },
               },
             },
@@ -154,11 +159,14 @@ export async function getTruckDriverAccess(id: string) {
             batchNumber: true,
             clientName: true,
             locationName: true,
-
             orderedProducts: {
               where: {
                 binLocations: {
-                  some: { assignedProducts: { every: { status: "Loaded" } } },
+                  some: {
+                    assignedProducts: {
+                      every: { status: { in: ["OutForDelivery", "Loaded"] } },
+                    },
+                  },
                 },
               },
               include: {

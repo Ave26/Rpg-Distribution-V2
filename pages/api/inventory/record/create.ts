@@ -31,17 +31,16 @@ export async function handler(
     switch (req.method) {
       case "POST":
         const userToken = verifiedToken as UserToken;
-
         const { orderedProducts, record }: TBody = req.body;
-        const orderedProductslength = orderedProducts.length;
         const { SO, clientName, locationName, truckName } = record;
+
+        // console.log(orderedProducts, record);
 
         const everyRecordIsEmpty = !Object.values(record).every(
           (value) => value !== "default" && Boolean(value)
         );
 
-        const orderedProductsIsEmpty = orderedProductslength === 0;
-
+        const orderedProductsIsEmpty = orderedProducts.length === 0;
         if (everyRecordIsEmpty || orderedProductsIsEmpty) {
           return res.status(405).json({ message: "Incomplete Field" });
         }

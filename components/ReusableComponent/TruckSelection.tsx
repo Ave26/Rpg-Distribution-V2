@@ -1,7 +1,9 @@
 import Loading from "@/components/Parts/Loading";
 import useTrucks from "@/hooks/useTrucks";
 import RecordsView from "../PickingAndPackingRole/StaffUI/RecordsView";
-import UpdateTruckStatus from "../PickingAndPackingRole/StaffUI/UpdateTruckStatus";
+import UpdateTruckStatus, {
+  TUpdateProductStatus,
+} from "../PickingAndPackingRole/StaffUI/UpdateTruckStatus";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import EmergencyStopButton from "../PickingAndPackingRole/StaffUI/EmergencyStopButton";
 import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
@@ -15,8 +17,8 @@ type TTruckSelectionProps = {
 };
 
 type TStates = {
-  selectedId: string[];
-  setSelectedId: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedId: string;
+  setSelectedId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function TruckSelection({ states }: TTruckSelectionProps) {
@@ -29,13 +31,22 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     door: false,
     message: "",
   });
+
+  // const [productData, setProductData] = useState<TUpdateProductStatus>({
+  //   data: { binLocationIds: [], total: 0 },
+  //   truckId: "",
+  // });
+
   const { trucks } = useTrucks();
 
+  // function selectId(truckId: string) {
+  //   selectedId?.includes(truckId)
+  //     ? setSelectedId(selectedId.filter((i) => i !== truckId))
+  //     : setSelectedId([...selectedId, truckId]);
+  // }
   function selectId(truckId: string) {
-    selectedId?.includes(truckId)
-      ? setSelectedId(selectedId.filter((i) => i !== truckId))
-      : setSelectedId([...selectedId, truckId]);
-  }
+    selectedId === truckId ? setSelectedId("") : setSelectedId(truckId);
+  } // change this action into 1 then accumulate all the total in a specific id Only if its open
 
   const [coordinates, setCoordinates] = useState<Coordinates>({
     latitude: 0,
@@ -43,9 +54,8 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
   });
 
   useEffect(() => {
-    console.log("geolocation is working");
-
     if (navigator.geolocation && role === "Driver") {
+      // geolocation
       console.log(true);
       const successHandler = (position: GeolocationPosition) => {
         setCoordinates({
@@ -87,6 +97,8 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
     <>
       {Array.isArray(trucks) ? (
         trucks?.map((truck) => {
+          // console.log(truck.records);
+
           return (
             <div key={truck.id}>
               <div
@@ -101,43 +113,27 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                     <GasStopButton
                       // enableGeolocation={enableGeolocation}
                       truck={truck}
-                      states={{ setToast, coordinates }}
+                      states={{
+                        setToast,
+                        coordinates,
+                      }}
                     />
                     <EmergencyStopButton
                       // enableGeolocation={enableGeolocation}
                       truck={truck}
-                      states={{ setToast, coordinates }}
+                      states={{
+                        setToast,
+                        coordinates,
+                      }}
                     />
-                    <UpdateTruckStatus
+                    <UpdateTruckStatus // need to take the payload of bins location and the total
                       truck={truck}
-                      states={{ setToast, coordinates }}
+                      states={{
+                        setToast,
+                        coordinates,
+                      }}
                       // enableGeolocation={enableGeolocation}
                     />
-
-                    {/* currently WORK IN
-                    PROGRESS 
-
-
-                    the start deliver must have a prompt to the user if the orders has been delivered
-
-                    prompt the use if the product hasnt been delivered
-                    the button complete cant be change if all the products hasnt been delivered
-                  the button complete must have a prompt and a restiction if the one or more of the products has been completely delivered
-
-
-                    if the driver has been in emergency stop then make a external comps to the admin so they can change the truck status
-
-                    EMEGERGENCY AND GAS STOP MUST HAVE A LOCATION IN THE LOGS TO PINPOINT WHERE ARE THEY
-
-
-
-
-                    the driver is the only one who can alter the prouuct status its handles
-
-
-                    the truck logs must have time stamp nad optional location
-                    
-                    */}
                   </div>
                 )}
                 <div>({truck.records.length})</div>

@@ -2,16 +2,24 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware, UserToken } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import { TRequest } from "@/components/DeliveryMangement/Driver/DeliverButton";
+
+export type ProductData = { binLocationIds?: string[]; total?: number };
+
+export type UpdateProduct = {
+  truckId: string;
+  productData: ProductData;
+};
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const { data, truckId }: TRequest = req.body;
-  console.log(data, truckId);
+  const { productData, truckId }: UpdateProduct = req.body;
+  const { binLocationIds, total } = productData;
 
+  console.log(req.body);
+  //  need to create new api for updating the truch status as well as the product status depending on what the truck status
   switch (req.method) {
     case "POST":
       try {
@@ -19,17 +27,19 @@ export async function handler(
           where: { id: truckId, status: "InTransit" },
           data: {
             payloadCapacity: {
-              increment: data.total,
+              increment: total,
             },
             assignedProducts: {
               updateMany: {
-                where: { binLocationsId: { in: data.binLocationIds } },
+                where: { binLocationsId: { in: binLocationIds } },
                 data: { status: "Delivered" },
               },
             },
           },
           select: { assignedProducts: true },
         });
+
+        console.log(udpatedTruckAndProduct);
 
         return res.status(200).send(udpatedTruckAndProduct);
       } catch (error) {

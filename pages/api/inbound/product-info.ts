@@ -30,7 +30,7 @@ export default async function handler(
   const { barcodeId } = req.body;
   try {
     const { productInfo } = await getProductInfo(barcodeId);
-    console.log(productInfo);
+    // console.log(productInfo);
     return productInfo ? res.status(200).json(productInfo) : {};
   } catch (error) {
     console.log(error);

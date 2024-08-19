@@ -1,6 +1,4 @@
-import { assignedProducts, bins, Category } from "@prisma/client";
-import prisma from ".";
-import { TScanData } from "@/pages/dashboard/barcode-scanner";
+import { assignedProducts } from "@prisma/client";
 import scan, { TScanDataFinal } from "@/pages/api/inbound/scan";
 
 type TAssignedProducts = Omit<

@@ -8,7 +8,7 @@ import DashboardLayout from "@/components/Admin/dashboardLayout";
 import { buttonStyleEdge, buttonStyleSubmit } from "@/styles/style";
 import DamageBin from "@/components/PalleteLocation/DamageBin";
 
-export default function PalleteLocation({ data: dta }: any) {
+export default function PalleteLocation() {
   const [open, setOpen] = useState<boolean>(false);
   const [openDamageBin, setOpenDamageBin] = useState<boolean>(true);
 
@@ -32,7 +32,7 @@ export default function PalleteLocation({ data: dta }: any) {
         </div>
         {openDamageBin ? <DamageBin /> : null}
 
-        {/* {!open ? <CreateRack /> : <UpdateRack />} */}
+        {!open ? <CreateRack /> : <UpdateRack />}
       </section>
     </>
   );

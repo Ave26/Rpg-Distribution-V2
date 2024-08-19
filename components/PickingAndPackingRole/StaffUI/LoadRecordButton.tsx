@@ -57,7 +57,6 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
       .then((response) => response.json())
       .then((data) => {
         if (data) {
-          mutate("/api/trucks/find-trucks");
           // setToastData({
           //   ...toastData,
           //   message: data.message,
@@ -66,7 +65,10 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
         }
       })
       .catch((e) => console.log(e))
-      .finally(() => setAnimate("animate-fade"));
+      .finally(() => {
+        mutate("/api/trucks/find-trucks");
+        setAnimate("animate-fade");
+      });
   }
 
   /* 

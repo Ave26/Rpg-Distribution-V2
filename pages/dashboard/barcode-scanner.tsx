@@ -83,7 +83,7 @@ type TCode = {
 export default function BarcodeScanner() {
   const [loading, setLoading] = useState(false);
   const [isManual, setIsManual] = useState(false);
-
+  const [message, setMessage] = useState("");
 
   const [serverData, setServerData] = useState<
     Record<string, any> | unknown | string
@@ -113,7 +113,6 @@ export default function BarcodeScanner() {
     category: "",
   });
 
-
   const fetchProductInfo = (barcodeId: string) => {
     console.log("fetching product");
     setLoading(true);
@@ -130,12 +129,16 @@ export default function BarcodeScanner() {
       .catch((e) => console.log(e))
       .finally(() => {
         setLoading(false);
-        setScanData((prev)=> ({...prev, skuCode: "default", date: new Date()}))
+        setScanData((prev) => ({
+          ...prev,
+          skuCode: "default",
+          date: new Date(),
+        }));
       });
   };
 
   const scanBarcode = () => {
-    setLoading(true)
+    setLoading(true);
     const category = productData.category;
     console.log("scanning barcode");
     const sku = productData.sku.find((sku) => sku.code === scanData.skuCode);
@@ -155,10 +158,11 @@ export default function BarcodeScanner() {
         }),
       })
         .then((res) => res.json())
-        .then((data: unknown) => setServerData(data)).finally(()=> setLoading(false))
+        .then((data: unknown) => setServerData(data))
+        .finally(() => setLoading(false));
     } catch (error) {
       console.error("Error Server Is Crying", error);
-    } 
+    }
   };
 
   function setInputTypeAndStyle(key: keyof TScanData): {
@@ -214,12 +218,11 @@ export default function BarcodeScanner() {
 
         if (value.length > 14) {
           updateBarcodeId(value);
-
         } else if (value.length === 14) {
           value === productData.barcodeId
             ? scanBarcode()
             : fetchProductInfo(value);
-        } 
+        }
       }
     } else {
       console.error(`Invalid name: ${name} is not a key of Scan Data`);
@@ -421,7 +424,7 @@ export default function BarcodeScanner() {
   }
 
   return (
-    <section className="relative flex h-full w-full overflow-y-scroll rounded-md bg-white p-2 font-semibold transition-all">
+    <section className="relative flex h-full w-full flex-wrap overflow-y-scroll rounded-md bg-white p-2 font-semibold transition-all">
       <div className="grid h-full w-full flex-col gap-2 md:grid-cols-2 md:flex-row md:gap-4">
         <div className="rouned-sm grid h-fit w-fit grid-flow-row grid-cols-2 gap-2 rounded-lg  bg-sky-300/70 p-2 shadow-2xl shadow-blue-600/25 transition-all ease-in-out md:h-full md:w-full md:grid-cols-1 md:rounded-none ">
           {Object.keys(scanData).map((key) => {

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import CloseAllButton from "../PickingAndPackingRole/StaffUI/CloseAllButton";
 
 export default function ViewTruckLoads() {
-  const [selectedId, setSelectedId] = useState<string[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
 
   return (
     <div className="h-full w-full overflow-y-scroll rounded-md bg-white p-2">

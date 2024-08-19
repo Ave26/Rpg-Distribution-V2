@@ -3,16 +3,36 @@ import { authMiddleware, UserToken } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { TUpdateTruckStatus } from "@/components/PickingAndPackingRole/StaffUI/UpdateTruckStatus";
 import prisma from "@/lib/prisma";
+import { Coordinates, TruckAvailability } from "@prisma/client";
+import { ProductData } from "../product/update-status";
+
+export interface Truck {
+  truckId: string;
+  status: TruckAvailability;
+  truckName: string;
+  coordinates: Coordinates;
+}
+
+export type TruckExtendsProduct = Truck & {
+  productData: ProductData;
+};
 
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const { status, truckId, truckName, coordinates }: TUpdateTruckStatus =
-    req.body;
-  console.log(truckId, status, truckName, coordinates);
+  const {
+    status,
+    truckId,
+    truckName,
+    coordinates,
+    productData,
+  }: TruckExtendsProduct = req.body;
 
+  const { binLocationIds, total } = productData;
+  console.log(truckId, status, truckName, coordinates);
+  console.log(req.body);
   switch (req.method) {
     case "POST":
       try {
@@ -53,6 +73,12 @@ export async function handler(
                 coordinates,
               },
             },
+            assignedProducts: {
+              updateMany: {
+                where: { binLocationsId: { in: binLocationIds } },
+                data: { status: "OutForDelivery" },
+              },
+            },
           },
           select: {
             truckName: true,
@@ -64,30 +90,6 @@ export async function handler(
         });
 
         console.log(updatedTruck);
-
-        // const { driverId, id, status: sts } = updatedTruck;
-
-        // if (updatedTruck) {
-        //   await prisma.deliveryLogs.create({
-        //     data: {
-        //       status: sts,
-        //       driverId: driverId || userId,
-        //       trucksId: id,
-        //       timeStamp: new Date(),
-        //       locations: {
-        //         create: {
-        //           coordinates: { longitude: 0, latitude: 0 },
-        //           name: "",
-        //         },
-        //       },
-        //     },
-        //   });
-        // }
-
-        /* 
-          if got an emergenct stop then the changes of the truck status will be commit.
-          
-        */
 
         return res
           .status(200)

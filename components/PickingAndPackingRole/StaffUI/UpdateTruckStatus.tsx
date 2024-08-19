@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import {
   Coordinates,
   TruckAvailability,
+  binLocations,
+  orderedProducts,
   productStatus,
+  records,
+  stockKeepingUnit,
   trucks,
 } from "@prisma/client";
 import Loading from "@/components/Parts/Loading";
@@ -10,16 +14,41 @@ import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle } from "@/styles/style";
 import { mutate } from "swr";
 import { TToast } from "../Toast";
+import { ProductData, Truck } from "@/pages/api/outbound/update-status-truck";
 
 export type TUpdateTruckStatusProps = {
   states: TStates;
-  truck: trucks;
+  truck: Trucks;
   enableGeolocation?: () => void;
+};
+
+type Trucks = trucks & {
+  records: Records[];
+};
+
+type Records = records & {
+  orderedProducts: OrderedProducts[];
+};
+
+type OrderedProducts = orderedProducts & {
+  binLocations: BinLocations[];
+};
+
+type BinLocations = binLocations & {
+  stockKeepingUnit: stockKeepingUnit;
 };
 
 type TStates = {
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
   coordinates: Coordinates;
+};
+
+export type TUpdateProductStatus = {
+  truckId?: string;
+  data?: {
+    binLocationIds?: string[];
+    total?: number;
+  };
 };
 
 export type TUpdateTruckStatus = {
@@ -42,35 +71,71 @@ export default function UpdateTruckStatus({
   enableGeolocation,
 }: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<TruckAvailability | null>(null);
   const { setToast, coordinates } = states;
+  const [truckform, setTruckForm] = useState<Truck>({
+    coordinates: { latitude: 0, longitude: 0 },
+    status: "InTransit",
+    truckId: "",
+    truckName: "",
+  });
 
-  function handleRequest() {
+  function getBinIdAndTotal(): ProductData {
+    console.log("selected truck id");
+    // const truck = trucks?.find((truck) => truck.id === truckId);
+
+    const takeTotalAndBinLocId = truck?.records.flatMap((record) => {
+      return record.orderedProducts.flatMap((orderedProduct) =>
+        orderedProduct.binLocations.map((binLocation) => {
+          const total =
+            binLocation.stockKeepingUnit.weight * binLocation.quantity;
+          return {
+            binLoc: binLocation.id,
+            total,
+          };
+        })
+      );
+    });
+
+    const accumulateIntoOne = takeTotalAndBinLocId?.reduce(
+      (accumulator: { total: number; binLocationIds: string[] }, initial) => {
+        accumulator.total += initial.total;
+        accumulator.binLocationIds.push(initial.binLoc);
+        return accumulator;
+      },
+      { total: 0, binLocationIds: [] }
+    );
+
+    const { binLocationIds, total } = accumulateIntoOne;
+    console.log(accumulateIntoOne);
+
+    return { binLocationIds, total };
+  }
+
+  function handleRequest({ binLocationIds, total }: ProductData) {
     setLoading(true);
+    const form: Truck = truckform;
+    // updateTruckStatus();
+    console.log(form);
 
-    fetch("/api/outbound/truck/update-status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status,
-        truckId: truck.id,
-        truckName: truck.truckName,
-        coordinates,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data)
-          setToast({
-            animate: "animate-emerge",
-            door: true,
-            message: data.message,
-          });
-
-        return data && mutate("/api/trucks/find-trucks");
+    try {
+      fetch("/api/outbound/truck/update-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          productData: { binLocationIds, total } as ProductData,
+        }),
       })
-      .catch((e) => console.log(e))
-      .finally(() => setLoading(false));
+        .then((res) => res.json())
+        .then((data) => console.log(data))
+        .catch((e) => console.error(e))
+        .finally(() => {
+          mutate("/api/trucks/find-trucks");
+          setLoading(false);
+        });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   const mappedComponent: Record<TruckAvailability, TButtonName> = {
@@ -86,22 +151,43 @@ export default function UpdateTruckStatus({
     GasStop: "Start Deliver",
   };
 
-  const renderButtonName = mappedComponent[truck.status];
+  const renderButtonName = mappedComponent[truck.status]; // await the truck status
 
   useEffect(() => {
     switch (renderButtonName) {
-      case "Complete the Delivery":
-        setStatus("Delivered");
-        break;
       case "Start Deliver":
-        setStatus("InTransit");
-        break;
+        return setTruckForm({
+          ...truckform,
+          status: "InTransit",
+          truckId: truck.id,
+          truckName: truck.truckName,
+          coordinates,
+        });
+      case "Complete the Delivery":
+        return setTruckForm({
+          ...truckform,
+          status: "Delivered",
+          truckId: truck.id,
+          truckName: truck.truckName,
+          coordinates,
+        });
+
       case "Return":
-        setStatus("Empty");
-        break;
+        return setTruckForm({
+          ...truckform,
+          status: "Empty",
+          truckId: truck.id,
+          truckName: truck.truckName,
+          coordinates,
+        });
+
       default:
-        setStatus(null);
-        break;
+        return setTruckForm({
+          ...truckform,
+          status: "Empty",
+          truckId: truck.id,
+          truckName: truck.truckName,
+        });
     }
   }, [renderButtonName]);
 
@@ -111,7 +197,11 @@ export default function UpdateTruckStatus({
       onClick={(e) => {
         e.stopPropagation();
         // enableGeolocation();
-        !loading && handleRequest();
+        const { binLocationIds, total } = getBinIdAndTotal();
+
+        !loading && handleRequest({ binLocationIds, total });
+
+        console.log("change the name of the status");
       }}
     >
       {loading ? (

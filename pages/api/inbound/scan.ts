@@ -31,14 +31,24 @@ export async function handler(
   verifiedToken: string | JwtPayload | UserToken
 ) {
   const scanData: TScanDataFinal = req.body;
-  console.log(scanData);
   try {
     const user = verifiedToken as UserToken;
-    const data = await scanBarcode(scanData, user.id);
+    const { quantity, boxSize, quality, ...rest } = scanData;
+    const hasValue = Object.values(rest).every(Boolean); // true | false
+    if (!hasValue || rest.skuCode === "default") {
+      console.log("Incomplete Field");
+      return res.json("Incomplete Field");
+    }
 
-    // console.log(data);
+    if (quantity > 1) {
+      const data = await scanBarcode(scanData, user.id);
+      return res.json(data);
+    } else {
+      console.log("scanning multiple");
+      // const data = await scanMultiple(scanData, user.id);
 
-    return res.json(data);
+      return res.json("scanning multiple");
+    }
   } catch (error) {
     return res.send(error);
   }

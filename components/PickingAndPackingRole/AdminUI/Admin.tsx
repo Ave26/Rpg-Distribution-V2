@@ -1,9 +1,7 @@
-import useLocations from "@/hooks/useLocations";
 import AdminRecordForm, { TRecord } from "./AdminRecordForm";
-import useTrucks from "@/hooks/useTrucks";
 import InventoryView from "./InventoryView";
 import { binLocations, orderedProducts } from "@prisma/client";
-import { SetStateAction, useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { TBins } from "@/fetcher/fetchBins";
 import BinSearchForm from "./BinSearchForm";
 import useBins from "@/hooks/useBins";
@@ -71,7 +69,7 @@ export default function Admin() {
     Array.isArray(data) &&
       data.find((v) => {
         v.assignedProducts[0]?.skuCode === binLocation.searchSKU;
-        const w = v.assignedProducts[0].sku.weight;
+        const w = v.assignedProducts[0].sku?.weight;
         setWeight(w);
         console.log("weight", weight);
         return weight;
@@ -127,7 +125,6 @@ export default function Admin() {
           bins,
           setTotal,
           total,
-
           orderedProducts,
           setOrderedProducts,
         }}

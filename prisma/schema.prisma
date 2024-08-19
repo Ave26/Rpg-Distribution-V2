@@ -166,16 +166,17 @@ enum BoxSize {
 }
 
 model assignedProducts {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
   dateReceived   DateTime
   purchaseOrder  String
   expirationDate DateTime
   boxSize        BoxSize
   quality        ProductQuality
   supplierName   String
-  status         productStatus    @default(Default)
-  skuCode        String           @unique
-  version        Int              @default(0)
+  status         productStatus  @default(Default)
+  version        Int            @default(0)
+  skuCode        String         @unique
+
   sku            stockKeepingUnit @relation(fields: [skuCode], references: [code])
   products       products?        @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId      String           @unique
@@ -188,8 +189,6 @@ model assignedProducts {
   trucks         trucks?          @relation(fields: [truckName], references: [truckName])
   truckName      String?          @unique
   ordersId       String?          @db.ObjectId
-  // orderedProducts   orderedProducts? @relation(fields: [orderedProductsId], references: [id])
-  // orderedProductsId String?          @db.ObjectId
   binLocations   binLocations?    @relation(fields: [binLocationsId], references: [id])
   binLocationsId String?          @db.ObjectId
 }
