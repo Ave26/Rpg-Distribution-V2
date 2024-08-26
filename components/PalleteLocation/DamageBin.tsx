@@ -1,75 +1,142 @@
 import React, { useState } from "react";
-import { DamageCategory } from "@prisma/client";
 import Input from "../Parts/Input";
-import { TChangeEventType } from "@/pages/dashboard/barcode-scanner";
-import { buttonStyle, buttonStyleSubmit, InputStyle } from "@/styles/style";
+import {
+  buttonStyle,
+  buttonStyleEdge,
+  buttonStyleSubmit,
+  InputStyle,
+} from "@/styles/style";
 import Loading from "../Parts/Loading";
-
-type TypeAndStyleReturnType = {
-  type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
-  style?: string;
-};
-
-// type category = DamageCategory;
+import useDamageCategories from "@/hooks/useDamageCategories";
+import { mutate } from "swr";
+import { Categories } from "@/fetcher/fetchDamageCategories";
+import { IoRemoveSharp } from "react-icons/io5";
+import { MdOutlineClear } from "react-icons/md";
 export interface DamageBin {
-  category: DamageCategory;
+  category: string;
   binQuantity: number;
-  capacity: number;
+  shelf: number;
 }
 
-function DamageBin() {
-  const [loading, setLoading] = useState(false);
+interface FormProps extends ViewCategoriesProps {
+  damageBin: DamageBin;
+  setDamageBin: React.Dispatch<React.SetStateAction<DamageBin>>;
+}
+
+interface ViewCategoriesProps {
+  categories: Categories[] | undefined;
+}
+
+export default function DamageBin() {
+  const { categories } = useDamageCategories();
+
   const [damageBin, setDamageBin] = useState<DamageBin>({
-    category: "Default",
     binQuantity: 0,
-    capacity: 0,
+    shelf: 0,
+    category: "default",
   });
 
-  function parseIntValue(key: keyof DamageBin, value: string): number | string {
-    switch (key) {
-      case "binQuantity":
-      case "capacity":
-        return parseInt(value);
+  return (
+    <div className="grid grid-cols-2">
+      {/* <button className={buttonStyleEdge}>Create Damage Category</button> */}
+      <div className="w-1/2">
+        <Form
+          damageBin={damageBin}
+          setDamageBin={setDamageBin}
+          categories={categories}
+        />
+      </div>
+      <div className="grid grid-flow-row grid-cols-2 rounded-md border border-black p-2">
+        <CategoryForm />
+        <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll border border-b-0 border-r-0 border-t-0 border-black p-2">
+          <ViewCategories categories={categories} />
+        </div>
+      </div>
+      <div className="text-red-600">
+        <h1>Note:</h1>
+        <p>Inbound: PO</p>
+        <p>Invetory: Bin ID</p>
+        <p>OutBound: SO</p>
+      </div>
+      {JSON.stringify(damageBin, null, 2)}
+    </div>
+  );
+}
 
-      default:
-        return value;
-    }
-  }
+function Form({ damageBin, setDamageBin, categories }: FormProps) {
+  const [loading, setLoading] = useState(false);
+  const { category, ...rest } = damageBin;
+  return (
+    <form
+      className="flex flex-col gap-2 p-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setLoading(true);
+        fetch("/api/inventory/damageBins/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(damageBin),
+        }).finally(() => {
+          setDamageBin({ binQuantity: 0, category: "default", shelf: 0 });
+          setLoading(false);
+        });
+      }}
+    >
+      <div className="flex gap-2">
+        <select
+          name={category}
+          value={category}
+          onChange={(e) =>
+            setDamageBin((prev) => ({ ...prev, category: e.target.value }))
+          }
+          className={InputStyle}
+        >
+          <option value={"default"} disabled>
+            Select Category
+          </option>
+          {Array.isArray(categories) &&
+            categories.map(({ category }) => {
+              return (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              );
+            })}
+        </select>
 
-  function handleChange(e: TChangeEventType) {
-    const { name, value } = e.target;
-    const typeName = name as keyof DamageBin;
-    setDamageBin((prev) => ({
-      ...prev,
-      [name]: parseIntValue(typeName, value),
-    }));
-  }
+        <button
+          type="button"
+          className="flex w-fit items-center justify-center hover:rotate-12 active:scale-90"
+          onClick={() => {
+            setDamageBin({
+              binQuantity: 0,
+              category: "default",
+              shelf: 0,
+            });
+          }}
+        >
+          remove
+        </button>
+      </div>
 
-  function selectionByKey(key: keyof DamageBin): Record<string, any> {
-    switch (key) {
-      case "category":
-        return DamageCategory;
-      default:
-        break;
-    }
-
-    return {};
-  }
-
-  function renderInput(key: keyof DamageBin) {
-    switch (key) {
-      case "capacity":
-      case "binQuantity":
+      {Object.keys(rest).map((key) => {
         return (
           <Input
+            key={key}
             attributes={{
               input: {
                 id: key,
                 name: key,
-                type: setInputTypeAndStyle(key).type,
-                value: damageBin[key].toLocaleString(),
-                onChange: handleChange,
+                type: "number",
                 min: 0,
+                value: damageBin[key as keyof DamageBin],
+                onChange: (e) => {
+                  const { name, value } = e.target;
+                  setDamageBin((prev) => ({
+                    ...prev,
+                    [name]: parseInt(value) <= 0 ? 0 : parseInt(value),
+                  }));
+                },
               },
               label: {
                 htmlFor: key,
@@ -78,103 +145,99 @@ function DamageBin() {
             }}
           />
         );
-      case "category":
-        return (
-          <select
-            key={key}
-            name={key}
-            value={damageBin[key].toLocaleString()}
-            onChange={handleChange}
-            className={InputStyle}
-          >
-            <option value={"Default"} disabled>
-              Select Category
-            </option>
-            {Object.keys(selectionByKey(key)).map((opt) => {
-              return (
-                <option value={opt} key={opt}>
-                  {opt}
-                </option>
-              );
-            })}
-          </select>
-        );
-
-      default:
-        return <></>;
-    }
-  }
-
-  function setInputTypeAndStyle(key: keyof DamageBin): TypeAndStyleReturnType {
-    switch (key) {
-      case "capacity":
-        return { type: "number" };
-      case "binQuantity":
-        return { type: "number" };
-      default:
-        return { type: "text" };
-    }
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    fetch("/api/damage-bin/create", {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      body: JSON.stringify(damageBin),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setLoading(false);
-        setDamageBin({
-          category: "Default",
-          binQuantity: 0,
-          capacity: 0,
-        });
-      });
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="grid grid-cols-1  gap-2 bg-sky-300/70 p-3"
-    >
-      {Object.keys(damageBin).map((key) => {
-        const typeKey = key as keyof DamageBin;
-        return (
-          <div key={key} className={setInputTypeAndStyle(typeKey).style}>
-            {renderInput(typeKey)}
-          </div>
-        );
       })}
-      <button
-        type="button"
-        className={buttonStyle}
-        onClick={() =>
-          setDamageBin({
-            category: "Default",
-            binQuantity: 0,
-            capacity: 0,
-          })
-        }
-      >
-        Reset
-      </button>
-      <button type="submit" className={buttonStyleSubmit}>
+
+      <button className={buttonStyleSubmit}>
         {loading ? (
-          <div className="flex h-fit w-full items-center justify-center">
+          <div className="flex items-center justify-center">
             <Loading />
           </div>
         ) : (
-          "Create Damage Bin"
+          "submit"
         )}
       </button>
-      <>{JSON.stringify(damageBin)}</>
     </form>
   );
 }
 
-export default DamageBin;
+function CategoryForm() {
+  const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  return (
+    <form
+      className="col-span-2 flex gap-2 p-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        fetch("/api/inventory/category/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(category.toUpperCase()),
+        })
+          .catch((e) => console.error(e))
+          .finally(() => {
+            setCategory("");
+            mutate("/api/inventory/damageBins/find");
+            setLoading(false);
+          });
+      }}
+    >
+      <Input
+        attributes={{
+          input: {
+            id: category,
+            type: "text",
+            name: category,
+            value: category,
+            onChange: (e) => setCategory(e.target.value),
+          },
+          label: { htmlFor: category, children: "Category" },
+        }}
+      />
+      <button type="submit" className={buttonStyleSubmit}>
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loading />
+          </div>
+        ) : (
+          "submit"
+        )}
+      </button>
+    </form>
+  );
+}
+
+function ViewCategories({ categories }: ViewCategoriesProps) {
+  return (
+    <>
+      {Array.isArray(categories) &&
+        categories?.map(({ category, count }) => {
+          return (
+            <div
+              className="flex items-end justify-between gap-2 p-2"
+              key={category}
+            >
+              <div className="flex w-full justify-between">
+                <li>{category}</li>
+                <h1>{count}</h1>
+              </div>
+              <button
+                onClick={() => {
+                  fetch("/api/inventory/category/remove", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(category),
+                  }).finally(() => {
+                    mutate("/api/inventory/category/find");
+                  });
+                }}
+              >
+                <IoRemoveSharp className="transition-all hover:scale-150 active:scale-100" />
+              </button>
+            </div>
+          );
+        })}
+    </>
+  );
+}

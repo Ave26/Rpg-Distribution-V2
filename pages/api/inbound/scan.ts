@@ -41,13 +41,13 @@ export async function handler(
     }
 
     if (quantity > 1) {
+      console.log("scanning multiple");
+      return res.json("scanning multiple");
+    } else {
+      // const data = await scanMultiple(scanData, user.id);
+      console.log("scanning single");
       const data = await scanBarcode(scanData, user.id);
       return res.json(data);
-    } else {
-      console.log("scanning multiple");
-      // const data = await scanMultiple(scanData, user.id);
-
-      return res.json("scanning multiple");
     }
   } catch (error) {
     return res.send(error);

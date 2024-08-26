@@ -157,8 +157,8 @@ export default function BarcodeScanner() {
           threshold: sku?.threshold,
         }),
       })
-        .then((res) => res.json())
-        .then((data: unknown) => setServerData(data))
+        // .then((res) => res.json())
+        // .then((data: unknown) => setServerData(data))
         .finally(() => setLoading(false));
     } catch (error) {
       console.error("Error Server Is Crying", error);

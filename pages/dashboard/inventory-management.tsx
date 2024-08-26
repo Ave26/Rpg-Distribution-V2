@@ -1,44 +1,70 @@
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import BinInventory from "@/components/Inventory/BinInventory";
+import DamageInventory from "@/components/Inventory/DamageInventory";
 import ProductInventory from "@/components/Inventory/ProductInventory";
 import Layout from "@/components/layout";
+import { buttonStyle, buttonStyleEdge } from "@/styles/style";
 import { ReactElement, useState } from "react";
 
-export default function InventoryManageMent() {
-  const [selected, setSelected] = useState<"Bin" | "Product">("Bin");
+type ButtonState = "Bin" | "Product" | "Damage Bin";
 
-  const componentMapping = {
+interface ButtonStateProps {
+  selected: string;
+  componentMapping: Record<ButtonState, JSX.Element>;
+  setSelected: React.Dispatch<React.SetStateAction<ButtonState>>;
+}
+
+export default function InventoryManageMent() {
+  const [selected, setSelected] = useState<ButtonState>("Bin");
+  const componentMapping: Record<ButtonState, JSX.Element> = {
     Bin: <BinInventory />,
     Product: <ProductInventory />,
+    "Damage Bin": <DamageInventory />,
   };
 
   const renderSelectedComponent = componentMapping[selected];
-
   return (
-    <section>
-      <div className="flex gap-2 border border-black p-2">
-        <button
-          className={`rounded-sm  ${
-            selected === "Bin"
-              ? "bg-sky-400/40 ring-2 ring-cyan-600"
-              : "bg-sky-300/40"
-          } p-2 text-xs font-bold uppercase shadow-md hover:bg-sky-300/10 active:bg-sky-300`}
-          onClick={() => setSelected("Bin")}>
-          Bin Inventory
-        </button>
-        <button
-          className={`rounded-sm  ${
-            selected === "Product"
-              ? "bg-sky-400/40 ring-2 ring-cyan-600"
-              : "bg-sky-300/40"
-          } p-2 text-xs font-bold uppercase shadow-md hover:bg-sky-300/10 active:bg-sky-300`}
-          onClick={() => setSelected("Product")}>
-          Product Inventory
-        </button>
+    <section className="flex h-full flex-col bg-white">
+      <div className="flex h-fit w-full gap-2">
+        <div className="flex w-96 gap-2 p-2">
+          <ButtonState
+            selected={selected}
+            componentMapping={componentMapping}
+            setSelected={setSelected}
+          />
+        </div>
       </div>
-
-      {renderSelectedComponent}
+      <div className="h-full w-full bg-slate-700 py-2 md:px-24">
+        {renderSelectedComponent}
+      </div>{" "}
+      {/*  border border-green-600 */}
     </section>
+  );
+}
+
+function ButtonState({
+  selected,
+  componentMapping,
+  setSelected,
+}: ButtonStateProps) {
+  return (
+    <>
+      {Object.keys(componentMapping).map((v) => {
+        return (
+          <button
+            key={v}
+            className={`${buttonStyleEdge} ${
+              v === selected && "bg-[#86B6F6]"
+            } w-full`}
+            onClick={() => {
+              setSelected(v as "Bin" | "Product");
+            }}
+          >
+            {v}
+          </button>
+        );
+      })}
+    </>
   );
 }
 

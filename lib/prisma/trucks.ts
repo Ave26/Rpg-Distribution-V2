@@ -15,17 +15,17 @@ export async function getTruckAdminAccess() {
         records: {
           where: {
             // need to have status loaded
-            // orderedProducts: {
-            //   every: {
-            //     binLocations: {
-            //       some: {
-            //         assignedProducts: {
-            //           some: { status: "Loaded" },
-            //         },
-            //       },
-            //     },
-            //   },
-            // },
+            orderedProducts: {
+              every: {
+                binLocations: {
+                  some: {
+                    assignedProducts: {
+                      every: { status: { in: ["OutForDelivery", "Loaded"] } },
+                    },
+                  },
+                },
+              },
+            },
           },
           select: {
             id: true,

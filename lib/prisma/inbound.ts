@@ -1,6 +1,11 @@
 import prisma from ".";
 import { TScanDataFinal } from "@/pages/api/inbound/scan";
-import { assignedProducts, Prisma, ProductQuality } from "@prisma/client";
+import {
+  assignedProducts,
+  damageBins,
+  Prisma,
+  ProductQuality,
+} from "@prisma/client";
 
 export async function scanBarcode(
   assignedProduct: TScanDataFinal,
@@ -16,9 +21,10 @@ export async function scanBarcode(
       const models: Record<ProductQuality, any> = {
         Damage: await prisma.damageBins.findMany({
           where: {
-            category: "ForReturnToSupplier",
+            damageCategory: { category: "OUTBOUND DAMAGE" },
             isAvailable: true,
           },
+          orderBy: { row: "desc" },
         }),
         Good: await prisma.bins.findMany({
           where: {
@@ -30,9 +36,7 @@ export async function scanBarcode(
       };
 
       const bins = models[rest.quality]; // result of bins
-
       let binIdPocket: string | undefined;
-
       const method = setMethod(category);
 
       const dateField = {
@@ -44,59 +48,57 @@ export async function scanBarcode(
 
       if (rest.quality === "Damage") {
         console.log("inserted in Damage Bin");
-        for (const bin of bins) {
-          const b = await prisma.damageBins.findUnique({
-            where: { id: bin.id },
-            include: { _count: { select: { assignedProducts: true } } },
-          });
+        const {
+          date: dt,
+          quantity,
+          category,
+          threshold,
+          ...rest
+        } = assignedProduct;
 
-          const hasSameProduct = await prisma.damageBins // kaparehas
-            .findUnique({
-              where: {
-                id: bin.id,
+        console.log(rest.quality);
+
+        // check whether the PO is the same  then push it into data[]
+        const damageBin = await prisma.damageBins.findFirst({
+          where: {
+            OR: [
+              {
+                PO: { equals: rest.purchaseOrder },
+              },
+              {
                 assignedProducts: {
-                  every: {
-                    barcodeId: rest.barcodeId,
-                    skuCode: rest.skuCode,
-                    [field]: date,
-                  },
+                  every: { purchaseOrder: rest.purchaseOrder },
                 },
               },
-            })
-            .catch((e) => console.log(e));
+              { assignedProducts: { none: {} } },
+            ],
+          },
+          orderBy: [{ row: "asc" }, { shelf: "asc" }],
+        });
+        // bin update and assinged Product create
+        // console.log(damageBin);
+        const product = await prisma.damageBins.update({
+          where: { id: damageBin?.id },
+          data: {
+            PO: rest.purchaseOrder,
+            assignedProducts: {
+              create: { ...rest, dateReceived: date, expirationDate: date },
+            },
+          },
+        });
 
-          console.log(hasSameProduct);
+        // const product = await prisma.assignedProducts
+        //   .create({
+        //     data: {
+        //       ...rest,
+        //       damageBinsId: damageBin?.id,
+        //       dateReceived: date,
+        //       expirationDate: date,
+        //     },
+        //   })
+        //   .catch((e) => console.log(e));
 
-          if (!b) {
-            return;
-          }
-          if (b?.capacity > b?._count.assignedProducts) {
-            if (bin.isAvailable && hasSameProduct) {
-              const product = await prisma.assignedProducts.create({
-                data: {
-                  ...rest,
-                  binId: bin.id,
-                  expirationDate: date,
-                  dateReceived: date,
-                  usersId: userId,
-                },
-              });
-              console.log(product);
-              break;
-            } else {
-              continue;
-            }
-          } else {
-            await prisma.damageBins.update({
-              where: {
-                id: bin.id,
-              },
-              data: {
-                isAvailable: false,
-              },
-            });
-          }
-        }
+        // console.log(product);
         message = "inserted into damage bin and it is for return to supplier";
       } else {
         for (const bin of bins) {
