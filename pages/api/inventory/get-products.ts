@@ -25,6 +25,7 @@ export async function handler(
                 code: true,
                 threshold: true,
                 weight: true,
+                product_status_log: { select: { status: true } },
               },
             },
             _count: {

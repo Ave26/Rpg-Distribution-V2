@@ -16,7 +16,7 @@ export const authMiddleware =
       req: NextApiRequest,
       res: NextApiResponse,
       verifiedToken: JwtPayload & UserToken
-    ) => Promise<void>
+    ) => Promise<NextApiResponse | void> // swap into type void
   ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {

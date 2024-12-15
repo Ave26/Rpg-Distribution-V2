@@ -22,11 +22,11 @@ export async function handler(
           )
         ) as TSKU;
         const { barcodeId, ...rest } = newSKU;
+        console.log(rest);
 
-        if (!Object.values(rest).every(Boolean)) {
-          return res.status(400).json({ message: "Incomplete Fields" });
-        }
-
+        // if (!Object.values(rest).every(Boolean)) {
+        //   return res.status(400).json({ message: "Incomplete Fields" });
+        // }
         const skuFound = await prisma.stockKeepingUnit.findUnique({
           where: { code },
         });
@@ -36,7 +36,7 @@ export async function handler(
         }
 
         const SKUCreated = await prisma.stockKeepingUnit.create({
-          data: newSKU,
+          data: { ...newSKU, supplierName: "ISM" },
         });
 
         return res.status(201).json({ message: "SKU Created", SKUCreated });

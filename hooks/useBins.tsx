@@ -3,7 +3,7 @@ import { fetchBins } from "@/fetcher/fetchProducts";
 
 export default function useBins() {
   const { data, error, isLoading } = useSWR(
-    "/api/inventory/bins/find",
+    "/api/records/bins/find",
     fetchBins,
     {
       refreshInterval: 1200,

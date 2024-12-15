@@ -10,6 +10,7 @@ import GenerateReport from "../api/generateReport";
 import MyDocument from "@/components/MyDocument";
 import Link from "next/link";
 import { PDFViewer } from "@react-pdf/renderer";
+import MapRealTimeUpdate from "@/components/MapRealTimeUpdate";
 
 export default function LogOverview() {
   return (
@@ -31,7 +32,6 @@ export default function LogOverview() {
       </div>
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <Reports />
-
         {/* <Test /> */}
       </div>
       <div className="relative col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">

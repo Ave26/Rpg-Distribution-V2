@@ -73,15 +73,16 @@ export default function Products({}: {
                   return (
                     <div
                       className="flex flex-col items-center justify-center gap-3 shadow-lg"
-                      key={index}>
-                      <Image
-                        priority
-                        alt="Product Image"
-                        src={value?.image || noImg}
-                        className="h-96 w-96 object-contain p-3 transition-all md:h-56 md:w-56"
-                        width="0"
-                        height="0"
-                      />
+                      key={index}
+                    >
+                      <div className="h-35 w-35 relative object-contain p-3 transition-all md:h-56 md:w-56">
+                        <Image
+                          priority
+                          alt="Product Image"
+                          src={value?.image || noImg}
+                          fill
+                        />{" "}
+                      </div>
                       <div className="flex w-full flex-col items-start justify-center p-2">
                         <strong>
                           <h1 className="text-md text-sky-600 ">

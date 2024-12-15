@@ -2,7 +2,7 @@ import { TEndPoints, TRole } from "@/types/roleTypes";
 
 const baseRoutes = [
   { path: "/dashboard/log-overview", label: "Log Overview" },
-  { path: "/dashboard/add-new-product", label: "Add Product" },
+  { path: "/dashboard/add-product", label: "Add Product" },
   { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
   { path: "/dashboard/pallete-location", label: "Pallete Location" },
   { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
@@ -16,7 +16,7 @@ export const roleToRoutes: Record<TRole, TEndPoints[]> = {
   Admin: baseRoutes,
   Staff: [
     { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
-    { path: "/dashboard/add-new-product", label: "Add Product" },
+    { path: "/dashboard/add-product", label: "Add Product" },
     { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
   ],
   Driver: [

@@ -1,63 +1,41 @@
 import {
-  UserRole,
-  binLocations,
-  orderedProducts,
-  stockKeepingUnit,
-} from "@prisma/client";
-import React, { useContext, useEffect, useState } from "react";
-import LoadRecordButton from "./LoadRecordButton";
-import {
   TOrderedProductsWBinLocations,
   TRecords,
 } from "../PickingAndPackingType";
-import { useMyContext } from "@/contexts/AuthenticationContext";
-import { TOrderedProductTest } from "../AdminUI/Admin";
 
-type TOrderedProductProps = {
+type OrderedProductProps = {
   record: TRecords;
   orderedProduct: TOrderedProductsWBinLocations;
 };
 
-// type TOrderedProductsTestWBinLocations = orderedProductsTest & {
-//   binLocations: TBinLocations[];
-// };
-
-// type TBinLocations = binLocations & {
-//   SKU: stockKeepingUnit;
-// };
-
 export default function OrderedProduct({
   orderedProduct,
   record,
-}: TOrderedProductProps) {
-  const [totalQuantity, setTotalQuantity] = useState(0);
-
-  // useEffect(() => {
-  //   const total = orderedProduct.binLocations.reduce((acc, initial) => {
-  //     return acc + initial.quantity;
-  //   }, 0);
-
-  //   setTotalQuantity(total);
-  // }, []);
-
+}: OrderedProductProps) {
   return (
     <>
-      {/* Ordered Product Id: {orderedProduct.id} */}
-      <h1>Product Name: {orderedProduct.productName}</h1>
-      <div className="flex flex-col gap-[1px]">
-        {orderedProduct.binLocations?.map((binLocation) => {
-          return (
-            <div
-              key={binLocation.id}
-              className="flex flex-wrap gap-2 border border-black p-2"
-            >
-              <h1>Quantity: {binLocation.quantity}</h1>
-              <h1>SKU Code: {binLocation.skuCode}</h1>
+      {orderedProduct.binLocations?.map((binLocation, key) => {
+        return (
+          <div
+            key={key}
+            className="flex h-[4em] w-full flex-none select-none  flex-col items-center justify-center rounded-md bg-white p-2 shadow-md hover:bg-sky-300 md:w-[45em]"
+          >
+            <div className="flex gap-2">
+              <h1>Product Name: {orderedProduct.productName}</h1>
+              <h1>SKU: {binLocation.skuCode}</h1>
               <h1>Weight: {binLocation.stockKeepingUnit.weight}</h1>
+              <h2>ID: {binLocation.id}</h2>
+              <h1>Quantity: {binLocation.quantity}</h1>
             </div>
-          );
-        })}
-      </div>
+
+            {/* <h1 className="flex gap-2">
+              {binLocation.assignedProducts.map((v) => (
+                <div className="">{v.id}</div>
+              ))}
+            </h1> */}
+          </div>
+        );
+      })}
     </>
   );
 }

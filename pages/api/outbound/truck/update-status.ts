@@ -3,7 +3,7 @@ import { authMiddleware, UserToken } from "../../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import { TUpdateTruckStatus } from "@/components/PickingAndPackingRole/StaffUI/UpdateTruckStatus";
 import prisma from "@/lib/prisma";
-import { Coordinates, TruckAvailability } from "@prisma/client";
+import { Coordinates, TruckAvailability, trucks } from "@prisma/client";
 import { ProductData } from "../product/update-status";
 
 export interface Truck {
@@ -31,51 +31,65 @@ export async function handler(
   }: TruckExtendsProduct = req.body;
 
   const { binLocationIds, total } = productData;
-  console.log(truckId, status, truckName, coordinates);
+  console.log(truckId, status, truckName, coordinates, total);
   console.log(req.body);
   switch (req.method) {
     case "POST":
       try {
         const userId = verifiedToken.id; // driver
-        // const { latitude, longitude } = coordinates;
-        // if (status && truckId && truckName && latitude && longitude) {
-        //   return res.status(404).json({ message: "Incomplete Field" });
-        // }
-
         const assignedProducts = await prisma.assignedProducts.findMany({
-          where: { truckName },
+          where: { truckName, quality: "Good" },
           select: { status: true },
         });
+
+        // console.log(assignedProducts);
 
         const checkProductStatus = assignedProducts.every(
           (product) => product.status === "Delivered"
         );
+
+        // console.log(checkProductStatus);
 
         if (!checkProductStatus && status === "Delivered") {
           return res.status(401).json({
             message: "All the products has not been delivered yet",
           });
         }
+        const data: Record<string, any> = {
+          driverId: status === "Empty" ? { unset: true } : userId,
+          status:
+            status === "Delivered" && checkProductStatus ? "Delivered" : status,
+          deliveryLogs: {
+            create: {
+              status,
+              driverId: userId,
+              timeStamp: new Date(),
+              coordinates,
+            },
+          },
+        };
+
+        let newData = { ...data };
+
+        if (status === "Empty") {
+          newData = {
+            ...newData,
+            payloadCapacity: 3500,
+          };
+        }
+        console.log(data);
+        console.log(newData);
 
         const updatedTruck = await prisma.trucks.update({
           where: { id: truckId },
           data: {
-            driverId: status === "Empty" ? { unset: true } : userId, // unset the driver id if the status has now become empty
-            status:
-              status === "Delivered" && checkProductStatus
-                ? "Delivered"
-                : status,
-            deliveryLogs: {
-              create: {
-                status,
-                driverId: userId,
-                timeStamp: new Date(),
-                coordinates,
-              },
-            },
+            ...newData,
             assignedProducts: {
               updateMany: {
-                where: { binLocationsId: { in: binLocationIds } },
+                where: {
+                  binLocationsId: { in: binLocationIds },
+                  status: "Loaded",
+                },
                 data: { status: "OutForDelivery" },
               },
             },
@@ -89,8 +103,8 @@ export async function handler(
           },
         });
 
-        console.log(updatedTruck);
-
+        // console.log(updatedTruck);
+        await disconnectProduct(status, updatedTruck?.truckName); // status: empty,  disconnect product
         return res
           .status(200)
           .json({ message: "Update Succesfull", updatedTruck });
@@ -103,3 +117,21 @@ export async function handler(
 }
 
 export default authMiddleware(handler);
+
+async function disconnectProduct(status: TruckAvailability, truckName: string) {
+  return (
+    status === "Empty" &&
+    (await prisma.trucks
+      .update({
+        where: {
+          truckName,
+          assignedProducts: { some: { status: "Rejected" } },
+        },
+        data: {
+          assignedProducts: { disconnect: { truckName } },
+        },
+      })
+      .then((v) => console.log(v))
+      .catch((e) => console.log(e)))
+  );
+}

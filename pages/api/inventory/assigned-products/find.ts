@@ -10,6 +10,8 @@ export interface AssignedProducts {
 }
 
 export type DamageBins = damageBins & {
+  row: number;
+  shelf: number;
   count: number;
   supplierName: string;
 };
@@ -24,10 +26,11 @@ export async function handler(
       where: { damageBinsId: { isSet: true } },
       select: {
         skuCode: true,
+        sku: { select: { supplierName: true } },
         damageBins: {
           include: {
             assignedProducts: {
-              select: { skuCode: true, supplierName: true },
+              select: { skuCode: true },
             },
           },
         },
@@ -36,24 +39,27 @@ export async function handler(
     .then((assignedProducts) => {
       const reshape = assignedProducts.reduce(
         (acc: AssignedProducts[], initial) => {
-          const data = initial.damageBins?.assignedProducts.filter(
+          const count = initial.damageBins?.assignedProducts.filter(
             (v) => v.skuCode === initial.skuCode
-          );
-          if (!data?.length) {
-            console.log("triggers");
-            return [];
-          }
-          const supplierName = data[0].supplierName;
+          ).length;
+
+          // get the
+
+          if (!count) return [];
+
+          const supplierName = initial.sku.supplierName;
+
+          if (!supplierName) return [];
 
           const entry = acc.find((data) => data.skuCode === initial.skuCode);
           if (!initial.damageBins) {
             return [];
           }
-          const { assignedProducts, ...rest } = initial.damageBins;
+          const { assignedProducts, row, shelf, ...rest } = initial.damageBins;
           if (!entry) {
             acc.push({
               skuCode: initial.skuCode,
-              damageBins: [{ ...rest, count: data.length, supplierName }],
+              damageBins: [{ ...rest, count, supplierName, row, shelf }],
             });
           } else {
             const isDuplicate = entry.damageBins.some(
@@ -63,8 +69,10 @@ export async function handler(
             if (!isDuplicate) {
               entry.damageBins.push({
                 ...rest,
-                count: data.length,
+                count,
                 supplierName,
+                row,
+                shelf,
               });
             }
           }
@@ -72,10 +80,15 @@ export async function handler(
         },
         []
       );
+      console.log(reshape);
       return reshape;
     })
-    .catch((e) => res.json(e));
+    .catch((e) => {
+      console.log(e);
 
+      res.json(e);
+    });
+  console.log(p);
   return res.json(p);
 }
 

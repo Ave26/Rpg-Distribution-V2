@@ -1,71 +1,105 @@
-import React, { lazy, Suspense } from "react";
 import {
+  TBinLocations,
+  TOrderedProductsWBinLocations,
   TRecords,
   TTrucks,
 } from "../PickingAndPackingRole/PickingAndPackingType";
+import { TToast } from "../PickingAndPackingRole/Toast";
+import { ReportDamageProduct } from "../PickingAndPackingRole/StaffUI/RecordsView";
 import OrderedProduct from "../PickingAndPackingRole/StaffUI/OrderedProduct";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import LoadRecordButton from "../PickingAndPackingRole/StaffUI/LoadRecordButton";
-import DeliverButton from "../DeliveryMangement/Driver/DeliverButton";
-import { TToast } from "../PickingAndPackingRole/Toast";
-
+import { UserRole } from "@prisma/client";
 type TRecordSelectionProps = {
   data: TData;
+  states: States;
 };
 
 type TData = {
   record: TRecords;
   truck: TTrucks;
-  setToast: React.Dispatch<React.SetStateAction<TToast>>;
+  setToast?: React.Dispatch<React.SetStateAction<TToast>>;
+};
+
+type States = {
+  reportDamageForm: ReportDamageProduct;
+  setReportDamageForm: React.Dispatch<
+    React.SetStateAction<ReportDamageProduct>
+  >;
 };
 
 export default function RecordSelection({ data }: TRecordSelectionProps) {
-  const { globalState } = useMyContext();
-  const role: string | undefined = globalState?.verifiedToken?.roles;
-  const isStaff = role === "Staff";
-  const isDriver = role === "Driver";
-  const { record, truck, setToast } = data;
-
+  const { record } = data;
   return (
     <>
-      <div className="flex flex-col items-start justify-center gap-[.5px] border border-dotted border-red-600 p-[2px]">
-        <h1 className="text-lg">Record Details</h1>
-        <ul>Batch Number: {record.batchNumber}</ul>
-        <ul>Purchase Order: {record.SO}</ul>
-        <ul>Destination: {record.locationName}</ul>
-        <ul>Client: {record.clientName}</ul>
+      <div className="flex items-center justify-between gap-[.5px] border border-dotted border-red-600 p-2 uppercase">
+        <ul className="text-lg">
+          Sales Order: {record.SO} (batch {record.batchNumber})
+        </ul>
+        <div className="flex  items-center justify-center gap-2">
+          <ul>Destination: {record.locationName}</ul>
+          <ul>Client: {record.clientName}</ul>
+        </div>
       </div>
-      <div className="h-[11em] overflow-y-scroll border border-black">
-        {record.orderedProducts.map((orderedProduct) => (
-          <div
-            key={orderedProduct.id}
-            className="flex h-fit flex-col justify-between gap-1 p-2"
-          >
-            <h1 className="uppercase">Ordered Products</h1>
-            <div>
-              <li className="flex w-full flex-col items-start justify-start gap-2 border-y-2 border-dotted border-slate-900 p-1">
-                <ul className="">
-                  <OrderedProduct
-                    orderedProduct={orderedProduct}
-                    record={record}
-                  />
-                </ul>
-              </li>
+      <div className="h-72 gap-2 overflow-y-scroll border border-black bg-slate-600 p-2">
+        <h1 className="sticky top-0 text-end uppercase text-black">
+          Ordered Products
+        </h1>
 
-              {isStaff && (
-                <div className="sticky flex items-center justify-center py-3">
-                  <LoadRecordButton
-                    truck={truck}
-                    orderedProduct={orderedProduct}
-                    record={record}
-                  />
-                </div>
-              )}
+        <div className="flex flex-none flex-col gap-2 rounded border  border-white p-2">
+          {record.orderedProducts.map((orderedProduct) => (
+            <div key={orderedProduct.id}>
+              <>{orderedProduct.productName}</>
+              <div className="flex flex-col gap-2">
+                {orderedProduct.binLocations.map((bl, key) => {
+                  return (
+                    <div
+                      key={bl.id}
+                      className="flex h-[4em] w-full flex-none select-none  flex-col items-center justify-center rounded-md bg-white shadow-md"
+                    >
+                      <BinLocView bl={bl} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <div className="sticky bottom-0"></div>
       </div>
-      {isDriver && <DeliverButton states={{ record, truck, setToast }} />}
     </>
+  );
+}
+
+interface BinLocViewProps {
+  bl: TBinLocations;
+}
+
+function BinLocView({ bl }: BinLocViewProps) {
+  const { globalState } = useMyContext();
+  const role: UserRole | undefined = globalState?.verifiedToken?.roles;
+  const goods = bl.assignedProducts.filter(
+    (ap) => ap.quality === "Good"
+  ).length;
+
+  const damages = bl.assignedProducts.filter(
+    (ap) => ap.quality === "Damage"
+  ).length;
+
+  return (
+    <div className="flex h-full w-full flex-grow">
+      <div className="flex h-full flex-grow items-center justify-center  gap-2 rounded-l-md bg-green-600">
+        <h1>SKU: {bl.skuCode}</h1>
+        <h1>Weight: {bl.stockKeepingUnit.weight}</h1>
+        <h1 className="">Good: {goods}</h1>
+      </div>
+      {role === "Driver" && (
+        <div className="flex h-full flex-grow items-center justify-center gap-2 rounded-r-md bg-red-400">
+          <h1>SKU: {bl.skuCode}</h1>
+          <h1>Weight: {bl.stockKeepingUnit.weight}</h1>
+          <h1>Damaged: {damages}</h1>
+        </div>
+      )}
+    </div>
   );
 }

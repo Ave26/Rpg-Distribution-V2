@@ -45,7 +45,7 @@ export default function TruckView({ states }: TTruckViewProps) {
         data?.map((truck) => (
           <div
             key={truck.id}
-            className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2"
+            className="flex w-full flex-col items-center justify-center p-2 md:flex-row md:p-2 "
           >
             <div className="flex w-full flex-wrap gap-2">
               <h1 className="">Truck Name:</h1>

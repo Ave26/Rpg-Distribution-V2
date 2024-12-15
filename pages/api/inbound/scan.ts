@@ -8,14 +8,13 @@ import { TScanData } from "@/pages/dashboard/barcode-scanner";
 
 export type TAssignedProducts = Pick<
   assignedProducts,
-  | "dateReceived"
-  | "expirationDate"
+  // | "dateReceived"
+  // | "expirationDate"
   | "binId"
   | "usersId"
   | "purchaseOrder"
   | "boxSize"
   | "quality"
-  | "supplierName"
   | "skuCode"
   | "barcodeId"
 >;
@@ -31,6 +30,7 @@ export async function handler(
   verifiedToken: string | JwtPayload | UserToken
 ) {
   const scanData: TScanDataFinal = req.body;
+
   try {
     const user = verifiedToken as UserToken;
     const { quantity, boxSize, quality, ...rest } = scanData;

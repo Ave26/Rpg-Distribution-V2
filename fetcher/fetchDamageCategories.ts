@@ -1,13 +1,13 @@
 // useProducts.js
 
-export type Categories = {
+export type DamageCategories = {
   category: string;
-  count: string;
+  count: number;
 };
 
 export async function fetchDamageCategories(
   url: string
-): Promise<Categories[]> {
+): Promise<DamageCategories[]> {
   try {
     const res = await fetch(url);
     const data = await res.json();

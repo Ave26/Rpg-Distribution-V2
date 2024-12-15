@@ -4,6 +4,7 @@ import { renderToStream } from "@react-pdf/renderer";
 import prisma from "@/lib/prisma";
 
 import OrderReports from "@/components/Report/OrdersDocument";
+import { authMiddleware } from "../../authMiddleware";
 
 export type TReportData = {
   product: string;
@@ -12,49 +13,54 @@ export type TReportData = {
   date: Date;
 };
 
-// export default authMiddleware(
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const currentDate = new Date();
-  const firstDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  );
-  const lastDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  );
+export default authMiddleware(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+    const lastDayOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    );
 
-  const getRecords = await prisma.records.findMany({
-    where: {
-      dateCreated: { gte: firstDayOfMonth, lte: lastDayOfMonth },
-    },
-    select: {
-      id: true,
-      clientName: true,
-      dateCreated: true,
-      SO: true,
-      _count: { select: { orderedProducts: true } },
-      orderedProducts: {
-        select: {
-          binLocations: {
-            select: {
-              quantity: true,
-              stockKeepingUnit: {
-                select: { products: { select: { price: true } } },
+    const getRecords = await prisma.records.findMany({
+      where: {
+        dateCreated: { gte: firstDayOfMonth, lte: lastDayOfMonth },
+      },
+      select: {
+        id: true,
+        clientName: true,
+        dateCreated: true,
+        SO: true,
+        _count: { select: { orderedProducts: true } },
+        orderedProducts: {
+          select: {
+            binLocations: {
+              select: {
+                quantity: true,
+                stockKeepingUnit: {
+                  select: { products: { select: { price: true } } },
+                },
               },
             },
           },
         },
       },
-    },
-  });
-  const pdfStream = await renderToStream(<OrderReports records={getRecords} />);
+    });
+    const pdfStream = await renderToStream(
+      <OrderReports records={getRecords} />
+    );
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename=Order_Report.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Order_Report.pdf`
+    );
 
-  return pdfStream.pipe(res);
-};
-// );
+    return pdfStream.pipe(res);
+  }
+);

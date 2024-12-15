@@ -20,25 +20,17 @@ export default function Toast({ states }: ToastPropsTypes) {
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (toast.animate === "animate-fade") {
-      timer = setTimeout(() => {
-        setToast({
-          ...toast,
-          door: false,
-          message: "",
-        });
-      }, 1200);
-    } else if (!toast.door) {
-      return;
-    } else {
-      timer = setTimeout(() => {
-        setToast({
-          ...toast,
-          animate: "animate-fade",
-        });
-      }, 1200);
-    }
+    if (!toast.door) return;
+    timer = setTimeout(() => {
+      setToast({
+        ...toast,
+        door: false,
+        message: toast.animate === "animate-fade" ? "" : "animate-fade",
+      });
+    }, 1200);
+
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast.animate]);
 
   return (

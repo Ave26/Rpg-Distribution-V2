@@ -18,7 +18,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const isAuthenticated = globalState?.authenticated as Boolean;
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.roles;
-
   const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
   const currentPath = router.asPath;
 
@@ -42,7 +41,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 text-xs font-extrabold md:h-screen md:flex-row  md:overflow-y-hidden">
-      {renderAside}
+      <div className="flex h-full w-full flex-none  flex-row  justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
+        {renderAside}
+      </div>
       <main className="animation-emerge relative h-full w-full">
         {children}
       </main>
@@ -66,11 +67,11 @@ export function Aside({
   router: NextRouter;
 }) {
   return (
-    <aside className="flex h-full w-full flex-row justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
+    <>
       {mapRoutes &&
         mapRoutes.length > 0 &&
         mapRoutes.map((route, index) => (
-          <Link key={index} href={route.path}>
+          <Link key={index} href={route.path} passHref>
             <div
               className={`h-fit w-fit cursor-pointer select-none whitespace-nowrap text-center transition-all hover:border-cyan-400 ${
                 router.asPath === route.path
@@ -83,6 +84,6 @@ export function Aside({
           </Link>
         ))}
       <LogoutButton />
-    </aside>
+    </>
   );
 }

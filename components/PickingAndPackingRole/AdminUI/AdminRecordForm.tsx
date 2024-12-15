@@ -46,6 +46,9 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    if (orderedProducts.length === 0)
+      return alert("Product Has Not Been Selected");
+
     fetch("/api/inventory/record/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,18 +60,18 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
 
         if (data) {
           setOrderedProducts([]);
-          mutate("/api/inventory/bins/find");
+          mutate("/api/records/bins/find");
         }
       })
       .catch((error) => error)
       .finally(() => {
+        mutate("/api/records/bins/find");
         setRecord({
           clientName: "",
           SO: "",
           truckName: "default",
           locationName: "default",
         });
-
         setBinLocation({
           searchSKU: "",
           totalQuantity: 0,
@@ -94,7 +97,11 @@ export default function AdminRecordForm({ states }: TAdminRecordForm) {
         }}
       />
 
-      <button type="submit" className={buttonStyleSubmit}>
+      <button
+        type="submit"
+        className={buttonStyleSubmit}
+        disabled={orderedProducts.length === 0 ? true : false}
+      >
         {loading ? (
           <div className="flex h-full w-full items-center justify-center transition-all">
             <Loading />

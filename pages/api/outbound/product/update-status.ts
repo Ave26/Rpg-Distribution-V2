@@ -41,8 +41,9 @@ export async function handler(
 
         console.log(udpatedTruckAndProduct);
 
-        return res.status(200).send(udpatedTruckAndProduct);
+        return res.status(200).json({ message: `${udpatedTruckAndProduct}` });
       } catch (error) {
+        console.log(error);
         return res.send(error);
       }
     default:

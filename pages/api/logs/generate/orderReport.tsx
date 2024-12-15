@@ -7,40 +7,41 @@ import OrderReport from "@/components/Report/OrderDocument";
 import { records } from "@prisma/client";
 import { TRecords } from "@/fetcher/fetchRecord";
 import { TRecord } from "@/components/PickingAndPackingRole/AdminUI/AdminRecordForm";
+import { authMiddleware } from "../../authMiddleware";
 
-// export default authMiddleware(
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const record = req.query;
-  const getRecord = await prisma.records.findFirst({
-    where: { id: record.Id as string },
-    select: {
-      id: true,
-      clientName: true,
-      dateCreated: true,
-      SO: true,
-      _count: { select: { orderedProducts: true } },
-      orderedProducts: {
-        select: {
-          binLocations: {
-            select: {
-              quantity: true,
-              stockKeepingUnit: {
-                select: { products: { select: { price: true } } },
+export default authMiddleware(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const record = req.query;
+    const getRecord = await prisma.records.findFirst({
+      where: { id: record.Id as string },
+      select: {
+        id: true,
+        clientName: true,
+        dateCreated: true,
+        SO: true,
+        _count: { select: { orderedProducts: true } },
+        orderedProducts: {
+          select: {
+            binLocations: {
+              select: {
+                quantity: true,
+                stockKeepingUnit: {
+                  select: { products: { select: { price: true } } },
+                },
               },
             },
           },
         },
       },
-    },
-  });
-  const pdfStream = await renderToStream(<OrderReport record={getRecord} />);
+    });
+    const pdfStream = await renderToStream(<OrderReport record={getRecord} />);
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=Order_Report_${record.id}.pdf`
-  );
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Order_Report_${record.id}.pdf`
+    );
 
-  return pdfStream.pipe(res);
-};
-// );
+    return pdfStream.pipe(res);
+  }
+);

@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 export default function useDamageCategories() {
   const { data, error, isLoading } = useSWR(
-    "/api/inventory/category/find",
+    "/api/inventory/damage-categories/find",
     fetchDamageCategories,
     {
       refreshInterval: 1200,

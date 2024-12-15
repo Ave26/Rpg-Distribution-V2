@@ -35,7 +35,7 @@ function OrderQueue() {
             <tr key={record.id} className="text-center text-[10px] font-bold">
               <td>{record.id}</td>
               <td>{record.clientName}</td>
-              <td>{record.dateCreated?.toLocaleString()}</td>
+              <td>{record.dateCreated?.toLocaleString().slice(0, 10)}</td>
               <td>{record._count.orderedProducts}</td>
               <td>
                 {record.orderedProducts.reduce((acc, initial) => {

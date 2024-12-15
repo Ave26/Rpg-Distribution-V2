@@ -8,13 +8,16 @@ import {
 import useSWR, { mutate } from "swr";
 
 type TLoadRecordButtonProps = {
-  orderedProduct: TOrderedProductsWBinLocations;
+  orderedProducts?: TOrderedProductsWBinLocations[]; // this should be the update for loading the record
   record: TRecords;
   truck: TTrucks;
-  states?: TStates;
+  states: {
+    setToastData: React.Dispatch<
+      React.SetStateAction<{ message: string; show: boolean }>
+    >;
+    toastData: { message: string; show: boolean };
+  };
 };
-
-type TStates = {};
 
 export type TUpdateTruckData = {
   status: TruckAvailability;
@@ -27,7 +30,12 @@ export type TUpdateTrucks = {
   truckId: string;
 };
 
-function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
+function LoadRecordButton({
+  truck,
+  orderedProducts,
+  states,
+}: TLoadRecordButtonProps) {
+  const { setToastData, toastData } = states;
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [animate, setAnimate] = useState<"animate-emerge" | "animate-fade">(
@@ -35,16 +43,23 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
   );
   const [percentage, setPercentage] = useState(0);
 
+  console.log(orderedProducts);
+
   function setRecordToLoad() {
-    const { assignedProductIds, total } = getAssignedProducts();
-    const { status } = setTruckStatus(total);
+    const result = getAssignedProducts();
+    if (!result) return;
+    const { totalIds, totalNW } = result;
+
+    const { status } = setTruckStatus(totalNW);
     // do something
     const data: TUpdateTrucks = {
-      total,
+      total: totalNW,
       status,
-      assignedProductIds: assignedProductIds,
+      assignedProductIds: totalIds,
       truckId: truck.id,
     };
+
+    console.log(data);
 
     console.log("click set record to load");
     fetch("/api/outbound/update-order", {
@@ -55,27 +70,25 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then((data: { message: string }) => {
         if (data) {
-          // setToastData({
-          //   ...toastData,
-          //   message: data.message,
-          //   show: true,
-          // });
+          mutate("/api/trucks/find");
+
+          alert(data.message);
+          setToastData({
+            ...toastData,
+            message: data.message,
+            show: true,
+          });
         }
       })
       .catch((e) => console.log(e))
       .finally(() => {
-        mutate("/api/trucks/find-trucks");
+        mutate("/api/trucks/find");
         setAnimate("animate-fade");
       });
   }
 
-  /* 
-    To find the current capacity, simply negate the current capacity into payloadCapacity
-  */
-
-  // NOTE: THE CURRENT CAPACITY WILL BE THE TOTAL ACCUMULATED IN ONE RECORD
   function setTruckStatus(total: number): TUpdateTruckData {
     const newCapacity = truck.payloadCapacity - total;
     const percentage = (1 - newCapacity / truck.threshold) * 100;
@@ -92,46 +105,34 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
   }
 
   function getAssignedProducts() {
-    const result = orderedProduct.binLocations.reduce(
-      (
-        accumulator: { assignedProductIds: string[]; total: number },
-        binLocation
-      ) => {
-        // Extract product IDs and add them to the assignedProductIds array
-        const productIds = binLocation.assignedProducts.map(
-          (assignedProduct) => assignedProduct.id
-        );
-        accumulator.assignedProductIds.push(...productIds);
+    const isArray = Array.isArray(orderedProducts);
+    return (
+      isArray &&
+      orderedProducts?.reduce(
+        (acc: { totalIds: string[]; totalNW: number }, op) => {
+          const result = op.binLocations.reduce(
+            (acc: { ids: string[]; netWeight: number }, bl) => {
+              const pIds = bl.assignedProducts.map((ap) => ap.id);
+              const netWeight = bl.quantity * bl.stockKeepingUnit.weight;
+              acc.ids.push(...pIds);
+              acc.netWeight += netWeight;
+              return acc;
+            },
+            { ids: [], netWeight: 0 }
+          );
 
-        // Calculate the total weight
-        accumulator.total +=
-          binLocation.quantity * binLocation.stockKeepingUnit.weight;
+          acc.totalIds.push(...result.ids);
+          acc.totalNW += result.netWeight;
 
-        return accumulator;
-      },
-      { assignedProductIds: [], total: 0 }
+          return acc;
+        },
+        { totalIds: [], totalNW: 0 }
+      )
     );
-    return result;
   }
 
-  /* 
-    currentCapacity = quantity * threshold
-   TODO: UPDATE -> status && payloadCapacity
-
-   after updating the trucks
-
-   put the name of the trucks in the assignedProducts
-   update the status of the assignedProducts
-
-   status  || capacity  || assignedProductIds
-
-  */
   const buttonStyle =
     "rounded-sm bg-sky-300/40 w-full h-full p-2 shadow-md text-[8px] hover:bg-sky-300/10 active:bg-sky-300 uppercase font-black";
-
-  useEffect(() => {
-    console.log(JSON.stringify(orderedProduct, null, 2));
-  }, []);
 
   return (
     <>
@@ -151,6 +152,8 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
           <button
             className={buttonStyle}
             onClick={() => {
+              console.log("setting record to load");
+
               if (truck.status === "InTransit") {
                 setAnimate("animate-fade");
 
@@ -184,14 +187,3 @@ function LoadRecordButton({ orderedProduct, truck }: TLoadRecordButtonProps) {
 }
 
 export default LoadRecordButton;
-
-/* 
-   TODO: NEED TO UPDATE ALL THE ASSIGNED PRODUCT INSIDE THE BINLOCATIONS
-  MAKE THE BIN LOCATIONS SELECTABLE SO THAT THE USER WILL HAVE TO CHOOSE WANT TO LOAD
-
-  
-  CHALLENGES: IS IT GOING TO LOAD ALL THE ASSIGNED PRODUCT COMING FROM THE BINS LOCATIONS BASED ON THE PRDERED PRODUCTS
-  THE PLAN IS TO TAKE THE IDs OF ASSIGNED PRODUCT AND MAKE A NEW MAP FOR IT
-  AND SEND IT TO THE SERVER TO FURTHER PROCESS IT
-
-*/

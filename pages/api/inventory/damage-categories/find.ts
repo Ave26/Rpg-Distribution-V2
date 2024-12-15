@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
-
 import { authMiddleware, UserToken } from "../../authMiddleware";
 import prisma from "@/lib/prisma";
 
@@ -10,7 +9,7 @@ export async function handler(
   verifiedToken: JwtPayload & UserToken
 ) {
   try {
-    const categories = await prisma.damageCategory
+    const categories = await prisma.damageCategories
       .findMany({
         select: { category: true, _count: { select: { damageBins: true } } },
       })
@@ -19,7 +18,8 @@ export async function handler(
           category: v.category,
           count: v._count.damageBins,
         }));
-      });
+      })
+      .catch((e) => console.log(e));
 
     console.log(categories);
     return res.json(categories);

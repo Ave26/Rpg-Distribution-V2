@@ -69,7 +69,8 @@ export default function Admin() {
     Array.isArray(data) &&
       data.find((v) => {
         v.assignedProducts[0]?.skuCode === binLocation.searchSKU;
-        const w = v.assignedProducts[0].sku?.weight;
+
+        const w = v.assignedProducts[0]?.sku?.weight;
         setWeight(w);
         console.log("weight", weight);
         return weight;

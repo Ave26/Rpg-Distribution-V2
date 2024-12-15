@@ -1,12 +1,31 @@
 // components/Inventory/BinTable.js
 import React from "react";
 import { TBins } from "../InventoryTypes";
+import { DamageProductInfo } from "../BinInventorySkwak";
 
 type TBinTableProps = {
   bins: TBins[] | undefined;
+  states: States;
 };
 
-const BinTable = ({ bins }: TBinTableProps) => {
+type States = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  moveDamageBin: boolean;
+  setMoveDamageBin: React.Dispatch<React.SetStateAction<boolean>>;
+  damageProduct: DamageProductInfo;
+  setDamageProduct: React.Dispatch<React.SetStateAction<DamageProductInfo>>;
+};
+
+const BinTable = ({ bins, states }: TBinTableProps) => {
+  const {
+    moveDamageBin,
+    open,
+    setMoveDamageBin,
+    setOpen,
+    damageProduct,
+    setDamageProduct,
+  } = states;
   const thArray = [
     "Category",
     "BinName",
@@ -115,6 +134,20 @@ const BinTable = ({ bins }: TBinTableProps) => {
                 }
               </td>
               <td>{bin._count.assignedProducts}</td>
+              <td className={`${moveDamageBin ? "animate-emerge" : "hidden"}`}>
+                <button
+                  type="button"
+                  className={`rounded-sm bg-sky-300/40 p-2 text-xs font-bold uppercase shadow-md hover:bg-sky-300/80 active:bg-sky-300`}
+                  id="printInventory"
+                  onClick={() => {
+                    console.log("move damaged product");
+                    setOpen(true);
+                    setDamageProduct({ ...damageProduct, binId: bin.id });
+                  }}
+                >
+                  move damaged product
+                </button>
+              </td>
             </tr>
           );
         })}

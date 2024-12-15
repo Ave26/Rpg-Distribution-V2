@@ -75,7 +75,7 @@ export default function DeliverButton({ states }: TDeliveryButton) {
   }
 
   return (
-    <button className={buttonStyle} onClick={changeProductStatus}>
+    <button className={buttonStyleSubmit} onClick={changeProductStatus}>
       {loading ? <Loading /> : "Hand The Package"}
     </button>
   );

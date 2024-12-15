@@ -1,12 +1,13 @@
 import DashboardLayout from "@/components/Admin/dashboardLayout";
 import BinInventory from "@/components/Inventory/BinInventory";
+import BinInventorySkwak from "@/components/Inventory/BinInventorySkwak";
 import DamageInventory from "@/components/Inventory/DamageInventory";
 import ProductInventory from "@/components/Inventory/ProductInventory";
 import Layout from "@/components/layout";
 import { buttonStyle, buttonStyleEdge } from "@/styles/style";
 import { ReactElement, useState } from "react";
 
-type ButtonState = "Bin" | "Product" | "Damage Bin";
+type ButtonState = "Bin" | "Product" | "Damage Bin" | "Button Skwak";
 
 interface ButtonStateProps {
   selected: string;
@@ -18,8 +19,9 @@ export default function InventoryManageMent() {
   const [selected, setSelected] = useState<ButtonState>("Bin");
   const componentMapping: Record<ButtonState, JSX.Element> = {
     Bin: <BinInventory />,
-    Product: <ProductInventory />,
+    Product: <ProductInventory />, // <BinInventory /> <BinInventorySkwak />
     "Damage Bin": <DamageInventory />,
+    "Button Skwak": <BinInventorySkwak />,
   };
 
   const renderSelectedComponent = componentMapping[selected];
@@ -36,7 +38,7 @@ export default function InventoryManageMent() {
       </div>
       <div className="h-full w-full bg-slate-700 py-2 md:px-24">
         {renderSelectedComponent}
-      </div>{" "}
+      </div>
       {/*  border border-green-600 */}
     </section>
   );

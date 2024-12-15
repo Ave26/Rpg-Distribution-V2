@@ -38,6 +38,7 @@ export default function ProductInventory() {
     code: "",
     threshold: 0,
     weight: 0,
+    supplierName: "",
   });
 
   const { data, mutate } = useSWR("/api/inventory/get-products", fetcher, {

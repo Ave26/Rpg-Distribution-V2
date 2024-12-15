@@ -7,7 +7,7 @@ export default function ViewTruckLoads() {
 
   return (
     <div className="h-full w-full overflow-y-scroll rounded-md bg-white p-2">
-      <div className="sticky top-0 flex  select-none justify-end pb-1">
+      <div className="sticky top-0 flex select-none justify-end pb-1">
         <CloseAllButton setSelectedId={setSelectedId} />
       </div>
       <TruckSelection states={{ selectedId, setSelectedId }} />

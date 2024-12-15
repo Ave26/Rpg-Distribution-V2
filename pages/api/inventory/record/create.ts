@@ -34,8 +34,6 @@ export async function handler(
         const { orderedProducts, record }: TBody = req.body;
         const { SO, clientName, locationName, truckName } = record;
 
-        // console.log(orderedProducts, record);
-
         const everyRecordIsEmpty = !Object.values(record).every(
           (value) => value !== "default" && Boolean(value)
         );
@@ -100,9 +98,7 @@ export async function handler(
           });
         });
 
-        return res
-          .status(200)
-          .json({ message: "create record working", createdRecord });
+        return res.status(200).json({ message: "Record Created" });
     }
   } catch (error) {
     console.log(error);

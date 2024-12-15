@@ -22,6 +22,7 @@ import Loading from "@/components/Parts/Loading";
 import Input from "@/components/Parts/Input";
 import { buttonStyle, InputStyle } from "@/styles/style";
 import { setTime } from "@/helper/_helper";
+import { InventoryMethod } from "../api/products/create";
 
 type InputTypeMapping<T> = {
   [K in keyof T]: React.InputHTMLAttributes<HTMLInputElement>["type"];
@@ -29,50 +30,25 @@ type InputTypeMapping<T> = {
 
 export type TAssignedProducts = Pick<
   assignedProducts,
-  | "barcodeId"
-  | "boxSize"
-  | "purchaseOrder"
-  | "quality"
-  | "supplierName"
-  | "skuCode"
+  "barcodeId" | "boxSize" | "purchaseOrder" | "quality" | "skuCode"
 >;
 
 export type TScanData = TAssignedProducts & {
   quantity: number;
   date: Date;
+  method?: InventoryMethod;
 };
 
 export type TChangeEventType =
   | React.ChangeEvent<HTMLInputElement>
   | React.ChangeEvent<HTMLSelectElement>;
 
-// type TSKU = {
-//   sku: stockKeepingUnit[];
-//   isLoading: boolean;
-// };
-
-// type TToast = {
-//   message: string | undefined | unknown;
-//   isShow: boolean;
-// };
-
-// type TData = {
-//   message: string;
-//   scanData: {
-//     message: string;
-//     TotalAssignedProduct: number;
-//     capacity: number;
-//     row: number;
-//     shelfLevel: number;
-//     rackName: string;
-//   };
-// };
-
 export interface TProductData {
   image: string | null;
   sku: TCode[];
   barcodeId: string;
   category: string;
+  method?: InventoryMethod;
 }
 
 type TCode = {
@@ -96,7 +72,6 @@ export default function BarcodeScanner() {
     date: setTime().date,
     purchaseOrder: "",
     quality: "Good",
-    supplierName: "",
     skuCode: "default",
   });
 
@@ -142,7 +117,7 @@ export default function BarcodeScanner() {
     const category = productData.category;
     console.log("scanning barcode");
     const sku = productData.sku.find((sku) => sku.code === scanData.skuCode);
-    const { barcodeId, ...rest } = scanData;
+    const { barcodeId, method, ...rest } = scanData;
 
     try {
       fetch("/api/inbound/scan", {
@@ -154,6 +129,7 @@ export default function BarcodeScanner() {
           barcodeId: productData.barcodeId,
           ...rest,
           category,
+          method: productData.method,
           threshold: sku?.threshold,
         }),
       })
@@ -292,7 +268,6 @@ export default function BarcodeScanner() {
         );
       case "date":
       case "purchaseOrder":
-      case "supplierName":
         return (
           <Input
             key={key}

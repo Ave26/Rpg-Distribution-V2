@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { renderToStream } from "@react-pdf/renderer";
 import prisma from "@/lib/prisma";
 import MyDocument from "@/components/MyDocument";
+import { authMiddleware } from "../../authMiddleware";
 
 export type TReportData = {
   product: string;
@@ -11,30 +12,30 @@ export type TReportData = {
   date: Date;
 };
 
-// export default authMiddleware(
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const reportData: TReportData = {
-    product: "Sample Product",
-    totalQuantityScanned: 100,
-    POO: "Origin Place",
-    date: new Date(),
-  };
+export default authMiddleware(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const reportData: TReportData = {
+      product: "Sample Product",
+      totalQuantityScanned: 100,
+      POO: "Origin Place",
+      date: new Date(),
+    };
 
-  const product = await prisma.assignedProducts.findMany({
-    where: { status: "Delivered" },
-    select: { skuCode: true },
-  });
+    const product = await prisma.assignedProducts.findMany({
+      where: { status: "Delivered" },
+      select: { skuCode: true },
+    });
 
-  // const pdfStream = await renderToStream(
-  //   <MyDocument reportData={reportData} product={product} />
-  // );
+    // const pdfStream = await renderToStream(
+    //   <MyDocument reportData={reportData} product={product} />
+    // );
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    "attachment; filename=productReport.pdf"
-  );
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=productReport.pdf"
+    );
 
-  // pdfStream.pipe(res);
-};
-// );
+    // return pdfStream.pipe(res);
+  }
+);

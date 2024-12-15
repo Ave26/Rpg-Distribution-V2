@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   Coordinates,
   TruckAvailability,
+  assignedProducts,
   binLocations,
   orderedProducts,
-  productStatus,
+  ProductStatus,
   records,
   stockKeepingUnit,
   trucks,
@@ -36,6 +37,7 @@ type OrderedProducts = orderedProducts & {
 
 type BinLocations = binLocations & {
   stockKeepingUnit: stockKeepingUnit;
+  assignedProducts: assignedProducts[];
 };
 
 type TStates = {
@@ -63,6 +65,7 @@ type TButtonName =
   | "Return"
   | "Start Deliver"
   | "Delivery Completed"
+  | "Home"
   | null;
 
 export default function UpdateTruckStatus({
@@ -86,11 +89,20 @@ export default function UpdateTruckStatus({
     const takeTotalAndBinLocId = truck?.records.flatMap((record) => {
       return record.orderedProducts.flatMap((orderedProduct) =>
         orderedProduct.binLocations.map((binLocation) => {
+          // take the length of the good product as quantity
+          const testCount = binLocation.assignedProducts.filter(
+            (ap) => ap.quality === "Good" && ap.status === "Loaded"
+          ).length;
+
+          console.log(testCount);
+          const test = binLocation.assignedProducts.filter((ap) => {
+            ap.quality === "Good" && ap.status === "Loaded";
+          });
           const total =
             binLocation.stockKeepingUnit.weight * binLocation.quantity;
           return {
             binLoc: binLocation.id,
-            total,
+            total: testCount,
           };
         })
       );
@@ -130,7 +142,7 @@ export default function UpdateTruckStatus({
         .then((data) => console.log(data))
         .catch((e) => console.error(e))
         .finally(() => {
-          mutate("/api/trucks/find-trucks");
+          mutate("/api/trucks/find");
           setLoading(false);
         });
     } catch (e) {
@@ -149,47 +161,102 @@ export default function UpdateTruckStatus({
     OnHold: null,
     EmergencyStop: "Start Deliver",
     GasStop: "Start Deliver",
+    Returning: "Home",
   };
 
   const renderButtonName = mappedComponent[truck.status]; // await the truck status
 
   useEffect(() => {
-    switch (renderButtonName) {
-      case "Start Deliver":
-        return setTruckForm({
-          ...truckform,
-          status: "InTransit",
-          truckId: truck.id,
-          truckName: truck.truckName,
-          coordinates,
-        });
-      case "Complete the Delivery":
-        return setTruckForm({
-          ...truckform,
-          status: "Delivered",
-          truckId: truck.id,
-          truckName: truck.truckName,
-          coordinates,
-        });
+    setTruckForm((prev) => {
+      switch (renderButtonName) {
+        case "Start Deliver":
+          return {
+            ...prev,
+            status: "InTransit",
+            truckId: truck.id,
+            truckName: truck.truckName,
+            coordinates,
+          };
+        case "Complete the Delivery":
+          return {
+            ...prev,
+            status: "Delivered",
+            truckId: truck.id,
+            truckName: truck.truckName,
+            coordinates,
+          };
+        case "Home":
+          return {
+            ...prev,
+            status: "Empty",
+            truckId: truck.id,
+            truckName: truck.truckName,
+            coordinates,
+          };
+        case "Return":
+          return {
+            ...prev,
+            status: "Returning",
+            truckId: truck.id,
+            truckName: truck.truckName,
+            coordinates,
+          };
+        default:
+          return {
+            ...prev,
+            status: "Empty",
+            truckId: truck.id,
+            truckName: truck.truckName,
+          };
+      }
+    });
+  }, [renderButtonName, truck.id, truck.truckName, coordinates]);
 
-      case "Return":
-        return setTruckForm({
-          ...truckform,
-          status: "Empty",
-          truckId: truck.id,
-          truckName: truck.truckName,
-          coordinates,
-        });
+  // useEffect(() => {
+  //   switch (renderButtonName) {
+  //     case "Start Deliver":
+  //       return setTruckForm({
+  //         ...truckform,
+  //         status: "InTransit",
+  //         truckId: truck.id,
+  //         truckName: truck.truckName,
+  //         coordinates,
+  //       });
+  //     case "Complete the Delivery":
+  //       return setTruckForm({
+  //         ...truckform,
+  //         status: "Delivered",
+  //         truckId: truck.id,
+  //         truckName: truck.truckName,
+  //         coordinates,
+  //       });
 
-      default:
-        return setTruckForm({
-          ...truckform,
-          status: "Empty",
-          truckId: truck.id,
-          truckName: truck.truckName,
-        });
-    }
-  }, [renderButtonName]);
+  //     case "Home":
+  //       return setTruckForm({
+  //         ...truckform,
+  //         status: "Empty",
+  //         truckId: truck.id,
+  //         truckName: truck.truckName,
+  //         coordinates,
+  //       });
+  //     case "Return":
+  //       return setTruckForm({
+  //         ...truckform,
+  //         status: "Returning",
+  //         truckId: truck.id,
+  //         truckName: truck.truckName,
+  //         coordinates,
+  //       });
+
+  //     default:
+  //       return setTruckForm({
+  //         ...truckform,
+  //         status: "Empty",
+  //         truckId: truck.id,
+  //         truckName: truck.truckName,
+  //       });
+  //   }
+  // }, [renderButtonName]);
 
   return (
     <button

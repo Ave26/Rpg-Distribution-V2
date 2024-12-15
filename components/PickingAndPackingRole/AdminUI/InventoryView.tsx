@@ -39,21 +39,19 @@ export type TStates = {
 type TStruck = "FILTER" | "INSERT" | "ADD" | undefined;
 
 export default function InventoryView({ states }: TInventoryView) {
-  const { setOrderedProducts, orderedProducts, binLocation, setToast, record } =
-    states;
+  const {
+    setOrderedProducts,
+    orderedProducts,
+    binLocation,
+    setToast,
+    record,
+    setBinLocation,
+  } = states;
   const [threshold, setThreshold] = useState(binLocation.totalQuantity);
 
   useEffect(() => {
     setThreshold(binLocation.totalQuantity);
   }, [binLocation.totalQuantity]);
-
-  // useEffect(() => {
-  //   console.log("orderedProducts", JSON.stringify(orderedProducts, null, 2));
-  // }, [orderedProducts]);
-
-  // useEffect(() => {
-  //   console.log("threshold", threshold);
-  // }, [threshold]);
 
   function findIndex(value: string) {
     const existingProductIndex = orderedProducts.findIndex(
@@ -160,6 +158,16 @@ export default function InventoryView({ states }: TInventoryView) {
     console.log("pocket", quantityPocket);
   }
 
+  const handleTagClick = async (tagName: string) => {
+    try {
+      await navigator.clipboard.writeText(tagName); // Copy to clipboard
+      // alert(`${tagName} copied! You can now paste it in the input field.`);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      // alert("Failed to copy. Please try again.");
+    }
+  };
+
   return (
     <div className="relative flex h-72 w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md border border-slate-200 bg-white p-2 text-center shadow-md transition-all md:h-full">
       {Array.isArray(states.bins) &&
@@ -174,6 +182,8 @@ export default function InventoryView({ states }: TInventoryView) {
             <React.Fragment key={bin.id}>
               <div
                 onClick={() => {
+                  const skuCode = bin.assignedProducts[0].skuCode;
+                  skuCode !== binLocation.searchSKU && handleTagClick(skuCode);
                   const isExists = states.orderedProducts.some((product) =>
                     product.binLocations.createMany.data.some(
                       (bin) => bin.binId === binId
@@ -183,10 +193,13 @@ export default function InventoryView({ states }: TInventoryView) {
                   const hasValue = Object.values(record).every(Boolean);
 
                   if (
-                    (states.binLocation.searchSKU &&
-                      states.binLocation.totalQuantity &&
-                      isExists) ||
-                    hasValue
+                    states.binLocation.searchSKU &&
+                    states.binLocation.totalQuantity
+
+                    // (states.binLocation.searchSKU &&
+                    //   states.binLocation.totalQuantity &&
+                    //   isExists) ||
+                    // hasValue     make some changes for checker, as for this, it is working.
                   ) {
                     handleBinSelection(bin);
                   } else {

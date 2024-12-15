@@ -81,10 +81,8 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
           ? !value
             ? ""
             : parseInt(value)
-          : value,
+          : value.toUpperCase(),
     });
-
-    // Conditionally trigger the toast if the value exceeds the total quantity or falls below
 
     if (name === "totalQuantity") {
       if (parseFloat(value) > totalQuantity || parseFloat(value) < 0) {

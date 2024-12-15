@@ -2,6 +2,7 @@ import useDeliveryLogs from "@/hooks/useDeliveryLogs";
 import { PDFViewer } from "@react-pdf/renderer";
 import React, { useEffect, useRef } from "react";
 import MyDocument from "../MyDocument";
+import MapRealTimeUpdate from "../MapRealTimeUpdate";
 
 function DeliveryLogs() {
   const { error, isLoading, deliveryLogs } = useDeliveryLogs();
@@ -39,6 +40,7 @@ function DeliveryLogs() {
                 <h3 className="place-self-center">
                   Longitude: {v.coordinates?.longitude}
                 </h3>
+                <MapRealTimeUpdate coordinates={v.coordinates} />
               </div>
             );
           })

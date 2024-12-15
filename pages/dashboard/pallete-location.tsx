@@ -10,69 +10,59 @@ import DamageBin from "@/components/PalleteLocation/DamageBin";
 import Bin from "@/components/PalleteLocation/Bin";
 
 type BinType = "Bin" | "Damage Bin";
-interface ViewProps {
-  materialize: BinType;
-}
-interface SelectViewProps {
-  setMaterialize: React.Dispatch<React.SetStateAction<BinType>>;
-}
-
-function View({ materialize }: ViewProps) {
-  const binSelection = {
-    Bin: <Bin />,
-    "Damage Bin": <DamageBin />,
-  };
-  const displayView = binSelection[materialize];
-  return <>{displayView}</>;
-}
-
-function SelectView({ setMaterialize }: SelectViewProps) {
-  return (
-    <>
-      <button
-        className={`${buttonStyleEdge}`}
-        onClick={() => setMaterialize("Bin")}
-      >
-        Bin
-      </button>
-      <button
-        className={`${buttonStyleEdge}`}
-        onClick={() => setMaterialize("Damage Bin")}
-      >
-        Damage Bin
-      </button>
-    </>
-  );
-}
 
 export default function PalleteLocation() {
-  const [materialize, setMaterialize] = useState<BinType>("Bin");
-
+  const [binType, setBinType] = useState<BinType>("Bin");
   return (
     <>
       <section className="flex h-full w-full flex-col gap-2 rounded-md bg-white p-2 font-bold">
         <div className="grid h-fit w-full grid-flow-col gap-2">
-          <SelectView setMaterialize={setMaterialize} />
+          <SelectionView setBinType={setBinType} binType={binType} />
         </div>
-        <View materialize={materialize} />
-
-        {/* <div className="flex flex-row items-center justify-center gap-2 border border-black p-3">
-          <ReusableButton name={"Create Rack"} onClick={() => setOpen(false)} />
-          <ReusableButton name={"Update Rack"} onClick={() => setOpen(true)} />
-          <button
-            onClick={handleClick}
-            type="button"
-            className={`${buttonStyleEdge} hover:bg-sky-300 active:bg-sky-500`}
-          >
-            Create Damage Bin
-          </button>
-          <button className={`${buttonStyleEdge} bg-red-600`}>
-            Add Damage Category
-          </button>
-        </div>
-        {openDamageBin ? <DamageBin /> : null}
-        {!open ? <CreateRack /> : <UpdateRack />} */}
+        <PalleteView binType={binType} />
       </section>
+    </>
+  );
+}
+
+interface PalleteViewProps {
+  binType: BinType;
+}
+
+function PalleteView({ binType }: PalleteViewProps) {
+  const binSelection = {
+    Bin: <Bin />,
+    "Damage Bin": <DamageBin />,
+  };
+  const materialize = binSelection[binType];
+
+  return <>{materialize}</>;
+}
+
+interface SelectionViewProps {
+  binType: BinType;
+  setBinType: React.Dispatch<React.SetStateAction<BinType>>;
+}
+
+function SelectionView({ setBinType, binType }: SelectionViewProps) {
+  const buttonSelections: BinType[] = ["Bin", "Damage Bin"];
+  return (
+    <>
+      {buttonSelections.map((name) => {
+        return (
+          <button
+            key={name}
+            onClick={() => {
+              setBinType(name);
+            }}
+            className={`${buttonStyleEdge} ${
+              name === binType && "bg-slate-600 text-white"
+            } `}
+          >
+            {name}
+          </button>
+        );
+      })}
     </>
   );
 }

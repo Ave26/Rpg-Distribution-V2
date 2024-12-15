@@ -9,7 +9,7 @@ import {
 import Loading from "../Parts/Loading";
 import useDamageCategories from "@/hooks/useDamageCategories";
 import { mutate } from "swr";
-import { Categories } from "@/fetcher/fetchDamageCategories";
+import { DamageCategories } from "@/fetcher/fetchDamageCategories";
 import { IoRemoveSharp } from "react-icons/io5";
 import { MdOutlineClear } from "react-icons/md";
 export interface DamageBin {
@@ -21,10 +21,6 @@ export interface DamageBin {
 interface FormProps extends ViewCategoriesProps {
   damageBin: DamageBin;
   setDamageBin: React.Dispatch<React.SetStateAction<DamageBin>>;
-}
-
-interface ViewCategoriesProps {
-  categories: Categories[] | undefined;
 }
 
 export default function DamageBin() {
@@ -170,7 +166,7 @@ function CategoryForm() {
         e.preventDefault();
         setLoading(true);
 
-        fetch("/api/inventory/category/create", {
+        fetch("/api/inventory/damage-categories/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(category.toUpperCase()),
@@ -208,6 +204,10 @@ function CategoryForm() {
   );
 }
 
+interface ViewCategoriesProps {
+  categories: DamageCategories[] | undefined;
+}
+
 function ViewCategories({ categories }: ViewCategoriesProps) {
   return (
     <>
@@ -224,7 +224,7 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
               </div>
               <button
                 onClick={() => {
-                  fetch("/api/inventory/category/remove", {
+                  fetch("/api/inventory/damage-categories/remove", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(category),

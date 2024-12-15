@@ -12,6 +12,12 @@ function CreateRack() {
   const [data, setData] = useState<any>("");
   const [isShow, setIsShow] = useState<boolean>(false);
 
+  // Food
+  // Laundry
+  // Cosmetics
+  // Sanitary
+  // Cleaning
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsShow(false);
@@ -39,7 +45,7 @@ function CreateRack() {
         }),
       });
       const json = await response.json();
-      console.log(json);
+      // console.log(json);
       setData(json?.message);
       setIsLoading(false);
       setIsShow(true);
@@ -57,7 +63,8 @@ function CreateRack() {
   return (
     <form
       onSubmit={handleCreateRack}
-      className="flex flex-col flex-wrap items-center justify-center gap-2 p-3">
+      className="flex flex-col flex-wrap items-center justify-center gap-2 p-3"
+    >
       <ReusableInput
         disableLabel={true}
         name="Rack Category"
