@@ -249,7 +249,14 @@ function FileUpload({ states }: { states: States }) {
   return (
     <div className="hidden">
       <CldUploadWidget
-        uploadPreset={"rpgprostock26"}
+        // uploadPreset={"rpgprostock26"}
+        uploadPreset={
+          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "rpgprostock26"
+        }
+        options={{
+          cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+          apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+        }}
         onSuccess={(res) => {
           console.log("onSuccess Triggered:", res); // Check if this logs
           handleSuccess(res); // Process the result
