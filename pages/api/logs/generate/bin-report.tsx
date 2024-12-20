@@ -2,8 +2,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { renderToStream } from "@react-pdf/renderer";
 import prisma from "@/lib/prisma";
-import MyDocument from "@/components/MyDocument";
-import OrderReport from "@/components/Report/OrderDocument";
 
 import { authMiddleware } from "../../authMiddleware";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
@@ -12,12 +10,15 @@ import {
   InventoryPage,
   isCategoryParams,
 } from "../../inventory/bins/find";
+import { Prisma } from "@prisma/client";
 
 export default authMiddleware(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const inventoryPage = req.query;
     // console.log(inventoryPage);
-    let newCategoryPage: InventoryPage | {} = {};
+    let newCategoryPage:
+      | InventoryPage
+      | Partial<Prisma.binLogReportCreateInput> = {};
 
     if (isCategoryParams(inventoryPage)) {
       // Use Object.entries to filter out empty values
@@ -27,6 +28,7 @@ export default authMiddleware(
         ) // Keep only non-empty values
       );
     }
+
     try {
       const bins = await prisma.bins
         .findMany({
@@ -131,6 +133,16 @@ export default authMiddleware(
           });
         });
       const pdfStream = await renderToStream(<BinDocument inventory={bins} />);
+
+      await prisma.binLogReport
+        .create({
+          data: {
+            category: newCategoryPage.category ?? "", // Ensure default values
+            rackName: newCategoryPage.rackName ?? "",
+            timeStamp: new Date().toISOString(),
+          },
+        })
+        .catch((e) => console.log(e));
 
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(

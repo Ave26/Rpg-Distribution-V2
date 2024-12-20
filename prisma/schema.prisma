@@ -107,6 +107,13 @@ model bins {
   binPlaceHolder    binPlaceHolder[]
 }
 
+model binLogReport {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  timeStamp DateTime
+  category  String
+  rackName  String
+}
+
 model binPlaceHolder {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   bin              bins               @relation(fields: [binId], references: [id])

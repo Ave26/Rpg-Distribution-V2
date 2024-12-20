@@ -4,7 +4,8 @@ import { TruckAvailability } from "@prisma/client";
 export type TSelectedBTN =
   | "Truck Management"
   | "View Truck Loads"
-  | "Manage Location";
+  | "Manage Location"
+  | "Empty";
 
 export type TForm = Pick<trucks, "truckName" | "plate" | "payloadCapacity">;
 export type TFormExtend = TForm & {

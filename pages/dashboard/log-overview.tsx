@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import useDeliveryLogs from "@/hooks/useDeliveryLogs";
 import Map from "@/components/ReusableComponent/Map";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
+import useBinLogReport from "@/hooks/useBinLogReport";
 
 export default function LogOverview() {
   const [position, setPosition] = useState<[number, number]>([0, 0]);
@@ -34,6 +35,7 @@ export default function LogOverview() {
       </div>
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <Reports />
+        <BinLogReports />
       </div>
       <div className="relative col-span-1  flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Delivery Logs</h1>
@@ -53,6 +55,30 @@ LogOverview.getLayout = (page: ReactElement) => {
     </Layout>
   );
 };
+
+function BinLogReports() {
+  const { error, binReport, isLoading } = useBinLogReport();
+
+  return (
+    <div className="flex flex-col gap-2 border border-black p-2">
+      <h1>LOG REPORT</h1>
+      {Array.isArray(binReport) &&
+        binReport
+          .map((bin) => {
+            return (
+              <a
+                key={bin.id}
+                href={`/api/logs/generate/bin-report?category=${bin.category}&rackName=${bin.rackName}`}
+                className="flex flex-col gap-2 hover:text-blue-800"
+              >
+                {bin.category}-{bin.rackName}-{bin.timeStamp.toString()}
+              </a>
+            );
+          })
+          .reverse()}
+    </div>
+  );
+}
 
 /*
   beofre set the truck status to be delivered, check first the products inside if all of those are delivered
