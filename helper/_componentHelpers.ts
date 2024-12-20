@@ -1,101 +1,101 @@
-import { EntriesTypes } from "@/types/binEntries";
-import { Bin } from "@/types/inventory";
-import {
-  assignedProducts,
-  bins,
-  products,
-  stockKeepingUnit,
-} from "@prisma/client";
+// import { EntriesTypes } from "@/types/binEntries";
+// import { Bin } from "@/types/inventory";
+// import {
+//   assignedProducts,
+//   bins,
+//   products,
+//   stockKeepingUnit,
+// } from "@prisma/client";
 
-type ToastTypes = {
-  message: string;
-  isShow: boolean;
-};
-
-type TBins = bins & {
-  _count: {
-    assignedProducts: number;
-  };
-  assignedProducts: TAssignedProducts[];
-};
-
-type TAssignedProducts = assignedProducts & {
-  sku: stockKeepingUnit;
-  products: products;
-};
-
-// type TAssignedProducts = {
-//   expirationDate: string;
-//   dateReceive: string;
-//   barcodeId: string;
-//   skuCode: string;
-//   sku: {
-//     weight: number;
-//   };
-//   products: {
-//     barcodeId: string;
-//     productName: string;
-//     sku: TSKU[];
-//     price: number;
-//   };
+// type ToastTypes = {
+//   message: string;
+//   isShow: boolean;
 // };
 
 // type TBins = bins & {
-//   assignedProducts: TAssignedProducts[];
-//   racks: {
-//     name: string;
-//     categories: {
-//       category: string;
-//     };
-//   };
 //   _count: {
 //     assignedProducts: number;
 //   };
+//   assignedProducts: TAssignedProducts[];
 // };
 
-export const getRequiredBinData = (bin: TBins, quantity: number) => {
-  const productName = bin.assignedProducts[0].products.productName;
-  const barcodeId = bin.assignedProducts[0].barcodeId;
-  const expiryDate = bin.assignedProducts[0].expirationDate;
-  const price = Number(bin.assignedProducts[0].products.price);
-  const skuCode = bin.assignedProducts[0].skuCode;
-  const weight = bin.assignedProducts[0].sku.weight;
-  const binId = bin.id;
+// type TAssignedProducts = assignedProducts & {
+//   sku: stockKeepingUnit;
+//   products: products;
+// };
 
-  let newEntry: EntriesTypes = {
-    totalQuantity: Number(quantity),
-    productName,
-    barcodeId,
-    skuCode,
-    weight,
-    expiryDate,
-    price,
-    binIdsEntries: [binId],
-  };
+// // type TAssignedProducts = {
+// //   expirationDate: string;
+// //   dateReceive: string;
+// //   barcodeId: string;
+// //   skuCode: string;
+// //   sku: {
+// //     weight: number;
+// //   };
+// //   products: {
+// //     barcodeId: string;
+// //     productName: string;
+// //     sku: TSKU[];
+// //     price: number;
+// //   };
+// // };
 
-  return {
-    newEntry,
-    binId,
-  };
-};
+// // type TBins = bins & {
+// //   assignedProducts: TAssignedProducts[];
+// //   racks: {
+// //     name: string;
+// //     categories: {
+// //       category: string;
+// //     };
+// //   };
+// //   _count: {
+// //     assignedProducts: number;
+// //   };
+// // };
 
-export const getProductTotalQuantity = (
-  bins: TBins[],
-  quantity: number,
-  setToast: React.Dispatch<React.SetStateAction<ToastTypes>>
-) => {
-  let totalProductQuantity: number = 0;
-  if (bins) {
-    for (let i = 0; i < Number(bins?.length); i++) {
-      const productCount = Number(bins[i]?._count.assignedProducts);
-      totalProductQuantity += productCount;
-    }
-  }
+// export const getRequiredBinData = (bin: TBins, quantity: number) => {
+//   const productName = bin.assignedProducts[0].products.productName;
+//   const barcodeId = bin.assignedProducts[0].barcodeId;
+//   const expiryDate = bin.assignedProducts[0].expirationDate;
+//   const price = Number(bin.assignedProducts[0].products.price);
+//   const skuCode = bin.assignedProducts[0].skuCode;
+//   const weight = bin.assignedProducts[0].sku.weight;
+//   const binId = bin.id;
 
-  if (quantity > totalProductQuantity) {
-    setToast({ isShow: true, message: "Action Denied" });
-    return console.log("Requested Quantity Exceeded");
-  }
+//   let newEntry: EntriesTypes = {
+//     totalQuantity: Number(quantity),
+//     productName,
+//     barcodeId,
+//     skuCode,
+//     weight,
+//     expiryDate,
+//     price,
+//     binIdsEntries: [binId],
+//   };
 
-  return totalProductQuantity;
-};
+//   return {
+//     newEntry,
+//     binId,
+//   };
+// };
+
+// export const getProductTotalQuantity = (
+//   bins: TBins[],
+//   quantity: number,
+//   setToast: React.Dispatch<React.SetStateAction<ToastTypes>>
+// ) => {
+//   let totalProductQuantity: number = 0;
+//   if (bins) {
+//     for (let i = 0; i < Number(bins?.length); i++) {
+//       const productCount = Number(bins[i]?._count.assignedProducts);
+//       totalProductQuantity += productCount;
+//     }
+//   }
+
+//   if (quantity > totalProductQuantity) {
+//     setToast({ isShow: true, message: "Action Denied" });
+//     return console.log("Requested Quantity Exceeded");
+//   }
+
+//   return totalProductQuantity;
+// };

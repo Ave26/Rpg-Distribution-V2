@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Toast from "./Toast";
@@ -21,7 +21,7 @@ export default function ProductImage({
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  async function handleSubmit() {
+  const handleSubmit = useCallback(async () => {
     if (barcodeId?.length === 14) {
       try {
         const response = await fetch("/api/product/find", {
@@ -38,7 +38,7 @@ export default function ProductImage({
         const product = await json?.product;
 
         setProductImage(product?.image);
-        // console.log(json);
+
         if (json?.authenticated === false || response.status === 403) {
           setMessage(json?.message);
           router.push("/login");
@@ -46,18 +46,17 @@ export default function ProductImage({
 
         setIsLoading(false);
         setIsShow(true);
-
-        // console.log(json?.message);
       } catch (error) {
         console.log(error);
         setIsLoading(false);
       }
     }
-  }
+  }, [barcodeId, router]);
 
   useEffect(() => {
     handleSubmit();
-  }, [barcodeId]);
+  }, [barcodeId, handleSubmit]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsShow(false);

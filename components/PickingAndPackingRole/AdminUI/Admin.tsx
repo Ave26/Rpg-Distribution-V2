@@ -43,6 +43,7 @@ export default function Admin() {
   const [currrentCapacity, setCurrrentCapacity] = useState<number>(0);
   const [binLocations, setBinLocations] = useState<TBinLocations[]>([]);
   const [weight, setWeight] = useState(0);
+
   const [orderedProducts, setOrderedProducts] = useState<
     TCreateOrderedProduct[]
   >([]);
@@ -75,7 +76,7 @@ export default function Admin() {
         console.log("weight", weight);
         return weight;
       });
-  }, [data, binLocation.searchSKU]);
+  }, [data, binLocation.searchSKU, weight]);
 
   return (
     <div className="flex h-full w-full flex-wrap items-center justify-center gap-2  text-black transition-all md:flex-nowrap md:items-start md:justify-start">

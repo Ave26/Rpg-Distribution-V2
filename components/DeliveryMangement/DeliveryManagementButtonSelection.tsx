@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TSelectedBTN } from "./deliveryManagementTypes";
-import { buttonStyle, buttonStyleEdge } from "@/styles/style";
-import { UserRole } from "@prisma/client";
+import { buttonStyleEdge } from "@/styles/style";
 
 type TDMSProps = {
   states: TStates;

@@ -26,7 +26,7 @@ async function handler(
           Admin: getTruckAdminAccess,
           SuperAdmin: getTruckAdminAccess,
           Staff: getTruckStaffAccess,
-          Driver: () => getTruckDriverAccess(userId),
+          Driver: () => getTruckDriverAccess(userId, ""),
         };
 
         const { error, trucks } = await roleMapping[roles as UserRole]();

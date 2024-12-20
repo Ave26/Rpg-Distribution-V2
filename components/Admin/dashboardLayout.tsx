@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UserRole } from "@prisma/client";
 
 import { useMyContext } from "@/contexts/AuthenticationContext";
@@ -8,6 +8,7 @@ import { TEndPoints, TRole, TRoleToRoutes } from "@/types/roleTypes";
 import { linkStyle } from "@/styles/style";
 import { roleToRoutes } from "../RoleBaseRoutes";
 import LogoutButton from "../Parts/LogoutButton";
+import { AiOutlineLoading } from "react-icons/ai";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const role: string | undefined = globalState?.verifiedToken?.roles;
   const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
   const currentPath = router.asPath;
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const handleRouteChange = (loading: boolean) => setIsLoading(loading);
+
+    router.events.on("routeChangeStart", () => handleRouteChange(true));
+    router.events.on("routeChangeComplete", () => handleRouteChange(false));
+    router.events.on("routeChangeError", () => handleRouteChange(false));
+
+    return () => {
+      router.events.off("routeChangeStart", () => handleRouteChange(true));
+      router.events.off("routeChangeComplete", () => handleRouteChange(false));
+      router.events.off("routeChangeError", () => handleRouteChange(false));
+    };
+  }, [router]);
 
   useEffect(() => {
     if (mapRoutes) {
@@ -44,9 +60,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex h-full w-full flex-none  flex-row  justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
         {renderAside}
       </div>
-      <main className="animation-emerge relative h-full w-full">
-        {children}
-      </main>
+      {isLoading ? (
+        <div className="flex h-full w-screen animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
+          <AiOutlineLoading className="animate-spin" size={30} />
+        </div>
+      ) : (
+        <main className="animation-emerge relative h-full w-full">
+          {children}
+        </main>
+      )}
     </div>
   );
 }

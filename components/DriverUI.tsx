@@ -7,7 +7,7 @@ import {
 } from "@/types/deliveryTypes";
 // import { getTrucks } from "@/lib/prisma/trucks";
 import { trucks as TTrucks } from "@prisma/client";
-import MapRealTimeUpdate from "./MapRealTimeUpdate";
+// import MapRealTimeUpdate from "./MapRealTimeUpdate";
 import useSWR from "swr";
 
 type TDriverUIProps = {

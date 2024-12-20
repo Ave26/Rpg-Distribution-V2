@@ -8,7 +8,8 @@ import { RxCross2 } from "react-icons/rx";
 import Input from "../Parts/Input";
 import { mutate } from "swr";
 import useCategories from "@/hooks/useCategories";
-import { InventoryPage } from "@/pages/api/inventory/bins/find";
+import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";
+import Link from "next/link";
 
 type Button = "Move Damage Product" | "Print Inventory" | "Organize Bin";
 interface BinInventoryProps {}
@@ -90,16 +91,21 @@ export default function BinInventory({}: BinInventoryProps) {
       }
     );
 
-    elementRefs.current.forEach((el) => {
+    // Copy the current refs to a local variable
+    const currentElementRefs = elementRefs.current;
+
+    // Observe elements
+    currentElementRefs.forEach((el) => {
       if (el) observer.observe(el);
     });
 
+    // Cleanup function
     return () => {
-      elementRefs.current.forEach((el) => {
+      currentElementRefs.forEach((el) => {
         if (el) observer.unobserve(el);
       });
     };
-  }, [moveDamageProduct]);
+  }, [moveDamageProduct]); // Only re-run when `moveDamageProduct` changes
 
   const handleTagClick = async (tagName: string) => {
     try {
@@ -161,6 +167,7 @@ export default function BinInventory({}: BinInventoryProps) {
                     <h1>Count: {v.bin.count}</h1>
                   </div>
                 </div>
+
                 {visibleButtons[i] && (
                   <select
                     className={`${InputStyle} text-[.64rem] ${
@@ -183,21 +190,18 @@ export default function BinInventory({}: BinInventoryProps) {
                       Select Bin
                     </option>
                     {inventory
-                      .filter(
-                        (value) => value.bin.binId !== v.bin.binId
-                        // !Object.values(selectedBinIds).includes(
-                        //   value.bin.binId
-                        // )
-                      )
+                      .filter((value) => value.bin.binId !== v.bin.binId)
                       .map((v) => {
                         return (
                           <option
+                            key={i}
                             value={v.bin.binId}
                           >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
                         );
                       })}
                   </select>
                 )}
+
                 {visibleButtons[i] && (
                   <>
                     <MdMoveDown
@@ -225,6 +229,7 @@ export default function BinInventory({}: BinInventoryProps) {
         <div className="w-1/2  rounded-br-md bg-slate-300">
           <OrganizeBinForm
             states={{
+              inventory,
               page,
               setPage,
               inventoryActionState,
@@ -272,7 +277,7 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
     <>
       {buttons.map((btnName, i) => {
         return (
-          <div className="flex flex-col gap-2 transition-all">
+          <div key={i} className="flex flex-col gap-2 transition-all">
             <button
               key={btnName}
               onClick={() => {
@@ -319,7 +324,7 @@ interface OrganizeFormProps {
         isOpen: boolean;
       }>
     >;
-
+    inventory: InventoryBins[] | undefined;
     setSelectedBinIds: React.Dispatch<
       React.SetStateAction<Record<string, string>>
     >;
@@ -330,7 +335,7 @@ interface OrganizeFormProps {
 }
 
 function OrganizeBinForm({ states }: OrganizeFormProps) {
-  const { selectedBinIds, setSelectedBinIds } = states;
+  const { selectedBinIds, setSelectedBinIds, inventory } = states;
   console.log(selectedBinIds);
   const { categories, error, isLoading } = useCategories();
   const { page, setPage } = states;
@@ -364,8 +369,10 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
             Select Category
           </option>
           {Array.isArray(categories) &&
-            categories.map((v) => (
-              <option className="text-xs">{v.category}</option>
+            categories.map((v, index) => (
+              <option key={index} className="text-xs">
+                {v.category}
+              </option>
             ))}
         </select>
         <button
@@ -401,8 +408,12 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
               .find((v) => {
                 return v.category === page.category;
               })
-              ?.rackNames.map((rackName) => {
-                return <option value={rackName}>{rackName}</option>;
+              ?.rackNames.map((rackName, index) => {
+                return (
+                  <option key={index} value={rackName}>
+                    {rackName}
+                  </option>
+                );
               })}
         </select>
         <button
@@ -457,7 +468,7 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
             id="moveProducts"
             type="submit"
             disabled={isButtonEnable}
-            onMouseOver={() => {
+            onMouseEnter={() => {
               if (isButtonEnable)
                 alert(`button is disabled = ${isButtonEnable}`);
             }}
@@ -541,6 +552,13 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
           >
             Clear Selected
           </button>
+          <a
+            // href={`/api/logs/generate/bin-report?page=${JSON.stringify(page)}`}
+            href={`/api/logs/generate/bin-report?category=${page.category}&rackName=${page.rackName}`}
+            className="hover:text-blue-900"
+          >
+            Download Bin Record
+          </a>
         </div>
       )}
 

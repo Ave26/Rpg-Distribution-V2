@@ -103,7 +103,7 @@ const BinTable = ({ bins, states }: TBinTableProps) => {
                 {
                   bin.assignedProducts.map((assignedProduct) => (
                     <p key={assignedProduct.id}>
-                      {String(assignedProduct?.expirationDate).split("T")[0]}
+                      {/* {String(assignedProduct?.expirationDate).split("T")[0]} */}
                     </p>
                   ))[0]
                 }
@@ -112,7 +112,7 @@ const BinTable = ({ bins, states }: TBinTableProps) => {
                 {
                   bin.assignedProducts.map((assignedProduct) => (
                     <p key={assignedProduct.id}>
-                      {String(assignedProduct?.dateReceived).split("T")[0]}
+                      {/* {String(assignedProduct?.dateReceived).split("T")[0]} */}
                     </p>
                   ))[0]
                 }

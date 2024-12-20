@@ -39,7 +39,7 @@ export default function Header() {
           globalState?.authenticated
         )}`
       );
-  }, [Boolean(globalState?.authenticated)]);
+  }, [globalState?.authenticated]);
 
   return (
     <div
@@ -53,7 +53,7 @@ export default function Header() {
           className={`flex h-fit  w-fit select-none flex-row items-end justify-center gap-2  p-2`}
         >
           {mapRoutes?.map((route, index) => (
-            <Link key={index} href={route.path}>
+            <Link key={index} href={route.path} passHref>
               <Image
                 priority
                 src={ProStockV2}

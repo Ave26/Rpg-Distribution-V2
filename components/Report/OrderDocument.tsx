@@ -81,6 +81,7 @@ export default function OrderReport({ record }: TOrderReportProps) {
     "Total Quantity",
     "Total Amount",
   ];
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>

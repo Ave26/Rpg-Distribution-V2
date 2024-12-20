@@ -4,7 +4,7 @@ import {
   users,
   orderedProducts,
   products,
-  productStatus,
+  ProductStatus,
 } from "@prisma/client";
 
 type TAuthor = Omit<users, "id" | "password" | "additionalInfo" | "roles">;
@@ -18,7 +18,7 @@ export type TRecords = records & {
 type TAssginedProducts = {
   id: string;
   expirationDate: Date;
-  status: productStatus;
+  status: ProductStatus;
 };
 
 type TOrderedProducts = orderedProducts & {

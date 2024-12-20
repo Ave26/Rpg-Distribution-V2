@@ -148,8 +148,8 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
                 <div className="flex w-full animate-emerge gap-2 transition-all">
                   <h1 className="flex-none">Rack Names:</h1>
                   <div className="flex w-full gap-2">
-                    {rackNames.map((v) => (
-                      <h1>[{v}]</h1>
+                    {rackNames.map((v, i) => (
+                      <h1 key={i}>[{v}]</h1>
                     ))}
                   </div>
                 </div>

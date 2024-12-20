@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, SetStateAction, useEffect, useState } from "react";
 import PickingAndPacking from "./picking-and-packing";
 import Layout from "@/components/layout";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
@@ -10,33 +10,37 @@ import GenerateReport from "../api/generateReport";
 import MyDocument from "@/components/MyDocument";
 import Link from "next/link";
 import { PDFViewer } from "@react-pdf/renderer";
-import MapRealTimeUpdate from "@/components/MapRealTimeUpdate";
+import LeafletMap from "@/components/ReusableComponent/Map/LeafletMap";
+import dynamic from "next/dynamic";
+import useDeliveryLogs from "@/hooks/useDeliveryLogs";
+import Map from "@/components/ReusableComponent/Map";
+import BinDocument from "@/components/Report/Inventory/BinDocument";
 
 export default function LogOverview() {
+  const [position, setPosition] = useState<[number, number]>([0, 0]);
+  const [truckName, setTruckName] = useState<string>("");
+
   return (
     <section className="grid h-full grid-cols-1 gap-2 md:grid-cols-2">
-      {/* <Logs />
-        
-      <OrderQueue />
-      <DeliveryLogs /> */}
       <div className="relative col-span-1 flex flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Order Queue</h1>
-
         <OrderQueue />
-        <Link
+        <a
           href={"/api/logs/generate/orderReports"}
           className="absolute right-2 top-2 uppercase text-sky-500 underline"
         >
           Generate Orders For This Month
-        </Link>
+        </a>
       </div>
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <Reports />
-        {/* <Test /> */}
       </div>
-      <div className="relative col-span-1 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
+      <div className="relative col-span-1  flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Delivery Logs</h1>
-        <DeliveryLogs />
+        <DeliveryLogs states={{ position, setPosition, setTruckName }} />
+        <div className="relative">
+          <Map coordinates={position} truckName={truckName} />
+        </div>
       </div>
     </section>
   );
@@ -50,13 +54,13 @@ LogOverview.getLayout = (page: ReactElement) => {
   );
 };
 
-/* 
+/*
   beofre set the truck status to be delivered, check first the products inside if all of those are delivered
   every product that has been delivered has a logs records so the it can be track the info later
 
-  IMPLEMENT: 
+  IMPLEMENT:
   DEPLOYED VERSION OF GEOLOCATION TO BE ENABLED √
-  OUTOBUND DAMAGE PRODUCT | REPORT  -- DONWLODABLE 
+  OUTOBUND DAMAGE PRODUCT | REPORT  -- DONWLODABLE
   INVENTORY DAMAGE PRODUCT | REPORT -- DOWNLODABLE
   REPLENISHMENT AND SORTING
     - POLLING THE PRODUCT TO BE REPLENISH
@@ -65,8 +69,7 @@ LogOverview.getLayout = (page: ReactElement) => {
   PRODUCT, TOTAL QUANTITY SCANNED, POO, DATE
   DOWNLOADABLE DESGINED PDF
 
-
-  ADDED TODO: 
+  ADDED TODO:
   CREATE LINK TO DISPLAY MAP
   THE FILL METHOD NEEDS A SIZE IN IMAGE && CHANGE THE PATH IN TO URL
 */

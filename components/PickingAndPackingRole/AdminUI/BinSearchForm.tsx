@@ -58,7 +58,14 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
         });
       }
     }
-  }, [currrentCapacity, binLocation.totalQuantity]);
+  }, [
+    currrentCapacity,
+    binLocation.totalQuantity,
+    weight,
+    binLocation,
+    setBinLocation,
+    setToast,
+  ]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -132,7 +139,7 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
   useEffect(() => {
     !binLocation.searchSKU &&
       setBinLocation({ ...binLocation, totalQuantity: 0 });
-  }, [binLocation.searchSKU]);
+  }, [binLocation.searchSKU, binLocation, setBinLocation]);
 
   return (
     <form

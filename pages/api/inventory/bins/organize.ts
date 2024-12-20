@@ -95,7 +95,7 @@ export async function handler(
         let binsFromBinMap = sortedBinMap.values().next().value || []; // binMap = [bin1, bin2, bin3]
         const key = sortedBinMap.keys().next().value || ""; // skuCode, dateInfo
 
-        binsFromBinMap = binsFromBinMap.filter((v) => v.count > 0); // Only process non-empty bins and not same product
+        binsFromBinMap = binsFromBinMap.filter((v: BinMap) => v.count > 0); // Only process non-empty bins and not same product
         console.log(binsFromBinMap);
 
         for (const targetBin of binsFromBinMap) {
@@ -107,7 +107,7 @@ export async function handler(
 
           const limitedProductIds = targetBin.assignedProducts
             .slice(0, transferable)
-            .map((v) => v.id);
+            .map((v: { id: string; PO: string }) => v.id);
 
           const update = prisma.assignedProducts.updateMany({
             where: {
@@ -126,7 +126,8 @@ export async function handler(
             targetBin.count -= transferable; // binMap count
 
             targetBin.assignedProducts = targetBin.assignedProducts.filter(
-              (product) => !limitedProductIds.includes(product.id)
+              (product: { id: string; PO: string }) =>
+                !limitedProductIds.includes(product.id)
             );
 
             bins[targetBin.binIndex]._count.assignedProducts -= transferable;
@@ -146,7 +147,7 @@ export async function handler(
 
         sortedBinMap.set(
           key,
-          binsFromBinMap.filter((v) => v.count > 0) // Only keep non-empty bins
+          binsFromBinMap.filter((v: BinMap) => v.count > 0) // Only keep non-empty bins
         );
 
         // Delete the key if the count is 0 (or no bins left after filtering)

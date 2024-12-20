@@ -59,7 +59,7 @@ export default async function handler(
             barcodeId: true,
             skuCode: true,
             status: true,
-            expirationDate: true,
+            // expirationDate: true,
             sku: {
               select: {
                 weight: true,

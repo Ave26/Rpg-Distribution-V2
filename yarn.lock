@@ -7,6 +7,11 @@
   resolved "https://registry.npmjs.org/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
+"@ag-media/react-pdf-table@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@ag-media/react-pdf-table/-/react-pdf-table-2.0.0.tgz"
+  integrity sha512-fChEZgaIIBW6sG3H9v5ntY6DA6+CmjBV+VWjDhbbf8cRCfUE/WlnWe1xttoPqbwRRdkgJhvQBjQfxUgAswOz1A==
+
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
   resolved "https://registry.npmjs.org/@alloc/quick-lru/-/quick-lru-5.2.0.tgz"
@@ -336,7 +341,7 @@
     parse-svg-path "^0.1.2"
     svg-arc-to-cubic-bezier "^3.2.0"
 
-"@react-pdf/renderer@^3.1.12":
+"@react-pdf/renderer@^2.0.2 || ^3.0.0 || ^4.0.0", "@react-pdf/renderer@^3.1.12":
   version "3.1.12"
   resolved "https://registry.npmjs.org/@react-pdf/renderer/-/renderer-3.1.12.tgz"
   integrity sha512-y4H2ELH0okJP7+ig+uNjFAfuAanWiF3mxsKsE7ZBuhF4tabbMt9fX+pQ7qn4xrzEWX0vlso6s6ebkkeGdSGWzA==
@@ -354,7 +359,7 @@
     queue "^6.0.1"
     scheduler "^0.17.0"
 
-"@react-pdf/stylesheet@^4.1.7":
+"@react-pdf/stylesheet@^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0", "@react-pdf/stylesheet@^4.1.7":
   version "4.1.7"
   resolved "https://registry.npmjs.org/@react-pdf/stylesheet/-/stylesheet-4.1.7.tgz"
   integrity sha512-3n0Vg0XFszPyo0MpH75DkLRvsS4JOE0HzBH6XqFHDiquZDrC4mNgmMhZEbsOED+8xDGoCeVh8fLU3L6Tu0HWqg==
@@ -468,6 +473,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/geojson@*":
+  version "7946.0.15"
+  resolved "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.15.tgz"
+  integrity sha512-9oSxFzDCT2Rj6DfcHF8G++jxBKS7mBqXl5xrRW+Kbvjry6Uduya2iiwqHPhVXpasAVMBYKkEPGgKhd3+/HZ6xA==
+
 "@types/google-map-react@^2.1.8":
   version "2.1.8"
   resolved "https://registry.npmjs.org/@types/google-map-react/-/google-map-react-2.1.8.tgz"
@@ -486,6 +496,13 @@
   integrity sha512-drE6uz7QBKq1fYqqoFKTDRdFCPHd5TCub75BM+D+cMx7NU9hUz7SESLfC2fSCXVFMO5Yj8sOWHuGqPgjc+fz0Q==
   dependencies:
     "@types/node" "*"
+
+"@types/leaflet@^1.9.15":
+  version "1.9.15"
+  resolved "https://registry.npmjs.org/@types/leaflet/-/leaflet-1.9.15.tgz"
+  integrity sha512-7UuggAuAs+mva66gtf2OTB1nEhzU/9JED93TIaOEgvFMvG/dIGQaukHE7izHo1Zd+Ko1L4ETUw7TBc8yUxevpg==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/mime@*", "@types/mime@^1":
   version "1.3.2"
@@ -2748,7 +2765,7 @@ react-leaflet@^4.0.0:
   dependencies:
     "@react-leaflet/core" "^2.0.0"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.3.3 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.6 || ^17.0.0 || ^18.0.0", "react@^17 || ^18 || >=19.0.0-beta", "react@^17.x || ^18.x", react@^18.0.0, react@^18.2.0, "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.3.3 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.6 || ^17.0.0 || ^18.0.0", "react@^16.8.6 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^17 || ^18 || >=19.0.0-beta", "react@^17.x || ^18.x", react@^18.0.0, react@^18.2.0, "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

@@ -47,13 +47,13 @@ export default function ProductInventory() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setToast({ ...toast, show: false });
+      setToast((prevState) => ({ ...prevState, show: false }));
     }, 1200);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [toast.show]);
+  }, [toast.show, setToast]);
 
   return (
     <section className="flex h-[30.5em] w-full items-start justify-center overflow-y-scroll border border-black">

@@ -21,10 +21,7 @@ export default function TruckManagement() {
 
   useEffect(() => {
     const timer: NodeJS.Timeout = setTimeout(() => {
-      setToast({
-        ...toast,
-        show: false,
-      });
+      setToast((prevState) => ({ ...prevState, show: false }));
     }, 2200);
 
     return () => {

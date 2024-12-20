@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+// import { Category } from "@prisma/client";
 import prisma from ".";
 
 export const findPublicProducts = async () => {

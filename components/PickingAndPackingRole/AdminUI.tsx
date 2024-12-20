@@ -13,7 +13,7 @@ import Head from "next/head";
 import Search from "../Parts/Search";
 import ReusableButton from "../Parts/ReusableButton";
 import Loading from "../Parts/Loading";
-import BinsLayout from "../BinsLayout";
+// import BinsLayout from "../BinsLayout";
 import Toast from "../Parts/Toast";
 
 type TBins = bins & {
@@ -174,7 +174,7 @@ export default function PickingAndPacking() {
       return truck.truckName === formData.truck;
     });
     setTruckCapacity(truck?.payloadCapacity!);
-  }, [formData.truck, formData]);
+  }, [formData.truck, formData, testTrucks]);
 
   const inputStyle =
     "appearance-none select-none block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
@@ -321,7 +321,7 @@ export default function PickingAndPacking() {
           </div>
         ) : (
           <div className="relative flex h-full w-fit flex-col items-center justify-start transition-all">
-            <BinsLayout
+            {/* <BinsLayout
               bins={bins}
               // truckCapacity={truckCapacity}
               formData={formData}
@@ -330,7 +330,7 @@ export default function PickingAndPacking() {
               trucks={testTrucks}
               setIsDisabled={setIsDisabled}
               dataEntries={{ productEntry, setProductEntry }}
-            />
+            /> */}
             <div className="relative h-[17em] w-full overflow-y-auto border border-black p-2 text-black  md:w-[45em]">
               {productEntry?.map((entry, index) => (
                 <span

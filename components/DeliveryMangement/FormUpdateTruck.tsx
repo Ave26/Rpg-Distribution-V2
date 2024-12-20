@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TForm, TFormExtend, TSelectedTruck } from "./deliveryManagementTypes";
 import TMInput from "./TMInput";
 import { IoIosClose } from "react-icons/io";
@@ -30,15 +30,29 @@ type TStates = {
 export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
   const [loading, setLoading] = useState(false);
   const { setTruckComponentKey, selectedTruck, setToast } = states;
+  const initialForm = useMemo(
+    () => ({
+      truckName: selectedTruck.truckName,
+      plate: "",
+      payloadCapacity: 0,
+      status: selectedTruck.truckStatus,
+    }),
+    [selectedTruck.truckName, selectedTruck.truckStatus] // Dependencies
+  );
+
+  const [form, setForm] = useState<TFormExtend>(initialForm);
+
+  useEffect(() => {
+    setForm(initialForm);
+  }, [initialForm]);
+
+  // useEffect(() => {
+  //   setForm({ ...form, status: selectedTruck.truckStatus });
+  // }, [selectedTruck.truckStatus]); change it to useMemo
+
   const truckStatus: string[] = Object.keys(TruckAvailability).map(
     (key) => TruckAvailability[key as TruckAvailability] // convert enums to array
   );
-  const [form, setForm] = useState<TFormExtend>({
-    truckName: selectedTruck.truckName,
-    plate: "",
-    payloadCapacity: 0,
-    status: selectedTruck.truckStatus, // need initial value to be based on the swr data
-  });
 
   function handleChange(
     e:
@@ -75,10 +89,6 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
         setLoading(false);
       });
   }
-
-  useEffect(() => {
-    setForm({ ...form, status: selectedTruck.truckStatus });
-  }, [selectedTruck.truckStatus]);
 
   return (
     <form

@@ -124,11 +124,6 @@ export async function getTruckStaffAccess() {
 }
 export async function getTruckDriverAccess(id: string, status: string) {
   console.log("truck driver access..");
-  // needs to filter something to change the display for records level
-
-  /* 
-     if the 
-  */
 
   try {
     const truck = await prisma.trucks.findFirst({

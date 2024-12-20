@@ -60,6 +60,7 @@ async function handler(
 
     const products = await prisma.products.create({
       data: {
+        method: "",
         barcodeId,
         category,
         productName,

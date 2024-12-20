@@ -1,4 +1,3 @@
-import Loading from "@/components/Parts/Loading";
 import React, { useEffect, useState } from "react";
 import { TSKU, TToast } from "../InventoryTypes";
 import { stockKeepingUnit } from "@prisma/client";
@@ -43,6 +42,7 @@ type TData = {
 };
 
 function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
+  const { toast, setToast } = states;
   const [skuReq, setSKUReq] = useState<"alter" | "add" | "default">("default");
   const [swapBtn, setSwapBtn] = useState(false);
 
@@ -112,16 +112,21 @@ function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      states.setToast((prevState) => ({ ...prevState, show: false }));
-    }, 1200);
+    const timer: NodeJS.Timeout = setTimeout(() => {
+      setToast((prevToast) => ({
+        ...prevToast,
+        show: false,
+      }));
+    }, 2200);
 
-    return () => clearTimeout(timer);
-  }, [states.toast.show]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [toast.show, setToast]); // having setToast as depency
 
-  useEffect(() => {
-    console.log(states.disabled);
-  }, [states.disabled]);
+  // useEffect(() => {
+  //   console.log(states.disabled);
+  // }, [states.disabled]);
 
   const btnStyle = `rounded-sm bg-sky-300/40 p-2 h-[40px] w-full shadow-md hover:bg-sky-300/80 active:bg-sky-300 uppercase text-xs font-bold w-full`;
   return (
@@ -135,7 +140,8 @@ function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
               e.preventDefault();
               setSKUReq("alter");
               setSwapBtn(true);
-            }}>
+            }}
+          >
             Alter
           </button>
           <button
@@ -148,7 +154,8 @@ function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
               e.preventDefault();
               setSKUReq("add");
               setSwapBtn(true);
-            }}>
+            }}
+          >
             Add
           </button>
         </>
@@ -159,7 +166,8 @@ function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
             onClick={() => {
               setSwapBtn(false);
               setSKUReq("default");
-            }}>
+            }}
+          >
             Cancel
           </button>
           <button
@@ -172,7 +180,8 @@ function InventoryRequestButton({ states }: InventoryRequestButtonProps) {
               };
               const selectedBtn = btnRoutes[skuReq];
               return selectedBtn();
-            }}>
+            }}
+          >
             Confirm
           </button>
         </>

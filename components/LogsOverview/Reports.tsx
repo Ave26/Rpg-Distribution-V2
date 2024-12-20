@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import MyDocument from "../MyDocument";
 import OrderReport from "../Report/OrderDocument";
 import useProductLogStatus from "@/hooks/useProductLogStatus";
+import BinDocument from "../Report/Inventory/BinDocument";
 
 type TReport = {
   product: string;
