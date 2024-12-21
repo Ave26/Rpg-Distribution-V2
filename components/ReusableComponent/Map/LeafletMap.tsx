@@ -1,22 +1,26 @@
 import { LatLng } from "leaflet";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import L from "leaflet";
 import { CircleMarker, Popup, useMapEvents, Marker } from "react-leaflet";
 
-// if (typeof window !== "undefined") {
-//   require("leaflet/dist/leaflet.css");
-// }
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-import "leaflet/dist/leaflet.css"; // Dynamically loaded on the client side
-
-// Fix Leaflet marker icon issue
+// Fix Leaflet marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
+
+if (typeof window !== "undefined") {
+  require("leaflet/dist/leaflet.css");
+}
+
+import "leaflet/dist/leaflet.css"; // Dynamically loaded on the client side
 
 interface LeafletMapProps {
   coordinates: [number, number];
@@ -81,6 +85,10 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
         <CircleMarkerNoSSR center={coordinates} radius={5}>
           <PopupNoSSR>{truckName}</PopupNoSSR>
         </CircleMarkerNoSSR>
+
+        {/* <Marker position={coordinates} icon={markerIcon}>
+          <PopupNoSSR>{truckName}</PopupNoSSR>
+        </Marker> */}
 
         {/* <MarkerNoSSR position={coordinates}>
           <PopupNoSSR>

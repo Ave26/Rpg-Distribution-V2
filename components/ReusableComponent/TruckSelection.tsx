@@ -9,7 +9,7 @@ import EmergencyStopButton from "../PickingAndPackingRole/StaffUI/EmergencyStopB
 import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
 import TruckDetails from "./TruckDetails";
 import Toast, { TToast } from "../PickingAndPackingRole/Toast";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
 import { Coordinates, UserRole } from "@prisma/client";
 import { TTrucks } from "../PickingAndPackingRole/PickingAndPackingType";
 
@@ -79,11 +79,11 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
     latitude: 0,
     longitude: 0,
   });
+  console.log(role);
 
   useEffect(() => {
     if (navigator.geolocation && role === "Driver") {
       // geolocation
-      console.log(true);
       const successHandler = (position: GeolocationPosition) => {
         setCoordinates({
           latitude: position.coords.latitude,
@@ -118,7 +118,7 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
         navigator.geolocation.clearWatch(watcherId);
       };
     }
-  }, [role]);
+  }, []);
 
   return (
     <div
