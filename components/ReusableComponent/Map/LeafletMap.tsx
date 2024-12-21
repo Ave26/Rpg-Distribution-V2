@@ -2,12 +2,13 @@ import { LatLng } from "leaflet";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import L from "leaflet";
-import { CircleMarker, Popup, useMapEvents } from "react-leaflet";
+import { CircleMarker, Popup, useMapEvents, Marker } from "react-leaflet";
 
-if (typeof window !== "undefined") {
-  require("leaflet/dist/leaflet.css");
-}
-// import "leaflet/dist/leaflet.css"; // Dynamically loaded on the client side
+// if (typeof window !== "undefined") {
+//   require("leaflet/dist/leaflet.css");
+// }
+
+import "leaflet/dist/leaflet.css"; // Dynamically loaded on the client side
 
 // Fix Leaflet marker icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,6 +33,15 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
     { ssr: false }
   );
 
+  const CircleMarkerNoSSR = dynamic(
+    () => import("react-leaflet").then((mod) => mod.CircleMarker),
+    { ssr: false }
+  );
+  const PopupNoSSR = dynamic(
+    () => import("react-leaflet").then((mod) => mod.Popup),
+    { ssr: false }
+  );
+
   function LocationMarker() {
     const [position, setPosition] = useState<LatLng | null>(null);
     const map = useMapEvents({
@@ -44,11 +54,17 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
       },
     });
 
-    return position ? (
-      <CircleMarker center={position} radius={10}>
+    return (
+      <CircleMarker
+        center={{
+          lat: position?.lat ? position?.lat : 0,
+          lng: position?.lng ? position?.lng : 0,
+        }}
+        radius={10}
+      >
         <Popup>{truckName}</Popup>
       </CircleMarker>
-    ) : null;
+    );
   }
 
   return (
@@ -60,7 +76,17 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
         style={{ height: "35vh", width: "100%" }}
       >
         <TileLayerWithNoSSR url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <LocationMarker />
+        {/* <LocationMarker /> */}
+
+        <CircleMarkerNoSSR center={coordinates} radius={5}>
+          <PopupNoSSR>{truckName}</PopupNoSSR>
+        </CircleMarkerNoSSR>
+
+        {/* <MarkerNoSSR position={coordinates}>
+          <PopupNoSSR>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </PopupNoSSR>
+        </MarkerNoSSR> */}
       </MapWithNoSSR>
     </div>
   );

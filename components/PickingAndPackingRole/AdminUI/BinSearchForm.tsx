@@ -67,6 +67,12 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
     setToast,
   ]);
 
+  useEffect(() => {
+    if (!binLocation.searchSKU) {
+      setBinLocation((prevState) => ({ ...prevState, totalQuantity: 0 }));
+    }
+  }, [binLocation.searchSKU, setBinLocation]);
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
@@ -135,11 +141,6 @@ export default function BinSearchForm({ states }: TBinSearchForm) {
       )
     );
   }
-
-  useEffect(() => {
-    !binLocation.searchSKU &&
-      setBinLocation({ ...binLocation, totalQuantity: 0 });
-  }, [binLocation.searchSKU, binLocation, setBinLocation]);
 
   return (
     <form

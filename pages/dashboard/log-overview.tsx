@@ -23,7 +23,7 @@ export default function LogOverview() {
 
   return (
     <section className="grid h-full grid-cols-1 gap-2 md:grid-cols-2">
-      <div className="relative col-span-1 flex flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
+      <div className="relative col-span-1 flex h-full flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Order Queue</h1>
         <OrderQueue />
         <a
@@ -61,7 +61,7 @@ function BinLogReports() {
 
   return (
     <div className="flex flex-col gap-2 border border-black p-2">
-      <h1>LOG REPORT</h1>
+      <h1 className="font-black uppercase">BIN LOG REPORT</h1>
       {Array.isArray(binReport) &&
         binReport
           .map((bin) => {
@@ -69,7 +69,7 @@ function BinLogReports() {
               <a
                 key={bin.id}
                 href={`/api/logs/generate/bin-report?category=${bin.category}&rackName=${bin.rackName}`}
-                className="flex flex-col gap-2 hover:text-blue-800"
+                className="flex w-fit flex-col gap-2  hover:text-blue-800"
               >
                 {bin.category}-{bin.rackName}-{bin.timeStamp.toString()}
               </a>
