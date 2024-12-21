@@ -11,7 +11,7 @@ export default function GasStopButton({
   states,
   truck,
 }: TUpdateTruckStatusProps) {
-  const { setToast, coordinates } = states;
+  const { setToast, coordinates, disabled } = states;
   const { truckName, id: truckId } = truck;
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +48,7 @@ export default function GasStopButton({
   return (
     <button
       className={buttonStyle}
+      disabled={disabled}
       onClick={(e) => {
         e.stopPropagation();
         !loading && handleRequest();

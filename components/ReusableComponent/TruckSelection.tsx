@@ -80,6 +80,8 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
     longitude: 0,
   });
   console.log(role);
+  const [isGeolocationAvailable, setGeolocationAvailable] =
+    useState<boolean>(true);
 
   useEffect(() => {
     if (navigator.geolocation && role === "Driver") {
@@ -89,16 +91,30 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
+        setGeolocationAvailable(true); // Geolocation is available
       };
 
       const errorHandler = (error: GeolocationPositionError) => {
         // setError(error.message);
-        console.log(error);
+        setGeolocationAvailable(false);
+        if (error.code === error.PERMISSION_DENIED) {
+          console.error("Geolocation access blocked: Permission denied.");
+          alert("Geolocation access blocked: Permission denied");
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          console.error("Geolocation access blocked: Position unavailable.");
+          alert("Geolocation access blocked: Position unavailable.");
+        } else if (error.code === error.TIMEOUT) {
+          console.error("Geolocation access blocked: Request timed out.");
+          alert("Geolocation access blocked: Request timed out.");
+        } else {
+          console.error("An unknown error occurred:", error.message);
+          alert(`An unknown error occurred:, ${error.message}`);
+        }
       };
 
       const options = {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 20000,
         maximumAge: 0,
       };
 
@@ -118,7 +134,11 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
         navigator.geolocation.clearWatch(watcherId);
       };
     }
-  }, []);
+  }, [role]);
+
+  useEffect(() => {
+    console.log(coordinates);
+  }, [coordinates]);
 
   return (
     <div
@@ -138,6 +158,7 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
             states={{
               setToast,
               coordinates,
+              disabled: !isGeolocationAvailable,
             }}
           />
           <EmergencyStopButton
@@ -145,13 +166,15 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
             states={{
               setToast,
               coordinates,
+              disabled: !isGeolocationAvailable,
             }}
           />
-          <UpdateTruckStatus // need to take the payload of bins location and the total
+          <UpdateTruckStatus
             truck={truck}
             states={{
               setToast,
               coordinates,
+              disabled: !isGeolocationAvailable,
             }}
           />
         </div>

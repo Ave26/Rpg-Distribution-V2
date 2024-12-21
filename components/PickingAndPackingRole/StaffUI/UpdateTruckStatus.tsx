@@ -43,6 +43,7 @@ type BinLocations = binLocations & {
 type TStates = {
   setToast: React.Dispatch<React.SetStateAction<TToast>>;
   coordinates: Coordinates;
+  disabled: boolean;
 };
 
 export type TUpdateProductStatus = {
@@ -74,7 +75,7 @@ export default function UpdateTruckStatus({
   enableGeolocation,
 }: TUpdateTruckStatusProps) {
   const [loading, setLoading] = useState(false);
-  const { setToast, coordinates } = states;
+  const { setToast, coordinates, disabled } = states;
   const [truckform, setTruckForm] = useState<Truck>({
     coordinates: { latitude: 0, longitude: 0 },
     status: "InTransit",
@@ -128,7 +129,7 @@ export default function UpdateTruckStatus({
     const form: Truck = truckform;
     // updateTruckStatus();
     console.log(form);
-
+    //   Object.values(form.coordinates).every(Boolean) &&
     try {
       fetch("/api/outbound/truck/update-status", {
         method: "POST",
@@ -261,6 +262,7 @@ export default function UpdateTruckStatus({
   return (
     <button
       className={buttonStyle}
+      disabled={disabled}
       onClick={(e) => {
         e.stopPropagation();
         // enableGeolocation();

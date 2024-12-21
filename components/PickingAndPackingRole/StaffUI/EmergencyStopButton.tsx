@@ -12,7 +12,7 @@ export default function EmergencyStopButton({
   truck,
   enableGeolocation,
 }: TUpdateTruckStatusProps) {
-  const { setToast, coordinates } = states;
+  const { setToast, coordinates, disabled } = states;
   const { truckName, id: truckId } = truck;
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +46,7 @@ export default function EmergencyStopButton({
   return (
     <button
       className={buttonStyle}
+      disabled={disabled}
       onClick={(e) => {
         e.stopPropagation();
         !loading && handleRequest();
