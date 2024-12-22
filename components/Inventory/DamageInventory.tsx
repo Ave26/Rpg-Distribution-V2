@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import Input from "../Parts/Input";
 import Search from "../Parts/Search";
 import { CgSearch } from "react-icons/cg";
+import Link from "next/link";
 
 export default function DamageInventory() {
   const { assignedProducts } = useAssignedProducts();
@@ -71,8 +72,8 @@ export default function DamageInventory() {
         </button> */}
 
         <a
-          href="/api/logs/generate/bin-damage-report"
-          className={buttonStyleEdge}
+          href={`/api/logs/generate/bin-damage-report`}
+          className="flex w-fit flex-col gap-2  hover:text-blue-800"
         >
           skwak
         </a>
@@ -165,8 +166,8 @@ function ViewDamageBins({ damageBins, productName }: ViewDamageBinsProps) {
                   <h1>Quantity: {damageBin.count}</h1>
                   <div className="flex w-full gap-1">
                     Purchase Order:
-                    {damageBin.purchaseOrder.map((v) => (
-                      <h1>{v}</h1>
+                    {damageBin.purchaseOrder.map((v, i) => (
+                      <h1 key={i}>{v}</h1>
                     ))}
                   </div>
                   <h1>Supplier Name: {damageBin.supplierName}</h1>

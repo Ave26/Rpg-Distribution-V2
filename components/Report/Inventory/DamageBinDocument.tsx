@@ -41,9 +41,9 @@ const DamageBinDocument: React.FC<BinDocumentProps> = ({ products }) => {
           </Text>
         </View>
 
-        {products.map((p) => {
+        {products.map((p, i) => {
           return (
-            <View style={styles.table}>
+            <View key={i} style={styles.table}>
               <View
                 style={[
                   styles.row,

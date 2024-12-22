@@ -25,6 +25,7 @@ export async function handler(
           row: i,
           shelf: index + 1,
           category,
+          action: "",
         })
       )
   );
