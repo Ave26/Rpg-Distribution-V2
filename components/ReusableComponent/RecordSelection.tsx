@@ -78,13 +78,13 @@ interface BinLocViewProps {
 function BinLocView({ bl }: BinLocViewProps) {
   const { globalState } = useMyContext();
   const role: UserRole | undefined = globalState?.verifiedToken?.roles;
-  const goods = bl.assignedProducts.filter(
-    (ap) => ap.quality === "Good"
-  ).length;
+  const goods = Array.isArray(bl.assignedProducts)
+    ? bl.assignedProducts.filter((ap) => ap.quality === "Good").length
+    : 0;
 
-  const damages = bl.assignedProducts.filter(
-    (ap) => ap.quality === "Damage"
-  ).length;
+  const damages = Array.isArray(bl.assignedProducts)
+    ? bl.assignedProducts.filter((ap) => ap.quality === "Damage").length
+    : 0;
 
   return (
     <div className="flex h-full w-full flex-grow">
