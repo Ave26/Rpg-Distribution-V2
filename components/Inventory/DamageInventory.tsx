@@ -1,9 +1,12 @@
-import { DamageBins } from "@/pages/api/inventory/assigned-products/find";
+import {
+  AssignedProducts,
+  DamageBins,
+} from "@/pages/api/inventory/assigned-products/find";
 import useAssignedProducts from "@/hooks/useAssignedProducts";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaProductHunt } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
-import { buttonStyleSubmit, InputStyle } from "@/styles/style";
+import { buttonStyleEdge, buttonStyleSubmit, InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
 import { GiGroundbreaker } from "react-icons/gi";
 import React, { useState } from "react";
@@ -41,6 +44,39 @@ export default function DamageInventory() {
         </div>
       </div>
       <div className="flex h-[45em] w-full flex-col items-center gap-2 overflow-y-scroll rounded-b-md bg-slate-300 p-4">
+        {/* <button
+          className={buttonStyleEdge}
+          onClick={() => {
+            fetch("/api/logs/generate/bin-damage-report", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify("damageBinButton"),
+            })
+              .then((res) => {
+                res.ok && console.log("success");
+              })
+              .catch((e) => {
+                console.error(e);
+              })
+              .finally(() => {
+                setLoading(false);
+                setDamageBinButton((prevState) => ({
+                  ...prevState,
+                  operation: "Generate Report",
+                }));
+              });
+          }}
+        >
+          skwak
+        </button> */}
+
+        <a
+          href="/api/logs/generate/bin-damage-report"
+          className={buttonStyleEdge}
+        >
+          skwak
+        </a>
+
         {Array.isArray(assignedProducts) &&
           assignedProducts?.map((product) => {
             return (
@@ -65,6 +101,7 @@ export default function DamageInventory() {
                   }  flex w-full flex-none flex-col gap-2 overflow-scroll bg-slate-700 shadow-md transition-all md:w-[45em]`}
                 >
                   <ViewDamageBins
+                    productName={product.productName}
                     damageBins={product.damageBins}
                     key={product.skuCode}
                   />
@@ -77,13 +114,17 @@ export default function DamageInventory() {
   );
 }
 
-type Operation = "Generate Report" | "Select Action" | "Cancel";
+type Operation =
+  | "Generate Report"
+  | "Select Action"
+  | "Cancel"
+  | "Update Damage Report";
 
-type Actions =
-  | "For Return Supplier"
-  | "For Return Home"
-  | "For Replacement Client"
-  | "For Replacement Supplier";
+export type Actions =
+  | "For Replacement Client" // Outbound
+  | "For Return Supplier" // Inbound
+  | "For Return Home" // home
+  | "For Replacement"; // Inventory
 
 export type DamageBinButton = {
   operation: Operation;
@@ -93,9 +134,10 @@ export type DamageBinButton = {
 
 type ViewDamageBinsProps = {
   damageBins: DamageBins[];
+  productName: string;
 };
 
-function ViewDamageBins({ damageBins }: ViewDamageBinsProps) {
+function ViewDamageBins({ damageBins, productName }: ViewDamageBinsProps) {
   const [loading, setLoading] = useState(false);
   const [damageBinButton, setDamageBinButton] = useState<DamageBinButton>({
     id: "",
@@ -116,12 +158,19 @@ function ViewDamageBins({ damageBins }: ViewDamageBinsProps) {
               <div className="flex">
                 <div className="rounded-y-md w-5/6 rounded-l-md p-2">
                   <h1>Type: {damageBin.category}</h1>
+                  <h1>Product Name: {productName}</h1>
                   <h1>
                     Location: {row} / {shelf}
                   </h1>
                   <h1>Quantity: {damageBin.count}</h1>
-                  <h1>Purchase Order: [PO-1,PO-2,3,4,5,6]</h1>
+                  <div className="flex w-full gap-1">
+                    Purchase Order:
+                    {damageBin.purchaseOrder.map((v) => (
+                      <h1>{v}</h1>
+                    ))}
+                  </div>
                   <h1>Supplier Name: {damageBin.supplierName}</h1>
+                  <h1>Supplier Name: {damageBin.action}</h1>
                 </div>
 
                 <button
@@ -135,7 +184,7 @@ function ViewDamageBins({ damageBins }: ViewDamageBinsProps) {
                         if (damageBin.id === damageBinButton.id) {
                           setLoading(true);
 
-                          fetch("/api/inventory/damageReport/create", {
+                          fetch("/api/logs/generate/bin-damage-report", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(damageBinButton),
@@ -148,6 +197,10 @@ function ViewDamageBins({ damageBins }: ViewDamageBinsProps) {
                             })
                             .finally(() => {
                               setLoading(false);
+                              setDamageBinButton((prevState) => ({
+                                ...prevState,
+                                operation: "Generate Report",
+                              }));
                             });
                         }
                       },
@@ -162,6 +215,32 @@ function ViewDamageBins({ damageBins }: ViewDamageBinsProps) {
                               : damageBin.id,
                           operation: "Select Action",
                         });
+                      },
+                      "Update Damage Report": () => {
+                        console.log("updating damge bin");
+                        if (damageBin.id === damageBinButton.id) {
+                          setLoading(true);
+
+                          fetch("/api/logs/report/update/damage-bin", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(damageBinButton),
+                          })
+                            .then(async (res) => {
+                              const data = await res.json();
+                              alert(`${res.ok ? "success" : ""}, ${data}`);
+                            })
+                            .catch((e) => {
+                              console.error(e);
+                            })
+                            .finally(() => {
+                              setLoading(false);
+                              setDamageBinButton((prevState) => ({
+                                ...prevState,
+                                operation: "Update Damage Report",
+                              }));
+                            });
+                        }
                       },
                     };
                     operationFields[damageBinButton.operation]();
@@ -206,10 +285,10 @@ function SelectAction({
   setDamageBinButton,
 }: SelectActionProps) {
   const actions: Actions[] | "default" = [
-    "For Replacement Client",
-    "For Replacement Supplier",
-    "For Return Home",
-    "For Return Supplier",
+    "For Replacement Client", // Outbound
+    "For Return Supplier", // Inbound
+    "For Return Home", // home
+    "For Replacement", // Inventory
   ];
 
   return (
@@ -225,7 +304,7 @@ function SelectAction({
             operation:
               newAction === "default"
                 ? damageBinButton.operation
-                : "Generate Report",
+                : "Update Damage Report",
           });
         }}
         className={`${InputStyle}`}
@@ -234,10 +313,10 @@ function SelectAction({
           Select Category
         </option>
         {Array.isArray(actions) &&
-          actions.map((v) => {
+          actions.map((action, i) => {
             return (
-              <option key={v} value={v}>
-                {v}
+              <option key={i} value={action}>
+                {action}
               </option>
             );
           })}

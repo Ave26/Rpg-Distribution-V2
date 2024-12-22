@@ -6,6 +6,7 @@ import { damageBins } from "@prisma/client";
 
 export interface AssignedProducts {
   skuCode: string;
+  productName: string;
   damageBins: DamageBins[];
 }
 
@@ -14,6 +15,7 @@ export type DamageBins = damageBins & {
   shelf: number;
   count: number;
   supplierName: string;
+  purchaseOrder: string[]; // added
 };
 
 export async function handler(
@@ -26,11 +28,19 @@ export async function handler(
       where: { damageBinsId: { isSet: true } },
       select: {
         skuCode: true,
-        sku: { select: { supplierName: true } },
+        sku: {
+          select: {
+            supplierName: true,
+            products: { select: { productName: true } },
+          },
+        },
         damageBins: {
           include: {
             assignedProducts: {
-              select: { skuCode: true },
+              select: {
+                skuCode: true,
+                purchaseOrder: true,
+              },
             },
           },
         },
@@ -43,8 +53,6 @@ export async function handler(
             (v) => v.skuCode === initial.skuCode
           ).length;
 
-          // get the
-
           if (!count) return [];
 
           const supplierName = initial.sku.supplierName;
@@ -52,14 +60,27 @@ export async function handler(
           if (!supplierName) return [];
 
           const entry = acc.find((data) => data.skuCode === initial.skuCode);
-          if (!initial.damageBins) {
+          if (!initial.damageBins || !initial.sku.products?.productName) {
             return [];
           }
           const { assignedProducts, row, shelf, ...rest } = initial.damageBins;
+          const POs = assignedProducts.map((v) => v.purchaseOrder);
+          const distinctPOs = [...new Set(POs)];
+
           if (!entry) {
             acc.push({
               skuCode: initial.skuCode,
-              damageBins: [{ ...rest, count, supplierName, row, shelf }],
+              productName: initial.sku.products.productName,
+              damageBins: [
+                {
+                  ...rest,
+                  count,
+                  supplierName,
+                  row,
+                  shelf,
+                  purchaseOrder: distinctPOs ?? [],
+                },
+              ],
             });
           } else {
             const isDuplicate = entry.damageBins.some(
@@ -73,6 +94,7 @@ export async function handler(
                 supplierName,
                 row,
                 shelf,
+                purchaseOrder: distinctPOs ?? [],
               });
             }
           }

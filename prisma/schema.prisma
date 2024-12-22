@@ -105,6 +105,7 @@ model bins {
   orderedProductsId String?            @db.ObjectId
   binLocations      binLocations[]
   binPlaceHolder    binPlaceHolder[]
+  damageBinReport   damageBinReport[]
 }
 
 model binLogReport {
@@ -131,6 +132,7 @@ model damageBins {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   damageCategories damageCategories?  @relation(fields: [category], references: [category])
   category         String             @unique
+  action           String
   version          Int?
   isAvailable      Boolean?           @default(true)
   row              Int
@@ -139,6 +141,12 @@ model damageBins {
   SO               String?            @unique @default("")
   binId            String?            @unique @default("")
   assignedProducts assignedProducts[]
+}
+
+model damageBinReport {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  bins   bins?   @relation(fields: [binsId], references: [id])
+  binsId String? @db.ObjectId
 }
 
 enum ProductStatus {

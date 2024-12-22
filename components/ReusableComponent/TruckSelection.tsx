@@ -99,16 +99,16 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
         setGeolocationAvailable(false);
         if (error.code === error.PERMISSION_DENIED) {
           console.error("Geolocation access blocked: Permission denied.");
-          alert("Geolocation access blocked: Permission denied");
+          // alert("Geolocation access blocked: Permission denied");
         } else if (error.code === error.POSITION_UNAVAILABLE) {
           console.error("Geolocation access blocked: Position unavailable.");
-          alert("Geolocation access blocked: Position unavailable.");
+          // alert("Geolocation access blocked: Position unavailable.");
         } else if (error.code === error.TIMEOUT) {
           console.error("Geolocation access blocked: Request timed out.");
-          alert("Geolocation access blocked: Request timed out.");
+          // alert("Geolocation access blocked: Request timed out.");
         } else {
           console.error("An unknown error occurred:", error.message);
-          alert(`An unknown error occurred:, ${error.message}`);
+          // alert(`An unknown error occurred:, ${error.message}`);
         }
       };
 
