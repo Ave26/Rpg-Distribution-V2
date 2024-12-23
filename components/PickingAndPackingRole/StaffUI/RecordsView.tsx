@@ -121,6 +121,7 @@ export type ToastData = {
   message: string;
   show: boolean;
 };
+
 function Records({ truck, states }: RecordsProps) {
   const {
     selectedId,

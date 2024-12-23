@@ -25,7 +25,9 @@ export async function handler(
 ) {
   const p = await prisma.assignedProducts
     .findMany({
-      where: { damageBinsId: { isSet: true } },
+      where: {
+        damageBinsId: { isSet: true },
+      },
       select: {
         skuCode: true,
         sku: {

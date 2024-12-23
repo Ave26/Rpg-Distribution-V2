@@ -8,16 +8,38 @@ import { renderToStream } from "@react-pdf/renderer";
 import DamageBinDocument from "@/components/Report/Inventory/DamageBinDocument";
 import { AssignedProducts } from "../../inventory/assigned-products/find";
 
+export type QueryDamageBin = {
+  damageBinId: string;
+  skuCode: string;
+  // binId: string;
+  // category: string;
+  // row: number;
+  // shelf: number;
+  // SO: string;
+};
+
 export async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const damageReport: DamageBinButton = req.body;
+  const { damageBinId, skuCode }: QueryDamageBin = req.body;
+  // if (Object.values(query).length < 5) {
+  //   return res.status(405).json("Incomplete Field");
+  // }
+
+  // const { binId, category, row, shelf, id } = query;
+
+  // if there is bin Id then create a query object that handles that
+  const filter =
+    !damageBinId || !skuCode
+      ? { damageBinsId: { isSet: true } }
+      : { damageBinsId: damageBinId, skuCode };
+
   try {
     const p = await prisma.assignedProducts
       .findMany({
-        where: { damageBinsId: { isSet: true } },
+        where: filter,
         select: {
           skuCode: true,
           sku: {
@@ -100,15 +122,22 @@ export async function handler(
       });
 
     const pdfStream = await renderToStream(<DamageBinDocument products={p} />);
-    console.log(p);
+
+    // const user = await prisma.users.findFirst({
+    //   where: { id: "652bb3f5026c56e80679b285" },
+    //   select: { _count: {} },
+    // });
+
+    // console.log(user);
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
       `attachment; filename=Order_Report_${"bins download"}.pdf`
     );
-
+    console.log(p);
     return pdfStream.pipe(res);
   } catch (error) {
+    console.log(error);
     return res.json(error);
   }
 }

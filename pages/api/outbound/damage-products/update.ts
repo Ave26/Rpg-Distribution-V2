@@ -21,49 +21,61 @@ export async function handler(
   const { SO, ids, truckId }: { ids: string[]; SO: string; truckId: string } =
     req.body;
 
-  const checkTruck = await prisma.trucks.findUnique({
-    where: { id: truckId, status: "InTransit", driverId: { isSet: true } },
-    select: { status: true },
-  });
+  try {
+    const checkTruck = await prisma.trucks.findUnique({
+      where: { id: truckId, status: "InTransit", driverId: { isSet: true } },
+      select: { status: true },
+    });
 
-  if (!checkTruck)
-    return res
-      .status(404)
-      .json({ message: "Start Deliver Has Not Been Initiated!" });
+    console.log(checkTruck);
 
-  const db = await prisma.damageBins.findFirst({
-    where: {
-      category: "OUTBOUND DAMAGE",
-      OR: [
-        {
-          SO,
-        },
-        { assignedProducts: { none: {} } },
-      ],
-    },
-    orderBy: [{ row: "asc" }, { shelf: "asc" }],
-  });
-  console.log(db);
+    if (!checkTruck)
+      return res
+        .status(404)
+        .json({ message: "Start Deliver Has Not Been Initiated!" });
 
-  const updatedP = await prisma.assignedProducts.updateMany({
-    where: { id: { in: ids } },
-    data: {
-      status: "Rejected",
-      version: { increment: 1 },
-      quality: "Damage",
-      damageBinsId: db?.id,
-    },
-  });
+    // find available damage bin
+    const db = await prisma.damageBins.findFirst({
+      where: {
+        category: "OUTBOUND DAMAGE",
+        OR: [
+          {
+            SO,
+          },
+          { assignedProducts: { none: {} } },
+        ],
+      },
+      orderBy: [{ row: "asc" }, { shelf: "asc" }],
+    });
+    console.log(db);
 
-  const updateDamageBin = await prisma.damageBins.update({
-    where: { id: db?.id },
-    data: { SO },
-  });
+    const updatedP = await prisma.assignedProducts.updateMany({
+      where: { id: { in: ids } },
+      data: {
+        status: "Rejected",
+        version: { increment: 1 },
+        quality: "Damage",
+        damageBinsId: db?.id,
+      },
+    });
 
-  console.log(updateDamageBin, updatedP);
-  return (
-    updatedP && updateDamageBin && res.status(200).json({ message: "Success" })
-  );
+    console.log(updatedP);
+
+    const updateDamageBin = await prisma.damageBins.update({
+      where: { id: db?.id },
+      data: { SO, action: "For Return Home" },
+    });
+
+    console.log(updateDamageBin, updatedP);
+    return (
+      updatedP &&
+      updateDamageBin &&
+      res.status(200).json({ message: "Success" })
+    );
+  } catch (error) {
+    console.log(error);
+    return res.json(error);
+  }
 }
 
 export default authMiddleware(handler);

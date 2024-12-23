@@ -1,5 +1,5 @@
 import useInventoryBins from "@/hooks/useInventoryBins";
-import { buttonStyleSubmit, InputStyle } from "@/styles/style";
+import { buttonStyleDark, buttonStyleSubmit, InputStyle } from "@/styles/style";
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { MdInventory2 } from "react-icons/md";
@@ -61,18 +61,19 @@ export default function BinInventory({}: BinInventoryProps) {
     PO: "Default",
   });
 
+  const [inventoryActionState, setInventoryActionState] = useState({
+    isOpen: false,
+  });
+
+  const [selectedBinIds, setSelectedBinIds] = useState<Record<string, string>>(
+    {}
+  );
+
   const elementRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [visibleButtons, setVisibleButtons] = useState<{
     [key: number]: boolean;
   }>({});
-  // const [isOpen, setIsOpen] = useState(false);
-  const [inventoryActionState, setInventoryActionState] = useState({
-    isOpen: false,
-  });
-  const [selectedBinIds, setSelectedBinIds] = useState<Record<string, string>>(
-    {}
-  );
-  console.log(Object.values(selectedBinIds).map((value) => value));
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -107,16 +108,6 @@ export default function BinInventory({}: BinInventoryProps) {
     };
   }, [moveDamageProduct]); // Only re-run when `moveDamageProduct` changes
 
-  const handleTagClick = async (tagName: string) => {
-    try {
-      await navigator.clipboard.writeText(tagName); // Copy to clipboard
-      // alert(`${tagName} copied! You can now paste it in the input field.`);
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-      // alert("Failed to copy. Please try again.");
-    }
-  };
-
   return (
     <div className="relative">
       <div className="flex h-[8%] justify-between rounded-t-md  bg-white p-2">
@@ -141,13 +132,18 @@ export default function BinInventory({}: BinInventoryProps) {
           {Array.isArray(inventory) &&
             inventory.map((v, i) => (
               <div
-                key={v.bin.binId}
+                key={i}
                 ref={(el) => (elementRefs.current[i] = el)}
                 data-id={i}
                 className="flex gap-2"
                 onClick={() => {
                   const barcodeId = v.product?.barcodeId ?? "";
-                  handleTagClick(barcodeId);
+                  navigator.clipboard
+                    .writeText(barcodeId)
+                    .then(() => {
+                      console.log("text copied!");
+                    })
+                    .catch((e) => console.log(e));
                 }}
               >
                 <div
@@ -169,41 +165,7 @@ export default function BinInventory({}: BinInventoryProps) {
                 </div>
 
                 {visibleButtons[i] && (
-                  <select
-                    className={`${InputStyle} text-[.64rem] ${
-                      inventoryActionState.isOpen && !moveDamageProduct
-                        ? "animate-emerge"
-                        : "hidden"
-                    }`}
-                    key={v.bin.binId}
-                    name={v.bin.binId}
-                    id={v.bin.binId}
-                    value={selectedBinIds[v.bin.binId] || "default"}
-                    onChange={(e) =>
-                      setSelectedBinIds((state) => ({
-                        ...state,
-                        [v.bin.binId]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value="default" disabled>
-                      Select Bin
-                    </option>
-                    {inventory
-                      .filter((value) => value.bin.binId !== v.bin.binId)
-                      .map((v) => {
-                        return (
-                          <option
-                            key={i}
-                            value={v.bin.binId}
-                          >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
-                        );
-                      })}
-                  </select>
-                )}
-
-                {visibleButtons[i] && (
-                  <>
+                  <div>
                     <MdMoveDown
                       type="button"
                       size={50}
@@ -220,7 +182,39 @@ export default function BinInventory({}: BinInventoryProps) {
                         moveDamageProduct ? "animate-emerge" : "hidden"
                       } ${buttonStyleSubmit}`}
                     />
-                  </>
+
+                    <select
+                      className={`${InputStyle} text-[.64rem] ${
+                        inventoryActionState.isOpen && !moveDamageProduct
+                          ? "animate-emerge"
+                          : "hidden"
+                      }`}
+                      // key={i}
+                      name={v.bin.binId}
+                      id={v.bin.binId}
+                      value={selectedBinIds[v.bin.binId] || "default"}
+                      onChange={(e) =>
+                        setSelectedBinIds((state) => ({
+                          ...state,
+                          [v.bin.binId]: e.target.value,
+                        }))
+                      }
+                    >
+                      <option value="default" disabled>
+                        Select Bin
+                      </option>
+                      {inventory
+                        .filter((value) => value.bin.binId !== v.bin.binId)
+                        .map((v, i) => {
+                          return (
+                            <option
+                              key={i}
+                              value={v.bin.binId}
+                            >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
+                          );
+                        })}
+                    </select>
+                  </div>
                 )}
               </div>
             ))}
@@ -301,9 +295,7 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
 
                 fields[btnName]();
               }}
-              className={
-                "flex-shrink rounded-md bg-slate-700 p-2  text-center uppercase text-white active:scale-105"
-              }
+              className={buttonStyleDark}
             >
               {btnName}
             </button>

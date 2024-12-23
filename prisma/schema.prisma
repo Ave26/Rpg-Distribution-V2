@@ -132,7 +132,7 @@ model damageBins {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   damageCategories damageCategories?  @relation(fields: [category], references: [category])
   category         String             @unique
-  action           String
+  action           String             @default("")
   version          Int?
   isAvailable      Boolean?           @default(true)
   row              Int

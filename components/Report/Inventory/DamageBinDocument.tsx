@@ -19,11 +19,15 @@ interface BinDocumentProps {
 }
 
 const DamageBinDocument: React.FC<BinDocumentProps> = ({ products }) => {
+  console.log(products);
   const Titles = [
     "Category",
     "Position",
     "PO",
     "Quantity",
+    "Action",
+    "Purchase Type | Code",
+    "Damage Bin ID",
     // "SKU",
     // "Date Info",
     // "Quantity",
@@ -74,6 +78,18 @@ const DamageBinDocument: React.FC<BinDocumentProps> = ({ products }) => {
                   <Text style={[styles.cell, { marginVertical: "2" }]}>
                     {item.count}
                   </Text>
+                  <Text style={[styles.cell, { marginVertical: "2" }]}>
+                    {item.action}
+                  </Text>
+                  <Text style={[styles.cell, { marginVertical: "2" }]}>
+                    {item.action}
+                  </Text>
+                  <Text style={[styles.cell, { marginVertical: "2" }]}>
+                    {item.id}
+                  </Text>
+                  {/* <Text style={[styles.cell, { marginVertical: "2" }]}>
+                    {item.SO ? item.SO : ""}
+                  </Text> */}
                 </View>
               ))}
             </View>
