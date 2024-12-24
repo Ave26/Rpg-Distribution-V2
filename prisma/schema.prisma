@@ -162,6 +162,7 @@ enum ProductQuality {
   Good
   Damage
   Default
+  Duplicate
 }
 
 enum BoxSize {

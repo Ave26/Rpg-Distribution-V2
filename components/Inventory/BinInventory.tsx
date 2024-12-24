@@ -10,6 +10,7 @@ import { mutate } from "swr";
 import useCategories from "@/hooks/useCategories";
 import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";
 import Link from "next/link";
+import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
 
 type Button = "Move Damage Product" | "Print Inventory" | "Organize Bin";
 interface BinInventoryProps {}
@@ -132,8 +133,8 @@ export default function BinInventory({}: BinInventoryProps) {
           {Array.isArray(inventory) &&
             inventory.map((v, i) => (
               <div
-                key={i}
                 ref={(el) => (elementRefs.current[i] = el)}
+                key={v.bin.binId}
                 data-id={i}
                 className="flex gap-2"
                 onClick={() => {
@@ -297,7 +298,9 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
               }}
               className={buttonStyleDark}
             >
-              {btnName}
+              {btnName === "Move Damage Product"
+                ? `${btnName} | Remove Duplicated`
+                : btnName}
             </button>
           </div>
         );
@@ -559,11 +562,21 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
   );
 }
 
+type DamageFormActions = "SEND TO DAMAGE BIN" | "REMOVE DUPLICATE PRODUCT";
+
 function MoveDamageProduct({ states }: MoveDamageProductProps) {
   const [loading, setLoading] = useState(false);
   const { moveDamageForm, setMoveDamageForm, POs, setPOs } = states;
   const { open, count, PO, ...DamageForm } = moveDamageForm;
   const [quantity, setQuantity] = useState(0);
+  const actions: DamageFormActions[] = [
+    "REMOVE DUPLICATE PRODUCT",
+    "SEND TO DAMAGE BIN",
+  ];
+
+  const [action, setAction] = useState<DamageFormActions | "default">(
+    "default"
+  );
 
   function getProductQuantityBasedOnPO(PO: string, binId: string) {
     console.log("fetching quantity");
@@ -588,27 +601,72 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
       className="inset-0 flex h-fit w-[30em] flex-col gap-2 rounded-md bg-white/30 p-2 shadow-md backdrop-blur-sm"
       onSubmit={(e) => {
         e.preventDefault();
+        const actionFields: Record<DamageFormActions | "default", () => void> =
+          {
+            "REMOVE DUPLICATE PRODUCT": () => {
+              setLoading(true);
 
-        console.log("submitting");
-        setLoading(true);
-        fetch("/api/inventory/damage-products/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...DamageForm, PO }),
-        })
-          .then((res) => res.json())
-          .catch((e) => console.log(e))
-          .finally(() => {
-            setLoading(false);
-            setMoveDamageForm({
-              ...moveDamageForm,
-              open: false,
-              PO: "Default",
-            });
-            mutate("/api/inventory/bins/find");
-          });
+              const Duplicateform: DuplicateForm = {
+                binId: DamageForm.binId,
+                quantity: DamageForm.quantity,
+                PO,
+              };
+
+              fetch("/api/inventory/duplicate-products/update", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(Duplicateform),
+              })
+                .then(async (res) => {
+                  res.ok && setPOs([]);
+                  const data = await res.json();
+                  alert(data);
+                })
+                .catch((e) => console.log(e))
+                .finally(() => {
+                  setLoading(false);
+                  setMoveDamageForm({
+                    ...moveDamageForm,
+                    open: false,
+                    PO: "Default",
+                  });
+                  mutate("/api/inventory/bins/find");
+                });
+            },
+            "SEND TO DAMAGE BIN": () => {
+              setLoading(true);
+              fetch("/api/inventory/damage-products/update", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ ...DamageForm, PO }),
+              })
+                .then(async (res) => {
+                  const data = await res.json();
+                  alert(data);
+                })
+                .catch((e) => console.log(e))
+                .finally(() => {
+                  setLoading(false);
+                  setMoveDamageForm({
+                    ...moveDamageForm,
+                    open: false,
+                    PO: "Default",
+                  });
+                  mutate("/api/inventory/bins/find");
+                });
+            },
+            default: () => {
+              alert(`No Action Selected`);
+            },
+          };
+        actionFields[action]();
+
+        // console.log("submitting");
+        // setLoading(true);
       }}
     >
       <RxCross2
@@ -621,12 +679,37 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
             quantity: 0,
           });
           setLoading(false);
+
+          setAction("default");
         }}
       />
+      {/*  this will change into selection  send to damage bin and remove duplicated*/}
 
-      <h1 className="mb-3 border border-dashed border-black p-2 text-center font-black uppercase">
+      <select
+        name={action}
+        value={action}
+        onChange={(e) => {
+          const newAction = e.target.value as DamageFormActions | "default";
+          setAction(newAction);
+        }}
+        className={`${InputStyle} uppercase`}
+      >
+        <option value={"default"} disabled className="text-center">
+          Select Action
+        </option>
+        {Array.isArray(actions) &&
+          actions.map((action, i) => {
+            return (
+              <option key={i} value={action} className="text-center">
+                {action}
+              </option>
+            );
+          })}
+      </select>
+
+      {/* <h1 className="mb-3 border border-dashed border-black p-2 text-center font-black uppercase">
         send to damage bin
-      </h1>
+      </h1> */}
 
       <div className="flex flex-col gap-2">
         <select

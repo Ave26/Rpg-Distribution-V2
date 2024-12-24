@@ -105,6 +105,7 @@ export async function handler(
 
         // console.log(updatedTruck);
         await disconnectProduct(status, updatedTruck?.truckName); // status: empty,  disconnect product
+
         return res
           .status(200)
           .json({ message: "Update Succesfull", updatedTruck });

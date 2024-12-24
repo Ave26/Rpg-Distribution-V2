@@ -19,6 +19,7 @@ export async function handler(
   const { binLocationIds, total } = productData;
 
   console.log(req.body);
+  console.log(req.body);
   //  need to create new api for updating the truch status as well as the product status depending on what the truck status
   switch (req.method) {
     case "POST":
