@@ -10,10 +10,10 @@ import AdminUI from "@/components/PickingAndPackingRole/AdminUI/Admin";
 
 export default function PickingAndPacking() {
   const roleComponentMapper = {
-    SuperAdmin: () => <AdminUI />, //Admin
-    Admin: () => <AdminUI />,
-    Staff: () => <StaffUI />,
-    Driver: () => undefined,
+    SUPERADMIN: () => <AdminUI />, //Admin
+    ADMIN: () => <AdminUI />,
+    STAFF: () => <StaffUI />,
+    DRIVER: () => undefined,
   };
 
   const { MappedComponent } = useMapComponent(roleComponentMapper);

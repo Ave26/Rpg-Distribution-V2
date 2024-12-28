@@ -5,7 +5,7 @@ import {
 import useAssignedProducts from "@/hooks/useAssignedProducts";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaProductHunt } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
 import {
   buttonStyleDark,
   buttonStyleEdge,
@@ -36,9 +36,10 @@ export default function DamageInventory() {
             <a
               href={`/api/logs/generate/bin-damage-report`}
               // className="flex w-fit flex-col gap-2  hover:text-blue-800"
-              className={buttonStyleDark}
+              className={`${buttonStyleDark}`}
             >
-              Print Damage Report
+              <span className="hidden sm:block">Print Damage Report</span>
+              <IoMdPrint size={20} className="sm:hidden" />
             </a>
           </div>
           <div className="flex">
@@ -341,15 +342,6 @@ function SelectAction({
           });
         }}
       />
-
-      {/* <button className={buttonStyle}>For Return (Supplier)</button>
-  <button className={buttonStyle}>For Return (Home)</button>
-  <button className={buttonStyle}>
-    For Replacement (Client)
-  </button>
-  <button className={buttonStyle}>
-    For Replacement (Supplier)
-  </button> */}
     </>
   );
 }

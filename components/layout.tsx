@@ -8,7 +8,6 @@ import React, { ReactNode, useEffect } from "react";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
-import Circle from "./PickingAndPackingRole/PickingAndPackingParts/Circle";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -21,6 +20,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     const data: AuthProps = await response.json();
     if (data?.authenticated === false || !data?.authenticated) router.push("/");
     updateGlobalState(data);
+    // console.log(data);
     return data;
   };
   useSWR("/api/authentication", fetcher);

@@ -12,7 +12,6 @@ export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [globalState, setGlobalState] = useState<AuthProps | undefined>(
     undefined
   );
-
   const updateGlobalState = (newValue: AuthProps) => {
     setGlobalState(newValue);
   };

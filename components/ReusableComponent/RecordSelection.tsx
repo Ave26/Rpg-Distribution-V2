@@ -8,7 +8,7 @@ import { TToast } from "../PickingAndPackingRole/Toast";
 import { ReportDamageProduct } from "../PickingAndPackingRole/StaffUI/RecordsView";
 import OrderedProduct from "../PickingAndPackingRole/StaffUI/OrderedProduct";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import { UserRole } from "@prisma/client";
+// import {  } from "@prisma/client";
 type TRecordSelectionProps = {
   data: TData;
   states: States;
@@ -77,7 +77,7 @@ interface BinLocViewProps {
 
 function BinLocView({ bl }: BinLocViewProps) {
   const { globalState } = useMyContext();
-  const role: UserRole | undefined = globalState?.verifiedToken?.roles;
+  const role: string | undefined = globalState?.verifiedToken?.role;
   const goods = Array.isArray(bl.assignedProducts)
     ? bl.assignedProducts.filter((ap) => ap.quality === "Good").length
     : 0;

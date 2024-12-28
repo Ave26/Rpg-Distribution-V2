@@ -29,8 +29,10 @@ export async function handler(
     coordinates,
     productData,
   }: TruckExtendsProduct = req.body;
+  console.log(req.body);
 
   const { binLocationIds, total } = productData;
+  console.log(binLocationIds);
   console.log(truckId, status, truckName, coordinates, total);
   console.log(req.body);
   switch (req.method) {

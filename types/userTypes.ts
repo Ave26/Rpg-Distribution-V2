@@ -1,6 +1,6 @@
-import { users as TUser, UserRole } from "@prisma/client";
+import { users as TUser } from "@prisma/client";
 
-export type TAuth = Omit<TUser, "id" | "roles" | "additionalInfo">;
+export type TAuth = Omit<TUser, "id" | "role" | "additionalInfo">;
 export type TAuthNoPW = Omit<TUser, "password">;
 
 export type TUserResponse = {

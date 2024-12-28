@@ -3,7 +3,7 @@ import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { TFormExtend } from "@/components/DeliveryMangement/deliveryManagementTypes";
-import { UserRole } from "@prisma/client";
+// import { UserRole } from "@prisma/client";
 
 type TBody = { form: TFormExtend; id: string };
 

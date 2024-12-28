@@ -3,7 +3,7 @@ import { authMiddleware } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
@@ -16,7 +16,7 @@ export default async function handler(
           orderBy: { timeStamp: "desc" },
           take: 150,
         });
-        // console.log(deliveryLogs);
+        console.log(deliveryLogs);
         return res.json(deliveryLogs);
       } catch (error) {
         return res.json(error);
@@ -26,4 +26,4 @@ export default async function handler(
   }
 }
 
-// export default authMiddleware(handler);
+export default authMiddleware(handler);

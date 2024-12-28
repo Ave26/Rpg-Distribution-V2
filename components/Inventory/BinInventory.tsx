@@ -1,8 +1,8 @@
 import useInventoryBins from "@/hooks/useInventoryBins";
 import { buttonStyleDark, buttonStyleSubmit, InputStyle } from "@/styles/style";
 import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
-import { MdInventory2 } from "react-icons/md";
+import { AiOutlineLoading, AiOutlineMobile } from "react-icons/ai";
+import { MdDriveFileMove, MdInventory2 } from "react-icons/md";
 import { MdMoveDown } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import Input from "../Parts/Input";
@@ -11,31 +11,12 @@ import useCategories from "@/hooks/useCategories";
 import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";
 import Link from "next/link";
 import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
+import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
+import { HiDuplicate } from "react-icons/hi";
+import { FaBorderAll } from "react-icons/fa";
 
 type Button = "Move Damage Product" | "Print Inventory" | "Organize Bin";
 interface BinInventoryProps {}
-interface BinActionButtonsProp {
-  states: {
-    moveDamageProduct: boolean;
-    setMoveDamageProduct: React.Dispatch<React.SetStateAction<boolean>>;
-
-    inventoryActionState: { isOpen: boolean };
-    setInventoryActionState: React.Dispatch<
-      React.SetStateAction<{
-        isOpen: boolean;
-      }>
-    >;
-  };
-}
-
-interface MoveDamageProductProps {
-  states: {
-    moveDamageForm: MoveDamageForm;
-    setMoveDamageForm: React.Dispatch<React.SetStateAction<MoveDamageForm>>;
-    setPOs: React.Dispatch<React.SetStateAction<string[]>>;
-    POs: string[];
-  };
-}
 
 export type MoveDamageForm = {
   open: boolean;
@@ -45,15 +26,31 @@ export type MoveDamageForm = {
   PO: string | "Default";
 };
 
+type Operation = "MOVE" | "SELECT" | "CANCEL" | "ACTION" | "SWAP";
+
+type Actions = "MERGE" | "CLEAR";
+
+type BinButton = {
+  operation: Operation;
+  id: string;
+  action: Actions | "default";
+};
+
 export default function BinInventory({}: BinInventoryProps) {
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState<InventoryPage>({
     category: "default",
     rackName: "default",
   });
-
   const { inventory } = useInventoryBins(page);
   const [moveDamageProduct, setMoveDamageProduct] = useState(false);
   const [POs, setPOs] = useState<string[]>([]);
+  const [binButton, setBinButton] = useState<BinButton>({
+    action: "default",
+    id: "",
+    operation: "ACTION",
+  });
+
   const [moveDamageForm, setMoveDamageForm] = useState<MoveDamageForm>({
     open: false,
     binId: "",
@@ -61,6 +58,7 @@ export default function BinInventory({}: BinInventoryProps) {
     count: 0,
     PO: "Default",
   });
+  const [selectBinId, setSelectBinId] = useState("");
 
   const [inventoryActionState, setInventoryActionState] = useState({
     isOpen: false,
@@ -75,165 +73,265 @@ export default function BinInventory({}: BinInventoryProps) {
     [key: number]: boolean;
   }>({});
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.getAttribute("data-id");
-          if (!id) return;
-          setVisibleButtons((prevState) => ({
-            ...prevState,
-            [id]: entry.isIntersecting,
-          }));
-        });
-      },
-      {
-        root: document.querySelector(".parent"), // Parent element as the viewport
-        threshold: 0.5, // 50% visibility to trigger
-      }
-    );
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         const id = entry.target.getAttribute("data-id");
+  //         if (!id) return;
+  //         setVisibleButtons((prevState) => ({
+  //           ...prevState,
+  //           [id]: entry.isIntersecting,
+  //         }));
+  //       });
+  //     },
+  //     {
+  //       root: document.querySelector(".parent"), // Parent element as the viewport
+  //       threshold: 0.5, // 50% visibility to trigger
+  //     }
+  //   );
 
-    // Copy the current refs to a local variable
-    const currentElementRefs = elementRefs.current;
+  //   // Copy the current refs to a local variable
+  //   const currentElementRefs = elementRefs.current;
 
-    // Observe elements
-    currentElementRefs.forEach((el) => {
-      if (el) observer.observe(el);
-    });
+  //   // Observe elements
+  //   currentElementRefs.forEach((el) => {
+  //     if (el) observer.observe(el);
+  //   });
 
-    // Cleanup function
-    return () => {
-      currentElementRefs.forEach((el) => {
-        if (el) observer.unobserve(el);
-      });
-    };
-  }, [moveDamageProduct]); // Only re-run when `moveDamageProduct` changes
+  //   // Cleanup function
+  //   return () => {
+  //     currentElementRefs.forEach((el) => {
+  //       if (el) observer.unobserve(el);
+  //     });
+  //   };
+  // }, [moveDamageProduct]);
+  // Only re-run when `moveDamageProduct` changes
 
   return (
     <div className="relative">
-      <div className="flex h-[8%] justify-between rounded-t-md  bg-white p-2">
+      <div className="flex h-full justify-between rounded-t-md  bg-white p-2">
         <MdInventory2
           size={30}
           className="flex h-full animate-emerge items-center justify-center drop-shadow-md"
         />
-        <div className="flex gap-2">
+
+        <div className="flex gap-2 text-xs">
           <BinActionButtons
             states={{
               moveDamageProduct,
               setMoveDamageProduct,
               inventoryActionState,
               setInventoryActionState,
+              page,
+              setPage,
             }}
           />
         </div>
       </div>
 
-      <div className="flex w-full justify-center gap-1">
-        <div className="parent relative flex h-[45em] w-5/6 flex-col items-start gap-2 overflow-y-scroll rounded-bl-md bg-slate-300 p-4 backdrop-blur-sm">
-          {Array.isArray(inventory) &&
-            inventory.map((v, i) => (
-              <div
-                ref={(el) => (elementRefs.current[i] = el)}
-                key={v.bin.binId}
-                data-id={i}
-                className="flex gap-2"
-                onClick={() => {
-                  const barcodeId = v.product?.barcodeId ?? "";
-                  navigator.clipboard
-                    .writeText(barcodeId)
-                    .then(() => {
-                      console.log("text copied!");
-                    })
-                    .catch((e) => console.log(e));
-                }}
-              >
-                <div
-                  key={i}
-                  className="flex h-[4em] w-full flex-none select-none items-center justify-center gap-2 rounded-md bg-white p-2 shadow-md transition-all hover:bg-sky-300 md:w-[45em]"
-                >
-                  <div className="flex gap-2 uppercase">
-                    {/* <h1>BarcodeId: {v.product?.barcodeId}</h1> */}
-                    <h1 className="break-all">BinId: {v.bin.binId}</h1>
-                    <h1>Product: {v.product?.productName}</h1>
-                    <h1>{`Rack: ${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</h1>
-                    <h1>Category: {v.bin.category}</h1>
-                    <h1>
-                      {v.product?.dateInfo?.type}:
-                      {v.product?.dateInfo?.date?.toLocaleString().slice(0, 10)}
-                    </h1>
-                    <h1>Count: {v.bin.count}</h1>
-                  </div>
-                </div>
-
-                {visibleButtons[i] && (
-                  <div>
-                    <MdMoveDown
-                      type="button"
-                      size={50}
-                      onClick={() => {
-                        setPOs(v.product?.POs ?? []);
-                        setMoveDamageForm({
-                          ...moveDamageForm,
-                          open: true,
-                          binId: v.bin.binId,
-                          count: v.bin.count,
-                        });
-                      }}
-                      className={`relative ${
-                        moveDamageProduct ? "animate-emerge" : "hidden"
-                      } ${buttonStyleSubmit}`}
-                    />
-
-                    <select
-                      className={`${InputStyle} text-[.64rem] ${
-                        inventoryActionState.isOpen && !moveDamageProduct
-                          ? "animate-emerge"
-                          : "hidden"
-                      }`}
-                      // key={i}
-                      name={v.bin.binId}
-                      id={v.bin.binId}
-                      value={selectedBinIds[v.bin.binId] || "default"}
-                      onChange={(e) =>
-                        setSelectedBinIds((state) => ({
-                          ...state,
-                          [v.bin.binId]: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="default" disabled>
-                        Select Bin
-                      </option>
-                      {inventory
-                        .filter((value) => value.bin.binId !== v.bin.binId)
-                        .map((v, i) => {
-                          return (
-                            <option
-                              key={i}
-                              value={v.bin.binId}
-                            >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
-                          );
-                        })}
-                    </select>
-                  </div>
-                )}
-              </div>
-            ))}
-        </div>
-
-        <div className="w-1/2  rounded-br-md bg-slate-300">
+      <div className="flex h-[45em] w-full flex-col gap-2 overflow-y-scroll rounded-b-md bg-slate-300 p-2">
+        <div className="sticky top-0 flex  h-fit items-center justify-center rounded-md bg-slate-500 backdrop-blur-xl">
           <OrganizeBinForm
             states={{
               inventory,
-              page,
-              setPage,
               inventoryActionState,
-              setInventoryActionState,
+              page,
               selectedBinIds,
+              setInventoryActionState,
+              setPage,
               setSelectedBinIds,
             }}
           />
         </div>
+        {Array.isArray(inventory) &&
+          inventory.map((v, i) => (
+            <div
+              className="parent flex flex-col rounded-md bg-white uppercase"
+              key={v.bin.binId}
+            >
+              {/* Category and racks */}
+              <div className="flex">
+                <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
+                  <ul className="">
+                    <li>{v.product?.skuCode}</li>
+                    <li>
+                      {v.bin.category} {v.bin.rackName}
+                      {v.bin.row}/{v.bin.shelfLevel}
+                    </li>
+                  </ul>
+
+                  <div className="row-span-3">
+                    <p className="break-all text-end text-xs">
+                      Date: {String(v.product?.dateInfo.date).slice(0, 10)}
+                    </p>
+                    <h2 className="row-span-3 flex items-center justify-end p-2 text-center">
+                      Quantity: {v.bin.count}
+                    </h2>
+                  </div>
+                  <h2>{v.product?.productName}</h2>
+                </div>
+                <button
+                  onClick={() => {
+                    const operationFields: Record<Operation, () => void> = {
+                      ACTION: () => {
+                        setBinButton({
+                          ...binButton,
+                          id: v.bin.binId === binButton.id ? "" : v.bin.binId,
+                          operation: "CANCEL",
+                        });
+                      },
+                      CANCEL: () => {
+                        setBinButton({
+                          ...binButton,
+                          id: v.bin.binId === binButton.id ? "" : v.bin.binId,
+                          operation: "CANCEL",
+                        });
+                      },
+                      MOVE: () => {},
+                      SELECT: () => {},
+                      SWAP: () => {
+                        if (v.bin.binId === binButton.id) {
+                          setLoading(true);
+                          fetch("/api/inventory/bins/swap-products", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ page, selectedBinIds }),
+                          })
+                            .then(async (res) => {
+                              const data = await res.json();
+                              alert(data);
+                            })
+                            .finally(() => {
+                              // setLoading((state: { [key: string]: boolean }) => ({
+                              //   ...state,
+                              //   swapProducts: false,
+                              // }));
+
+                              setBinButton((state) => {
+                                return {
+                                  ...state,
+                                  id: "",
+                                  operation: "ACTION",
+                                };
+                              });
+
+                              setLoading(false);
+                              setSelectedBinIds({});
+                              mutate(
+                                `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
+                              );
+                            });
+                        }
+                      },
+                    };
+
+                    operationFields[binButton.operation]();
+                  }}
+                  className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
+                >
+                  {binButton.id === v.bin.binId ? (
+                    loading ? (
+                      <AiOutlineLoading className="animate-spin" size={30} />
+                    ) : (
+                      binButton.operation
+                    )
+                  ) : (
+                    <IoIosArrowDown />
+                  )}
+                </button>
+              </div>
+
+              {/* body of bin */}
+              <div
+                className={`flex ${
+                  binButton.id === v.bin.binId
+                    ? "h-20 overflow-x-hidden border border-t-2 p-2"
+                    : "h-0"
+                } justify-between overflow-y-scroll rounded-md transition-all ease-in-out`}
+              >
+                <ul className={`flex flex-col break-all`}>
+                  <li>Date: {String(v.product?.dateInfo.date).slice(0, 10)}</li>
+                </ul>
+                <div className="flex min-w-fit gap-2">
+                  <select
+                    name={v.bin.binId}
+                    id={v.bin.binId}
+                    value={selectedBinIds[v.bin.binId] || "default"}
+                    onChange={(e) => {
+                      setSelectedBinIds((state) => ({
+                        ...state,
+                        [v.bin.binId]: e.target.value,
+                      }));
+                      if (e.target.value) {
+                        setBinButton((state) => {
+                          return {
+                            ...state,
+                            operation: "SWAP",
+                          };
+                        });
+                      }
+                    }}
+                    className={`${InputStyle} text-[.64rem]`}
+                  >
+                    <option value="default" disabled>
+                      Select Bin
+                    </option>
+                    {inventory
+                      .filter((value) => value.bin.binId !== v.bin.binId)
+                      .map((v, i) => {
+                        return (
+                          <option
+                            key={i}
+                            value={v.bin.binId}
+                          >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
+                        );
+                      })}
+                  </select>
+                  {v.bin.binId === binButton.id && (
+                    <div>
+                      <MdMoveDown
+                        type="button"
+                        size={50}
+                        onClick={(e) => {
+                          setPOs(v.product?.POs ?? []);
+                          setMoveDamageForm({
+                            ...moveDamageForm,
+                            open: true,
+                            binId: v.bin.binId,
+                            count: v.bin.count,
+                          });
+                        }}
+                        className={`relative ${
+                          moveDamageProduct ? "animate-emerge" : "hidden"
+                        }   hover:text-red-500`}
+                      />
+                    </div>
+                  )}
+
+                  <button
+                    className={buttonStyleSubmit}
+                    onClick={() => {
+                      setSelectedBinIds((state) => ({
+                        ...state,
+                        [v.bin.binId]: "",
+                      }));
+
+                      setBinButton((state) => {
+                        return {
+                          ...state,
+                          id: "",
+                          operation: "CANCEL",
+                        };
+                      });
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
       </div>
 
       <div
@@ -254,27 +352,64 @@ export default function BinInventory({}: BinInventoryProps) {
   );
 }
 
+interface BinActionButtonsProp {
+  states: {
+    moveDamageProduct: boolean;
+    setMoveDamageProduct: React.Dispatch<React.SetStateAction<boolean>>;
+    page: InventoryPage;
+    setPage: React.Dispatch<React.SetStateAction<InventoryPage>>;
+    inventoryActionState: { isOpen: boolean };
+    setInventoryActionState: React.Dispatch<
+      React.SetStateAction<{
+        isOpen: boolean;
+      }>
+    >;
+  };
+}
+
 function BinActionButtons({ states }: BinActionButtonsProp) {
   const {
     moveDamageProduct,
     setMoveDamageProduct,
     inventoryActionState,
     setInventoryActionState,
+    page,
+    setPage,
   } = states;
   const { isOpen } = inventoryActionState;
+  const [loadingButton, setLoadingButton] = useState<string | null>(null);
+
   const buttons: Button[] = [
     "Move Damage Product",
     "Print Inventory",
     "Organize Bin",
   ];
 
+  const renderIcon = (buttonName: string) => {
+    const icons: Record<string, JSX.Element> = {
+      "Move Damage Product": (
+        <MdDriveFileMove size={20} className="sm:hidden" />
+      ),
+      "Print Inventory": <IoMdPrint size={20} className="sm:hidden" />,
+      "Organize Bin": <FaBorderAll size={20} className="sm:hidden" />,
+      default: <AiOutlineMobile size={20} className="sm:hidden" />,
+    };
+
+    const icon = icons[buttonName] || icons.default;
+
+    return <>{icon}</>;
+  };
+
   return (
     <>
-      {buttons.map((btnName, i) => {
+      {buttons.map((buttonName, i) => {
         return (
-          <div key={i} className="flex flex-col gap-2 transition-all">
+          <div
+            key={i}
+            className={`flex flex-col gap-2 transition-all before:absolute before:text-white hover:before:content-[${buttonName}]`}
+          >
             <button
-              key={btnName}
+              key={buttonName}
               onClick={() => {
                 const fields: Record<Button, () => void> = {
                   "Move Damage Product": () => {
@@ -282,6 +417,25 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
                   },
                   "Print Inventory": () => {
                     console.log("Button 2 clicked");
+                    setLoadingButton(buttonName);
+                    fetch(
+                      `/api/logs/generate/bin-report?category=${page.category}&rackName=${page.rackName}`
+                    )
+                      .then(async (res) => {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `Order_Report_bins_download_${Math.random()}.pdf`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                      })
+                      .catch((e) => {
+                        console.error(e);
+                      })
+                      .finally(() => {
+                        setLoadingButton(null);
+                      });
                   },
                   "Organize Bin": () => {
                     console.log("Sorting Bins");
@@ -294,13 +448,22 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
                   },
                 };
 
-                fields[btnName]();
+                fields[buttonName]();
               }}
-              className={buttonStyleDark}
+              className={`${buttonStyleDark} flex w-full items-center justify-center`}
             >
-              {btnName === "Move Damage Product"
-                ? `${btnName} | Remove Duplicated`
-                : btnName}
+              {loadingButton === buttonName ? (
+                <AiOutlineLoading
+                  className="animate-spin text-center"
+                  size={20}
+                />
+              ) : (
+                <>
+                  {renderIcon(buttonName)}
+
+                  <span className="hidden sm:block">{buttonName}</span>
+                </>
+              )}
             </button>
           </div>
         );
@@ -324,8 +487,6 @@ interface OrganizeFormProps {
       React.SetStateAction<Record<string, string>>
     >;
     selectedBinIds: Record<string, string>;
-    // isOpen: boolean;
-    // setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
 }
 
@@ -338,11 +499,8 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
 
   const [isButtonEnable, setIsButtonEnable] = useState(true);
   return (
-    <div className="flex flex-col gap-2 p-2 uppercase text-black">
+    <div className="flex w-fit gap-2 p-2 uppercase text-black">
       <div className="flex gap-2">
-        <label htmlFor="category" className="text-xs">
-          Find Category
-        </label>
         <select
           name="category"
           id="category"
@@ -378,9 +536,9 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
         </button>
       </div>
       <div className="flex gap-2">
-        <label htmlFor="rackName" className="text-xs">
+        {/* <label htmlFor="rackName" className="text-xs">
           Find RackName
-        </label>
+        </label> */}
         <select
           name="rackName"
           id="rackName"
@@ -501,7 +659,7 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
               "Move Products"
             )}
           </button>
-
+          {/* 
           <button
             id="swapProducts"
             type="submit"
@@ -530,7 +688,6 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
                     `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
                   );
                 });
-              1;
             }}
             className={`${buttonStyleSubmit} row-span-2 flex items-center justify-center uppercase`}
           >
@@ -539,27 +696,29 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
             ) : (
               "Swap Products"
             )}
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             onClick={() => setSelectedBinIds({})}
             className={`${buttonStyleSubmit} row-span-2 flex items-center justify-center uppercase`}
           >
             Clear Selected
-          </button>
-          <a
-            // href={`/api/logs/generate/bin-report?page=${JSON.stringify(page)}`}
-            href={`/api/logs/generate/bin-report?category=${page.category}&rackName=${page.rackName}`}
-            className="hover:text-blue-900"
-          >
-            Download Bin Record
-          </a>
+          </button> */}
         </div>
       )}
 
-      <div>{JSON.stringify(selectedBinIds, null, 2)}</div>
+      {/* <div>{JSON.stringify(selectedBinIds, null, 2)}</div> */}
     </div>
   );
+}
+
+interface MoveDamageProductProps {
+  states: {
+    moveDamageForm: MoveDamageForm;
+    setMoveDamageForm: React.Dispatch<React.SetStateAction<MoveDamageForm>>;
+    setPOs: React.Dispatch<React.SetStateAction<string[]>>;
+    POs: string[];
+  };
 }
 
 type DamageFormActions = "SEND TO DAMAGE BIN" | "REMOVE DUPLICATE PRODUCT";
@@ -568,7 +727,6 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
   const [loading, setLoading] = useState(false);
   const { moveDamageForm, setMoveDamageForm, POs, setPOs } = states;
   const { open, count, PO, ...DamageForm } = moveDamageForm;
-  const [quantity, setQuantity] = useState(0);
   const actions: DamageFormActions[] = [
     "REMOVE DUPLICATE PRODUCT",
     "SEND TO DAMAGE BIN",
@@ -632,6 +790,7 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
                     open: false,
                     PO: "Default",
                   });
+                  setAction("default");
                   mutate("/api/inventory/bins/find");
                 });
             },
@@ -656,6 +815,7 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
                     open: false,
                     PO: "Default",
                   });
+                  setAction("default");
                   mutate("/api/inventory/bins/find");
                 });
             },
@@ -664,9 +824,6 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
             },
           };
         actionFields[action]();
-
-        // console.log("submitting");
-        // setLoading(true);
       }}
     >
       <RxCross2
@@ -683,7 +840,6 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
           setAction("default");
         }}
       />
-      {/*  this will change into selection  send to damage bin and remove duplicated*/}
 
       <select
         name={action}
@@ -692,7 +848,9 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
           const newAction = e.target.value as DamageFormActions | "default";
           setAction(newAction);
         }}
-        className={`${InputStyle} uppercase`}
+        className={`${InputStyle} ${
+          action === "default" ? "animate-bounce" : ""
+        } uppercase `}
       >
         <option value={"default"} disabled className="text-center">
           Select Action
@@ -706,10 +864,6 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
             );
           })}
       </select>
-
-      {/* <h1 className="mb-3 border border-dashed border-black p-2 text-center font-black uppercase">
-        send to damage bin
-      </h1> */}
 
       <div className="flex flex-col gap-2">
         <select
@@ -775,3 +929,109 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
     </form>
   );
 }
+
+// <div
+//   ref={(el) => (elementRefs.current[i] = el)}
+//   key={v.bin.binId}
+//   data-id={i}
+//   onClick={() => {
+//     const barcodeId = v.product?.barcodeId ?? "";
+//     navigator.clipboard
+//       .writeText(barcodeId)
+//       .then(() => console.log("text copied!"))
+//       .catch((e) => console.log(e));
+//     setSelectBinId(
+//       selectBinId !== v.bin.binId ? v.bin.binId : ""
+//     );
+//   }}
+//   className={`
+//     ${selectBinId === v.bin.binId ? "h-28" : ""}
+//   ${
+//     moveDamageProduct ||
+//     (inventoryActionState.isOpen && !moveDamageProduct)
+//       ? "grid-cols-3"
+//       : "h-12 grid-cols-2"
+//   } grid  w-full flex-none rounded-md bg-white uppercase shadow-md transition-all hover:bg-sky-300`}
+// >
+//   <h1 className="flex items-center justify-center border border-black  text-center">{`Rack: ${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</h1>
+//   <h1 className="flex items-center justify-center  border border-black text-center">
+//     Count: {v.bin.count}
+//   </h1>
+
+// {visibleButtons[i] && (
+//   <div
+//     className={`
+
+//        ${selectBinId === v.bin.binId ? "h-28" : ""}
+//       ${
+//         moveDamageProduct ||
+//         (inventoryActionState.isOpen && !moveDamageProduct)
+//           ? "row-span-2 h-12"
+//           : "hidden"
+//       } flex w-full items-center justify-center transition-all`}
+//     onClick={(e) => e.stopPropagation()}
+//   >
+//     <MdMoveDown
+//       type="button"
+//       size={50}
+//       onClick={(e) => {
+//         setPOs(v.product?.POs ?? []);
+//         setMoveDamageForm({
+//           ...moveDamageForm,
+//           open: true,
+//           binId: v.bin.binId,
+//           count: v.bin.count,
+//         });
+//       }}
+//       className={`relative ${
+//         moveDamageProduct ? "animate-emerge" : "hidden"
+//       }   hover:text-white`}
+//     />
+
+//     <select
+//       name={v.bin.binId}
+//       id={v.bin.binId}
+//       value={selectedBinIds[v.bin.binId] || "default"}
+//       onChange={(e) =>
+//         setSelectedBinIds((state) => ({
+//           ...state,
+//           [v.bin.binId]: e.target.value,
+//         }))
+//       }
+//       className={`${InputStyle}
+//       ${
+//         inventoryActionState.isOpen && !moveDamageProduct
+//           ? "animate-emerge"
+//           : "hidden"
+//       }  text-[.64rem] `}
+//     >
+//       <option value="default" disabled>
+//         Select Bin
+//       </option>
+//       {inventory
+//         .filter((value) => value.bin.binId !== v.bin.binId)
+//         .map((v, i) => {
+//           return (
+//             <option
+//               key={i}
+//               value={v.bin.binId}
+//             >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
+//           );
+//         })}
+//     </select>
+//   </div>
+// )}
+
+//   <ul
+//     className={`${
+//       selectBinId === v.bin.binId
+//         ? "col-span-2 opacity-100"
+//         : "hidden"
+//     } col-span-1 flex flex-col  flex-wrap items-start justify-start gap-2 break-all  p-2 text-start transition duration-500`}
+//   >
+//     <li>Bin Id: {v.bin.binId}</li>
+//     <li>Product: {v.product?.productName}</li>
+//     <li>Category: {v.bin.category}</li>
+//   </ul>
+
+// </div>

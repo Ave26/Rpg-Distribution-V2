@@ -16,13 +16,13 @@ export default function Header() {
   const [authenticated, setAuthenticated] = useState(false);
   const [buttonName, setButtonName] = useState<string>("Login");
 
-  const role: string | undefined = globalState?.verifiedToken?.roles;
+  const role: string | undefined = globalState?.verifiedToken?.role;
 
   const roleToRoutes: TRoleToRoutes = {
-    SuperAdmin: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
-    Admin: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
-    Staff: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
-    Driver: [
+    SUPERADMIN: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
+    ADMIN: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
+    STAFF: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
+    DRIVER: [
       { path: "/dashboard/delivery-management", label: "Manage Delivery" },
     ],
   };
@@ -63,7 +63,7 @@ export default function Header() {
             </Link>
           ))}
           <div className="flex flex-col items-start justify-center">
-            <h1 className="text-center">{globalState?.verifiedToken?.roles}</h1>
+            <h1 className="text-center">{globalState?.verifiedToken?.role}</h1>
             <p className="text-center text-sm">
               {globalState?.verifiedToken?.id}
             </p>

@@ -1,11 +1,12 @@
-export type TRole = "Admin" | "Staff" | "Driver" | "SuperAdmin";
+export type TRole = "ADMIN" | "STAFF" | "DRIVER" | "SUPERADMIN";
+
 export type TEndPoints = {
   path: string;
   label: string;
 };
 export type TRoleToRoutes = {
-  SuperAdmin: TEndPoints[];
-  Admin: TEndPoints[];
-  Staff?: TEndPoints[];
-  Driver?: TEndPoints[];
+  SUPERADMIN: TEndPoints[];
+  ADMIN: TEndPoints[];
+  STAFF?: TEndPoints[];
+  DRIVER?: TEndPoints[];
 };

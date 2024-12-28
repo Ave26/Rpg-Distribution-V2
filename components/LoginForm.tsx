@@ -19,7 +19,7 @@ type Data = {
 interface User {
   additional_Info: AdditionInfo;
   id: string;
-  roles: string;
+  role: string;
   username: string;
 }
 
@@ -59,35 +59,38 @@ export default function LoginForm() {
         },
         body: JSON.stringify({ auth }),
       });
-      const json: Data = await response.json();
+      const data: Data = await response.json();
+      console.log(response.status);
+
       switch (response.status) {
         case 200:
-          if (json?.authenticated)
-            switch (json.user.roles) {
-              case "SuperAdmin":
-              case "Admin":
+          if (data?.authenticated)
+            switch (data.user.role) {
+              case "SUPERADMIN":
+              case "ADMIN":
+                console.log("executed");
                 router.push("/dashboard/log-overview");
                 break;
 
-              case "Staff":
+              case "STAFF":
                 router.push("/dashboard/barcode-scanner");
                 break;
-              case "Driver":
+              case "DRIVER":
                 router.push("/dashboard/delivery-management");
               default:
                 break;
             }
           break;
         case 401:
-          console.log(json?.message);
-          setMessage(json?.message);
+          console.log(data?.message);
+          setMessage(data?.message);
           setIsShow(true);
           break;
         case 404:
-          console.log(json.message);
+          console.log(data.message);
           break;
         case 505:
-          console.log(json.message);
+          console.log(data.message);
           break;
       }
     } catch (error: unknown | any) {
@@ -114,11 +117,13 @@ export default function LoginForm() {
     <>
       <form
         onSubmit={handleLogin}
-        className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg">
+        className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg"
+      >
         <div className="relative flex h-full w-full items-center justify-center  gap-1 rounded-full border bg-white/20 pr-2 backdrop-blur">
           <label
             htmlFor="username"
-            className="flex items-center justify-center rounded-full bg-white p-4">
+            className="flex items-center justify-center rounded-full bg-white p-4"
+          >
             <LiaUser className="h-full w-full" />
           </label>
           <input
@@ -133,7 +138,8 @@ export default function LoginForm() {
         <div className="relative flex h-full w-full items-center justify-center gap-1 rounded-full border bg-white/20  pr-2 backdrop-blur">
           <label
             htmlFor="password"
-            className="flex items-center justify-center rounded-full bg-white p-4">
+            className="flex items-center justify-center rounded-full bg-white p-4"
+          >
             <BiKey className="h-full w-full" />
           </label>
           <input

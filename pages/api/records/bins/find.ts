@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { authMiddleware, UserToken } from "../../authMiddleware";
-import { UserRole } from "@prisma/client";
+// import { UserRole } from "@prisma/client";
 import Products from "@/pages/products";
 
 export async function handler(

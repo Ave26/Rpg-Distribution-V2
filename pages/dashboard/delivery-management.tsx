@@ -11,8 +11,8 @@ import { AiOutlineLoading } from "react-icons/ai";
 
 export default function DeliveryManagement() {
   const { globalState } = useMyContext();
-  const role = globalState?.verifiedToken?.roles;
-
+  const role = globalState?.verifiedToken?.role;
+  console.log(role);
   const [selectedButton, setSelectedButton] = useState<TSelectedBTN>("Empty");
 
   const componentMapping: Record<TSelectedBTN, JSX.Element> = {
@@ -27,8 +27,8 @@ export default function DeliveryManagement() {
   };
 
   useEffect(() => {
-    if (role === "Driver") setSelectedButton("View Truck Loads");
-    if (role === "Admin" || role === "SuperAdmin")
+    if (role === "DRIVER") setSelectedButton("View Truck Loads");
+    if (role === "ADMIN" || role === "SUPERADMIN")
       setSelectedButton("Truck Management");
   }, [role]);
 

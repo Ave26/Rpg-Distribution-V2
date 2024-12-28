@@ -6,7 +6,7 @@ import {
   getTruckAdminAccess,
   getTruckDriverAccess,
 } from "@/lib/prisma/trucks";
-import { UserRole } from "@prisma/client";
+// import { UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
 async function handler(
@@ -19,17 +19,17 @@ async function handler(
       case "GET":
         // let roles: UserRole = "SuperAdmin";
         // let userId: string;
-        let roles = verifiedToken.roles;
+        let role: string = verifiedToken.role;
         let userId = verifiedToken.id;
 
-        const roleMapping = {
-          Admin: getTruckAdminAccess,
-          SuperAdmin: getTruckAdminAccess,
-          Staff: getTruckStaffAccess,
-          Driver: () => getTruckDriverAccess(userId, ""),
+        const roleMapping: Record<string, () => any> = {
+          ADMIN: getTruckAdminAccess,
+          SUPERADMIN: getTruckAdminAccess,
+          STAFF: getTruckStaffAccess,
+          DRIVER: () => getTruckDriverAccess(userId, ""),
         };
 
-        const { error, trucks } = await roleMapping[roles as UserRole]();
+        const { error, trucks } = await roleMapping[role]();
 
         return error
           ? res.status(500).json({ message: "Server Error", error })

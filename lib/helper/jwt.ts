@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { VerifyToken } from "@/types/authTypes";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest } from "next/server";
-import { UserRole, users } from "@prisma/client";
+import { users } from "@prisma/client";
 
 interface Token {
   id: string;
@@ -20,15 +20,16 @@ interface JwtPayload {
   // Add other properties if needed
 }
 
-type TUser = Omit<users, "password" | "username" | "additionalInfo">;
-
-interface UserTypes {
-  id: string;
-  roles: UserRole;
-}
+// type TUser = Omit<users, "password" | "username" | "additionalInfo">;
+type TUser = Pick<users, "id" | "role">;
+// interface UserTypes {
+//   id: string;
+//   roles: "";
+// }
 // const { id, roles } = user;
 
-export const createJwt = (user: TUser | null | undefined) => {
+export const createJwt = (user: TUser) => {
+  // | null | undefined
   if (user) {
     const token = sign(user, process.env.JWT_SECRET as string, {
       expiresIn: "12h",
@@ -50,7 +51,8 @@ export const verifyJwt = async (req: NextApiRequest) => {
     const verifiedToken = verify(
       token as string,
       process.env.JWT_SECRET as string
-    ) as JwtPayload & { roles: UserRole; id: string };
+    ) as JwtPayload & { role: string; id: string };
+
     return { verifiedToken };
   } catch (error) {
     return { error };

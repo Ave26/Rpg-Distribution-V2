@@ -1,7 +1,6 @@
 // authMiddleware.ts
 import { verifyJwt } from "@/lib/helper/jwt";
 import { VerifyToken } from "@/types/authTypes";
-import { UserRole } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 

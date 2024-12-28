@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Toast from "@/components/Parts/Toast";
-import { UserRole } from "@prisma/client";
+import { userRoles } from "@prisma/client";
 import { TUserResponse, TUserWithConfirmPW } from "@/types/userTypes";
 import Loading from "./Parts/Loading";
 import { useMyContext } from "@/contexts/AuthenticationContext";
+import { buttonStyleSubmit, InputStyle } from "@/styles/style";
+import { AiOutlineLoading } from "react-icons/ai";
+import useRoles from "@/hooks/useRoles";
 
 export default function Register() {
   const { globalState } = useMyContext();
-  const role = globalState?.verifiedToken?.roles;
-  const roles = ["Admin", "Staff", "Driver"];
-  const roleMapping = roles.filter((r) => r !== role);
+  const role = globalState?.verifiedToken?.role;
+
+  const { roles } = useRoles();
+
+  // const roles = ["Admin", "Staff", "Driver"];
+  // const roleMapping: Roles[] =
+  //   Array.isArray(roles) &&
+  //   roles.filter((v) => v.role !== role).map((v) => v.role);
+
   const [userData, setUserData] = useState<TUserResponse>();
   const [isLoading, setIsLoading] = useState(false);
   const [isShow, setIsSHow] = useState(false);
@@ -17,7 +26,7 @@ export default function Register() {
     username: "",
     password: "",
     confirmPassword: "",
-    roles: "Staff",
+    role: "default",
     additionalInfo: {
       dob: "",
       email: "",
@@ -64,6 +73,7 @@ export default function Register() {
       const data: TUserResponse = await response.json();
 
       response.ok && setUserData(data);
+      alert(data.message);
       setIsSHow(true);
       console.log(data.message);
     } catch (e) {
@@ -74,7 +84,7 @@ export default function Register() {
         username: "",
         password: "",
         confirmPassword: "",
-        roles: "Staff",
+        role: "default",
         additionalInfo: {
           dob: "",
           email: "",
@@ -92,85 +102,93 @@ export default function Register() {
     return;
   }, [isShow]);
 
-  const inputStyle =
-    "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
+  // const inputStyle =
+  //   "block w-full min-w-[20em] rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500";
   return (
-    <>
-      <form
-        onSubmit={handleRegister}
-        className="flex h-full w-full flex-col gap-2 p-2 font-semibold text-black">
-        <input
-          name="username"
-          placeholder="Username"
-          value={String(user?.username)}
-          type="text"
-          onChange={handleChange}
-          className={inputStyle}
-        />
-        <input
-          name="password"
-          placeholder="Password"
-          value={String(user?.password)}
-          type="password"
-          onChange={handleChange}
-          className={inputStyle}
-        />
-        <input
-          name="confirmPassword"
-          placeholder="confirmPassword"
-          value={String(user?.confirmPassword)}
-          type="password"
-          onChange={handleChange}
-          className={inputStyle}
-        />
-        <select
-          name="roles"
-          value={user.roles as UserRole}
-          onChange={handleChange}
-          className={inputStyle}>
-          {roleMapping.map((role, index) => {
+    <form
+      onSubmit={handleRegister}
+      className="flex w-1/2 flex-col  gap-2  rounded-md bg-white p-2 font-semibold"
+    >
+      <input
+        name="username"
+        placeholder="Username"
+        value={String(user?.username)}
+        type="text"
+        onChange={handleChange}
+        className={InputStyle}
+      />
+      <input
+        name="password"
+        placeholder="Password"
+        value={String(user?.password)}
+        type="password"
+        onChange={handleChange}
+        className={InputStyle}
+      />
+      <input
+        name="confirmPassword"
+        placeholder="confirmPassword"
+        value={String(user?.confirmPassword)}
+        type="password"
+        onChange={handleChange}
+        className={InputStyle}
+      />
+
+      <select
+        name="role"
+        value={user.role || "default"}
+        onChange={handleChange}
+        className={InputStyle}
+      >
+        <option value="default" disabled>
+          Pick Role
+        </option>
+        {Array.isArray(roles) &&
+          roles.map(({ role, id }) => {
+            <option value="default">Pick Role</option>;
             return (
-              <option value={role} key={index}>
+              <option value={role} key={id}>
                 {role}
               </option>
             );
           })}
-        </select>
+      </select>
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={user.additionalInfo.email}
+        onChange={handleChange}
+        className={InputStyle}
+      />
+      <input
+        type="date"
+        name="dob"
+        placeholder="Date Of Birth"
+        value={user.additionalInfo.dob}
+        onChange={handleChange}
+        className={InputStyle}
+      />
+      <input
+        type="text"
+        min={12}
+        name="Phone_Number"
+        placeholder="Phone Number"
+        value={user.additionalInfo.Phone_Number}
+        onChange={handleChange}
+        className={InputStyle}
+      />
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={user.additionalInfo.email}
-          onChange={handleChange}
-          className={inputStyle}
-        />
-        <input
-          type="date"
-          name="dob"
-          placeholder="Date Of Birth"
-          value={user.additionalInfo.dob}
-          onChange={handleChange}
-          className={inputStyle}
-        />
-        <input
-          type="text"
-          min={12}
-          name="Phone_Number"
-          placeholder="Phone Number"
-          value={user.additionalInfo.Phone_Number}
-          onChange={handleChange}
-          className={inputStyle}
-        />
-
-        <button
-          type="submit"
-          className="flex h-fit w-full items-center justify-center rounded-md border border-sky-400 p-2 transition-all hover:border-transparent hover:bg-sky-300">
-          {isLoading ? <Loading /> : "Confirm"}
-        </button>
-      </form>
-
-      <Toast data={userData?.message} isShow={isShow} />
-    </>
+      <button
+        type="submit"
+        className={`${buttonStyleSubmit} flex items-center justify-center`}
+      >
+        {isLoading ? (
+          <AiOutlineLoading className="animate-spin text-center" size={20} />
+        ) : (
+          "Confirm"
+        )}
+      </button>
+    </form>
   );
 }

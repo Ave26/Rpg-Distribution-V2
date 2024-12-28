@@ -16,6 +16,7 @@ import useDeliveryLogs from "@/hooks/useDeliveryLogs";
 import Map from "@/components/ReusableComponent/Map";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
 import useBinLogReport from "@/hooks/useBinLogReport";
+import useUserScanned from "@/hooks/useUserScanned";
 
 export default function LogOverview() {
   const [position, setPosition] = useState<[number, number]>([0, 0]);
@@ -36,6 +37,7 @@ export default function LogOverview() {
       <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <Reports />
         <BinLogReports />
+        <UserProductScanned />
       </div>
       <div className="relative col-span-1  flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
         <h1 className="abosolute uppercase">Delivery Logs</h1>
@@ -76,6 +78,28 @@ function BinLogReports() {
             );
           })
           .reverse()}
+    </div>
+  );
+}
+
+function UserProductScanned() {
+  const { userScanned, error, isLoading } = useUserScanned();
+
+  return (
+    <div className="flex flex-col justify-start gap-2 bg-slate-700 p-2 ">
+      {Array.isArray(userScanned) &&
+        userScanned.map((u) => {
+          return (
+            <ul
+              key={u.username}
+              className="h-fit gap-2 rounded-md bg-white p-2 uppercase shadow-sm hover:bg-sky-300"
+            >
+              <li>User: {u.username}</li>
+              <li>Duplicate Count: {u.count}</li>
+              <li>Current Date: {u.count}</li>
+            </ul>
+          );
+        })}
     </div>
   );
 }

@@ -6,17 +6,17 @@ import Layout from "@/components/layout";
 
 function Custom404() {
   const { globalState } = useMyContext();
-  const role = globalState?.verifiedToken?.roles;
+  const role = globalState?.verifiedToken?.role;
 
   const baseRoutes = [
     { path: "/dashboard/log-overview", label: "Log Overview" },
   ];
 
   const roleToRoutes: TRoleToRoutes = {
-    SuperAdmin: baseRoutes,
-    Admin: baseRoutes,
-    Staff: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
-    Driver: [
+    SUPERADMIN: baseRoutes,
+    ADMIN: baseRoutes,
+    STAFF: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
+    DRIVER: [
       { path: "/dashboard/delivery-management", label: "Manage Delivery" },
     ],
   };
@@ -32,7 +32,8 @@ function Custom404() {
             <Link
               key={index}
               href={route.path}
-              className="text-4xl text-sky-900 underline transition-all hover:text-sky-900/30">
+              className="text-4xl text-sky-900 underline transition-all hover:text-sky-900/30"
+            >
               Go Back
             </Link>
           );

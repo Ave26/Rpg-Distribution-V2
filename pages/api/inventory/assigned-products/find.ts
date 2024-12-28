@@ -104,12 +104,10 @@ export async function handler(
         },
         []
       );
-      console.log(reshape);
       return reshape;
     })
     .catch((e) => {
       console.log(e);
-
       res.json(e);
     });
   console.log(p);

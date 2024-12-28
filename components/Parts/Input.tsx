@@ -2,6 +2,7 @@ import React from "react";
 
 type TTMInputProps = {
   attributes: TAttributes;
+  addedStyle?: string;
 };
 
 type TAttributes = {
@@ -9,7 +10,7 @@ type TAttributes = {
   label?: React.LabelHTMLAttributes<HTMLLabelElement>;
 };
 
-export default function Input({ attributes }: TTMInputProps) {
+export default function Input({ attributes, addedStyle }: TTMInputProps) {
   const inputStyle =
     "border-blue-gray-200 text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full rounded-[7px] border bg-transparent px-3 py-2.5 font-sans text-sm font-normal shadow-sm outline outline-0 transition-all placeholder-shown:border focus:border-2 focus:border-sky-400 focus:border-t-transparent focus:outline-0 disabled:border-0 placeholder:opacity-0 focus:placeholder:opacity-100";
 
@@ -18,7 +19,7 @@ export default function Input({ attributes }: TTMInputProps) {
 
   return (
     <div className="relative h-full w-full">
-      <input {...attributes.input} className={inputStyle} />
+      <input {...attributes.input} className={`${inputStyle} ${addedStyle}`} />
       <label {...attributes.label} className={labelStyle} />
     </div>
   );

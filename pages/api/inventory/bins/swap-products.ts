@@ -54,18 +54,36 @@ export async function handler(
 
   const bin1 = await prisma.bins.findUnique({
     where: { id: BinIdKey },
-    select: { assignedProducts: { select: { id: true } } },
+    select: {
+      assignedProducts: {
+        where: {
+          status: { in: ["Default", "Queuing"] },
+          damageBinsId: { isSet: false },
+          quality: "Good",
+        },
+        select: { id: true },
+      },
+    },
   });
 
   const bin2 = await prisma.bins.findUnique({
     where: { id: BinIdValue },
-    select: { assignedProducts: { select: { id: true } } },
+    select: {
+      assignedProducts: {
+        where: {
+          status: { in: ["Default", "Queuing"] },
+          damageBinsId: { isSet: false },
+          quality: "Good",
+        },
+        select: { id: true },
+      },
+    },
   });
 
   const bin1Products = bin1?.assignedProducts.map((p) => p.id) || [];
   const bin2Products = bin2?.assignedProducts.map((p) => p.id) || [];
 
-  await prisma
+  const test = await prisma
     .$transaction([
       // Update products currently in bin1 to point to bin2
       prisma.assignedProducts.updateMany({
@@ -79,6 +97,7 @@ export async function handler(
       }),
     ])
     .catch((e) => console.log(e));
+  console.log(test);
 
   return res.json("Product Swap Succesfully");
 }

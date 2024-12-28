@@ -18,31 +18,25 @@ export default function GasStopButton({
   // can only change while in transit
 
   function handleRequest() {
-    const truckStatus: TUpdateTruckStatus = {
-      status: "GasStop",
-      truckId,
-      truckName,
+    const form = {
       coordinates,
+      truckId,
     };
-    const requestBody = JSON.stringify(truckStatus);
 
-    fetch("/api/outbound/truck/update-status", {
+    fetch("/api/outbound/truck/gas-stop-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: requestBody,
+      body: JSON.stringify(form),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data)
-          setToast({
-            animate: "animate-emerge",
-            door: true,
-            message: data.message,
-          });
-
-        return data && mutate("/api/trucks/find-trucks");
+      .then(async (res) => {
+        const data = await res.json();
+        console.log(data);
+        res.ok && alert(data.message);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        mutate("/api/trucks/find-trucks");
+      });
   }
 
   return (

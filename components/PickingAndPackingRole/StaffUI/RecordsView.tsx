@@ -10,7 +10,7 @@ import RecordSelection from "../../ReusableComponent/RecordSelection";
 import { TToast } from "../Toast";
 import { buttonStyleSubmit } from "@/styles/style";
 import Input from "@/components/Parts/Input";
-import { UserRole } from "@prisma/client";
+import { userRoles } from "@prisma/client";
 import LoadRecordButton from "./LoadRecordButton";
 import { RxCross2 } from "react-icons/rx";
 import { FaMinus, FaPlus } from "react-icons/fa6";
@@ -134,8 +134,7 @@ function Records({ truck, states }: RecordsProps) {
     record,
   } = states;
   const { globalState } = useMyContext();
-  const role: UserRole | undefined = globalState?.verifiedToken?.roles;
-  console.log(record);
+  const role: string | undefined = globalState?.verifiedToken?.role;
   const [open, setOpen] = useState(false);
   const [openRecordId, setOpenRecordId] = useState("");
   const [toastData, setToastData] = useState<ToastData>({
@@ -178,7 +177,7 @@ function Records({ truck, states }: RecordsProps) {
                 states={{ reportDamageForm, setReportDamageForm }}
               />
 
-              {role === "Driver" && (
+              {role === "DRIVER" && (
                 <div className="sticky bottom-0 flex gap-2">
                   {openRecordId === r.id ? (
                     <HandPackage
@@ -223,7 +222,7 @@ function Records({ truck, states }: RecordsProps) {
                 </div>
               )}
 
-              {role === "Staff" && (
+              {role === "STAFF" && (
                 <LoadRecordButton
                   record={r}
                   truck={truck}

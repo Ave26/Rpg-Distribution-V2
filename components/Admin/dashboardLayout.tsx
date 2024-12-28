@@ -1,6 +1,5 @@
 import { NextRouter, useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { UserRole } from "@prisma/client";
 
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import Link from "next/link";
@@ -16,9 +15,11 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { globalState } = useMyContext();
+  console.log(globalState);
+
   const isAuthenticated = globalState?.authenticated as Boolean;
   const router = useRouter();
-  const role: string | undefined = globalState?.verifiedToken?.roles;
+  const role: string | undefined = globalState?.verifiedToken?.role;
   const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
   const currentPath = router.asPath;
   const [isLoading, setIsLoading] = useState(false);
@@ -57,11 +58,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-full flex-col items-start justify-center gap-2 break-words p-2 text-xs font-extrabold md:h-screen md:flex-row  md:overflow-y-hidden">
-      <div className="flex h-full w-full flex-none  flex-row  justify-start gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
+      <div className="flex h-full w-full flex-none flex-row  justify-start  gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 uppercase shadow-md  md:w-fit md:flex-col md:items-start md:justify-start md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
         {renderAside}
       </div>
       {isLoading ? (
-        <div className="flex h-full w-screen animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
+        <div className="flex h-[53.9em] w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
           <AiOutlineLoading className="animate-spin" size={30} />
         </div>
       ) : (

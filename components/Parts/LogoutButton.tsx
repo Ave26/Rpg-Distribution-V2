@@ -22,7 +22,7 @@ export default function LogoutButton() {
       type="button"
       onClick={handleLogout}
       className={
-        "cursor-pointer select-none rounded-md border border-transparent bg-transparent  p-2 font-bold hover:border-cyan-400 "
+        "cursor-pointer select-none rounded-md border border-transparent bg-transparent p-2 font-black  font-bold uppercase hover:border-cyan-400 "
       }
     >
       Logout

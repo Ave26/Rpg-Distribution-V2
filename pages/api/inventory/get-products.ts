@@ -32,7 +32,9 @@ export async function handler(
               select: {
                 assignedProducts: {
                   where: {
-                    status: "Default",
+                    status: { in: ["Default", "Queuing"] },
+                    damageBinsId: { isSet: false },
+                    quality: "Good",
                   },
                 },
               },

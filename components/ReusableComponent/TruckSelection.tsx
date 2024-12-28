@@ -10,7 +10,7 @@ import GasStopButton from "../PickingAndPackingRole/StaffUI/GasStopButton";
 import TruckDetails from "./TruckDetails";
 import Toast, { TToast } from "../PickingAndPackingRole/Toast";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
-import { Coordinates, UserRole } from "@prisma/client";
+import { Coordinates } from "@prisma/client";
 import { TTrucks } from "../PickingAndPackingRole/PickingAndPackingType";
 
 type TTruckSelectionProps = {
@@ -73,7 +73,7 @@ interface SelectTruckIdProps {
 function SelectTruckId({ states }: SelectTruckIdProps) {
   const { selectedId, setSelectedId, truck, setToast, toast } = states;
   const { globalState } = useMyContext();
-  const role: UserRole | undefined = globalState?.verifiedToken?.roles;
+  const role: string | undefined = globalState?.verifiedToken?.role;
 
   const [coordinates, setCoordinates] = useState<Coordinates>({
     latitude: 0,
@@ -84,7 +84,7 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
     useState<boolean>(true);
 
   useEffect(() => {
-    if (navigator.geolocation && role === "Driver") {
+    if (navigator.geolocation && role === "DRIVER") {
       // geolocation
       const successHandler = (position: GeolocationPosition) => {
         setCoordinates({
@@ -136,10 +136,6 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
     }
   }, [role]);
 
-  useEffect(() => {
-    console.log(coordinates);
-  }, [coordinates]);
-
   return (
     <div
       key={truck.id}
@@ -151,7 +147,7 @@ function SelectTruckId({ states }: SelectTruckIdProps) {
       <div className="flex max-h-full max-w-[30em] gap-2 break-words  text-[12px]">
         <TruckDetails truck={truck} />
       </div>
-      {role === "Driver" && (
+      {role === "DRIVER" && (
         <div className="flex w-[23.2em] items-center justify-start gap-2 transition-all">
           <GasStopButton
             truck={truck}

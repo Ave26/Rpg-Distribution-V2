@@ -1,11 +1,11 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "./index";
-import { UsersAdditionalInfo, UserRole } from "@prisma/client";
+import { UsersAdditionalInfo } from "@prisma/client";
 
 export const createUser = async (
   username: string,
   password: string,
-  roles: UserRole,
+  role: string,
   additionalInfo: UsersAdditionalInfo
 ) => {
   try {
@@ -13,13 +13,13 @@ export const createUser = async (
       data: {
         username: username,
         password: password,
-        roles,
+        roles: { connect: { role } },
         additionalInfo,
       },
       select: {
         id: true,
         username: true,
-        roles: true,
+        role: true,
         additionalInfo: true,
       },
     });
@@ -37,6 +37,12 @@ export const findUser = async (username: string) => {
         username,
       },
     });
+
+    // await prisma.users.update({
+    //   where: { id: user?.id },
+    //   data: { roles: { connect: { role: "ADMIN" } } },
+    // });
+
     return { user };
   } catch (error) {
     return { error };

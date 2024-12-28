@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { authMiddleware, UserToken } from "../authMiddleware";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import { Coordinates, UserRole, locations } from "@prisma/client";
+import { Coordinates, locations } from "@prisma/client";
 import { TOmitLocation } from "@/components/DeliveryMangement/Location/locationTypes";
 
 type TOmit = Omit<locations, "id" | "recordId" | "coordinates">;

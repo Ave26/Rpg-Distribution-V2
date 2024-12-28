@@ -43,11 +43,10 @@ export async function handler(
   verifiedToken: JwtPayload & UserToken
 ) {
   const inventoryPage = req.query;
-  // console.log(inventoryPage);
+
   let newCategoryPage: InventoryPage | {} = {};
 
   if (isCategoryParams(inventoryPage)) {
-    // Use Object.entries to filter out empty values
     newCategoryPage = Object.fromEntries(
       Object.entries(inventoryPage).filter(([_, value]) => value !== "default") // Keep only non-empty values
     );
@@ -140,7 +139,7 @@ export async function handler(
       });
     })
     .catch((e) => console.log(e));
-  // console.log(bins);
+  console.log(bins);
 
   return res.status(200).json(bins);
 }

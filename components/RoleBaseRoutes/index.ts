@@ -12,14 +12,14 @@ const baseRoutes = [
 ];
 
 export const roleToRoutes: Record<TRole, TEndPoints[]> = {
-  SuperAdmin: baseRoutes,
-  Admin: baseRoutes,
-  Staff: [
+  SUPERADMIN: baseRoutes,
+  ADMIN: baseRoutes, // Admin
+  STAFF: [
     { path: "/dashboard/barcode-scanner", label: "Scan Barcode" },
     { path: "/dashboard/add-product", label: "Add Product" },
     { path: "/dashboard/picking-and-packing", label: "Picking And Packing" },
   ],
-  Driver: [
+  DRIVER: [
     { path: "/dashboard/delivery-management", label: "Manage Delivery" },
   ],
 };

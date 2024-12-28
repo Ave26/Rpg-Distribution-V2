@@ -3,7 +3,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { authMiddleware, UserToken } from "../../authMiddleware";
 import prisma from "@/lib/prisma";
 import { damageBins } from "@prisma/client";
-import { DamageProductInfo } from "@/components/Inventory/BinInventorySkwak";
+// import { DamageProductInfo } from "@/components/Inventory/BinInventorySkwak";
 import { MoveDamageForm } from "@/components/Inventory/BinInventory";
 
 type DamageForm = Pick<MoveDamageForm, "binId" | "quantity" | "PO">;

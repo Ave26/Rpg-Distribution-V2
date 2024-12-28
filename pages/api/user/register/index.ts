@@ -40,7 +40,7 @@ export async function handler(
           message: "Account Already Exist",
         });
       }
-      const { password, roles } = userData;
+      const { password, role } = userData;
       const { dob, email } = userData.additionalInfo;
       const hashedPwd = await hashPassword(password, 10);
       const Phone_Number = parseInt(
@@ -56,7 +56,7 @@ export async function handler(
       const { newUser, error } = await createUser(
         String(userData?.username),
         hashedPwd,
-        roles,
+        role,
         newAdditionalInfo
       );
 

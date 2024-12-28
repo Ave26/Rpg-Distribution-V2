@@ -12,7 +12,7 @@ type TStates = {
   setSelectedButton: React.Dispatch<React.SetStateAction<TSelectedBTN>>;
 };
 
-type TRole = "Driver" | "Admin" | "Super Admin";
+type TRole = "DRIVER" | "ADMIN" | "SUPERADMIN";
 
 export default function DeliveryManagementButtonSelection({
   states,
@@ -20,9 +20,9 @@ export default function DeliveryManagementButtonSelection({
 }: TDMSProps) {
   const { selectedButton, setSelectedButton } = states;
   const buttonSelections: Record<TRole, TSelectedBTN[] | void> = {
-    Driver: ["View Truck Loads"],
-    Admin: ["Truck Management", "View Truck Loads", "Manage Location"],
-    "Super Admin": ["Truck Management", "View Truck Loads", "Manage Location"],
+    DRIVER: ["View Truck Loads"],
+    ADMIN: ["Truck Management", "View Truck Loads", "Manage Location"],
+    SUPERADMIN: ["Truck Management", "View Truck Loads", "Manage Location"],
   };
 
   const buttonsToRender = buttonSelections[role as TRole] || [];

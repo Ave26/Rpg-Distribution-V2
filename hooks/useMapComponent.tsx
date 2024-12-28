@@ -1,17 +1,17 @@
 import { useMyContext } from "@/contexts/AuthenticationContext";
 
-type TRole = "SuperAdmin" | "Admin" | "Staff" | "Driver";
+type TRole = "SUPERADMIN" | "ADMIN" | "STAFF" | "DRIVER";
 
 type TRoleToComponent = {
-  SuperAdmin: () => JSX.Element | undefined;
-  Admin: () => JSX.Element | undefined;
-  Staff: () => JSX.Element | undefined;
-  Driver: () => JSX.Element | undefined;
+  SUPERADMIN: () => JSX.Element | undefined;
+  ADMIN: () => JSX.Element | undefined;
+  STAFF: () => JSX.Element | undefined;
+  DRIVER: () => JSX.Element | undefined;
 };
 
 function useMapComponent(mapComponent: TRoleToComponent) {
   const { globalState } = useMyContext();
-  const role = globalState?.verifiedToken?.roles;
+  const role = globalState?.verifiedToken?.role;
 
   const MappedComponent = mapComponent[role as TRole]
     ? mapComponent[role as TRole]()

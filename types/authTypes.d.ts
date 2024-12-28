@@ -7,7 +7,7 @@ interface AuthProps {
 
 interface VerifyToken {
   id?: string;
-  roles: UserRole;
+  role: string;
   iat?: number;
   exp?: number;
 }
