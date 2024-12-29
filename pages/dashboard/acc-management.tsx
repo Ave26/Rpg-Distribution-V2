@@ -7,6 +7,7 @@ import {
   buttonStyleDark,
   buttonStyleEdge,
   buttonStyleSubmit,
+  InputStyle,
 } from "@/styles/style";
 import { FaUserPlus } from "react-icons/fa";
 import { RiUser4Fill } from "react-icons/ri";
@@ -16,6 +17,8 @@ import useRoles from "@/hooks/useRoles";
 import { mutate } from "swr";
 import Input from "@/components/Parts/Input";
 import { IoRemoveSharp } from "react-icons/io5";
+import { userRoles, users } from "@prisma/client";
+import { User } from "../api/user/update";
 
 type UserButton = {
   operation: Operation;
@@ -29,14 +32,22 @@ type Actions = "MERGE" | "CLEAR";
 
 const AccountManagement = () => {
   const { users, error, isLoading } = userUserTracker();
-  const { roles } = useRoles();
+
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [loading, setLoading] = useState(false);
+  // const [isInputChanged, setIsInputChanged] = useState(false);
 
   const [userButton, setUserButton] = useState<UserButton>({
     action: "default",
     id: "",
     operation: "ACTION",
+  });
+
+  const [{ additionalInfo, ...user }, setUser] = useState<User>({
+    additionalInfo: { dob: "", email: "", Phone_Number: 0 },
+    role: "default",
+    username: "",
+    id: "",
   });
 
   return (
@@ -71,9 +82,9 @@ const AccountManagement = () => {
         </div>
 
         <div className="w-full">
-          <h1 className="text-center text-lg font-extrabold uppercase">
+          {/* <h1 className="text-center text-lg font-extrabold uppercase">
             User Tracker
-          </h1>
+          </h1> */}
           <div className="flex w-full flex-col gap-2 uppercase">
             {Array.isArray(users) &&
               users.map((u) => {
@@ -98,18 +109,33 @@ const AccountManagement = () => {
                                   id: u.id === userButton.id ? "" : u.id,
                                   operation: "CANCEL",
                                 });
+
+                                setUser({
+                                  additionalInfo: {
+                                    dob: "",
+                                    email: "",
+                                    Phone_Number: 0,
+                                  },
+                                  role: "default",
+                                  username: "",
+                                  id: "",
+                                });
                               },
                               CANCEL: () => {
-                                // setBinButton({
-                                //   ...binButton,
-                                //   id:
-                                //     v.bin.binId === binButton.id ? "" : v.bin.binId,
-                                //   operation: "CANCEL",
-                                // });
                                 setUserButton({
                                   ...userButton,
                                   id: u.id === userButton.id ? "" : u.id,
                                   operation: "CANCEL",
+                                });
+                                setUser({
+                                  additionalInfo: {
+                                    dob: "",
+                                    email: "",
+                                    Phone_Number: 0,
+                                  },
+                                  role: "default",
+                                  username: "",
+                                  id: u.id,
                                 });
                               },
                               MOVE: () => {},
@@ -117,18 +143,29 @@ const AccountManagement = () => {
                               UPDATE: () => {
                                 if (u.id === userButton.id) {
                                   setLoading(true);
-                                  fetch("/api", {
+                                  fetch("/api/user/update", {
                                     method: "POST",
                                     headers: {
                                       "Content-Type": "application/json",
                                     },
-                                    body: JSON.stringify({}),
+                                    body: JSON.stringify({
+                                      additionalInfo,
+                                      ...user,
+                                    }),
                                   })
                                     .then(async (res) => {
                                       const data = await res.json();
                                       alert(data);
                                     })
                                     .finally(() => {
+                                      setLoading(false);
+                                      // setUserButton((state) => {
+                                      //   return {
+                                      //     ...state,
+                                      //     operation: "CANCEL",
+                                      //   };
+                                      // });
+
                                       // setLoading((state: { [key: string]: boolean }) => ({
                                       //   ...state,
                                       //   swapProducts: false,
@@ -172,57 +209,25 @@ const AccountManagement = () => {
                     <div
                       className={`flex ${
                         userButton.id === u.id
-                          ? "h-20 overflow-x-hidden border border-t-2 p-2"
+                          ? "h-fit border border-t-2 p-2"
                           : "h-0"
-                      } justify-between overflow-y-scroll rounded-md transition-all ease-in-out`}
+                      } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
                     >
-                      <ul className={`flex flex-col break-all`}>
-                        {/* <li>
-                          Date: {String(v.product?.dateInfo.date).slice(0, 10)}
-                        </li> */}
-                      </ul>
-                      <div className="flex min-w-fit gap-2">
-                        {/* 
-                        {v.bin.binId === binButton.id && (
-                          <div>
-                            <MdMoveDown
-                              type="button"
-                              size={50}
-                              onClick={(e) => {
-                                setPOs(v.product?.POs ?? []);
-                                setMoveDamageForm({
-                                  ...moveDamageForm,
-                                  open: true,
-                                  binId: v.bin.binId,
-                                  count: v.bin.count,
-                                });
-                              }}
-                              className={`relative ${
-                                moveDamageProduct ? "animate-emerge" : "hidden"
-                              }   hover:text-red-500`}
-                            />
-                          </div>
-                        )}
-
-                        <button
-                          className={buttonStyleSubmit}
-                          onClick={() => {
-                            setSelectedBinIds((state) => ({
-                              ...state,
-                              [v.bin.binId]: "",
-                            }));
-
-                            setBinButton((state) => {
-                              return {
-                                ...state,
-                                id: "",
-                                operation: "CANCEL",
-                              };
-                            });
+                      <div
+                        className={`${
+                          userButton.id === u.id ? "block" : "hidden"
+                        } flex min-w-full animate-emerge gap-2 transition-all`}
+                      >
+                        <UserForm
+                          states={{
+                            setUserButton,
+                            userButton,
+                            // isInputChanged,
+                            // setIsInputChanged,
+                            setUser,
+                            user: { additionalInfo, ...user },
                           }}
-                        >
-                          Remove
-                        </button> */}
+                        />
                       </div>
                     </div>
                   </div>
@@ -303,7 +308,7 @@ function UserRoleForm() {
           },
           label: { htmlFor: role, children: "Role" },
         }}
-        addedStyle="uppercase"
+        inputStyles="uppercase"
       />
       <button type="submit" className={buttonStyleSubmit}>
         {loading ? (
@@ -367,5 +372,208 @@ function ViewRoles() {
           );
         })}
     </>
+  );
+}
+
+interface UserFormProps {
+  states: {
+    setUser: React.Dispatch<React.SetStateAction<User>>;
+    user: User;
+    // setIsInputChanged: React.Dispatch<React.SetStateAction<boolean>>;
+    // isInputChanged: boolean;
+    setUserButton: React.Dispatch<React.SetStateAction<UserButton>>;
+    userButton: UserButton;
+  };
+}
+
+function UserForm({ states }: UserFormProps) {
+  const { roles } = useRoles();
+  const {
+    setUserButton,
+    userButton,
+    setUser,
+    user: { additionalInfo, ...user },
+  } = states;
+
+  const { Phone_Number, dob, email } = additionalInfo;
+  states.user;
+  useEffect(() => {
+    const { id, ...restOfUser } = states.user; // Exclude `id`
+    const hasChanges = Object.values(restOfUser).some((value) => {
+      if (typeof value === "object" && value !== null) {
+        return Object.values(value).some(
+          (nestedValue) => nestedValue !== "default" && !!nestedValue
+        );
+      }
+      return value !== "default" && !!value;
+    });
+
+    setUserButton((state) => ({
+      ...state,
+      operation: hasChanges ? "UPDATE" : "CANCEL",
+    }));
+  }, [states.user, setUserButton]); // Ensure the dependency matches the actual state
+
+  return (
+    <form className="l grid w-full grid-cols-2 gap-2 uppercase">
+      <select
+        name={user.role}
+        value={user.role}
+        onChange={(e) => {
+          setUser((state) => {
+            return {
+              ...state,
+              role: e.target.value,
+            };
+          });
+        }}
+        className={`${InputStyle} text-bolder uppercase text-white`}
+      >
+        <option value={"default"} disabled className="uppercase text-black">
+          Select Role
+        </option>
+        {Array.isArray(roles) &&
+          roles.map(({ id, role }) => {
+            return (
+              <option key={id} value={role} className="text-black">
+                {role}
+              </option>
+            );
+          })}
+      </select>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          setUser((state) => {
+            return {
+              ...state,
+              role: "default",
+              username: "",
+              additionalInfo: {
+                dob: "",
+                email: "",
+                Phone_Number: 0,
+              },
+            };
+          });
+        }}
+        className={`${buttonStyleEdge}  border-white uppercase text-white hover:bg-white hover:text-black`}
+      >
+        Clear
+      </button>
+      <Input
+        attributes={{
+          input: {
+            id: "username",
+            name: user.username,
+            value: user.username,
+            onChange: (e) => {
+              setUser((state) => {
+                return {
+                  ...state,
+                  username: e.target.value,
+                };
+              });
+            },
+          },
+          label: {
+            htmlFor: "username",
+            children: "Username",
+          },
+        }}
+        labelStyles="uppercase text-white"
+        inputStyles="uppercase text-white"
+      />
+      <Input
+        attributes={{
+          input: {
+            id: "dob",
+            name: dob,
+            value: dob,
+            type: "date",
+            onChange: (e) => {
+              setUser((state) => {
+                return {
+                  ...state,
+                  additionalInfo: {
+                    ...state.additionalInfo,
+                    dob: e.target.value,
+                  },
+                };
+              });
+            },
+          },
+          label: {
+            htmlFor: "dob",
+            children: "Date Of Birth",
+          },
+        }}
+        labelStyles="uppercase text-white"
+        inputStyles="uppercase text-white"
+      />
+      <Input
+        attributes={{
+          input: {
+            id: "email",
+            name: email,
+            value: email,
+            type: "email",
+            onChange: (e) => {
+              setUser((state) => {
+                return {
+                  ...state,
+                  additionalInfo: {
+                    ...state.additionalInfo,
+                    email: e.target.value,
+                  },
+                };
+              });
+            },
+          },
+          label: {
+            htmlFor: "email",
+            children: "email",
+          },
+        }}
+        labelStyles="uppercase text-white"
+        inputStyles="uppercase text-white"
+      />
+      <Input
+        attributes={{
+          input: {
+            id: "phoneNumber",
+            name: String(Phone_Number),
+            value: String(Phone_Number),
+            type: "text",
+            maxLength: 10,
+            onChange: (e) => {
+              setUser((state) => {
+                return {
+                  ...state,
+                  additionalInfo: {
+                    ...state.additionalInfo,
+                    Phone_Number: !e.target.value
+                      ? 0
+                      : parseInt(e.target.value),
+                  },
+                };
+              });
+            },
+          },
+          label: {
+            htmlFor: "phoneNumber",
+            children: "Phone Number",
+          },
+        }}
+        labelStyles="uppercase text-white"
+        inputStyles="uppercase text-white"
+      />
+
+      <h1>{JSON.stringify(user)}</h1>
+      {/* <>{JSON.stringify(additionalInfo)}</> */}
+      {/* <>{JSON.stringify(isInputChanged)}</> */}
+    </form>
   );
 }
