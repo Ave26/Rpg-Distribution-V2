@@ -51,8 +51,8 @@ const AccountManagement = () => {
   });
 
   return (
-    <div className="">
-      <div className="flex h-[8%] justify-between rounded-t-md bg-white p-2">
+    <>
+      {/* <div className="flex h-[8%] justify-between rounded-t-md bg-white p-2">
         <RiUser4Fill
           size={30}
           className="flex h-full animate-emerge  items-center justify-center"
@@ -68,23 +68,38 @@ const AccountManagement = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
       <div
-        className={`flex h-[53.9em] w-full flex-col items-center gap-2 overflow-x-hidden overflow-y-scroll rounded-b-md bg-slate-300 p-4`}
+        className={`flex h-[53.9em] w-full flex-col items-center gap-2 rounded-b-none rounded-t-md bg-slate-300`}
       >
+        <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
+          <RiUser4Fill
+            size={30}
+            className="flex h-full animate-emerge  items-center justify-center"
+          />
+
+          <div className="flex h-full gap-2">
+            <div className="flex flex-none items-center justify-center">
+              <button
+                className={`${buttonStyleDark}`}
+                onClick={() => setOpenCreateUser(!openCreateUser)}
+              >
+                <FaUserPlus size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div
           className={`${
             openCreateUser ? "sm:flex" : "hidden"
-          } h-fit w-full flex-none gap-2 overflow-x-hidden overflow-y-scroll rounded-md bg-white p-2 font-semibold text-black`}
+          } h-fit w-full flex-none gap-2 overflow-x-hidden overflow-y-scroll rounded-md bg-white p-2 font-semibold text-black transition-all duration-1000 ease-in-out`}
         >
           <Register />
           <RolesForm />
         </div>
 
-        <div className="w-full">
-          {/* <h1 className="text-center text-lg font-extrabold uppercase">
-            User Tracker
-          </h1> */}
+        <div className="w-full overflow-x-hidden overflow-y-scroll">
           <div className="flex w-full flex-col gap-2 uppercase">
             {Array.isArray(users) &&
               users.map((u) => {
@@ -236,7 +251,7 @@ const AccountManagement = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -415,7 +430,7 @@ function UserForm({ states }: UserFormProps) {
   }, [states.user, setUserButton]); // Ensure the dependency matches the actual state
 
   return (
-    <form className="l grid w-full grid-cols-2 gap-2 uppercase">
+    <form className="grid w-full grid-cols-2 gap-2 uppercase">
       <select
         name={user.role}
         value={user.role}

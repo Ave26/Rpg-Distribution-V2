@@ -66,11 +66,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   /* flex h-full w-full flex-none flex-row  justify-start  gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 uppercase shadow-md  md:w-fit md:flex-col md:items-center md:justify-start md:gap-2 md:overflow-x-hidden  md:text-sm */
   return (
     <div
-      className={`flex ${roboto.className} h-full flex-col items-start justify-center gap-2 overflow-y-hidden break-words p-2 text-xs font-extrabold sm:gap-10 md:h-screen lg:flex-row lg:p-10`}
+      className={`flex ${roboto.className} h-full flex-col items-start gap-2 overflow-y-scroll break-words p-2 text-xs font-extrabold  md:h-screen lg:flex-row lg:justify-center lg:p-10`}
     >
       <div className="flex h-full w-full items-center justify-center md:max-w-min">
         <div className="flex w-full justify-start gap-2 overflow-y-hidden overflow-x-scroll rounded-md bg-white p-2 text-[.9em] uppercase lg:max-w-min lg:flex-col lg:overflow-hidden ">
-          <div className="gap-2text-[.8em] mb-4 hidden items-center justify-center gap-2 md:flex">
+          <div className="hidden items-center justify-center gap-2 text-[.8em] lg:mb-4 lg:flex">
             <ProstockIcon />
           </div>
           {renderAside}
@@ -83,7 +83,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       ) : (
         <main className="animation-emerge relative h-full w-full">
           {children}
-          <div className="h-2 w-full  rounded-b-md bg-gradient-to-r from-[#A08130] via-[#EFBF04] to-[#A08130]"></div>
+          <div className="h-2 w-full rounded-b-md bg-gradient-to-r from-[#A08130] via-[#EFBF04] to-[#A08130]"></div>
         </main>
       )}
     </div>
