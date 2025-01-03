@@ -9,7 +9,7 @@ import {
   buttonStyleSubmit,
   InputStyle,
 } from "@/styles/style";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserCheck, FaUserPlus } from "react-icons/fa";
 import { RiUser4Fill } from "react-icons/ri";
 import { AiOutlineLoading } from "react-icons/ai";
 import { IoIosArrowDown } from "react-icons/io";
@@ -19,7 +19,9 @@ import Input from "@/components/Parts/Input";
 import { IoRemoveSharp } from "react-icons/io5";
 import { userRoles, users } from "@prisma/client";
 import { User } from "../api/user/update";
-
+import { PiUserGearBold } from "react-icons/pi";
+import { ImUserTie } from "react-icons/im";
+import { IconType } from "react-icons";
 type UserButton = {
   operation: Operation;
   id: string;
@@ -27,14 +29,17 @@ type UserButton = {
 };
 
 type Operation = "MOVE" | "SELECT" | "CANCEL" | "ACTION" | "UPDATE";
-
 type Actions = "MERGE" | "CLEAR";
+type keyNames = {
+  UserCreate: IconType;
+  Role: IconType;
+};
 
 const AccountManagement = () => {
   const { users, error, isLoading } = userUserTracker();
-
-  const [openCreateUser, setOpenCreateUser] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // const [openCreateUser, setOpenCreateUser] = useState(false);
   // const [isInputChanged, setIsInputChanged] = useState(false);
 
   const [userButton, setUserButton] = useState<UserButton>({
@@ -50,161 +55,184 @@ const AccountManagement = () => {
     id: "",
   });
 
+  const userButtonField: keyNames = {
+    UserCreate: ImUserTie,
+    Role: FaUserPlus,
+  };
+  const [keyName, setKeyName] = useState<keyof keyNames>("UserCreate");
+  const userComponentField: Record<keyof keyNames, React.ReactNode> = {
+    Role: <RolesForm />,
+    UserCreate: <Register />,
+  };
+
+  const RenderUserComponentField = userComponentField[keyName];
+
   return (
-    <section
-      className={`flex h-full w-full grid-cols-2 gap-2 rounded-b-none rounded-t-md bg-slate-300`}
-    >
+    <section className={`h-full bg-transparent`}>
       {/* header icons */}
-      <div className="borded flex h-[8%] w-full justify-between rounded-t-md border-black bg-white p-2">
+      <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
         <RiUser4Fill
           size={30}
           className="flex h-full animate-emerge  items-center justify-center"
         />
-
+        {/* Action Button */}
         <div className="flex h-full gap-2">
-          <div className="flex flex-none items-center justify-center">
-            <button
-              className={`${buttonStyleDark}`}
-              onClick={() => setOpenCreateUser(!openCreateUser)}
-            >
-              <FaUserPlus size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* Register and RolesForm */}
-      <div
-        className={`${
-          openCreateUser ? "sm:flex" : "hidden"
-        } borded flex h-full w-full flex-col gap-2 border-black p-2`}
-      >
-        <Register />
-        <RolesForm />
-      </div>
-      {/* Users Display */}
-      <div
-        className={` ${""} borded flex h-[15em] w-full flex-col gap-2 border-black  uppercase`}
-      >
-        {Array.isArray(users) &&
-          users.map((u) => {
+          {Object.entries(userButtonField).map(([key, Icon], i) => {
+            const typedKey = key as keyof keyNames;
             return (
-              <div
-                key={u.id}
-                className="parent flex flex-col rounded-md bg-white uppercase"
+              <button
+                key={key}
+                className={`${buttonStyleDark} flex items-center justify-center gap-2`}
+                onClick={() => setKeyName(typedKey)}
               >
-                <ul key={u.id} className="flex">
-                  <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
-                    <li>{u.id}</li>
-                    <li>{u.roles}</li>
-                    <li>{u.username}</li>
-                  </div>
-                  <button
-                    onClick={() => {
-                      const operationFields: Record<Operation, () => void> = {
-                        ACTION: () => {
-                          setUserButton({
-                            ...userButton,
-                            id: u.id === userButton.id ? "" : u.id,
-                            operation: "CANCEL",
-                          });
-
-                          setUser({
-                            additionalInfo: {
-                              dob: "",
-                              email: "",
-                              Phone_Number: 0,
-                            },
-                            role: "default",
-                            username: "",
-                            id: "",
-                          });
-                        },
-                        CANCEL: () => {
-                          setUserButton({
-                            ...userButton,
-                            id: u.id === userButton.id ? "" : u.id,
-                            operation: "CANCEL",
-                          });
-                          setUser({
-                            additionalInfo: {
-                              dob: "",
-                              email: "",
-                              Phone_Number: 0,
-                            },
-                            role: "default",
-                            username: "",
-                            id: u.id,
-                          });
-                        },
-                        MOVE: () => {},
-                        SELECT: () => {},
-                        UPDATE: () => {
-                          if (u.id === userButton.id) {
-                            setLoading(true);
-                            fetch("/api/user/update", {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              body: JSON.stringify({
-                                additionalInfo,
-                                ...user,
-                              }),
-                            })
-                              .then(async (res) => {
-                                const data = await res.json();
-                                alert(data);
-                              })
-                              .finally(() => {
-                                setLoading(false);
-                              });
-                          }
-                        },
-                      };
-
-                      operationFields[userButton.operation]();
-                    }}
-                    className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
-                  >
-                    {userButton.id === u.id ? (
-                      loading ? (
-                        <AiOutlineLoading className="animate-spin" size={30} />
-                      ) : (
-                        userButton.operation
-                      )
-                    ) : (
-                      <IoIosArrowDown />
-                    )}
-                  </button>
-                </ul>
-
-                <div
-                  className={`flex ${
-                    userButton.id === u.id
-                      ? "h-fit border border-t-2 p-2"
-                      : "h-0"
-                  } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
-                >
-                  <div
-                    className={`${
-                      userButton.id === u.id ? "block" : "hidden"
-                    } flex min-w-full animate-emerge gap-2 transition-all`}
-                  >
-                    <UserForm
-                      states={{
-                        setUserButton,
-                        userButton,
-                        // isInputChanged,
-                        // setIsInputChanged,
-                        setUser,
-                        user: { additionalInfo, ...user },
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+                <Icon size={20} />
+                <h1 className="flex items-center justify-center">{key}</h1>
+              </button>
             );
           })}
+        </div>
+      </div>
+
+      <div className="flex h-[92%] gap-2">
+        {/* Register and RolesForm */}
+
+        <div
+          className={`flex h-full w-[20%] flex-col items-start justify-start`}
+        >
+          <h1 className="flex w-full items-center justify-center bg-white p-2 font-black uppercase">
+            {keyName}
+          </h1>
+          {RenderUserComponentField}
+        </div>
+        {/* Users Display */}
+
+        <div
+          className={`flex h-full w-full flex-col gap-2 overflow-x-hidden overflow-y-scroll bg-slate-300 p-2`}
+        >
+          {Array.isArray(users) &&
+            users.map((u) => {
+              return (
+                <div
+                  key={u.id}
+                  className="parent flex flex-col rounded-md bg-white uppercase"
+                >
+                  <ul key={u.id} className="flex">
+                    <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
+                      <li>{u.id}</li>
+                      <li>{u.roles}</li>
+                      <li>{u.username}</li>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const operationFields: Record<Operation, () => void> = {
+                          ACTION: () => {
+                            setUserButton({
+                              ...userButton,
+                              id: u.id === userButton.id ? "" : u.id,
+                              operation: "CANCEL",
+                            });
+
+                            setUser({
+                              additionalInfo: {
+                                dob: "",
+                                email: "",
+                                Phone_Number: 0,
+                              },
+                              role: "default",
+                              username: "",
+                              id: "",
+                            });
+                          },
+                          CANCEL: () => {
+                            setUserButton({
+                              ...userButton,
+                              id: u.id === userButton.id ? "" : u.id,
+                              operation: "CANCEL",
+                            });
+                            setUser({
+                              additionalInfo: {
+                                dob: "",
+                                email: "",
+                                Phone_Number: 0,
+                              },
+                              role: "default",
+                              username: "",
+                              id: u.id,
+                            });
+                          },
+                          MOVE: () => {},
+                          SELECT: () => {},
+                          UPDATE: () => {
+                            if (u.id === userButton.id) {
+                              setLoading(true);
+                              fetch("/api/user/update", {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  additionalInfo,
+                                  ...user,
+                                }),
+                              })
+                                .then(async (res) => {
+                                  const data = await res.json();
+                                  alert(data);
+                                })
+                                .finally(() => {
+                                  setLoading(false);
+                                });
+                            }
+                          },
+                        };
+
+                        operationFields[userButton.operation]();
+                      }}
+                      className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
+                    >
+                      {userButton.id === u.id ? (
+                        loading ? (
+                          <AiOutlineLoading
+                            className="animate-spin"
+                            size={30}
+                          />
+                        ) : (
+                          userButton.operation
+                        )
+                      ) : (
+                        <IoIosArrowDown />
+                      )}
+                    </button>
+                  </ul>
+
+                  <div
+                    className={`flex ${
+                      userButton.id === u.id
+                        ? "h-fit border border-t-2 p-2"
+                        : "h-0"
+                    } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
+                  >
+                    <div
+                      className={`${
+                        userButton.id === u.id ? "block" : "hidden"
+                      } flex min-w-full animate-emerge gap-2 transition-all`}
+                    >
+                      <UserForm
+                        states={{
+                          setUserButton,
+                          userButton,
+                          // isInputChanged,
+                          // setIsInputChanged,
+                          setUser,
+                          user: { additionalInfo, ...user },
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
       </div>
     </section>
   );
@@ -223,10 +251,9 @@ AccountManagement.getLayout = (page: ReactElement) => {
 function RolesForm() {
   return (
     <>
-      <div className="grid h-full bg-white">
+      <div className="grid h-full w-full bg-white">
         {/* <button className={buttonStyleEdge}>Create Damage Category</button> */}
-        <div className="w-1/2"></div>
-        <div className="grid grid-flow-row grid-cols-2 rounded-md p-2">
+        <div className="grid grid-flow-row grid-cols-2 p-2">
           <UserRoleForm />
           <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll border border-b-0 border-r-0 border-t-0 border-black p-2">
             {/* <ViewCategories categories={categories} /> */}
@@ -246,7 +273,7 @@ function UserRoleForm() {
 
   return (
     <form
-      className="col-span-2 flex gap-2 p-2"
+      className="col-span-2 flex h-fit gap-2 p-2"
       onSubmit={(e) => {
         e.preventDefault();
         setLoading(true);
@@ -367,23 +394,6 @@ function UserForm({ states }: UserFormProps) {
 
   const { Phone_Number, dob, email } = additionalInfo;
   states.user;
-  // useEffect(() => {
-  //   const { id, ...restOfUser } = states.user; // Exclude `id`
-  //   const hasChanges = Object.values(restOfUser).some((value) => {
-  //     if (typeof value === "object" && value !== null) {
-  //       return Object.values(value).some(
-  //         (nestedValue) => nestedValue !== "default" && !!nestedValue
-  //       );
-  //     }
-  //     return value !== "default" && !!value;
-  //   });
-
-  //   setUserButton((state) => ({
-  //     ...state,
-  //     operation: hasChanges ? "UPDATE" : "CANCEL",
-  //   }));
-  // }, [states.user, setUserButton]);
-  // Ensure the dependency matches the actual state
 
   return (
     <form className="grid w-full grid-cols-2 gap-2 uppercase">
@@ -391,10 +401,16 @@ function UserForm({ states }: UserFormProps) {
         name={user.role}
         value={user.role}
         onChange={(e) => {
+          const { value } = e.target;
+          setUserButton((state) => ({
+            ...state,
+            operation: value && value !== "default" ? "UPDATE" : "CANCEL",
+          }));
+
           setUser((state) => {
             return {
               ...state,
-              role: e.target.value,
+              role: value,
             };
           });
         }}
@@ -417,6 +433,8 @@ function UserForm({ states }: UserFormProps) {
         type="button"
         onClick={(e) => {
           e.preventDefault();
+          setUserButton((state) => ({ ...state, operation: "CANCEL" }));
+
           setUser((state) => {
             return {
               ...state,
@@ -441,10 +459,15 @@ function UserForm({ states }: UserFormProps) {
             name: user.username,
             value: user.username,
             onChange: (e) => {
+              const { value } = e.target;
+              setUserButton((state) => ({
+                ...state,
+                operation: value ? "UPDATE" : "CANCEL",
+              }));
               setUser((state) => {
                 return {
                   ...state,
-                  username: e.target.value,
+                  username: value,
                 };
               });
             },
@@ -465,12 +488,17 @@ function UserForm({ states }: UserFormProps) {
             value: dob,
             type: "date",
             onChange: (e) => {
+              const { value } = e.target;
+              setUserButton((state) => ({
+                ...state,
+                operation: value ? "UPDATE" : "CANCEL",
+              }));
               setUser((state) => {
                 return {
                   ...state,
                   additionalInfo: {
                     ...state.additionalInfo,
-                    dob: e.target.value,
+                    dob: value,
                   },
                 };
               });
@@ -492,12 +520,17 @@ function UserForm({ states }: UserFormProps) {
             value: email,
             type: "email",
             onChange: (e) => {
+              const { value } = e.target;
+              setUserButton((state) => ({
+                ...state,
+                operation: value ? "UPDATE" : "CANCEL",
+              }));
               setUser((state) => {
                 return {
                   ...state,
                   additionalInfo: {
                     ...state.additionalInfo,
-                    email: e.target.value,
+                    email: value,
                   },
                 };
               });
@@ -520,14 +553,19 @@ function UserForm({ states }: UserFormProps) {
             type: "text",
             maxLength: 10,
             onChange: (e) => {
+              const { value } = e.target;
+
+              setUserButton((state) => ({
+                ...state,
+                operation: value && parseInt(value) > 0 ? "UPDATE" : "CANCEL",
+              }));
               setUser((state) => {
                 return {
                   ...state,
                   additionalInfo: {
                     ...state.additionalInfo,
-                    Phone_Number: !e.target.value
-                      ? 0
-                      : parseInt(e.target.value),
+                    Phone_Number:
+                      !value || Number.isNaN(value) ? 0 : parseInt(value),
                   },
                 };
               });

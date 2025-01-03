@@ -39,7 +39,7 @@ export default function LogOverview() {
         />
       </div>
 
-      <div className="grid h-[49em] grid-cols-1 grid-rows-3 gap-2 p-2 lg:grid-cols-2">
+      <div className="grid h-[49em] grid-cols-1 grid-rows-3 gap-2 overflow-x-hidden overflow-y-scroll p-2 lg:grid-cols-2">
         <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
           <OrderQueue />
         </div>
@@ -99,7 +99,7 @@ function UserProductScanned() {
   const { userScanned, error, isLoading } = useUserScanned();
 
   return (
-    <div className="flex flex-col justify-start gap-2 bg-slate-700 p-2 ">
+    <div className="flex flex-col justify-start gap-2 bg-slate-700 p-2">
       {Array.isArray(userScanned) &&
         userScanned.map((u) => {
           return (

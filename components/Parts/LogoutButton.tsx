@@ -22,8 +22,8 @@ export default function LogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className={`flex items-center justify-center p-2 text-center font-black uppercase hover:bg-gradient-to-r
-        hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611]`}
+      className={`flex items-center justify-center p-2 text-center font-black
+        uppercase hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] hover:text-white`}
     >
       Logout
     </button>

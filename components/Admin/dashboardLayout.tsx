@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const mappedAside: Record<string, JSX.Element> = {
     true: <Aside mapRoutes={mapRoutes} router={router} />,
-    false: <LoadingAside />,
+    false: <AiOutlineLoading className="animate-spin" size={30} />,
   };
 
   const renderAside = mappedAside[String(isAuthenticated)];
@@ -75,14 +75,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       className={`${roboto.className} flex h-full w-full flex-col gap-2 p-2 py-10 lg:flex-row  lg:p-16`}
     >
       {/* Entire Aside */}
-      {/* flex h-full w-fit flex-col gap-5 border border-red-800 bg-white  pt-2 md:max-w-min */}
-      <div className="flex h-full flex-col gap-2 bg-white">
+      <div className="flex h-fit items-center justify-start gap-3 bg-white p-2 lg:h-full lg:flex-col lg:gap-0 lg:p-0 ">
         {/* Icon */}
         <div className="hidden h-fit items-center justify-center p-2 lg:flex lg:pb-4">
           <ProstockIcon />
         </div>
-        {/* Selections  relative grid h-full justify-around border border-green-600 lg:flex-col*/}
-        <div className="grid h-full auto-rows-fr grid-cols-1">
+        {/* Selections flex h-full w-full items-center justify-between lg:flex-col*/}
+
+        <div
+          className={`flex h-full w-full items-center justify-start  lg:flex-col`}
+        >
           {renderAside}
         </div>
         <LogoutButton />
@@ -109,14 +111,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 }
 
-export function LoadingAside() {
-  return (
-    <aside className="flex h-full w-full flex-row justify-center gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/30 p-2 shadow-md  md:w-fit md:flex-col md:items-center md:justify-center md:gap-2 md:overflow-x-hidden md:p-10 md:text-sm">
-      loading...
-    </aside>
-  );
-}
-
 interface AsideProps {
   mapRoutes: TEndPoints[];
   router: NextRouter;
@@ -125,7 +119,7 @@ interface AsideProps {
 export function Aside({ mapRoutes, router }: AsideProps) {
   const iconsFieled: Record<string, string> = {};
 
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState("hidden");
 
   return (
     <>
@@ -137,10 +131,9 @@ export function Aside({ mapRoutes, router }: AsideProps) {
               key={index}
               href={path}
               passHref
-              className="flex w-full flex-col items-center justify-center hover:bg-gradient-to-r 
-       hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611]"
+              className="flex h-[12.5%] w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611]"
             >
-              <Icon size={25} className="transition-all hover:opacity-0" />
+              <Icon size={25} />
               {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}
             </Link>
           );

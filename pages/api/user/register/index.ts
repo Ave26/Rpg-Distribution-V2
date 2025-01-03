@@ -11,7 +11,23 @@ export async function handler(
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  const { user: userData }: { user: TUserWithConfirmPW } = req.body;
+  const { additionalInfo, ...user }: TUserWithConfirmPW = req.body;
+
+  console.log(user);
+
+  const userData: TUserWithConfirmPW = {
+    role: user.role.toUpperCase().trim(),
+    username: user.username.toUpperCase().trim(),
+    confirmPassword: user.confirmPassword.trim(),
+    password: user.password.trim(),
+    additionalInfo: {
+      dob: additionalInfo.dob.toUpperCase().trim(),
+      email: additionalInfo.email.toUpperCase().trim(),
+      Phone_Number: additionalInfo.Phone_Number,
+    },
+  };
+
+  // return console.log(userData);
   console.log(userData);
   switch (req.method) {
     case "POST":
@@ -48,8 +64,8 @@ export async function handler(
       );
 
       const newAdditionalInfo = {
-        dob,
-        email,
+        dob: dob.toUpperCase(),
+        email: email.toUpperCase(),
         Phone_Number,
       };
 

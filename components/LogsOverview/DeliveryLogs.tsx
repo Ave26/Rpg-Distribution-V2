@@ -29,7 +29,7 @@ function DeliveryLogs({ states }: DeliveryLogsProps) {
 
   return (
     <div
-      className="flex h-[25em] flex-col gap-2 overflow-y-scroll"
+      className="flex h-[25em] flex-col gap-2 overflow-y-scroll p-2"
       ref={scrollableRef}
     >
       {Array.isArray(deliveryLogs) &&
@@ -57,7 +57,8 @@ function DeliveryLogs({ states }: DeliveryLogsProps) {
                   </h3>
                 </div>
                 <button
-                  className={buttonStyleDark}
+                  // className={buttonStyleDark}
+                  className="hover:bg-slate-200"
                   onClick={() => {
                     setTruckName(v.trucks.truckName);
                     setPosition([

@@ -4,6 +4,7 @@ import { FaCartFlatbed, FaPallet } from "react-icons/fa6";
 import {
   MdAccountCircle,
   MdAdminPanelSettings,
+  MdOutlineInventory,
   MdPallet,
 } from "react-icons/md";
 import { ImBoxAdd } from "react-icons/im";
@@ -33,19 +34,20 @@ const baseRoutes = [
     Icon: FaPallet,
   },
   {
+    path: "/dashboard/inventory-management",
+    label: "Manage Inventory",
+    Icon: MdOutlineInventory,
+  },
+  {
     path: "/dashboard/picking-and-packing",
     label: "Picking And Packing",
     Icon: FaCartFlatbed,
   },
+
   {
     path: "/dashboard/delivery-management",
     label: "Manage Delivery",
     Icon: TbTruckDelivery,
-  },
-  {
-    path: "/dashboard/inventory-management",
-    label: "Manage Inventory",
-    Icon: ImBoxAdd,
   },
   {
     path: "/dashboard/acc-management",
@@ -61,24 +63,24 @@ export const roleToRoutes: Record<TRole, TEndPoints[]> = {
     {
       path: "/dashboard/barcode-scanner",
       label: "Scan Barcode",
-      Icon: AiOutlineLoading,
+      Icon: BsUpcScan,
     },
     {
       path: "/dashboard/add-product",
       label: "Add Product",
-      Icon: AiOutlineLoading,
+      Icon: ImBoxAdd,
     },
     {
       path: "/dashboard/picking-and-packing",
       label: "Picking And Packing",
-      Icon: AiOutlineLoading,
+      Icon: FaCartFlatbed,
     },
   ],
   DRIVER: [
     {
       path: "/dashboard/delivery-management",
       label: "Manage Delivery",
-      Icon: AiOutlineLoading,
+      Icon: TbTruckDelivery,
     },
   ],
 };

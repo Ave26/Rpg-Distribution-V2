@@ -13,6 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "POST":
       const { auth } = req.body;
       const { username, password }: TOmitUser = auth;
+
       if (!username || !password) {
         return res.status(401).json({
           message: "Please complete credentials",
@@ -20,14 +21,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       try {
-        const { user } = await findUser(username);
+        const { user } = await findUser(username.toUpperCase());
+        // console.log(user);
         if (!user) {
           return res.status(401).json({
             message: "Invalid Credentials",
           });
         }
         const verifiedPwd = await comparePassword(password, user.password);
-
+        console.log(verifiedPwd);
         if (!verifiedPwd) {
           return res.status(404).json({
             message: "Invalid Credentials",

@@ -24,15 +24,15 @@ export default function PickingAndPacking() {
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <section className="flex h-full w-full flex-col rounded-b-none rounded-t-md bg-slate-300 font-black lg:overflow-hidden">
+      <section className="flex h-full w-full flex-col gap-1 rounded-b-none rounded-t-md bg-transparent font-black lg:overflow-hidden">
         <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
-          <FaBoxesPacking
+          {/* <FaBoxesPacking
             size={30}
             className="flex h-full animate-emerge  items-center justify-center"
-          />
+          /> */}
         </div>
 
-        {MappedComponent}
+        <div className="flex h-[92%] w-full  gap-1">{MappedComponent}</div>
       </section>
     </>
   );

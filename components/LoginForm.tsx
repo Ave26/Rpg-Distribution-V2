@@ -119,7 +119,7 @@ export default function LoginForm() {
         onSubmit={handleLogin}
         className="flex h-full w-full flex-col items-center justify-center gap-2 break-normal p-6 font-semibold text-black backdrop-blur-lg"
       >
-        <div className="relative flex h-full w-full items-center justify-center  gap-1 rounded-full border bg-white/20 pr-2 backdrop-blur">
+        <div className="relative flex h-full w-full items-center justify-center  gap-1 rounded-full border border-slate-200 bg-white/20 pr-2 shadow-md backdrop-blur">
           <label
             htmlFor="username"
             className="flex items-center justify-center rounded-full bg-white p-4"
@@ -128,7 +128,7 @@ export default function LoginForm() {
           </label>
           <input
             name="username"
-            value={String(auth.username)}
+            value={String(auth.username).toUpperCase()}
             placeholder="User Name"
             type="text"
             onChange={handleChange}
