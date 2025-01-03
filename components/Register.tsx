@@ -14,11 +14,6 @@ export default function Register() {
 
   const { roles } = useRoles();
 
-  // const roles = ["Admin", "Staff", "Driver"];
-  // const roleMapping: Roles[] =
-  //   Array.isArray(roles) &&
-  //   roles.filter((v) => v.role !== role).map((v) => v.role);
-
   const [userData, setUserData] = useState<TUserResponse>();
   const [isLoading, setIsLoading] = useState(false);
   const [isShow, setIsSHow] = useState(false);
@@ -107,7 +102,7 @@ export default function Register() {
   return (
     <form
       onSubmit={handleRegister}
-      className="flex w-1/2 flex-col  gap-2  rounded-md bg-white p-2 font-semibold"
+      className="flex flex-col gap-2 rounded-md bg-white p-2 font-semibold"
     >
       <input
         name="username"

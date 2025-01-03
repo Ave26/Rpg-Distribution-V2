@@ -72,7 +72,7 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
   }
 
   return (
-    <div className="overflow-hidden border border-black">
+    <div className="overflow-hidden">
       <MapWithNoSSR
         attributionControl={false}
         center={coordinates}

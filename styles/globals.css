@@ -14,13 +14,18 @@
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 9px; /* For vertical scrollbar */
+  height: 9px; /* For horizontal scrollbar */
 }
+
+/* ::-webkit-slider-thumb {
+  width: 100px;
+} */
 
 /* Track */
 ::-webkit-scrollbar-track {
   /* background: #f1f1f1; */
-  background-color: transparent;
+  background: transparent;
 }
 
 /* Handle */

@@ -33,7 +33,7 @@ export async function handler(
         const userToken = verifiedToken as UserToken;
         const { orderedProducts, record }: TBody = req.body;
         const { SO, clientName, locationName, truckName } = record;
-
+        console.log(req.body);
         const everyRecordIsEmpty = !Object.values(record).every(
           (value) => value !== "default" && Boolean(value)
         );

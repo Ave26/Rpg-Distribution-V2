@@ -11,9 +11,8 @@ export const buttonStyleDark =
 
 export const linkStyle = {
   select:
-    "rounded-md border  border-transparent bg-[#86B6F6] p-2 font-bold hover:border-cyan-400",
-  unSelect:
-    "rounded-md border  border-transparent bg-transparent p-2  font-bold",
+    "rounded-md  border-transparent bg-yellow-500  font-bold hover:border-cyan-400",
+  unSelect: "rounded-md border-transparent bg-transparent  font-bold",
 };
 
 export const InputStyle =

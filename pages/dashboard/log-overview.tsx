@@ -17,33 +17,46 @@ import Map from "@/components/ReusableComponent/Map";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
 import useBinLogReport from "@/hooks/useBinLogReport";
 import useUserScanned from "@/hooks/useUserScanned";
+import { RiUser4Fill } from "react-icons/ri";
+import { buttonStyleDark } from "@/styles/style";
+import { FaUserPlus } from "react-icons/fa";
+import { SiLg } from "react-icons/si";
+import { MdFiberManualRecord, MdFiberSmartRecord } from "react-icons/md";
 
 export default function LogOverview() {
   const [position, setPosition] = useState<[number, number]>([0, 0]);
   const [truckName, setTruckName] = useState<string>("");
-
+  //relative col-span-1 flex h-[20em] flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all
+  //  h-full w-full grid-cols-1 gap-2 md:grid-cols-2
   return (
-    <section className="grid h-full grid-cols-1 gap-2 md:grid-cols-2">
-      <div className="relative col-span-1 flex h-full flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
-        <h1 className="abosolute uppercase">Order Queue</h1>
-        <OrderQueue />
-        <a
-          href={"/api/logs/generate/orderReports"}
-          className="absolute right-2 top-2 uppercase text-sky-500 underline"
-        >
-          Generate Orders For This Month
-        </a>
+    <section
+      className={`flex h-full w-full flex-col rounded-b-none rounded-t-md bg-slate-300 font-black`}
+    >
+      <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
+        <MdFiberSmartRecord
+          size={30}
+          className="flex h-full animate-emerge  items-center justify-center"
+        />
       </div>
-      <div className="row-span-2 flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
-        <Reports />
-        <BinLogReports />
-        <UserProductScanned />
-      </div>
-      <div className="relative col-span-1  flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all">
-        <h1 className="abosolute uppercase">Delivery Logs</h1>
-        <DeliveryLogs states={{ position, setPosition, setTruckName }} />
-        <div className="relative">
+
+      <div className="grid h-[49em] grid-cols-1 grid-rows-3 gap-2 p-2 lg:grid-cols-2">
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+          <OrderQueue />
+        </div>
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+          <Reports />
+        </div>
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+          <DeliveryLogs states={{ position, setPosition, setTruckName }} />
+        </div>
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+          <BinLogReports />
+        </div>
+        <div className="relative flex flex-col rounded-md bg-white p-2 shadow-md">
           <Map coordinates={position} truckName={truckName} />
+        </div>
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+          <UserProductScanned />
         </div>
       </div>
     </section>
@@ -62,7 +75,7 @@ function BinLogReports() {
   const { error, binReport, isLoading } = useBinLogReport();
 
   return (
-    <div className="flex flex-col gap-2 border border-black p-2">
+    <>
       <h1 className="font-black uppercase">BIN LOG REPORT</h1>
       {Array.isArray(binReport) &&
         binReport
@@ -78,7 +91,7 @@ function BinLogReports() {
             );
           })
           .reverse()}
-    </div>
+    </>
   );
 }
 

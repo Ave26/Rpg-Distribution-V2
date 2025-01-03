@@ -26,11 +26,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   useSWR("/api/authentication", fetcher);
 
   return (
-    <div className="transition-all">
+    <>
       {/* <Header /> */}
-      <main className="h-full w-full bg-[#50425B]">{children}</main>
+      {/* 50425B */}
+      <main className="h-screen">{children}</main>
       <Footer />
-    </div>
+    </>
   );
 }
 // bg-gradient-to-b from-[#efbf04] via-blue-500 to-cyan-300

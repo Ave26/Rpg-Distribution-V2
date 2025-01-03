@@ -51,8 +51,11 @@ const AccountManagement = () => {
   });
 
   return (
-    <>
-      {/* <div className="flex h-[8%] justify-between rounded-t-md bg-white p-2">
+    <section
+      className={`flex h-full w-full grid-cols-2 gap-2 rounded-b-none rounded-t-md bg-slate-300`}
+    >
+      {/* header icons */}
+      <div className="borded flex h-[8%] w-full justify-between rounded-t-md border-black bg-white p-2">
         <RiUser4Fill
           size={30}
           className="flex h-full animate-emerge  items-center justify-center"
@@ -68,190 +71,142 @@ const AccountManagement = () => {
             </button>
           </div>
         </div>
-      </div> */}
-      <div
-        className={`flex h-[53.9em] w-full flex-col items-center gap-2 rounded-b-none rounded-t-md bg-slate-300`}
-      >
-        <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
-          <RiUser4Fill
-            size={30}
-            className="flex h-full animate-emerge  items-center justify-center"
-          />
-
-          <div className="flex h-full gap-2">
-            <div className="flex flex-none items-center justify-center">
-              <button
-                className={`${buttonStyleDark}`}
-                onClick={() => setOpenCreateUser(!openCreateUser)}
-              >
-                <FaUserPlus size={20} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`${
-            openCreateUser ? "sm:flex" : "hidden"
-          } h-fit w-full flex-none gap-2 overflow-x-hidden overflow-y-scroll rounded-md bg-white p-2 font-semibold text-black transition-all duration-1000 ease-in-out`}
-        >
-          <Register />
-          <RolesForm />
-        </div>
-
-        <div className="w-full overflow-x-hidden overflow-y-scroll">
-          <div className="flex w-full flex-col gap-2 uppercase">
-            {Array.isArray(users) &&
-              users.map((u) => {
-                return (
-                  <div
-                    key={u.id}
-                    className="parent flex flex-col rounded-md bg-white uppercase"
-                  >
-                    <ul key={u.id} className="flex">
-                      <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
-                        <li>{u.id}</li>
-                        <li>{u.roles}</li>
-                        <li>{u.username}</li>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const operationFields: Record<Operation, () => void> =
-                            {
-                              ACTION: () => {
-                                setUserButton({
-                                  ...userButton,
-                                  id: u.id === userButton.id ? "" : u.id,
-                                  operation: "CANCEL",
-                                });
-
-                                setUser({
-                                  additionalInfo: {
-                                    dob: "",
-                                    email: "",
-                                    Phone_Number: 0,
-                                  },
-                                  role: "default",
-                                  username: "",
-                                  id: "",
-                                });
-                              },
-                              CANCEL: () => {
-                                setUserButton({
-                                  ...userButton,
-                                  id: u.id === userButton.id ? "" : u.id,
-                                  operation: "CANCEL",
-                                });
-                                setUser({
-                                  additionalInfo: {
-                                    dob: "",
-                                    email: "",
-                                    Phone_Number: 0,
-                                  },
-                                  role: "default",
-                                  username: "",
-                                  id: u.id,
-                                });
-                              },
-                              MOVE: () => {},
-                              SELECT: () => {},
-                              UPDATE: () => {
-                                if (u.id === userButton.id) {
-                                  setLoading(true);
-                                  fetch("/api/user/update", {
-                                    method: "POST",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({
-                                      additionalInfo,
-                                      ...user,
-                                    }),
-                                  })
-                                    .then(async (res) => {
-                                      const data = await res.json();
-                                      alert(data);
-                                    })
-                                    .finally(() => {
-                                      setLoading(false);
-                                      // setUserButton((state) => {
-                                      //   return {
-                                      //     ...state,
-                                      //     operation: "CANCEL",
-                                      //   };
-                                      // });
-
-                                      // setLoading((state: { [key: string]: boolean }) => ({
-                                      //   ...state,
-                                      //   swapProducts: false,
-                                      // }));
-                                      // setBinButton((state) => {
-                                      //   return {
-                                      //     ...state,
-                                      //     id: "",
-                                      //     operation: "ACTION",
-                                      //   };
-                                      // });
-                                      // setLoading(false);
-                                      // setSelectedBinIds({});
-                                      // mutate(
-                                      //   `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
-                                      // );
-                                    });
-                                }
-                              },
-                            };
-
-                          operationFields[userButton.operation]();
-                        }}
-                        className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
-                      >
-                        {userButton.id === u.id ? (
-                          loading ? (
-                            <AiOutlineLoading
-                              className="animate-spin"
-                              size={30}
-                            />
-                          ) : (
-                            userButton.operation
-                          )
-                        ) : (
-                          <IoIosArrowDown />
-                        )}
-                      </button>
-                    </ul>
-
-                    <div
-                      className={`flex ${
-                        userButton.id === u.id
-                          ? "h-fit border border-t-2 p-2"
-                          : "h-0"
-                      } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
-                    >
-                      <div
-                        className={`${
-                          userButton.id === u.id ? "block" : "hidden"
-                        } flex min-w-full animate-emerge gap-2 transition-all`}
-                      >
-                        <UserForm
-                          states={{
-                            setUserButton,
-                            userButton,
-                            // isInputChanged,
-                            // setIsInputChanged,
-                            setUser,
-                            user: { additionalInfo, ...user },
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
       </div>
-    </>
+      {/* Register and RolesForm */}
+      <div
+        className={`${
+          openCreateUser ? "sm:flex" : "hidden"
+        } borded flex h-full w-full flex-col gap-2 border-black p-2`}
+      >
+        <Register />
+        <RolesForm />
+      </div>
+      {/* Users Display */}
+      <div
+        className={` ${""} borded flex h-[15em] w-full flex-col gap-2 border-black  uppercase`}
+      >
+        {Array.isArray(users) &&
+          users.map((u) => {
+            return (
+              <div
+                key={u.id}
+                className="parent flex flex-col rounded-md bg-white uppercase"
+              >
+                <ul key={u.id} className="flex">
+                  <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
+                    <li>{u.id}</li>
+                    <li>{u.roles}</li>
+                    <li>{u.username}</li>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const operationFields: Record<Operation, () => void> = {
+                        ACTION: () => {
+                          setUserButton({
+                            ...userButton,
+                            id: u.id === userButton.id ? "" : u.id,
+                            operation: "CANCEL",
+                          });
+
+                          setUser({
+                            additionalInfo: {
+                              dob: "",
+                              email: "",
+                              Phone_Number: 0,
+                            },
+                            role: "default",
+                            username: "",
+                            id: "",
+                          });
+                        },
+                        CANCEL: () => {
+                          setUserButton({
+                            ...userButton,
+                            id: u.id === userButton.id ? "" : u.id,
+                            operation: "CANCEL",
+                          });
+                          setUser({
+                            additionalInfo: {
+                              dob: "",
+                              email: "",
+                              Phone_Number: 0,
+                            },
+                            role: "default",
+                            username: "",
+                            id: u.id,
+                          });
+                        },
+                        MOVE: () => {},
+                        SELECT: () => {},
+                        UPDATE: () => {
+                          if (u.id === userButton.id) {
+                            setLoading(true);
+                            fetch("/api/user/update", {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                additionalInfo,
+                                ...user,
+                              }),
+                            })
+                              .then(async (res) => {
+                                const data = await res.json();
+                                alert(data);
+                              })
+                              .finally(() => {
+                                setLoading(false);
+                              });
+                          }
+                        },
+                      };
+
+                      operationFields[userButton.operation]();
+                    }}
+                    className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
+                  >
+                    {userButton.id === u.id ? (
+                      loading ? (
+                        <AiOutlineLoading className="animate-spin" size={30} />
+                      ) : (
+                        userButton.operation
+                      )
+                    ) : (
+                      <IoIosArrowDown />
+                    )}
+                  </button>
+                </ul>
+
+                <div
+                  className={`flex ${
+                    userButton.id === u.id
+                      ? "h-fit border border-t-2 p-2"
+                      : "h-0"
+                  } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
+                >
+                  <div
+                    className={`${
+                      userButton.id === u.id ? "block" : "hidden"
+                    } flex min-w-full animate-emerge gap-2 transition-all`}
+                  >
+                    <UserForm
+                      states={{
+                        setUserButton,
+                        userButton,
+                        // isInputChanged,
+                        // setIsInputChanged,
+                        setUser,
+                        user: { additionalInfo, ...user },
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    </section>
   );
 };
 
@@ -268,10 +223,10 @@ AccountManagement.getLayout = (page: ReactElement) => {
 function RolesForm() {
   return (
     <>
-      <div className="grid h-full w-1/2">
+      <div className="grid h-full bg-white">
         {/* <button className={buttonStyleEdge}>Create Damage Category</button> */}
         <div className="w-1/2"></div>
-        <div className="grid grid-flow-row grid-cols-2 rounded-md border border-black p-2">
+        <div className="grid grid-flow-row grid-cols-2 rounded-md p-2">
           <UserRoleForm />
           <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll border border-b-0 border-r-0 border-t-0 border-black p-2">
             {/* <ViewCategories categories={categories} /> */}
@@ -412,22 +367,23 @@ function UserForm({ states }: UserFormProps) {
 
   const { Phone_Number, dob, email } = additionalInfo;
   states.user;
-  useEffect(() => {
-    const { id, ...restOfUser } = states.user; // Exclude `id`
-    const hasChanges = Object.values(restOfUser).some((value) => {
-      if (typeof value === "object" && value !== null) {
-        return Object.values(value).some(
-          (nestedValue) => nestedValue !== "default" && !!nestedValue
-        );
-      }
-      return value !== "default" && !!value;
-    });
+  // useEffect(() => {
+  //   const { id, ...restOfUser } = states.user; // Exclude `id`
+  //   const hasChanges = Object.values(restOfUser).some((value) => {
+  //     if (typeof value === "object" && value !== null) {
+  //       return Object.values(value).some(
+  //         (nestedValue) => nestedValue !== "default" && !!nestedValue
+  //       );
+  //     }
+  //     return value !== "default" && !!value;
+  //   });
 
-    setUserButton((state) => ({
-      ...state,
-      operation: hasChanges ? "UPDATE" : "CANCEL",
-    }));
-  }, [states.user, setUserButton]); // Ensure the dependency matches the actual state
+  //   setUserButton((state) => ({
+  //     ...state,
+  //     operation: hasChanges ? "UPDATE" : "CANCEL",
+  //   }));
+  // }, [states.user, setUserButton]);
+  // Ensure the dependency matches the actual state
 
   return (
     <form className="grid w-full grid-cols-2 gap-2 uppercase">

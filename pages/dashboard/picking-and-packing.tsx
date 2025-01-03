@@ -6,6 +6,7 @@ import Admin from "@/components/PickingAndPackingRole/AdminUI";
 import StaffUI from "@/components/PickingAndPackingRole/StaffUI/Staff";
 import useMapComponent from "@/hooks/useMapComponent";
 import AdminUI from "@/components/PickingAndPackingRole/AdminUI/Admin";
+import { FaBoxesPacking } from "react-icons/fa6";
 // { trucks }: { trucks: TTrucks[] }
 
 export default function PickingAndPacking() {
@@ -23,7 +24,16 @@ export default function PickingAndPacking() {
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <section className="h-full w-full">{MappedComponent}</section>
+      <section className="flex h-full w-full flex-col rounded-b-none rounded-t-md bg-slate-300 font-black lg:overflow-hidden">
+        <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
+          <FaBoxesPacking
+            size={30}
+            className="flex h-full animate-emerge  items-center justify-center"
+          />
+        </div>
+
+        {MappedComponent}
+      </section>
     </>
   );
 }

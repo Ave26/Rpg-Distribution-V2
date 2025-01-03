@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProStockV2 from "@/public/assets/Finally.png";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import Link from "next/link";
@@ -63,29 +63,48 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const renderAside = mappedAside[String(isAuthenticated)];
-  /* flex h-full w-full flex-none flex-row  justify-start  gap-2 overflow-x-scroll rounded-md border border-dotted bg-white/90 p-2 uppercase shadow-md  md:w-fit md:flex-col md:items-center md:justify-start md:gap-2 md:overflow-x-hidden  md:text-sm */
+
+  {
+    /* <div className="flex w-full items-center justify-start gap-0 overflow-y-hidden overflow-x-scroll rounded-md p-1 uppercase lg:flex-col lg:gap-5">
+          {renderAside}
+        </div> */
+  }
+
   return (
     <div
-      className={`flex ${roboto.className} h-full flex-col items-start gap-2 overflow-y-scroll break-words p-2 text-xs font-extrabold  md:h-screen lg:flex-row lg:justify-center lg:p-10`}
+      className={`${roboto.className} flex h-full w-full flex-col gap-2 p-2 py-10 lg:flex-row  lg:p-16`}
     >
-      <div className="flex h-full w-full items-center justify-center md:max-w-min">
-        <div className="flex w-full justify-start gap-2 overflow-y-hidden overflow-x-scroll rounded-md bg-white p-2 text-[.9em] uppercase lg:max-w-min lg:flex-col lg:overflow-hidden ">
-          <div className="hidden items-center justify-center gap-2 text-[.8em] lg:mb-4 lg:flex">
-            <ProstockIcon />
-          </div>
+      {/* Entire Aside */}
+      {/* flex h-full w-fit flex-col gap-5 border border-red-800 bg-white  pt-2 md:max-w-min */}
+      <div className="flex h-full flex-col gap-2 bg-white">
+        {/* Icon */}
+        <div className="hidden h-fit items-center justify-center p-2 lg:flex lg:pb-4">
+          <ProstockIcon />
+        </div>
+        {/* Selections  relative grid h-full justify-around border border-green-600 lg:flex-col*/}
+        <div className="grid h-full auto-rows-fr grid-cols-1">
           {renderAside}
         </div>
+        <LogoutButton />
       </div>
-      {isLoading ? (
-        <div className="flex h-[53.9em] w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
-          <AiOutlineLoading className="animate-spin" size={30} />
-        </div>
-      ) : (
-        <main className="animation-emerge relative h-full w-full">
-          {children}
-          <div className="h-2 w-full rounded-b-md bg-gradient-to-r from-[#A08130] via-[#EFBF04] to-[#A08130]"></div>
-        </main>
-      )}
+      {/* Entire Main */}
+      <div className="flex h-full w-full flex-col gap-1 rounded-md">
+        {isLoading ? (
+          <div className="scrollbar-hide flex h-full w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
+            <AiOutlineLoading className="animate-spin" size={30} />
+          </div>
+        ) : (
+          <main className="relative h-[53.9em] w-full overflow-hidden rounded-md">
+            {children}
+          </main>
+        )}
+        <span
+          className="block h-2 w-full rounded-b-md bg-gradient-to-r 
+       from-[#D9C611] via-[#F0DC05] to-[#D9C611]
+       
+       "
+        ></span>
+      </div>
     </div>
   );
 }
@@ -98,46 +117,61 @@ export function LoadingAside() {
   );
 }
 
-export function Aside({
-  mapRoutes,
-  router,
-}: {
+interface AsideProps {
   mapRoutes: TEndPoints[];
   router: NextRouter;
-}) {
+}
+
+export function Aside({ mapRoutes, router }: AsideProps) {
+  const iconsFieled: Record<string, string> = {};
+
+  const [hidden, setHidden] = useState(false);
+
   return (
     <>
       {mapRoutes &&
         mapRoutes.length > 0 &&
-        mapRoutes.map((route, index) => {
+        mapRoutes.map(({ label, path, Icon }, index) => {
           return (
-            <Link key={index} href={route.path} passHref>
-              <div
-                className={`h-fit w-full cursor-pointer select-none whitespace-nowrap border border-black text-center transition-all hover:border-cyan-400 ${
-                  router.asPath === route.path
-                    ? linkStyle.select
-                    : linkStyle.unSelect
-                }`}
-              >
-                {route.label}
-              </div>
+            <Link
+              key={index}
+              href={path}
+              passHref
+              className="flex w-full flex-col items-center justify-center hover:bg-gradient-to-r 
+       hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611]"
+            >
+              <Icon size={25} className="transition-all hover:opacity-0" />
+              {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}
             </Link>
           );
         })}
-      <LogoutButton />
     </>
   );
 }
 
+/*  <div
+                /* flex h-full w-full items-center justify-center hover:bg-[#FCD92C] 
+              
+              flex w-36 items-center justify-center p-2 text-[10px] font-black hover:border-cyan-400
+              */
+// className={`flex h-full items-center justify-center border text-center hover:bg-[#86B6F6] ${
+//   router.asPath === path ? linkStyle.select : linkStyle.unSelect
+// }`}
+
+//  className=" border hover:border-black"
+//  >
+//  {/* {label} */}
+// </div>
+
 function ProstockIcon() {
   return (
     <>
-      <div className="relative h-10 w-10">
-        <Image src={ProStockV2} alt={"rpg"} fill />
+      <div className="relative w-[4em]">
+        <Image src={ProStockV2} alt={"rpg"} />
       </div>
-      <h1 className="flex h-fit w-fit items-center justify-center font-extrabold">
-        RPG-rostock
-      </h1>
+      {/* <h1 className="flex h-fit w-fit items-center justify-center text-[11px] font-extrabold">
+        RPG-Prostock
+      </h1> */}
     </>
   );
 }

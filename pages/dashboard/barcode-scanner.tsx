@@ -399,7 +399,7 @@ export default function BarcodeScanner() {
   }
 
   return (
-    <section className="relative flex h-full w-full flex-wrap overflow-y-scroll rounded-md bg-white p-2 font-semibold transition-all">
+    <section className="relative flex h-full w-full flex-wrap  rounded-md bg-white p-2 font-semibold transition-all">
       <div className="grid h-full w-full flex-col gap-2 md:grid-cols-2 md:flex-row md:gap-4">
         <div className="rouned-sm grid h-fit w-fit grid-flow-row grid-cols-2 gap-2 rounded-lg  bg-sky-300/70 p-2 shadow-2xl shadow-blue-600/25 transition-all ease-in-out md:h-full md:w-full md:grid-cols-1 md:rounded-none ">
           {Object.keys(scanData).map((key) => {

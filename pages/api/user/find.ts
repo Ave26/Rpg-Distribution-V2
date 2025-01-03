@@ -8,13 +8,13 @@ export async function handler(
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
-  console.log(req.body);
-
-  const test = await prisma.users
+  await prisma.users
     .findMany({ select: { username: true, role: true, id: true } })
-    .then((users) => res.json(users));
-
-  console.log(test);
+    .then((users) => {
+      console.log(users);
+      return res.json(users);
+    })
+    .catch((e) => res.json(e));
 }
 
 export default authMiddleware(handler);

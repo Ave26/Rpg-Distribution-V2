@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { HiMenu, HiMenuAlt1, HiHome } from "react-icons/hi";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { TRole, TRoleToRoutes } from "@/types/roleTypes";
+import { AiOutlineLoading } from "react-icons/ai";
 
 export default function Header() {
   const router = useRouter();
@@ -19,11 +20,33 @@ export default function Header() {
   const role: string | undefined = globalState?.verifiedToken?.role;
 
   const roleToRoutes: TRoleToRoutes = {
-    SUPERADMIN: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
-    ADMIN: [{ path: "/dashboard/log-overview", label: "Log Overview" }],
-    STAFF: [{ path: "/dashboard/barcode-scanner", label: "Scan Barcode" }],
+    SUPERADMIN: [
+      {
+        path: "/dashboard/log-overview",
+        label: "Log Overview",
+        Icon: AiOutlineLoading,
+      },
+    ],
+    ADMIN: [
+      {
+        path: "/dashboard/log-overview",
+        label: "Log Overview",
+        Icon: AiOutlineLoading,
+      },
+    ],
+    STAFF: [
+      {
+        path: "/dashboard/barcode-scanner",
+        label: "Scan Barcode",
+        Icon: AiOutlineLoading,
+      },
+    ],
     DRIVER: [
-      { path: "/dashboard/delivery-management", label: "Manage Delivery" },
+      {
+        path: "/dashboard/delivery-management",
+        label: "Manage Delivery",
+        Icon: AiOutlineLoading,
+      },
     ],
   };
   const mapRoutes = roleToRoutes[role as TRole];

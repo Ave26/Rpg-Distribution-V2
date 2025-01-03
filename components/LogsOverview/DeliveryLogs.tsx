@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import MyDocument from "../MyDocument";
 import dynamic from "next/dynamic";
 import LeafletMap from "../ReusableComponent/Map/LeafletMap";
-import { buttonStyleEdge } from "@/styles/style";
+import { buttonStyleDark, buttonStyleEdge } from "@/styles/style";
 
 interface DeliveryLogsProps {
   states: {
@@ -36,12 +36,9 @@ function DeliveryLogs({ states }: DeliveryLogsProps) {
         deliveryLogs
           ?.map((v, index) => {
             return (
-              <div
-                className="flex justify-between gap-1 border border-black"
-                key={v.id}
-              >
-                <div>
-                  <h3 className="text-start">{v.trucks?.truckName}</h3>
+              <div className="flex justify-between gap-1 uppercase" key={v.id}>
+                <div className="flex">
+                  <h3 className="">{v.trucks?.truckName}</h3>
                   <h3
                     className={`${
                       v.status === "GasStop" || v.status === "EmergencyStop"
@@ -60,7 +57,7 @@ function DeliveryLogs({ states }: DeliveryLogsProps) {
                   </h3>
                 </div>
                 <button
-                  className={buttonStyleEdge}
+                  className={buttonStyleDark}
                   onClick={() => {
                     setTruckName(v.trucks.truckName);
                     setPosition([

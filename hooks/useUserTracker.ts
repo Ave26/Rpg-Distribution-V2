@@ -7,7 +7,7 @@ export default function userUserTracker() {
     `/api/user/find`,
     fetchUserTracker,
     {
-      refreshInterval: 1200,
+      refreshInterval: 3000,
     }
   );
   return {

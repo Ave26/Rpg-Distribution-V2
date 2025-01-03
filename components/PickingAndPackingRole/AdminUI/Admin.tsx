@@ -8,6 +8,8 @@ import useBins from "@/hooks/useBins";
 import Toast, { TToast } from "../Toast";
 import ViewBinLocations from "./ViewBinLocations";
 import React from "react";
+import { MdFiberSmartRecord } from "react-icons/md";
+import { FaBoxesPacking } from "react-icons/fa6";
 
 export type TBinLocations = Omit<binLocations, "id" | "orderedProductsTestId">;
 export type TOrderedProductTest = orderedProducts & {
@@ -77,9 +79,9 @@ export default function Admin() {
         return weight;
       });
   }, [data, binLocation.searchSKU, weight]);
-
+  // flex h-full w-full flex-wrap items-center justify-center gap-2  text-black transition-all md:flex-nowrap md:items-start md:justify-start
   return (
-    <div className="flex h-full w-full flex-wrap items-center justify-center gap-2  text-black transition-all md:flex-nowrap md:items-start md:justify-start">
+    <div className="flex flex-col gap-2 overflow-y-scroll p-2 md:flex-row md:overflow-hidden">
       <div className="flex h-full w-full flex-col justify-start gap-2 rounded-md bg-white p-2 md:max-w-sm md:items-start">
         <BinSearchForm
           states={{
@@ -132,7 +134,7 @@ export default function Admin() {
         }}
       />
       {orderedProducts.length !== 0 && (
-        <div className="flex flex-col gap-2 border border-slate-200 p-2 shadow-md">
+        <div className="z-50 flex flex-col gap-2 border border-slate-200 p-2 shadow-md">
           <h1>On Queue</h1>
           <ViewBinLocations
             binLocations={binLocations}

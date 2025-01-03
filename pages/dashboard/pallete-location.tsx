@@ -14,14 +14,12 @@ type BinType = "Bin" | "Damage Bin";
 export default function PalleteLocation() {
   const [binType, setBinType] = useState<BinType>("Bin");
   return (
-    <>
-      <section className="flex h-full w-full flex-col gap-2 rounded-md bg-white p-2 font-bold">
-        <div className="grid h-fit w-full grid-flow-col gap-2">
-          <SelectionView setBinType={setBinType} binType={binType} />
-        </div>
-        <PalleteView binType={binType} />
-      </section>
-    </>
+    <section className="flex h-full w-full flex-col gap-2 rounded-md bg-white p-2 font-bold">
+      <div className="grid h-fit w-full grid-flow-col gap-2">
+        <SelectionView setBinType={setBinType} binType={binType} />
+      </div>
+      <PalleteView binType={binType} />
+    </section>
   );
 }
 

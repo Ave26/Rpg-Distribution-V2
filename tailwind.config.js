@@ -14,9 +14,11 @@ module.exports = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+
       fontFamily: {
         // sans: ["Open Sans Extrabold", "Courier New", "Courier", "monospace"],
       },
+
       animation: {
         fade: "fade .2s linear forwards",
         emerge: "emerge .5s linear forwards",
