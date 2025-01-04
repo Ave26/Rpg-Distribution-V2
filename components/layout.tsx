@@ -11,8 +11,8 @@ import { AuthProps } from "@/types/authTypes";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { updateGlobalState } = useMyContext();
-
+  const { updateGlobalState, globalState } = useMyContext();
+  const isAuthenticated = globalState?.authenticated as Boolean;
   const fetcher = async (url: string) => {
     const response = await fetch(url, {
       method: "GET",
@@ -29,7 +29,15 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       {/* <Header /> */}
       {/* 50425B */}
-      <main className="h-screen">{children}</main>
+      <main
+        className={`${
+          isAuthenticated
+            ? "bg-gradient-to-tr from-[#5750D9] via-[#5363D9] to-[#4F75D8]"
+            : "bg-gradient-to-b from-cyan-300 to-blue-500"
+        } h-screen`}
+      >
+        {children}
+      </main>
       <Footer />
     </>
   );

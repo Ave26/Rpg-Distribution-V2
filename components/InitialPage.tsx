@@ -10,7 +10,7 @@ const InitialPage: FC<HomeProps> = ({}) => {
   // flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white
   return (
     <>
-      <section className="flex h-full flex-col flex-wrap items-center justify-center uppercase ">
+      <section className="flex h-full flex-col flex-wrap items-center justify-center text-white">
         {/* logo */}
 
         <div className="flex flex-col gap-2 p-2">

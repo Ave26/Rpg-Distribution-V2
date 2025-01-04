@@ -66,11 +66,10 @@ const AccountManagement = () => {
   };
 
   const RenderUserComponentField = userComponentField[keyName];
-
   return (
-    <section className={`h-full bg-transparent`}>
-      {/* header icons */}
-      <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
+    <section className={`h-full w-full bg-slate-300`}>
+      {/* HEADER */}
+      <div className="flex min-h-[9.2%] w-full justify-between bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]">
         <RiUser4Fill
           size={30}
           className="flex h-full animate-emerge  items-center justify-center"
@@ -93,22 +92,144 @@ const AccountManagement = () => {
         </div>
       </div>
 
-      <div className="flex h-[92%] gap-2">
-        {/* Register and RolesForm */}
+      {/* BODY */}
+      <div className="flex h-[87.5%] flex-col sm:flex-row">
+        <div className={`flex flex-col pt-2`}>
+          {/* CREATE ROLE/USER */}
 
-        <div
-          className={`flex h-full w-[20%] flex-col items-start justify-start`}
-        >
-          <h1 className="flex w-full items-center justify-center bg-white p-2 font-black uppercase">
+          <h1 className="flex items-center justify-center  bg-white p-3 font-black uppercase">
             {keyName}
           </h1>
           {RenderUserComponentField}
         </div>
-        {/* Users Display */}
 
+        {/* Users Display */}
         <div
           className={`flex h-full w-full flex-col gap-2 overflow-x-hidden overflow-y-scroll bg-slate-300 p-2`}
         >
+          {Array.isArray(users) &&
+            users.map((u) => {
+              return (
+                <div
+                  key={u.id}
+                  className="parent flex flex-col rounded-md bg-white uppercase"
+                >
+                  <ul key={u.id} className="flex">
+                    <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
+                      <li>{u.id}</li>
+                      <li>{u.roles}</li>
+                      <li>{u.username}</li>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const operationFields: Record<Operation, () => void> = {
+                          ACTION: () => {
+                            setUserButton({
+                              ...userButton,
+                              id: u.id === userButton.id ? "" : u.id,
+                              operation: "CANCEL",
+                            });
+
+                            setUser({
+                              additionalInfo: {
+                                dob: "",
+                                email: "",
+                                Phone_Number: 0,
+                              },
+                              role: "default",
+                              username: "",
+                              id: "",
+                            });
+                          },
+                          CANCEL: () => {
+                            setUserButton({
+                              ...userButton,
+                              id: u.id === userButton.id ? "" : u.id,
+                              operation: "CANCEL",
+                            });
+                            setUser({
+                              additionalInfo: {
+                                dob: "",
+                                email: "",
+                                Phone_Number: 0,
+                              },
+                              role: "default",
+                              username: "",
+                              id: u.id,
+                            });
+                          },
+                          MOVE: () => {},
+                          SELECT: () => {},
+                          UPDATE: () => {
+                            if (u.id === userButton.id) {
+                              setLoading(true);
+                              fetch("/api/user/update", {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  additionalInfo,
+                                  ...user,
+                                }),
+                              })
+                                .then(async (res) => {
+                                  const data = await res.json();
+                                  alert(data);
+                                })
+                                .finally(() => {
+                                  setLoading(false);
+                                });
+                            }
+                          },
+                        };
+
+                        operationFields[userButton.operation]();
+                      }}
+                      className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
+                    >
+                      {userButton.id === u.id ? (
+                        loading ? (
+                          <AiOutlineLoading
+                            className="animate-spin"
+                            size={30}
+                          />
+                        ) : (
+                          userButton.operation
+                        )
+                      ) : (
+                        <IoIosArrowDown />
+                      )}
+                    </button>
+                  </ul>
+
+                  <div
+                    className={`flex ${
+                      userButton.id === u.id
+                        ? "h-fit border border-t-2 p-2"
+                        : "h-0"
+                    } justify-between rounded-md bg-slate-700 transition-all ease-in-out`}
+                  >
+                    <div
+                      className={`${
+                        userButton.id === u.id ? "block" : "hidden"
+                      } flex min-w-full animate-emerge gap-2 transition-all`}
+                    >
+                      <UserForm
+                        states={{
+                          setUserButton,
+                          userButton,
+                          // isInputChanged,
+                          // setIsInputChanged,
+                          setUser,
+                          user: { additionalInfo, ...user },
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           {Array.isArray(users) &&
             users.map((u) => {
               return (

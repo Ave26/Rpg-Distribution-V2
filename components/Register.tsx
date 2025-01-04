@@ -117,7 +117,7 @@ export default function Register() {
   // flex h-full flex-col gap-2 rounded-md border border-green-500 bg-white p-2 font-semibold
   return (
     <form
-      className="grid w-full grid-cols-1  gap-2 bg-slate-700 p-2 uppercase"
+      className="grid h-full w-full grid-cols-2 gap-2  bg-slate-700 p-2 uppercase sm:grid-cols-1"
       onSubmit={(e) => {
         e.preventDefault();
         e.preventDefault();
@@ -422,7 +422,7 @@ export default function Register() {
       >
         submit
       </button>
-      <h1>{JSON.stringify(user)}</h1>
+      {/* <h1>{JSON.stringify(user)}</h1> */}
       {/* <>{JSON.stringify(additionalInfo)}</> */}
       {/* <>{JSON.stringify(isInputChanged)}</> */}
     </form>

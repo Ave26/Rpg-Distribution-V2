@@ -66,46 +66,49 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   {
     /* <div className="flex w-full items-center justify-start gap-0 overflow-y-hidden overflow-x-scroll rounded-md p-1 uppercase lg:flex-col lg:gap-5">
-          {renderAside}
+          {renderAside} bg-gradient-to-tr from-[#5750D9] via-[#5363D9] to-[#4F75D8]
+          border-green flex h-full w-full flex-col border py-10 transition-all sm:p-16 lg:flex-row lg:gap-2
         </div> */
   }
 
   return (
     <div
-      className={`${roboto.className} flex h-full w-full flex-col gap-2 p-2 py-10 lg:flex-row  lg:p-16`}
+      className={`${roboto.className} flex h-full gap-2 transition-all sm:rounded-md sm:p-16`}
     >
-      {/* Entire Aside */}
-      <div className="flex h-fit items-center justify-start gap-3 bg-white p-2 lg:h-full lg:flex-col lg:gap-0 lg:p-0 ">
+      {/* Entire Aside flex h-full flex-col items-center justify-start gap-3 bg-white lg:h-fit lg:gap-0 lg:p-0 */}
+      <div className="flex flex-col bg-white">
         {/* Icon */}
-        <div className="hidden h-fit items-center justify-center p-2 lg:flex lg:pb-4">
+        <div
+          className="w-full items-center justify-center bg-gradient-to-r from-[#D9C611] via-[#F0DC05]  to-[#D9C611] 
+       p-2 lg:flex lg:pb-4"
+        >
           <ProstockIcon />
         </div>
         {/* Selections flex h-full w-full items-center justify-between lg:flex-col*/}
-
+        {/* flex-col */}
         <div
-          className={`flex h-full w-full items-center justify-start  lg:flex-col`}
+          className={`flex h-full w-full flex-col items-center justify-start`}
         >
           {renderAside}
         </div>
         <LogoutButton />
       </div>
-      {/* Entire Main */}
-      <div className="flex h-full w-full flex-col gap-1 rounded-md">
+      {/* Entire Main flex h-full w-full flex-col gap-1 rounded-r-md
+      scrollbar-hide flex h-full w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2
+      */}
+      <div className="flex h-full w-full flex-col gap-1">
         {isLoading ? (
-          <div className="scrollbar-hide flex h-full w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2">
+          <div className="relative flex h-full w-full animate-pulse items-center justify-center bg-slate-400">
             <AiOutlineLoading className="animate-spin" size={30} />
           </div>
         ) : (
-          <main className="relative h-[53.9em] w-full overflow-hidden rounded-md">
-            {children}
-          </main>
+          /* [53.9em] */
+          <main className="flex h-full w-full flex-col">{children}</main>
         )}
-        <span
-          className="block h-2 w-full rounded-b-md bg-gradient-to-r 
-       from-[#D9C611] via-[#F0DC05] to-[#D9C611]
-       
-       "
-        ></span>
+        {/* <span
+          className="block h-full w-full rounded-b-md border 
+       border-black bg-gradient-to-r from-[#D9C611] via-[#F0DC05] to-[#D9C611]"
+        ></span> */}
       </div>
     </div>
   );
@@ -131,7 +134,7 @@ export function Aside({ mapRoutes, router }: AsideProps) {
               key={index}
               href={path}
               passHref
-              className="flex h-[12.5%] w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611]"
+              className="flex h-full w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] lg:h-[12.5%]"
             >
               <Icon size={25} />
               {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}
