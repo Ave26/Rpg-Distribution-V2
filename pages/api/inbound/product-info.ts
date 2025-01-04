@@ -21,13 +21,24 @@ export type TAssignedProducts = Omit<
   | "usersId"
 >;
 
+export type ProductInfo = {
+  barcodeId: string;
+  category: string;
+  image: string | null;
+  method: string;
+  sku: {
+    code: string;
+    threshold: number;
+  }[];
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: string | JwtPayload | undefined
 ) {
   const { barcodeId } = req.body;
-
+  console.log(barcodeId);
   await prisma.products
     .findFirstOrThrow({
       where: { barcodeId },
@@ -39,8 +50,14 @@ export default async function handler(
         method: true,
       },
     })
-    .then((products) => res.status(200).json(products))
-    .catch((e) => res.json(`{Not Found ${e}`));
+    .then((products) => {
+      console.log(products);
+      return res.status(200).json(products);
+    })
+    .catch((e) => {
+      console.log(e.message);
+      return res.status(500).json(e.message);
+    });
 }
 
 // export default authMiddleware(handler);

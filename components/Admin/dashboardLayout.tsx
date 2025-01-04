@@ -123,7 +123,6 @@ export function Aside({ mapRoutes, router }: AsideProps) {
   const iconsFieled: Record<string, string> = {};
 
   const [hidden, setHidden] = useState("hidden");
-
   return (
     <>
       {mapRoutes &&
@@ -134,7 +133,10 @@ export function Aside({ mapRoutes, router }: AsideProps) {
               key={index}
               href={path}
               passHref
-              className="flex h-full w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] lg:h-[12.5%]"
+              className={`${
+                router.asPath === path &&
+                "bg-gradient-to-r from-[#D9C611] via-[#F0DC05] to-[#D9C611]"
+              } flex h-full w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] lg:h-[12.5%]`}
             >
               <Icon size={25} />
               {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}

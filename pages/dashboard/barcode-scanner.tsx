@@ -23,6 +23,7 @@ import Input from "@/components/Parts/Input";
 import { buttonStyle, InputStyle } from "@/styles/style";
 import { setTime } from "@/helper/_helper";
 import { InventoryMethod } from "../api/products/create";
+import { ProductInfo } from "../api/inbound/product-info";
 
 type InputTypeMapping<T> = {
   [K in keyof T]: React.InputHTMLAttributes<HTMLInputElement>["type"];
@@ -43,13 +44,13 @@ export type TChangeEventType =
   | React.ChangeEvent<HTMLInputElement>
   | React.ChangeEvent<HTMLSelectElement>;
 
-export interface TProductData {
-  image: string | null;
-  sku: TCode[];
-  barcodeId: string;
-  category: string;
-  method?: InventoryMethod;
-}
+// export interface TProductData {
+//   image: string | null;
+//   sku: TCode[];
+//   barcodeId: string;
+//   category: string;
+//   method?: InventoryMethod;
+// }
 
 type TCode = {
   threshold: number;
@@ -59,11 +60,11 @@ type TCode = {
 export default function BarcodeScanner() {
   const [loading, setLoading] = useState(false);
   const [isManual, setIsManual] = useState(false);
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
 
-  const [serverData, setServerData] = useState<
-    Record<string, any> | unknown | string
-  >({});
+  // const [serverData, setServerData] = useState<
+  //   Record<string, any> | unknown | string
+  // >({});
 
   const [scanData, setScanData] = useState<TScanData>({
     barcodeId: "",
@@ -81,11 +82,12 @@ export default function BarcodeScanner() {
     }
   }, [isManual]);
 
-  const [productData, setProductData] = useState<TProductData>({
+  const [productData, setProductData] = useState<ProductInfo>({
     image: "",
     sku: [],
     barcodeId: "",
     category: "",
+    method: "",
   });
 
   const fetchProductInfo = (barcodeId: string) => {
@@ -96,9 +98,11 @@ export default function BarcodeScanner() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ barcodeId }),
     })
-      .then((res) => res.json())
-      .then((data: TProductData) => {
+      .then(async (res) => {
+        const data: ProductInfo = await res.json();
         setProductData(data);
+        res.ok && alert(data.barcodeId);
+        res.status === 500 && alert(data);
         setLoading(false);
       })
       .catch((e) => console.log(e))
@@ -133,7 +137,12 @@ export default function BarcodeScanner() {
           threshold: sku?.threshold,
         }),
       })
-        // .then((res) => res.json())
+        .then(async (res) => {
+          const data = await res.json();
+          console.log(data);
+          // res.ok && alert(data);
+          res.status === 404 && alert(data);
+        })
         // .then((data: unknown) => setServerData(data))
         .finally(() => setLoading(false));
     } catch (error) {
@@ -188,18 +197,57 @@ export default function BarcodeScanner() {
         const updateBarcodeId = (value: string) => {
           setScanData((prev) => ({
             ...prev,
-            barcodeId: value.slice(14),
+            barcodeId: value,
           }));
         };
 
-        if (value.length > 14) {
+        if (!productData.barcodeId) {
+          if (value.length > 7) {
+            console.log("fetch product initiated");
+            fetchProductInfo(value);
+          }
+        } else {
           updateBarcodeId(value);
-        } else if (value.length === 14) {
-          value === productData.barcodeId
-            ? scanBarcode()
-            : fetchProductInfo(value);
+          console.log("dont scan", productData.barcodeId.length);
+
+          if (value.length === productData.barcodeId.length) {
+            console.log("do scan", productData.barcodeId.length);
+            scanBarcode();
+          } else if (value.length > productData.barcodeId.length) {
+            setScanData((prev) => ({
+              ...prev,
+              barcodeId: value.slice(productData.barcodeId.length),
+            }));
+          } else if (value.length === 0) {
+            setProductData({
+              barcodeId: "",
+              category: "",
+              image: "",
+              method: "",
+              sku: [],
+            });
+          }
         }
+
+        // if (value.length > 14) {
+        //   updateBarcodeId(value);
+        // } else if (value.length === 14) {
+        //   value === productData.barcodeId
+        //     ? scanBarcode()
+        //     : fetchProductInfo(value);
+        // }
+
+        // if (value.length > 1) {
+        //   updateBarcodeId(value);
+        //   // fetchProductInfo(value);
+        // } else if (value.length === 14) {
+        //   value === productData.barcodeId
+        //     ? scanBarcode()
+        //     : fetchProductInfo(value);
+        // }
       }
+
+      // initiate finding the product if value change
     } else {
       console.error(`Invalid name: ${name} is not a key of Scan Data`);
     }

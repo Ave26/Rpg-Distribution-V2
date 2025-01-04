@@ -34,10 +34,11 @@ export async function handler(
   try {
     const user = verifiedToken as UserToken;
     const { quantity, boxSize, quality, ...rest } = scanData;
+    console.log(scanData);
     const hasValue = Object.values(rest).every(Boolean); // true | false
     if (!hasValue || rest.skuCode === "default") {
       console.log("Incomplete Field");
-      return res.json("Incomplete Field");
+      return res.status(404).json("Incomplete Field");
     }
 
     if (quantity > 1) {

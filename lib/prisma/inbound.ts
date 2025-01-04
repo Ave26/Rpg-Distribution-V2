@@ -208,7 +208,7 @@ export async function scanBarcode(
               console.log("block initiated");
               if (bin._count.assignedProducts === 0) {
                 console.log("select the first bin", bin.id);
-                await prisma.assignedProducts
+                const p = await prisma.assignedProducts
                   .create({
                     data: {
                       ...rest,
@@ -217,7 +217,11 @@ export async function scanBarcode(
                       dateInfo: { date, type },
                     },
                   })
+                  .then((product) => {
+                    console.log(product);
+                  })
                   .catch((e) => console.log(e));
+
                 break;
               } else {
                 console.log("proceed to comparison");
