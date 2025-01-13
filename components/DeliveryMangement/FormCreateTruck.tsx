@@ -4,6 +4,7 @@ import { mutate } from "swr";
 import { TToast } from "../Inventory/InventoryTypes";
 import TMInput from "./TMInput";
 import Loading from "../Parts/Loading";
+import Input from "../Parts/Input";
 
 type TFormCreateTruckProps = {
   states: TStates;
@@ -27,7 +28,10 @@ function FormCreateTruck({ states }: TFormCreateTruckProps) {
     const { name, value } = e.target;
     setForm({
       ...form,
-      [name]: name === "payloadCapacity" ? parseInt(value) : value,
+      [name]:
+        name === "payloadCapacity" && Number.isNaN(parseInt(value))
+          ? 0
+          : parseInt(value),
     });
   }
 
@@ -59,13 +63,12 @@ function FormCreateTruck({ states }: TFormCreateTruckProps) {
 
   const btnStyle =
     "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 h-10 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800";
+
+  // relative flex w-fit animate-emerge flex-col gap-2
   return (
-    <form
-      className="relative flex w-fit animate-emerge flex-col gap-2"
-      onSubmit={handleSubmit}
-    >
+    <form className="flex h-[50%] flex-col gap-2 p-2" onSubmit={handleSubmit}>
       {Object.keys(form).map((key) => (
-        <TMInput
+        <Input
           key={key}
           attributes={{
             input: {
@@ -79,10 +82,7 @@ function FormCreateTruck({ states }: TFormCreateTruckProps) {
               value: form[key as keyof TForm],
               onChange: handleChange,
             },
-            label: {
-              children: key,
-              htmlFor: key,
-            },
+            label: { children: key, htmlFor: key },
           }}
         />
       ))}
@@ -96,6 +96,8 @@ function FormCreateTruck({ states }: TFormCreateTruckProps) {
           "Submit"
         )}
       </button>
+
+      <>{JSON.stringify(form, null, 2)}</>
     </form>
   );
 }

@@ -80,7 +80,7 @@ export async function scanBarcode(
           method,
           ...rest
         } = assignedProduct;
-        console.log("finding available bins");
+        console.log("finding available bins", assignedProduct);
 
         const bins = await prisma.bins
           .findMany({
@@ -146,27 +146,13 @@ export async function scanBarcode(
           .catch((e) => {
             console.log(e);
           });
+        console.log(bins);
+
         console.log(rest.skuCode);
         const key = `${rest.skuCode}_${date.toString().slice(0, 10)}_${type}`;
-
-        console.log(bins);
-        if (!bins) return "";
+        console.log(key);
+        if (!bins) return "can't find bin";
         for (const bin of bins) {
-          // const product =
-          //   bin.assignedProducts && bin.assignedProducts.length > 0
-          //     ? bin.assignedProducts[0]
-          //     : {
-          //         skuCode: "", // Default value if assignedProducts is empty
-          //         dateInfo: { date: null, type: "" }, // Default dateInfo structure
-          //       };
-          // const date = product.dateInfo.date?.toISOString().slice(0, 10) ?? "";
-          // const type = product.dateInfo.type;
-          // const passKey =
-          //   !date && !type && !product.skuCode
-          //     ? ""
-          //     : `${String(product?.skuCode)}_${date}_${type}`;
-          // console.log(bin._count.assignedProducts);
-
           const product = bin.assignedProducts?.[0] ?? {
             skuCode: "",
             dateInfo: { date: null, type: "" },
@@ -180,31 +166,10 @@ export async function scanBarcode(
               : "";
 
           console.log(passKey);
-          // const hasSameProduct = await prisma.bins
-          //   .findUnique({
-          //     where: {
-          //       id: bin.id,
-          //       assignedProducts: {
-          //         every: {
-          //           barcodeId: rest.barcodeId,
-          //           skuCode: rest.skuCode,
-          //           dateInfo: { date, type },
-          //           status: { in: ["Default", "Queuing"] },
-          //         },
-          //       },
-          //     },
-          //   })
-          //   .catch((e) => console.log(e));
 
-          // check if there to campare then proceed to comparison
-          // if non the put to initial bin as long as its validate the condition
           console.log(bin.id);
           if (bin.capacity > bin?._count.assignedProducts) {
             if (bin.isAvailable) {
-              // NOTE: THIS BLOCK ALWAYS BREAK
-              // THAT MEANS PRODUCTS DATA IS ALWAYS AVAILABLE
-              //  BLOCK DOESN'T KNOW IF THE PRODUCTS IS REALLY AVAILABLE TO
-              // BE COMAPARED WITH
               console.log("block initiated");
               if (bin._count.assignedProducts === 0) {
                 console.log("select the first bin", bin.id);
@@ -248,39 +213,6 @@ export async function scanBarcode(
                   continue;
                 }
               }
-
-              // if (!hasSameProduct || hasSameProduct === null) {
-              //   // put it on the first bin
-              //   console.log("put it on the first bin");
-              //   console.log(bin.id);
-              //   console.log(hasSameProduct);
-              //   // await prisma.assignedProducts
-              //   //   .create({
-              //   //     data: {
-              //   //       ...rest,
-              //   //       binId: bin.id,
-              //   //       usersId: userId,
-              //   //       dateInfo: { date, type },
-              //   //     },
-              //   //   })
-              //   //   .catch((e) => console.log(e));
-              // } else {
-              //   console.log("product created");
-              //   console.log(bin.id);
-              //   console.log(hasSameProduct);
-
-              //   // await prisma.assignedProducts
-              //   //   .create({
-              //   //     data: {
-              //   //       ...rest,
-              //   //       binId: bin.id,
-              //   //       usersId: userId,
-              //   //       dateInfo: { date, type },
-              //   //     },
-              //   //   })
-              //   //   .catch((e) => console.log(e));
-              // }
-              break;
             } else {
               continue;
             }
@@ -299,7 +231,7 @@ export async function scanBarcode(
           where: { binId: binIdPocket, quality: "Good" },
         });
 
-        message = `Product Count: ${0}`;
+        message = `Product Count: ${count}`;
       }
     })
     .catch((e) => {

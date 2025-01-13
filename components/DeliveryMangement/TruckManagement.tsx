@@ -43,28 +43,28 @@ export default function TruckManagement() {
     ),
   };
   const renderComponent = mappedComponent[truckComponentKey];
-
+  /* flex h-full w-full flex-col items-center justify-center gap-2  text-xs transition-all md:flex-row md:items-start md:justify-start */
+  /* flex h-full w-full flex-col items-center gap-2 border border-black transition-all md:flex-row md:items-start */
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2  text-xs transition-all md:flex-row md:items-start md:justify-start">
-      <div className="flex h-full w-full flex-col items-center gap-2 transition-all md:flex-row md:items-start">
-        <div className="flex h-full w-full items-start justify-center rounded-md bg-white p-2 drop-shadow-sm md:w-fit">
-          {renderComponent}
-        </div>
+    <>
+      {/* flex h-full w-full items-start justify-center rounded-md bg-white p-2 drop-shadow-sm md:w-fit */}
+      <div className="h-full rounded-md bg-white font-black uppercase sm:w-[50%]">
+        {renderComponent}
+      </div>
 
-        <div className="flex h-[40em] w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md bg-white p-2 shadow-md md:min-h-full">
-          <TruckView
-            states={{
-              truckComponentKey,
-              setTruckComponentKey,
-              selectedTruck,
-              setSelectedTruck,
-            }}
-          />
-        </div>
+      <div className="flex h-full w-full flex-col gap-[1.5px] overflow-y-scroll rounded-md bg-white p-2 shadow-md md:min-h-full">
+        <TruckView
+          states={{
+            truckComponentKey,
+            setTruckComponentKey,
+            selectedTruck,
+            setSelectedTruck,
+          }}
+        />
       </div>
 
       <Toast isShow={toast.show} data={toast.message} />
-    </div>
+    </>
   );
 }
 // flex h-[40em] w-full flex-col items-center justify-start gap-[1px] overflow-y-scroll md:items-start

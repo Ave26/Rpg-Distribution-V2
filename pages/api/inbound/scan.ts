@@ -8,8 +8,6 @@ import { TScanData } from "@/pages/dashboard/barcode-scanner";
 
 export type TAssignedProducts = Pick<
   assignedProducts,
-  // | "dateReceived"
-  // | "expirationDate"
   | "binId"
   | "usersId"
   | "purchaseOrder"

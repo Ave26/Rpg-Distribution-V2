@@ -21,15 +21,13 @@ async function handler(
           return res.status(200).send({ message: "Empty Fields" });
         }
 
-        // find the truckName if there is the same throw an error
-
         const truckFound = await prisma.trucks.findUnique({
-          where: { truckName: rest.truckName },
+          where: { truckName: rest.truckName.toLocaleLowerCase() },
         });
 
         const dataToUpdate: Record<string, number | string> = {
-          truckName: rest.truckName,
-          plate: rest.plate,
+          truckName: rest.truckName.toUpperCase(),
+          plate: rest.plate.toUpperCase(),
           payloadCapacity: rest.payloadCapacity,
         };
 

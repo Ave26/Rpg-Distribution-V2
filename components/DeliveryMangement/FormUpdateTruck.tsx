@@ -7,7 +7,8 @@ import TruckStatusOptions from "./TruckStatusOptions";
 import { TToast } from "../Inventory/InventoryTypes";
 import Loading from "../Parts/Loading";
 import { mutate } from "swr";
-import { buttonStyleEdge, buttonStyleSubmit } from "@/styles/style";
+import { buttonStyleEdge, buttonStyleSubmit, InputStyle } from "@/styles/style";
+import Input from "../Parts/Input";
 
 type TData = {
   updatedTruck: trucks;
@@ -89,13 +90,11 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
         setLoading(false);
       });
   }
-
+  // relative flex w-fit animate-emerge flex-col gap-2
+  // border-blue-gray-200  text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full appearance-none rounded-[7px] border bg-transparent px-3 py-2 font-sans text-sm font-normal outline outline-0 transition-all focus:border-2 focus:border-sky-400
   return (
-    <form
-      className="relative flex w-fit animate-emerge flex-col gap-2"
-      onSubmit={handleSubmit}
-    >
-      <div className="flex h-fit w-full justify-end ">
+    <form className="flex h-[50%] flex-col gap-2 p-2" onSubmit={handleSubmit}>
+      <div className="flex h-fit w-full justify-end">
         <button
           type="button"
           onClick={() => setTruckComponentKey("create")}
@@ -117,7 +116,7 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
                 id={key}
                 value={form[key as keyof TForm]}
                 onChange={handleChange}
-                className="border-blue-gray-200  text-blue-gray-700 placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 disabled:bg-blue-gray-50 peer h-full w-full appearance-none rounded-[7px] border bg-transparent px-3 py-2 font-sans text-sm font-normal outline outline-0 transition-all focus:border-2 focus:border-sky-400"
+                className={InputStyle}
               >
                 {truckStatus.map((statusOption) => (
                   <option key={statusOption} value={statusOption}>
@@ -129,28 +128,53 @@ export default function FormUpdateTruck({ states }: TFormUpdateTruckProps) {
           )}
 
           {key !== "status" && key !== "id" && (
-            <TMInput
-              attributes={{
-                input: {
-                  name: key,
-                  id: key,
-                  type:
-                    typeof form[key as keyof TForm] === "number"
-                      ? "number"
-                      : "text",
-                  min:
-                    typeof form[key as keyof TForm] === "number"
-                      ? 0
-                      : undefined,
-                  value: form[key as keyof TForm],
-                  onChange: handleChange,
-                },
-                label: {
-                  children: key,
-                  htmlFor: key,
-                },
-              }}
-            />
+            <>
+              {/* <TMInput
+                attributes={{
+                  input: {
+                    name: key,
+                    id: key,
+                    type:
+                      typeof form[key as keyof TForm] === "number"
+                        ? "number"
+                        : "text",
+                    min:
+                      typeof form[key as keyof TForm] === "number"
+                        ? 0
+                        : undefined,
+                    value: form[key as keyof TForm],
+                    onChange: handleChange,
+                  },
+                  label: {
+                    children: key,
+                    htmlFor: key,
+                  },
+                }}
+              /> */}
+
+              <Input
+                key={key}
+                inputStyles="uppercase"
+                attributes={{
+                  input: {
+                    name: key,
+                    id: key,
+                    type:
+                      typeof form[key as keyof TForm] === "number"
+                        ? "number"
+                        : "text",
+                    min:
+                      typeof form[key as keyof TForm] === "number"
+                        ? 0
+                        : undefined,
+
+                    value: form[key as keyof TForm],
+                    onChange: handleChange,
+                  },
+                  label: { children: key, htmlFor: key },
+                }}
+              />
+            </>
           )}
         </div>
       ))}

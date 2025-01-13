@@ -84,8 +84,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         >
           <ProstockIcon />
         </div>
-        {/* Selections flex h-full w-full items-center justify-between lg:flex-col*/}
-        {/* flex-col */}
         <div
           className={`flex h-full w-full flex-col items-center justify-start`}
         >
@@ -93,9 +91,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
         <LogoutButton />
       </div>
-      {/* Entire Main flex h-full w-full flex-col gap-1 rounded-r-md
-      scrollbar-hide flex h-full w-full animate-pulse grid-cols-1 items-center justify-center gap-2 bg-slate-500 md:grid-cols-2
-      */}
+
       <div className="flex h-full w-full flex-col gap-1">
         {isLoading ? (
           <div className="relative flex h-full w-full animate-pulse items-center justify-center bg-slate-400">

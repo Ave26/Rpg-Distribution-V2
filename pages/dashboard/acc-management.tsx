@@ -93,7 +93,7 @@ const AccountManagement = () => {
       </div>
 
       {/* BODY */}
-      <div className="flex h-[87.5%] flex-col sm:flex-row">
+      <div className="flex max-h-[90.8%] flex-col sm:h-[88.5%] sm:flex-row lg:h-[87.5%]">
         <div className={`flex flex-col pt-2`}>
           {/* CREATE ROLE/USER */}
 

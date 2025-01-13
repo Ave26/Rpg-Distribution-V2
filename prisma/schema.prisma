@@ -301,6 +301,8 @@ model deliveryLogs {
   timeStamp   DateTime
   coordinates Coordinates
   locations   locations?
+
+  @@index([trucksId, timeStamp])
 }
 
 enum TruckAvailability {

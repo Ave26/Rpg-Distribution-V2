@@ -13,12 +13,26 @@ async function handler(
       try {
         const deliveryLogs = await prisma.deliveryLogs.findMany({
           include: { trucks: { select: { truckName: true } } },
-          orderBy: { timeStamp: "desc" },
-          take: 150,
+          orderBy: [{ trucks: { truckName: "desc" } }, { timeStamp: "desc" }],
         });
+
         console.log(deliveryLogs);
-        return res.json(deliveryLogs);
+
+        const groupedLogs = deliveryLogs?.reduce(
+          (acc: Record<string, (typeof deliveryLogs)[number][]>, log) => {
+            const truckName = log.trucks?.truckName || "Unknown Truck";
+            if (!acc[truckName]) {
+              acc[truckName] = [];
+            }
+            acc[truckName].push(log);
+            return acc;
+          },
+          {}
+        );
+        console.log(groupedLogs);
+        return res.json(groupedLogs);
       } catch (error) {
+        console.log(error);
         return res.json(error);
       }
     default:

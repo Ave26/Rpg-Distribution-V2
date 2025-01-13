@@ -5,7 +5,9 @@ export type TDeliveryLogs = deliveryLogs & {
   trucks: trucks;
 };
 
-export async function fetchDeliveryLogs(url: string): Promise<TDeliveryLogs[]> {
+export async function fetchDeliveryLogs(
+  url: string
+): Promise<Record<string, TDeliveryLogs[]>> {
   try {
     const res = await fetch(url);
     const data = await res.json();

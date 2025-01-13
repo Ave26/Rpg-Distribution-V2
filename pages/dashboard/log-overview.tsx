@@ -26,42 +26,63 @@ import { MdFiberManualRecord, MdFiberSmartRecord } from "react-icons/md";
 export default function LogOverview() {
   const [position, setPosition] = useState<[number, number]>([0, 0]);
   const [truckName, setTruckName] = useState<string>("");
-  //relative col-span-1 flex h-[20em] flex-col gap-2 overflow-x-scroll rounded-md border border-slate-200 bg-white p-2 shadow-md transition-all
-  //  h-full w-full grid-cols-1 gap-2 md:grid-cols-2
-
-  // flex min-h-[9.2%] w-full justify-between bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]
-  // grid h-[49em] grid-cols-1 grid-rows-3 gap-2 overflow-x-hidden overflow-y-scroll p-2 lg:grid-cols-2
-  // flex h-full w-full flex-col rounded-b-none rounded-t-md bg-slate-300 font-black
-  // flex h-[87.5%] flex-col border border-black sm:flex-row
+  // h-full w-full bg-slate-300
+  // grid max-h-[90.8%] auto-cols-fr auto-rows-fr grid-cols-1 gap-2 bg-slate-300 p-2 sm:h-[88.5%] sm:grid-cols-2 lg:h-[87.5%]
+  const trucks = Array.from({ length: 4 }, (_, i) => {
+    return i + 1;
+  });
+  const logs = Array.from({ length: 4 }, (_, i) => {
+    return i + 1;
+  });
   return (
-    <section className={`h-full w-full bg-slate-300`}>
-      <div className="flex min-h-[9.2%] w-full justify-between bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]">
+    <section
+      className={`grid h-full grid-cols-2 grid-rows-2 gap-1 bg-transparent`}
+    >
+      {/* <div className="flex min-h-[9.2%] w-full justify-between bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]">
         <MdFiberSmartRecord
           size={30}
           className="flex h-full animate-emerge  items-center justify-center"
         />
-      </div>
-
-      <div className="grid h-[87.5%] auto-cols-fr auto-rows-fr grid-cols-1 gap-2 p-2 sm:grid-cols-2">
-        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+      </div> */}
+      <div className="row-span-2 grid auto-rows-fr grid-cols-2 grid-rows-2 gap-1">
+        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-none rounded-br-md bg-white shadow-md">
           <OrderQueue />
         </div>
-        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
-          <Reports />
-        </div>
-        <div className="flex w-full flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
-          <DeliveryLogs states={{ position, setPosition, setTruckName }} />
-        </div>
-        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white p-2 shadow-md">
+        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-none bg-white p-2 shadow-md">
           <BinLogReports />
         </div>
-        <div className="relative flex flex-col rounded-md bg-white p-2 shadow-md">
-          <Map coordinates={position} truckName={truckName} />
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-none bg-white shadow-md">
+          <Reports />
         </div>
-        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md  bg-white shadow-md">
           <UserProductScanned />
         </div>
       </div>
+      <div className="grid h-full max-h-full w-full grid-cols-2 gap-1  rounded-none rounded-bl-md bg-slate-200 p-1">
+        <DeliveryLogs states={{ position, setPosition, setTruckName }} />
+      </div>
+      <div className="flex flex-col rounded-none rounded-tl-md bg-white p-2 shadow-md">
+        <Map coordinates={position} truckName={truckName} />
+      </div>
+
+      {/* <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+        <OrderQueue />
+      </div>
+      <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+        <Reports />
+      </div>
+      <div className="flex w-full flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+        <DeliveryLogs states={{ position, setPosition, setTruckName }} />
+      </div>
+      <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white p-2 shadow-md">
+        <BinLogReports />
+      </div>
+      <div className="flex flex-col rounded-md bg-white p-2 shadow-md">
+        <Map coordinates={position} truckName={truckName} />
+      </div>
+      <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md bg-white shadow-md">
+        <UserProductScanned />
+      </div> */}
     </section>
   );
 }

@@ -60,30 +60,30 @@ function Form() {
   return (
     <form
       className="grid h-fit grid-flow-row grid-cols-2 gap-2 p-2"
-      onSubmit={(e) => {
-        console.log("triggered");
-        e.preventDefault();
-        setLoading(true);
-        fetch("/api/products/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(product),
-        }).finally(() => {
-          setProduct({
-            category: "default",
-            barcodeId: "",
-            code: "",
-            image: "",
-            productName: "",
-            supplierName: "",
-            price: 0,
-            threshold: 0,
-            weight: 0,
-            method: "default",
-          });
-          setLoading(false);
-        });
-      }}
+      // onSubmit={(e) => {
+      //   console.log("triggered");
+      //   e.preventDefault();
+      //   setLoading(true);
+      //   fetch("/api/products/create", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(product),
+      //   }).finally(() => {
+      //     setProduct({
+      //       category: "default",
+      //       barcodeId: "",
+      //       code: "",
+      //       image: "",
+      //       productName: "",
+      //       supplierName: "",
+      //       price: 0,
+      //       threshold: 0,
+      //       weight: 0,
+      //       method: "default",
+      //     });
+      //     setLoading(false);
+      //   });
+      // }}
     >
       <div className="col-span-2 flex gap-2">
         <select
@@ -195,7 +195,34 @@ function Form() {
         <FileUpload states={{ product, setProduct }} />
       </div>
 
-      <button className={`${buttonStyleSubmit} col-span-2`}>
+      <button
+        className={`${buttonStyleSubmit} col-span-2`}
+        type="button"
+        onClick={() => {
+          console.log("triggered");
+          // e.preventDefault();
+          setLoading(true);
+          fetch("/api/products/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(product),
+          }).finally(() => {
+            setProduct({
+              category: "default",
+              barcodeId: "",
+              code: "",
+              image: "",
+              productName: "",
+              supplierName: "",
+              price: 0,
+              threshold: 0,
+              weight: 0,
+              method: "default",
+            });
+            setLoading(false);
+          });
+        }}
+      >
         {loading ? (
           <div className="flex items-center justify-center">
             <AiOutlineLoading className="animate-spin" size={30} />

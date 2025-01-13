@@ -72,31 +72,29 @@ function LeafletMap({ coordinates, truckName }: LeafletMapProps) {
   }
 
   return (
-    <div className="overflow-hidden">
-      <MapWithNoSSR
-        attributionControl={false}
-        center={coordinates}
-        zoom={20}
-        style={{ height: "35vh", width: "100%" }}
-      >
-        <TileLayerWithNoSSR url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {/* <LocationMarker /> */}
+    <MapWithNoSSR
+      attributionControl={false}
+      center={coordinates}
+      zoom={15}
+      style={{ height: "40vh", width: "100%" }}
+    >
+      <TileLayerWithNoSSR url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {/* <LocationMarker /> */}
 
-        <CircleMarkerNoSSR center={coordinates} radius={5}>
-          <PopupNoSSR>{truckName}</PopupNoSSR>
-        </CircleMarkerNoSSR>
+      <CircleMarkerNoSSR center={coordinates} radius={5}>
+        <PopupNoSSR>{truckName}</PopupNoSSR>
+      </CircleMarkerNoSSR>
 
-        {/* <Marker position={coordinates} icon={markerIcon}>
+      {/* <Marker position={coordinates} icon={markerIcon}>
           <PopupNoSSR>{truckName}</PopupNoSSR>
         </Marker> */}
 
-        {/* <MarkerNoSSR position={coordinates}>
+      {/* <MarkerNoSSR position={coordinates}>
           <PopupNoSSR>
             A pretty CSS3 popup. <br /> Easily customizable.
           </PopupNoSSR>
         </MarkerNoSSR> */}
-      </MapWithNoSSR>
-    </div>
+    </MapWithNoSSR>
   );
 }
 
