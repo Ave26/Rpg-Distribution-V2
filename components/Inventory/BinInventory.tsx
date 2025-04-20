@@ -1,18 +1,16 @@
 import useInventoryBins from "@/hooks/useInventoryBins";
 import { buttonStyleDark, buttonStyleSubmit, InputStyle } from "@/styles/style";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineLoading, AiOutlineMobile } from "react-icons/ai";
-import { MdDriveFileMove, MdInventory2 } from "react-icons/md";
+import { MdDriveFileMove } from "react-icons/md";
 import { MdMoveDown } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import Input from "../Parts/Input";
 import { mutate } from "swr";
 import useCategories from "@/hooks/useCategories";
 import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";
-import Link from "next/link";
 import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
 import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
-import { HiDuplicate } from "react-icons/hi";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBorderAll } from "react-icons/fa";
 import Barcode from "../Parts/Barcode";
@@ -150,11 +148,6 @@ export default function BinInventory({}: BinInventoryProps) {
               setSelectedBinIds,
             }}
           />
-          {/* <div className="rounded border bg-gray-100 p-4">
-            <p>
-              Last Scanned: <strong>{barcode || "Waiting for scan..."}</strong>
-            </p>
-          </div> */}
 
           <div className="flex gap-2 text-xs">
             <BinActionButtons

@@ -15,7 +15,6 @@ import { Prisma } from "@prisma/client";
 export default authMiddleware(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const inventoryPage = req.query;
-    // console.log(inventoryPage);
     let newCategoryPage:
       | InventoryPage
       | Partial<Prisma.binLogReportCreateInput> = {};

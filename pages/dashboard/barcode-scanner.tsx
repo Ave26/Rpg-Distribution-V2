@@ -87,7 +87,7 @@ function BarcodeScan({ states }: BarcodeScanProps) {
   const [loading, setLoading] = useState(false);
 
   const [barcodeId, setBarcodeId] = useState("");
-  const [image, setImage] = useState("");
+  // const [image, setImage] = useState("");
   const [date, setDate] = useState<Date>(new Date());
   const [quantity, setQuantity] = useState(1);
   const [boxSize, setBoxSize] = useState<BoxSize | "default">("default");
@@ -139,10 +139,11 @@ function BarcodeScan({ states }: BarcodeScanProps) {
             }
           })
           .catch((error: Error) => {
-            console.log(error.name);
-            setSkuCode("default");
-            setBarcodeId("");
-            alert(error);
+            console.log(error);
+            // console.log(error.name);
+            // setSkuCode("default");
+            // setBarcodeId("");
+            // alert(error);
           })
           .finally(() => setLoading(false));
       }, 500);

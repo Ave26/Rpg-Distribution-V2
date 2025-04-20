@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import CreateRack from "../CreateRack";
 import Input from "../Parts/Input";
-import { buttonStyleSubmit, InputStyle } from "@/styles/style";
+import {
+  buttonStyle,
+  buttonStyleDark,
+  buttonStyleSubmit,
+  InputStyle,
+} from "@/styles/style";
 import useCategories from "@/hooks/useCategories";
 import { Categories } from "@/fetcher/fetchCategories";
 import { mutate } from "swr";
@@ -61,6 +66,8 @@ export default function Bin() {
         <h1 className="p-2 font-bold uppercase">Create Racks</h1>
         <Form bin={bin} setBin={setBin} categories={categories} />
       </div>
+      <h1>Prin Bin Barcode</h1>
+
       <div className="grid grid-flow-row grid-cols-2 rounded-md">
         <h1 className="p-2 font-bold uppercase">Create Category</h1>
         <CategoryForm />
@@ -135,7 +142,7 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
         categories?.map(({ category, count, rackNames, id }) => {
           return (
             <div
-              className="flex flex-col items-end justify-between gap-2 p-2 hover:bg-slate-200"
+              className="flex flex-col items-end justify-between gap-2 bg-slate-200 p-2"
               key={category}
               onClick={() => {
                 setSelectCategoryId(id);
@@ -145,11 +152,19 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
                 }
               }}
             >
-              <div className="flex w-full justify-between gap-2">
+              <div className="flex w-full select-none justify-between gap-2">
                 <div className="flex w-full justify-between">
-                  <ul className="w-full">{category}</ul>
-                  <div className="w-40">
+                  <ul className="flex w-full items-center justify-start">
+                    {category}
+                  </ul>
+
+                  <div className="flex w-40 items-center justify-center border">
                     <h1>Product Quantity {count}</h1>
+                  </div>
+                  <div className="h-fit w-fit">
+                    <button onClick={() => {}} className={buttonStyleDark}>
+                      print
+                    </button>
                   </div>
                 </div>
 

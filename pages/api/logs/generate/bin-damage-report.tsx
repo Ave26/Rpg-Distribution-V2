@@ -3,7 +3,6 @@ import { JwtPayload } from "jsonwebtoken";
 
 import { authMiddleware, UserToken } from "../../authMiddleware";
 import prisma from "@/lib/prisma";
-import { DamageBinButton } from "@/components/Inventory/DamageInventory";
 import { renderToStream } from "@react-pdf/renderer";
 import DamageBinDocument from "@/components/Report/Inventory/DamageBinDocument";
 import { AssignedProducts } from "../../inventory/assigned-products/find";

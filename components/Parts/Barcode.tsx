@@ -20,16 +20,16 @@ function Barcode({ value }: BarcodeProps) {
     if (barcodeRef.current && value.trim() !== "") {
       // Only generate barcode if value is not empty
       JsBarcode(barcodeRef.current, value, {
-        // format: "CODE128",
-        // displayValue: true,
-        // fontSize: 16,
-        // height: 60,
-        // margin: 10,
         format: "CODE128",
-        width: 0.75, // narrower bars
-        height: 50, // shorter barcode
-        fontSize: 10, // smaller text
-        displayValue: true, // show the URL under the barcode (optional)
+        displayValue: true,
+        fontSize: 16,
+        height: 60,
+        margin: 10,
+        // format: "CODE128",
+        // width: 0.75, // narrower bars
+        // height: 50, // shorter barcode
+        // fontSize: 10, // smaller text
+        // displayValue: true, // show the URL under the barcode (optional)
       });
 
       // Convert SVG to Base64 image
