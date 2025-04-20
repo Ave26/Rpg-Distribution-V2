@@ -1,8 +1,19 @@
+import { useMyContext } from "@/contexts/AuthenticationContext";
+import { LogoutResponse } from "@/pages/api/user/logout";
 import { buttonStyleDark } from "@/styles/style";
 import router from "next/router";
 import React from "react";
 
-export default function LogoutButton() {
+interface LogoutButton {
+  states: {
+    logoutResponse: LogoutResponse;
+    setLogoutResponse: React.Dispatch<React.SetStateAction<LogoutResponse>>;
+  };
+}
+
+export default function LogoutButton({ states }: LogoutButton) {
+  const { updateGlobalState } = useMyContext();
+  const { logoutResponse, setLogoutResponse } = states;
   function handleLogout() {
     fetch("/api/user/logout", {
       method: "DELETE",
@@ -11,8 +22,16 @@ export default function LogoutButton() {
       },
     })
       .then((res) => res.json())
-      .then(({ message }) => {
-        console.log(message);
+      .then((data: LogoutResponse) => {
+        const { isLogout, message } = data;
+        console.log(data);
+        setLogoutResponse({
+          isLogout,
+          message,
+        });
+        updateGlobalState({
+          authenticated: false,
+        });
         router.push("/");
       })
       .catch((error) => error);

@@ -1,6 +1,6 @@
 import { UserRole } from "@prisma/client";
 
-interface AuthProps {
+export interface AuthProps {
   authenticated?: boolean;
   verifiedToken?: VerifyToken;
 }

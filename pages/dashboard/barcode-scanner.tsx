@@ -336,7 +336,7 @@ function BarcodeScan({ states }: BarcodeScanProps) {
           }}
           className={`${buttonStyleDark} transition-all active:scale-95`}
         >
-          x
+          Reset
         </button>
       </div>
 

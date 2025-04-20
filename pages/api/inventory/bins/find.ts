@@ -29,11 +29,16 @@ export interface InventoryBins {
 export type InventoryPage = {
   category: string | "default";
   rackName: string | "default";
+  shelfLevel: number;
+  row: number;
 };
 
 export function isCategoryParams(query: any): query is InventoryPage {
   return (
-    typeof query.category === "string" && typeof query.rackName === "string"
+    typeof query.category === "string" &&
+    typeof query.rackName === "string" &&
+    typeof query.shelfLevel === "number" &&
+    typeof query.row === "number"
   );
 }
 
@@ -43,12 +48,15 @@ export async function handler(
   verifiedToken: JwtPayload & UserToken
 ) {
   const inventoryPage = req.query;
+  console.log(inventoryPage);
 
   let newCategoryPage: InventoryPage | {} = {};
 
   if (isCategoryParams(inventoryPage)) {
     newCategoryPage = Object.fromEntries(
-      Object.entries(inventoryPage).filter(([_, value]) => value !== "default") // Keep only non-empty values
+      Object.entries(inventoryPage).filter(
+        ([_, value]) => value !== "default" && value !== 0
+      ) // Keep only non-empty values
     );
   }
 

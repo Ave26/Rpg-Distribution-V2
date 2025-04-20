@@ -45,23 +45,23 @@ export default function LogOverview() {
         />
       </div> */}
       <div className="row-span-2 grid auto-rows-fr grid-cols-2 grid-rows-2 gap-1">
-        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-none rounded-br-md bg-white shadow-md">
+        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-br-md bg-white shadow-md">
           <OrderQueue />
         </div>
-        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-none bg-white p-2 shadow-md">
+        <div className="col-span-2 flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-md bg-white p-2 shadow-md">
           <BinLogReports />
         </div>
-        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-none bg-white shadow-md">
+        <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md rounded-l-md bg-white shadow-md">
           <Reports />
         </div>
         <div className="flex flex-col overflow-x-hidden overflow-y-scroll rounded-md  bg-white shadow-md">
           <UserProductScanned />
         </div>
       </div>
-      <div className="grid h-full max-h-full w-full grid-cols-2 gap-1  rounded-none rounded-bl-md bg-slate-200 p-1">
+      <div className="grid h-full max-h-full w-full grid-cols-2 gap-1  rounded-md rounded-bl-md bg-slate-200 p-1">
         <DeliveryLogs states={{ position, setPosition, setTruckName }} />
       </div>
-      <div className="flex flex-col rounded-none rounded-tl-md bg-white p-2 shadow-md">
+      <div className="flex flex-col rounded-md rounded-tl-md bg-white p-2 shadow-md">
         <Map coordinates={position} truckName={truckName} />
       </div>
 

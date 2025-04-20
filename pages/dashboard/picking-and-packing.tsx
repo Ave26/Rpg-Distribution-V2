@@ -19,19 +19,25 @@ export default function PickingAndPacking() {
 
   const { MappedComponent } = useMapComponent(roleComponentMapper);
 
+  {
+    /* <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2"> */
+  }
+  {
+    /* <FaBoxesPacking
+            size={30}
+            className="flex h-full animate-emerge  items-center justify-center"
+          /> */
+  }
+  {
+    /* </div> */
+  }
+
   return (
     <>
       <Head>
         <title>{"Dashboard | Picking And Packing"}</title>
       </Head>
-      <section className="flex h-full w-full flex-col gap-1 rounded-b-none rounded-t-md bg-transparent font-black lg:overflow-hidden">
-        <div className="flex h-[8%] w-full justify-between rounded-t-md bg-white p-2">
-          {/* <FaBoxesPacking
-            size={30}
-            className="flex h-full animate-emerge  items-center justify-center"
-          /> */}
-        </div>
-
+      <section className="overflow-x-hidden overflow-y-scroll p-1">
         <div className="flex h-[92%] w-full  gap-1">{MappedComponent}</div>
       </section>
     </>

@@ -25,8 +25,8 @@ export default function DamageInventory() {
   const { assignedProducts } = useAssignedProducts();
   const [selected, setSelected] = useState("");
   return (
-    <>
-      <div className="flex h-[8%] justify-between rounded-t-md bg-white p-2">
+    <div className="flex flex-col gap-1 p-1">
+      <div className="flex h-[40%] justify-between rounded-t-md bg-white p-2 shadow-md">
         <GiGroundbreaker
           size={30}
           className="flex h-full animate-emerge  items-center justify-center text-red-600"
@@ -62,42 +62,40 @@ export default function DamageInventory() {
           </div>
         </div>
       </div>
-      <div className="flex h-[45em] w-full flex-col items-center gap-2 overflow-y-scroll rounded-b-md bg-slate-300 p-4">
-        {Array.isArray(assignedProducts) &&
-          assignedProducts?.map((product) => {
-            return (
-              <>
-                <button
-                  className="flex h-[4em] w-full flex-none select-none  flex-col items-center justify-center rounded-md bg-white p-2 shadow-md hover:bg-sky-300 md:w-[45em]"
-                  onClick={() => {
-                    if (selected === product.skuCode) {
-                      setSelected("");
-                    } else {
-                      setSelected(product.skuCode);
-                    }
-                  }}
-                >
-                  <h1>{product.skuCode}</h1>
-                </button>
-                <div
-                  className={`${
-                    selected === product.skuCode
-                      ? "h-[30em] p-2"
-                      : "h-0 border-hidden"
-                  }  flex w-full flex-none flex-col gap-2 overflow-scroll bg-slate-700 shadow-md transition-all md:w-[45em]`}
-                >
-                  <ViewDamageBins
-                    productName={product.productName}
-                    damageBins={product.damageBins}
-                    key={product.skuCode}
-                    skuCode={product.skuCode}
-                  />
-                </div>
-              </>
-            );
-          })}
-      </div>
-    </>
+      {Array.isArray(assignedProducts) &&
+        assignedProducts?.map((product) => {
+          return (
+            <>
+              <button
+                className="flex h-[3em] w-full flex-none select-none  flex-col items-center justify-center rounded-md bg-white p-2 shadow-md hover:bg-sky-300"
+                onClick={() => {
+                  if (selected === product.skuCode) {
+                    setSelected("");
+                  } else {
+                    setSelected(product.skuCode);
+                  }
+                }}
+              >
+                <h1>{product.skuCode}</h1>
+              </button>
+              <div
+                className={`${
+                  selected === product.skuCode
+                    ? "h-[30em] p-2"
+                    : "h-0 border-hidden"
+                }  flex w-full flex-none flex-col gap-2 overflow-scroll bg-slate-700 shadow-md transition-all`}
+              >
+                <ViewDamageBins
+                  productName={product.productName}
+                  damageBins={product.damageBins}
+                  key={product.skuCode}
+                  skuCode={product.skuCode}
+                />
+              </div>
+            </>
+          );
+        })}
+    </div>
   );
 }
 

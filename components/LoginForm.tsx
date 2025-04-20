@@ -9,6 +9,8 @@ import { BiKey } from "react-icons/bi";
 import Toast from "./Parts/Toast";
 import { users } from "@prisma/client";
 import { TAuth } from "@/types/userTypes";
+import { useMyContext } from "@/contexts/AuthenticationContext";
+import { AuthProps } from "@/types/authTypes";
 
 type Data = {
   authenticated: boolean;
@@ -31,6 +33,7 @@ interface AdditionInfo {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { updateGlobalState } = useMyContext();
   const [message, setMessage] = useState<string>("");
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -59,13 +62,15 @@ export default function LoginForm() {
         },
         body: JSON.stringify({ auth }),
       });
-      const data: Data = await response.json();
+      const data: AuthProps = await response.json();
+      console.log(data);
+      updateGlobalState(data);
       console.log(response.status);
 
       switch (response.status) {
         case 200:
           if (data?.authenticated)
-            switch (data.user.role) {
+            switch (data.verifiedToken?.role) {
               case "SUPERADMIN":
               case "ADMIN":
                 console.log("executed");
@@ -81,17 +86,17 @@ export default function LoginForm() {
                 break;
             }
           break;
-        case 401:
-          console.log(data?.message);
-          setMessage(data?.message);
-          setIsShow(true);
-          break;
-        case 404:
-          console.log(data.message);
-          break;
-        case 505:
-          console.log(data.message);
-          break;
+        // case 401:
+        //   console.log(data?.);
+        //   setMessage(data?.message);
+        //   setIsShow(true);
+        //   break;
+        // case 404:
+        //   console.log(data.message);
+        //   break;
+        // case 505:
+        //   console.log(data.message);
+        //   break;
       }
     } catch (error: unknown | any) {
       console.log(error);

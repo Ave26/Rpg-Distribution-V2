@@ -1,21 +1,16 @@
 import { TEndPoints, TRole } from "@/types/roleTypes";
-import { AiOutlineLoading } from "react-icons/ai";
 import { FaCartFlatbed, FaPallet } from "react-icons/fa6";
-import {
-  MdAccountCircle,
-  MdAdminPanelSettings,
-  MdOutlineInventory,
-  MdPallet,
-} from "react-icons/md";
+import { MdAdminPanelSettings, MdOutlineInventory } from "react-icons/md";
 import { ImBoxAdd } from "react-icons/im";
 import { BsUpcScan } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { RiAccountCircleLine } from "react-icons/ri";
 
-const baseRoutes = [
+const baseRoutes: TEndPoints[] = [
   {
     path: "/dashboard/log-overview",
     label: "Log Overview",
+
     Icon: MdAdminPanelSettings,
   },
   {
@@ -31,11 +26,13 @@ const baseRoutes = [
   {
     path: "/dashboard/pallete-location",
     label: "Pallete Location",
+    subMenu: ["Bin", "Damage Bin"],
     Icon: FaPallet,
   },
   {
     path: "/dashboard/inventory-management",
     label: "Manage Inventory",
+    subMenu: ["Bin", "Product", "Damage Bin"],
     Icon: MdOutlineInventory,
   },
   {
@@ -47,6 +44,7 @@ const baseRoutes = [
   {
     path: "/dashboard/delivery-management",
     label: "Manage Delivery",
+    subMenu: ["Truck Management", "View Truck Loads", "Manage Location"],
     Icon: TbTruckDelivery,
   },
   {
@@ -80,6 +78,7 @@ export const roleToRoutes: Record<TRole, TEndPoints[]> = {
     {
       path: "/dashboard/delivery-management",
       label: "Manage Delivery",
+      // subMenu: ["Truck Management", "View Truck Loads", "Manage Location"],
       Icon: TbTruckDelivery,
     },
   ],

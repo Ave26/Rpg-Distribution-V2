@@ -19,7 +19,7 @@ const InitialPage: FC<HomeProps> = ({}) => {
               <Image src={ProStockV2} alt={"rpg"} />
             </div>
           </div>
-          <div className="text-words flex flex-col items-center justify-center break-normal text-center">
+          <div className="text-words flex flex-col items-center justify-center break-normal text-center text-slate-700">
             <h1 className="text-4xl font-bold">RPG Prostock</h1>
             <p className="text-words break-normal text-center">
               Take Control of Your Warehouse with Prostock
@@ -32,7 +32,7 @@ const InitialPage: FC<HomeProps> = ({}) => {
         </div>
 
         <Link
-          className="w-full text-center font-black uppercase hover:text-white"
+          className="w-full text-center font-black uppercase text-slate-700"
           href={"https://rpg-ph.com"}
         >
           Learn More

@@ -14,6 +14,7 @@ import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
 import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
 import { HiDuplicate } from "react-icons/hi";
 import { FaBorderAll } from "react-icons/fa";
+import Barcode from "../Parts/Barcode";
 
 type Button = "Move Damage Product" | "Print Inventory" | "Organize Bin";
 interface BinInventoryProps {}
@@ -41,6 +42,8 @@ export default function BinInventory({}: BinInventoryProps) {
   const [page, setPage] = useState<InventoryPage>({
     category: "default",
     rackName: "default",
+    row: 0,
+    shelfLevel: 0,
   });
   const { inventory } = useInventoryBins(page);
   const [moveDamageProduct, setMoveDamageProduct] = useState(false);
@@ -58,7 +61,6 @@ export default function BinInventory({}: BinInventoryProps) {
     count: 0,
     PO: "Default",
   });
-  const [selectBinId, setSelectBinId] = useState("");
 
   const [inventoryActionState, setInventoryActionState] = useState({
     isOpen: false,
@@ -68,70 +70,73 @@ export default function BinInventory({}: BinInventoryProps) {
     {}
   );
 
-  const elementRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [visibleButtons, setVisibleButtons] = useState<{
-    [key: number]: boolean;
-  }>({});
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanBuffer, setScanBuffer] = useState("");
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       entries.forEach((entry) => {
-  //         const id = entry.target.getAttribute("data-id");
-  //         if (!id) return;
-  //         setVisibleButtons((prevState) => ({
-  //           ...prevState,
-  //           [id]: entry.isIntersecting,
-  //         }));
-  //       });
-  //     },
-  //     {
-  //       root: document.querySelector(".parent"), // Parent element as the viewport
-  //       threshold: 0.5, // 50% visibility to trigger
-  //     }
-  //   );
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
 
-  //   // Copy the current refs to a local variable
-  //   const currentElementRefs = elementRefs.current;
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const key = e.key;
 
-  //   // Observe elements
-  //   currentElementRefs.forEach((el) => {
-  //     if (el) observer.observe(el);
-  //   });
+      if (key === "Shift" || key === "Control" || key === "Alt" || e.metaKey) {
+        return;
+      }
 
-  //   // Cleanup function
-  //   return () => {
-  //     currentElementRefs.forEach((el) => {
-  //       if (el) observer.unobserve(el);
-  //     });
-  //   };
-  // }, [moveDamageProduct]);
-  // Only re-run when `moveDamageProduct` changes
+      if (!isScanning) {
+        setIsScanning(true);
+        timeout = setTimeout(() => {
+          const scanned = scanBuffer;
+          parseBarcode(scanned);
+          setScanBuffer("");
+          setIsScanning(false);
+        }, 100);
+      }
+
+      if (key === "Enter") {
+        const scanned = scanBuffer;
+        parseBarcode(scanned);
+        setScanBuffer("");
+        setIsScanning(false);
+        clearTimeout(timeout);
+      } else {
+        setScanBuffer((prev) => prev + key);
+      }
+    };
+
+    const parseBarcode = (barcodeStr: string) => {
+      const parts = barcodeStr.split("-");
+      if (parts.length === 3) {
+        const [cat, secLevel, r] = parts;
+
+        const rack = secLevel.charAt(0);
+        const shelfLevel = parseInt(secLevel.slice(1));
+        const row = parseInt(r);
+
+        setPage((prevState) => {
+          return {
+            ...prevState,
+            category: cat,
+            rackName: rack,
+            row,
+            shelfLevel,
+          };
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+      clearTimeout(timeout);
+    };
+  }, [scanBuffer, isScanning]);
 
   return (
-    <div className="relative">
-      <div className="flex h-full justify-between rounded-t-md  bg-white p-2">
-        <MdInventory2
-          size={30}
-          className="flex h-full animate-emerge items-center justify-center drop-shadow-md"
-        />
-
-        <div className="flex gap-2 text-xs">
-          <BinActionButtons
-            states={{
-              moveDamageProduct,
-              setMoveDamageProduct,
-              inventoryActionState,
-              setInventoryActionState,
-              page,
-              setPage,
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="flex h-[45em] w-full flex-col gap-2 overflow-y-scroll rounded-b-md bg-slate-300 p-2">
-        <div className="sticky top-0 flex  h-fit items-center justify-center rounded-md bg-slate-500 backdrop-blur-xl">
+    <>
+      <div className="flex flex-col gap-2 rounded-b-md bg-slate-300">
+        <div className="sticky top-0 flex h-fit items-center justify-between rounded-md bg-slate-300 p-2 backdrop-blur-xl">
           <OrganizeBinForm
             states={{
               inventory,
@@ -143,195 +148,236 @@ export default function BinInventory({}: BinInventoryProps) {
               setSelectedBinIds,
             }}
           />
+          {/* <div className="rounded border bg-gray-100 p-4">
+            <p>
+              Last Scanned: <strong>{barcode || "Waiting for scan..."}</strong>
+            </p>
+          </div> */}
+
+          <div className="flex gap-2 text-xs">
+            <BinActionButtons
+              states={{
+                moveDamageProduct,
+                setMoveDamageProduct,
+                inventoryActionState,
+                setInventoryActionState,
+                page,
+                setPage,
+              }}
+            />
+          </div>
         </div>
-        {Array.isArray(inventory) &&
-          inventory.map((v, i) => (
-            <div
-              className="parent flex flex-col rounded-md bg-white uppercase"
-              key={v.bin.binId}
-            >
-              {/* Category and racks */}
-              <div className="flex">
-                <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
-                  <ul className="">
-                    <li>{v.product?.skuCode}</li>
-                    <li>
-                      {v.bin.category} {v.bin.rackName}
-                      {v.bin.row}/{v.bin.shelfLevel}
-                    </li>
-                  </ul>
 
-                  <div className="row-span-3">
-                    <p className="break-all text-end text-xs">
-                      Date: {String(v.product?.dateInfo.date).slice(0, 10)}
-                    </p>
-                    <h2 className="row-span-3 flex items-center justify-end p-2 text-center">
-                      Quantity: {v.bin.count}
-                    </h2>
-                  </div>
-                  <h2>{v.product?.productName}</h2>
-                </div>
-                <button
-                  onClick={() => {
-                    const operationFields: Record<Operation, () => void> = {
-                      ACTION: () => {
-                        setBinButton({
-                          ...binButton,
-                          id: v.bin.binId === binButton.id ? "" : v.bin.binId,
-                          operation: "CANCEL",
-                        });
-                      },
-                      CANCEL: () => {
-                        setBinButton({
-                          ...binButton,
-                          id: v.bin.binId === binButton.id ? "" : v.bin.binId,
-                          operation: "CANCEL",
-                        });
-                      },
-                      MOVE: () => {},
-                      SELECT: () => {},
-                      SWAP: () => {
-                        if (v.bin.binId === binButton.id) {
-                          setLoading(true);
-                          fetch("/api/inventory/bins/swap-products", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ page, selectedBinIds }),
-                          })
-                            .then(async (res) => {
-                              const data = await res.json();
-                              alert(data);
-                            })
-                            .finally(() => {
-                              // setLoading((state: { [key: string]: boolean }) => ({
-                              //   ...state,
-                              //   swapProducts: false,
-                              // }));
-
-                              setBinButton((state) => {
-                                return {
-                                  ...state,
-                                  id: "",
-                                  operation: "ACTION",
-                                };
-                              });
-
-                              setLoading(false);
-                              setSelectedBinIds({});
-                              mutate(
-                                `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
-                              );
-                            });
-                        }
-                      },
-                    };
-
-                    operationFields[binButton.operation]();
-                  }}
-                  className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
-                >
-                  {binButton.id === v.bin.binId ? (
-                    loading ? (
-                      <AiOutlineLoading className="animate-spin" size={30} />
-                    ) : (
-                      binButton.operation
-                    )
-                  ) : (
-                    <IoIosArrowDown />
-                  )}
-                </button>
-              </div>
-
-              {/* body of bin */}
+        <div className="flex flex-col gap-1 p-1">
+          {Array.isArray(inventory) &&
+            inventory.map((v, i) => (
               <div
-                className={`flex ${
-                  binButton.id === v.bin.binId
-                    ? "h-20 overflow-x-hidden border border-t-2 p-2"
-                    : "h-0"
-                } justify-between overflow-y-scroll rounded-md transition-all ease-in-out`}
+                className="parent flex flex-col rounded-md bg-white uppercase"
+                key={v.bin.binId}
               >
-                <ul className={`flex flex-col break-all`}>
-                  <li>Date: {String(v.product?.dateInfo.date).slice(0, 10)}</li>
-                </ul>
-                <div className="flex min-w-fit gap-2">
-                  <select
-                    name={v.bin.binId}
-                    id={v.bin.binId}
-                    value={selectedBinIds[v.bin.binId] || "default"}
-                    onChange={(e) => {
-                      setSelectedBinIds((state) => ({
-                        ...state,
-                        [v.bin.binId]: e.target.value,
-                      }));
-                      if (e.target.value) {
+                {/* Category and racks */}
+                <div className="flex">
+                  <div className="rounded-y-md grid w-5/6 grid-cols-2 rounded-l-md  p-2 text-sm">
+                    <ul className="">
+                      <li>{v.product?.skuCode}</li>
+                      <li>
+                        {v.bin.category} {v.bin.rackName}
+                        {v.bin.row}/{v.bin.shelfLevel}
+                      </li>
+                    </ul>
+
+                    <div className="z-0 row-span-3">
+                      {/* <div className="">
+                        <Barcode
+                          value={`${v.bin.category}-${v.bin.rackName}${v.bin.row}${v.bin.shelfLevel}`}
+                        />
+                      </div> */}
+                      <p className="break-all text-end text-xs">
+                        Date: {String(v.product?.dateInfo.date).slice(0, 10)}
+                      </p>
+                      <h2 className="row-span-3 flex items-center justify-end p-2 text-center">
+                        Quantity: {v.bin.count}
+                      </h2>
+                    </div>
+                    <h2>{v.product?.productName}</h2>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const operationFields: Record<Operation, () => void> = {
+                        ACTION: () => {
+                          setBinButton({
+                            ...binButton,
+                            id: v.bin.binId === binButton.id ? "" : v.bin.binId,
+                            operation: "CANCEL",
+                          });
+                        },
+                        CANCEL: () => {
+                          setBinButton({
+                            ...binButton,
+                            id: v.bin.binId === binButton.id ? "" : v.bin.binId,
+                            operation: "CANCEL",
+                          });
+                        },
+                        MOVE: () => {},
+                        SELECT: () => {},
+                        SWAP: () => {
+                          if (v.bin.binId === binButton.id) {
+                            setLoading(true);
+                            fetch("/api/inventory/bins/swap-products", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ page, selectedBinIds }),
+                            })
+                              .then(async (res) => {
+                                const data = await res.json();
+                                alert(data);
+                              })
+                              .finally(() => {
+                                // setLoading((state: { [key: string]: boolean }) => ({
+                                //   ...state,
+                                //   swapProducts: false,
+                                // }));
+
+                                setBinButton((state) => {
+                                  return {
+                                    ...state,
+                                    id: "",
+                                    operation: "ACTION",
+                                  };
+                                });
+
+                                setLoading(false);
+                                setSelectedBinIds({});
+                                mutate(
+                                  `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
+                                );
+                              });
+                          }
+                        },
+                      };
+
+                      operationFields[binButton.operation]();
+                    }}
+                    className="border-l-1 flex w-3/6 select-none items-center justify-center rounded-r-md border border-y-0 border-r-0 p-2 hover:bg-sky-400 md:w-1/6"
+                  >
+                    {binButton.id === v.bin.binId ? (
+                      loading ? (
+                        <AiOutlineLoading className="animate-spin" size={30} />
+                      ) : (
+                        binButton.operation
+                      )
+                    ) : (
+                      <IoIosArrowDown />
+                    )}
+                  </button>
+                </div>
+
+                {/* body of bin */}
+                <div
+                  className={`flex ${
+                    binButton.id === v.bin.binId
+                      ? "h-20 overflow-x-hidden border border-t-2 p-2"
+                      : "h-0"
+                  } justify-between overflow-y-scroll rounded-md transition-all ease-in-out`}
+                >
+                  <ul
+                    className={`flex w-full flex-col items-end justify-center break-all`}
+                  >
+                    {/* /api/logs/generate/bin-report?category=${page.category}&rackName=${page.rackName} 
+                    https://rpg-distribution-v2.vercel.app/scan/${v.bin.category}-${v.bin.rackName}${v.bin.row}${v.bin.shelfLevel}
+                    ${v.bin.category}-${v.bin.rackName}${v.bin.row}${v.bin.shelfLevel}
+                    */}
+                    <Barcode
+                      value={
+                        binButton.id === v.bin.binId
+                          ? `${v.bin.category}-${v.bin.rackName}${v.bin.row}-${v.bin.shelfLevel}`
+                          : ""
+                      }
+                    />
+                    {/* <li> 
+                      Date: {String(v.product?.dateInfo.date).slice(0, 10)}
+                    </li> */}
+                  </ul>
+                  <div className="flex min-w-fit gap-2">
+                    <select
+                      name={v.bin.binId}
+                      id={v.bin.binId}
+                      value={selectedBinIds[v.bin.binId] || "default"}
+                      onChange={(e) => {
+                        setSelectedBinIds((state) => ({
+                          ...state,
+                          [v.bin.binId]: e.target.value,
+                        }));
+                        if (e.target.value) {
+                          setBinButton((state) => {
+                            return {
+                              ...state,
+                              operation: "SWAP",
+                            };
+                          });
+                        }
+                      }}
+                      className={`${InputStyle} text-[.64rem]`}
+                    >
+                      <option value="default" disabled>
+                        Select Bin
+                      </option>
+                      {inventory
+                        .filter((value) => value.bin.binId !== v.bin.binId)
+                        .map((v, i) => {
+                          return (
+                            <option
+                              key={i}
+                              value={v.bin.binId}
+                            >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
+                          );
+                        })}
+                    </select>
+                    {v.bin.binId === binButton.id && (
+                      <div>
+                        <MdMoveDown
+                          type="button"
+                          size={50}
+                          onClick={(e) => {
+                            setPOs(v.product?.POs ?? []);
+                            setMoveDamageForm({
+                              ...moveDamageForm,
+                              open: true,
+                              binId: v.bin.binId,
+                              count: v.bin.count,
+                            });
+                          }}
+                          className={`relative ${
+                            moveDamageProduct ? "animate-emerge" : "hidden"
+                          }   hover:text-red-500`}
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      className={buttonStyleSubmit}
+                      onClick={() => {
+                        setSelectedBinIds((state) => ({
+                          ...state,
+                          [v.bin.binId]: "",
+                        }));
+
                         setBinButton((state) => {
                           return {
                             ...state,
-                            operation: "SWAP",
+                            id: "",
+                            operation: "CANCEL",
                           };
                         });
-                      }
-                    }}
-                    className={`${InputStyle} text-[.64rem]`}
-                  >
-                    <option value="default" disabled>
-                      Select Bin
-                    </option>
-                    {inventory
-                      .filter((value) => value.bin.binId !== v.bin.binId)
-                      .map((v, i) => {
-                        return (
-                          <option
-                            key={i}
-                            value={v.bin.binId}
-                          >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
-                        );
-                      })}
-                  </select>
-                  {v.bin.binId === binButton.id && (
-                    <div>
-                      <MdMoveDown
-                        type="button"
-                        size={50}
-                        onClick={(e) => {
-                          setPOs(v.product?.POs ?? []);
-                          setMoveDamageForm({
-                            ...moveDamageForm,
-                            open: true,
-                            binId: v.bin.binId,
-                            count: v.bin.count,
-                          });
-                        }}
-                        className={`relative ${
-                          moveDamageProduct ? "animate-emerge" : "hidden"
-                        }   hover:text-red-500`}
-                      />
-                    </div>
-                  )}
-
-                  <button
-                    className={buttonStyleSubmit}
-                    onClick={() => {
-                      setSelectedBinIds((state) => ({
-                        ...state,
-                        [v.bin.binId]: "",
-                      }));
-
-                      setBinButton((state) => {
-                        return {
-                          ...state,
-                          id: "",
-                          operation: "CANCEL",
-                        };
-                      });
-                    }}
-                  >
-                    Remove
-                  </button>
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
 
       <div
@@ -348,7 +394,7 @@ export default function BinInventory({}: BinInventoryProps) {
           }}
         />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -499,7 +545,7 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
 
   const [isButtonEnable, setIsButtonEnable] = useState(true);
   return (
-    <div className="flex w-fit gap-2 p-2 uppercase text-black">
+    <div className="flex w-fit gap-2 uppercase">
       <div className="flex gap-2">
         <select
           name="category"
@@ -536,9 +582,6 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
         </button>
       </div>
       <div className="flex gap-2">
-        {/* <label htmlFor="rackName" className="text-xs">
-          Find RackName
-        </label> */}
         <select
           name="rackName"
           id="rackName"
@@ -575,6 +618,15 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
         >
           x
         </button>
+      </div>
+
+      <div className="flex w-40 gap-1">
+        <h1 className="flex w-full items-center justify-center rounded-md border border-black">
+          {page.row}
+        </h1>
+        <h1 className="flex w-full items-center justify-center rounded-md border border-black">
+          {page.shelfLevel}
+        </h1>
       </div>
 
       {states.inventoryActionState.isOpen && (
@@ -659,51 +711,6 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
               "Move Products"
             )}
           </button>
-          {/* 
-          <button
-            id="swapProducts"
-            type="submit"
-            onClick={() => {
-              setLoading((state: { [key: string]: boolean }) => ({
-                ...state,
-                swapProducts: true,
-              }));
-
-              fetch("/api/inventory/bins/swap-products", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ page, selectedBinIds }),
-              })
-                .then(async (res) => {
-                  const data = await res.json();
-                  alert(data);
-                })
-                .finally(() => {
-                  setLoading((state: { [key: string]: boolean }) => ({
-                    ...state,
-                    swapProducts: false,
-                  }));
-                  setSelectedBinIds({});
-                  mutate(
-                    `/api/inventory/bins/find?category=${page.category}&rackName=${page.rackName}`
-                  );
-                });
-            }}
-            className={`${buttonStyleSubmit} row-span-2 flex items-center justify-center uppercase`}
-          >
-            {loading["swapProducts"] ? (
-              <AiOutlineLoading className="animate-spin " size={30} />
-            ) : (
-              "Swap Products"
-            )}
-          </button> */}
-
-          {/* <button
-            onClick={() => setSelectedBinIds({})}
-            className={`${buttonStyleSubmit} row-span-2 flex items-center justify-center uppercase`}
-          >
-            Clear Selected
-          </button> */}
         </div>
       )}
 
@@ -929,109 +936,3 @@ function MoveDamageProduct({ states }: MoveDamageProductProps) {
     </form>
   );
 }
-
-// <div
-//   ref={(el) => (elementRefs.current[i] = el)}
-//   key={v.bin.binId}
-//   data-id={i}
-//   onClick={() => {
-//     const barcodeId = v.product?.barcodeId ?? "";
-//     navigator.clipboard
-//       .writeText(barcodeId)
-//       .then(() => console.log("text copied!"))
-//       .catch((e) => console.log(e));
-//     setSelectBinId(
-//       selectBinId !== v.bin.binId ? v.bin.binId : ""
-//     );
-//   }}
-//   className={`
-//     ${selectBinId === v.bin.binId ? "h-28" : ""}
-//   ${
-//     moveDamageProduct ||
-//     (inventoryActionState.isOpen && !moveDamageProduct)
-//       ? "grid-cols-3"
-//       : "h-12 grid-cols-2"
-//   } grid  w-full flex-none rounded-md bg-white uppercase shadow-md transition-all hover:bg-sky-300`}
-// >
-//   <h1 className="flex items-center justify-center border border-black  text-center">{`Rack: ${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</h1>
-//   <h1 className="flex items-center justify-center  border border-black text-center">
-//     Count: {v.bin.count}
-//   </h1>
-
-// {visibleButtons[i] && (
-//   <div
-//     className={`
-
-//        ${selectBinId === v.bin.binId ? "h-28" : ""}
-//       ${
-//         moveDamageProduct ||
-//         (inventoryActionState.isOpen && !moveDamageProduct)
-//           ? "row-span-2 h-12"
-//           : "hidden"
-//       } flex w-full items-center justify-center transition-all`}
-//     onClick={(e) => e.stopPropagation()}
-//   >
-//     <MdMoveDown
-//       type="button"
-//       size={50}
-//       onClick={(e) => {
-//         setPOs(v.product?.POs ?? []);
-//         setMoveDamageForm({
-//           ...moveDamageForm,
-//           open: true,
-//           binId: v.bin.binId,
-//           count: v.bin.count,
-//         });
-//       }}
-//       className={`relative ${
-//         moveDamageProduct ? "animate-emerge" : "hidden"
-//       }   hover:text-white`}
-//     />
-
-//     <select
-//       name={v.bin.binId}
-//       id={v.bin.binId}
-//       value={selectedBinIds[v.bin.binId] || "default"}
-//       onChange={(e) =>
-//         setSelectedBinIds((state) => ({
-//           ...state,
-//           [v.bin.binId]: e.target.value,
-//         }))
-//       }
-//       className={`${InputStyle}
-//       ${
-//         inventoryActionState.isOpen && !moveDamageProduct
-//           ? "animate-emerge"
-//           : "hidden"
-//       }  text-[.64rem] `}
-//     >
-//       <option value="default" disabled>
-//         Select Bin
-//       </option>
-//       {inventory
-//         .filter((value) => value.bin.binId !== v.bin.binId)
-//         .map((v, i) => {
-//           return (
-//             <option
-//               key={i}
-//               value={v.bin.binId}
-//             >{`${v.bin.rackName}${v.bin.row}/${v.bin.shelfLevel}`}</option>
-//           );
-//         })}
-//     </select>
-//   </div>
-// )}
-
-//   <ul
-//     className={`${
-//       selectBinId === v.bin.binId
-//         ? "col-span-2 opacity-100"
-//         : "hidden"
-//     } col-span-1 flex flex-col  flex-wrap items-start justify-start gap-2 break-all  p-2 text-start transition duration-500`}
-//   >
-//     <li>Bin Id: {v.bin.binId}</li>
-//     <li>Product: {v.product?.productName}</li>
-//     <li>Category: {v.bin.category}</li>
-//   </ul>
-
-// </div>

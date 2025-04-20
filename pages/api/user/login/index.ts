@@ -4,6 +4,7 @@ import { comparePassword } from "@/lib/helper/bcrypt";
 import { createCookie } from "@/lib/helper/cookie";
 import { users as TUser } from "@prisma/client";
 import { findUser } from "@/lib/prisma/user";
+import { AuthProps } from "@/types/authTypes";
 
 type TOmitUser = Omit<TUser, "id" | "additional_Info">;
 
@@ -41,11 +42,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const token = createJwt({ id, role });
         createCookie(token, res);
 
-        const userData = {
+        const userData: AuthProps = {
           authenticated: true,
-          message: "login succesfully",
-          user: { id, role },
+          verifiedToken: {
+            role,
+            id,
+          },
         };
+        // const userData: AuthProps = {
+        //   authenticated: true,
+        //   message: "login succesfully",
+        //   user: { id, role },
+        // };
         console.log(userData);
         return res.status(200).json(userData);
       } catch (e) {

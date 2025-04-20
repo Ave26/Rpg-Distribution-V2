@@ -33,18 +33,20 @@ export default function DamageBin() {
   });
 
   return (
-    <div className="grid grid-cols-2">
+    <div className="flex w-full flex-col bg-white">
       {/* <button className={buttonStyleEdge}>Create Damage Category</button> */}
-      <div className="w-1/2">
+      <div className="h-fit">
+        <h1 className="p-2 font-bold uppercase">Create Racks</h1>
         <Form
           damageBin={damageBin}
           setDamageBin={setDamageBin}
           categories={categories}
         />
       </div>
-      <div className="grid grid-flow-row grid-cols-2 rounded-md border border-black p-2">
+      <div className="grid grid-flow-row grid-cols-2 rounded-md">
+        <h1 className="p-2 font-bold uppercase">Create Category</h1>
         <CategoryForm />
-        <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll border border-b-0 border-r-0 border-t-0 border-black p-2">
+        <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll  border-b-0 border-r-0 border-t-0 p-2">
           <ViewCategories categories={categories} />
         </div>
       </div>
@@ -64,7 +66,7 @@ function Form({ damageBin, setDamageBin, categories }: FormProps) {
   const { category, ...rest } = damageBin;
   return (
     <form
-      className="flex flex-col gap-2 p-2"
+      className="flex gap-2 p-1"
       onSubmit={(e) => {
         e.preventDefault();
         setLoading(true);
@@ -78,7 +80,7 @@ function Form({ damageBin, setDamageBin, categories }: FormProps) {
         });
       }}
     >
-      <div className="flex gap-2">
+      <div className="flex w-full gap-2">
         <select
           name={category}
           value={category}
@@ -143,15 +145,17 @@ function Form({ damageBin, setDamageBin, categories }: FormProps) {
         );
       })}
 
-      <button className={buttonStyleSubmit}>
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <Loading />
-          </div>
-        ) : (
-          "submit"
-        )}
-      </button>
+      <div className="w-fit">
+        <button className={buttonStyleSubmit}>
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <Loading />
+            </div>
+          ) : (
+            "submit"
+          )}
+        </button>
+      </div>
     </form>
   );
 }
@@ -161,7 +165,7 @@ function CategoryForm() {
   const [loading, setLoading] = useState(false);
   return (
     <form
-      className="col-span-2 flex gap-2 p-2"
+      className="col-span-2 flex h-fit w-fit gap-2 p-1"
       onSubmit={(e) => {
         e.preventDefault();
         setLoading(true);
@@ -219,8 +223,10 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
               key={category}
             >
               <div className="flex w-full justify-between">
-                <li>{category}</li>
-                <h1>{count}</h1>
+                <ul className="w-full">{category}</ul>
+                <div className="w-40">
+                  <h1>Product Quantity {count}</h1>
+                </div>
               </div>
               <button
                 onClick={() => {

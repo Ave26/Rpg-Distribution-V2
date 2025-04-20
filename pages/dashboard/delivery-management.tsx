@@ -10,7 +10,7 @@ import Location from "@/components/DeliveryMangement/Location/Location";
 import { AiOutlineLoading } from "react-icons/ai";
 
 export default function DeliveryManagement() {
-  const { globalState } = useMyContext();
+  const { globalState, states } = useMyContext();
   const role = globalState?.verifiedToken?.role;
   console.log(role);
   const [selectedButton, setSelectedButton] = useState<TSelectedBTN>("Empty");
@@ -32,12 +32,13 @@ export default function DeliveryManagement() {
       setSelectedButton("Truck Management");
   }, [role]);
 
-  const renderComponent = componentMapping[selectedButton];
+  const renderComponent =
+    componentMapping[states?.deliveryAction ?? "Truck Management"];
 
   /* flex h-full w-full flex-col items-start justify-start gap-2 */
-  return (
-    <section className="h-full w-full bg-slate-300">
-      <div className="flex min-h-[9.2%] w-full justify-start gap-2 bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]">
+
+  {
+    /* <div className="flex min-h-[9.2%] w-full justify-start gap-2 bg-white p-2 sm:h-[11.5%] lg:h-[12.5%]">
         <DeliveryManagementButtonSelection
           role={role}
           states={{
@@ -45,11 +46,14 @@ export default function DeliveryManagement() {
             setSelectedButton,
           }}
         />
-      </div>
-      <div className="flex max-h-[90.8%] flex-col gap-2 p-2 sm:h-[88.5%] sm:flex-row lg:h-[87.5%]">
+      </div> */
+  }
+  return (
+    <>
+      <section className="flex  flex-col gap-2 overflow-x-hidden overflow-y-scroll p-2">
         {renderComponent}
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 

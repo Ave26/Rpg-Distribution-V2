@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import Layout from "@/components/layout";
 import ReusableButton from "@/components/Parts/ReusableButton";
 
@@ -8,23 +8,27 @@ import DashboardLayout from "@/components/Admin/dashboardLayout";
 import { buttonStyleEdge, buttonStyleSubmit } from "@/styles/style";
 import DamageBin from "@/components/PalleteLocation/DamageBin";
 import Bin from "@/components/PalleteLocation/Bin";
+import { useMyContext } from "@/contexts/AuthenticationContext";
 
 type BinType = "Bin" | "Damage Bin";
 
 export default function PalleteLocation() {
-  const [binType, setBinType] = useState<BinType>("Bin");
+  const { states } = useMyContext();
+  // const [binType, setBinType] = useState<BinType>("Bin");
+
+  //  setBinType={setBinType} binType={binType}
   return (
-    <section className="flex h-full w-full flex-col gap-2 rounded-md bg-white p-2 font-bold">
-      <div className="grid h-fit w-full grid-flow-col gap-2">
-        <SelectionView setBinType={setBinType} binType={binType} />
-      </div>
-      <PalleteView binType={binType} />
+    <section className="flex h-full w-full flex-col gap-2 rounded-md p-2">
+      {/* <div className="grid h-fit w-full grid-flow-col gap-2">
+        <SelectionView />
+      </div> */}
+      <PalleteView binType={states?.binType} />
     </section>
   );
 }
 
 interface PalleteViewProps {
-  binType: BinType;
+  binType?: BinType;
 }
 
 function PalleteView({ binType }: PalleteViewProps) {
@@ -32,18 +36,25 @@ function PalleteView({ binType }: PalleteViewProps) {
     Bin: <Bin />,
     "Damage Bin": <DamageBin />,
   };
-  const materialize = binSelection[binType];
+  const materialize = binSelection[binType ?? "Bin"];
 
-  return <>{materialize}</>;
+  return <div className="flex h-full w-full gap-2">{materialize}</div>;
 }
 
-interface SelectionViewProps {
-  binType: BinType;
-  setBinType: React.Dispatch<React.SetStateAction<BinType>>;
-}
+// interface SelectionViewProps {
+//   binType: BinType;
+//   setBinType: React.Dispatch<React.SetStateAction<BinType>>;
+// { setBinType, binType }: SelectionViewProps
+// }
 
-function SelectionView({ setBinType, binType }: SelectionViewProps) {
-  const buttonSelections: BinType[] = ["Bin", "Damage Bin"];
+export type BinTypes = ["Bin", "Damage Bin"];
+
+function SelectionView() {
+  // const buttonSelections: BinType[] = ["Bin", "Damage Bin"];
+  const { states } = useMyContext();
+
+  const buttonSelections: BinTypes = ["Bin", "Damage Bin"];
+
   return (
     <>
       {buttonSelections.map((name) => {
@@ -51,10 +62,10 @@ function SelectionView({ setBinType, binType }: SelectionViewProps) {
           <button
             key={name}
             onClick={() => {
-              setBinType(name);
+              states?.setBinType(name);
             }}
             className={`${buttonStyleEdge} ${
-              name === binType && "bg-slate-600 text-white"
+              name === states?.binType && "bg-slate-600 text-white"
             } `}
           >
             {name}

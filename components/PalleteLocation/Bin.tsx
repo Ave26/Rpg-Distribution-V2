@@ -8,6 +8,8 @@ import { mutate } from "swr";
 import { IoRemoveSharp } from "react-icons/io5";
 import Loading from "../Parts/Loading";
 import { AiOutlineLoading } from "react-icons/ai";
+import JsBarcode from "jsbarcode";
+import Barcode from "../Parts/Barcode";
 
 // <CreateRack /> *
 
@@ -30,7 +32,7 @@ interface ViewCategoriesProps {
 export default function Bin() {
   // const { categories } = useDamageCategories();
   const { categories } = useCategories();
-
+  const [rackLabel, setRackLabel] = useState<string>("");
   const [bin, setBin] = useState<Bin>({
     binQuantity: 0,
     shelf: 0,
@@ -39,20 +41,36 @@ export default function Bin() {
   });
 
   return (
-    <div className="grid grid-cols-2">
+    <div className="flex w-full flex-col bg-white">
       {/* <button className={buttonStyleEdge}>Create Damage Category</button> */}
-      <div className="w-1/2">
+
+      <div className="border border-black p-4">
+        <h1 className="mb-4 text-2xl font-bold">Generate Barcode for:</h1>
+        <Barcode value={rackLabel} />
+        <div className="mt-4">
+          <label className="block text-lg">Enter Rack and Bin:</label>
+          <input
+            type="text"
+            value={rackLabel}
+            onChange={(e) => setRackLabel(e.target.value)}
+            className="mt-2 w-full border p-2"
+          />
+        </div>
+      </div>
+      <div className="h-fit">
+        <h1 className="p-2 font-bold uppercase">Create Racks</h1>
         <Form bin={bin} setBin={setBin} categories={categories} />
       </div>
-      <div className="grid grid-flow-row grid-cols-2 rounded-md border border-black p-2">
+      <div className="grid grid-flow-row grid-cols-2 rounded-md">
+        <h1 className="p-2 font-bold uppercase">Create Category</h1>
         <CategoryForm />
 
-        <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll border border-b-0 border-r-0 border-t-0 border-black p-2">
+        <div className="col-span-2 row-span-6 flex h-[20em] flex-col gap-2 overflow-y-scroll  border-b-0 border-r-0 border-t-0 p-2">
           <ViewCategories categories={categories} />
         </div>
       </div>
 
-      {JSON.stringify(bin, null, 2)}
+      {/* {JSON.stringify(bin, null, 2)} */}
     </div>
   );
 }
@@ -62,7 +80,7 @@ function CategoryForm() {
   const [loading, setLoading] = useState(false);
   return (
     <form
-      className="col-span-2 flex gap-2 p-2"
+      className="col-span-2 flex h-fit gap-2 p-1"
       onSubmit={(e) => {
         e.preventDefault();
         setLoading(true);
@@ -79,27 +97,31 @@ function CategoryForm() {
           });
       }}
     >
-      <Input
-        attributes={{
-          input: {
-            id: category,
-            type: "text",
-            name: category,
-            value: category,
-            onChange: (e) => setCategory(e.target.value),
-          },
-          label: { htmlFor: category, children: "Category" },
-        }}
-      />
-      <button type="submit" className={buttonStyleSubmit}>
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <AiOutlineLoading className="animate-spin" size={30} />
-          </div>
-        ) : (
-          "submit"
-        )}
-      </button>
+      <div className="h-fit w-fit">
+        <Input
+          attributes={{
+            input: {
+              id: category,
+              type: "text",
+              name: category,
+              value: category,
+              onChange: (e) => setCategory(e.target.value),
+            },
+            label: { htmlFor: category, children: "Category" },
+          }}
+        />
+      </div>
+      <div className="w-fit">
+        <button type="submit" className={buttonStyleSubmit}>
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <AiOutlineLoading className="animate-spin" size={30} />
+            </div>
+          ) : (
+            "submit"
+          )}
+        </button>
+      </div>
     </form>
   );
 }
@@ -125,8 +147,10 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
             >
               <div className="flex w-full justify-between gap-2">
                 <div className="flex w-full justify-between">
-                  <li>{category}</li>
-                  <h1>{count}</h1>
+                  <ul className="w-full">{category}</ul>
+                  <div className="w-40">
+                    <h1>Product Quantity {count}</h1>
+                  </div>
                 </div>
 
                 <button
@@ -140,14 +164,18 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
                     });
                   }}
                 >
-                  <IoRemoveSharp className="transition-all hover:scale-150 active:scale-100" />
+                  <IoRemoveSharp
+                    className={`transition-all hover:scale-150 active:scale-100 ${
+                      selectCategoryId === id && "-rotate-90"
+                    }`}
+                  />
                 </button>
               </div>
 
               {selectCategoryId === id && (
-                <div className="flex w-full animate-emerge gap-2 transition-all">
+                <div className="flex w-full animate-emerge gap-2 pl-8 transition-all">
                   <h1 className="flex-none">Rack Names:</h1>
-                  <div className="flex w-full gap-2">
+                  <div className="flex w-full gap-2 ">
                     {rackNames.map((v, i) => (
                       <h1 key={i}>[{v}]</h1>
                     ))}
@@ -164,9 +192,11 @@ function ViewCategories({ categories }: ViewCategoriesProps) {
 function Form({ bin, categories, setBin }: FormProps) {
   const [loading, setLoading] = useState(false);
   const { category, rackName, ...rest } = bin;
+
+  console.log(`${rackName}-Bin-${rest.shelf}-${rest.binQuantity}`);
   return (
     <form
-      className="flex flex-col gap-2 p-2"
+      className="flex gap-2 p-1"
       onSubmit={(e) => {
         e.preventDefault();
         setLoading(true);
@@ -186,7 +216,7 @@ function Form({ bin, categories, setBin }: FormProps) {
         });
       }}
     >
-      <div className="flex gap-2">
+      <div className="flex w-full gap-2">
         <select
           name={category}
           value={category}
@@ -272,16 +302,17 @@ function Form({ bin, categories, setBin }: FormProps) {
           />
         );
       })}
-
-      <button className={buttonStyleSubmit}>
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <Loading />
-          </div>
-        ) : (
-          "submit"
-        )}
-      </button>
+      <div className="w-[20%]">
+        <button className={buttonStyleSubmit}>
+          {loading ? (
+            <div className="flex w-fit items-center justify-center">
+              <Loading />
+            </div>
+          ) : (
+            "submit"
+          )}
+        </button>
+      </div>
     </form>
   );
 }

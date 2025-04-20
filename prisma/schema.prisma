@@ -98,12 +98,14 @@ model categories {
   products products[]
 }
 
+// create a barcode id for bins and SO
 model bins {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   isAvailable       Boolean            @default(true)
   capacity          Int
   shelfLevel        Int
   row               Int
+  binBarcode        Int?
   version           Int                @default(0)
   status            SupplyLevelStatus?
   racks             racks              @relation(fields: [rackName], references: [name])

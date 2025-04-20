@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useReducer, useRef, useState } from "react";
 import ProStockV2 from "@/public/assets/Finally.png";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import Link from "next/link";
@@ -11,6 +11,13 @@ import { AiOutlineLoading } from "react-icons/ai";
 import Image from "next/image";
 
 import { Roboto } from "next/font/google";
+import { LogoutResponse } from "@/pages/api/user/logout";
+import { IoIosArrowBack } from "react-icons/io";
+import { RiHome2Line } from "react-icons/ri";
+import {
+  ButtonState,
+  DeliveryState,
+} from "@/pages/dashboard/inventory-management";
 
 const roboto = Roboto({
   subsets: ["latin"], // Choose subsets you need
@@ -22,10 +29,11 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { globalState } = useMyContext();
-  // console.log(globalState);
+  const { globalState, states } = useMyContext();
+  const DashBoard = states;
 
   const isAuthenticated = globalState?.authenticated as Boolean;
+
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.role;
   const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
@@ -51,9 +59,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       const isAuthorized = mapRoutes.some(
         (route) => route.path === currentPath
       );
-      if (!isAuthorized) {
-        router.push("/unauthorized");
-      }
+      // if (!isAuthorized) {
+      //   router.push("/unauthorized");
+      // }
     }
   }, [currentPath, mapRoutes, router]);
 
@@ -63,33 +71,150 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const renderAside = mappedAside[String(isAuthenticated)];
+  const [open, setOpen] = useState(false);
+  const [selected, setIsSelected] = useState("");
 
-  {
-    /* <div className="flex w-full items-center justify-start gap-0 overflow-y-hidden overflow-x-scroll rounded-md p-1 uppercase lg:flex-col lg:gap-5">
-          {renderAside} bg-gradient-to-tr from-[#5750D9] via-[#5363D9] to-[#4F75D8]
-          border-green flex h-full w-full flex-col border py-10 transition-all sm:p-16 lg:flex-row lg:gap-2
-        </div> */
-  }
+  // useEffect checker
+  useEffect(() => {
+    console.log(isAuthenticated);
+  }, [isAuthenticated]);
+  useEffect(() => {
+    console.log(role);
+  }, [role]);
+
+  useEffect(() => {
+    console.log(mapRoutes);
+  }, [mapRoutes]);
+
+  // flex h-full gap-2 transition-all sm:rounded-md sm:p-16
+
+  const ColorButtonSelected = "bg-blue-300";
+  const ColorButtonDeselected = "bg-[#edf0f7]";
 
   return (
-    <div
-      className={`${roboto.className} flex h-full gap-2 transition-all sm:rounded-md sm:p-16`}
-    >
-      {/* Entire Aside flex h-full flex-col items-center justify-start gap-3 bg-white lg:h-fit lg:gap-0 lg:p-0 */}
-      <div className="flex flex-col bg-white">
-        {/* Icon */}
-        <div
-          className="w-full items-center justify-center bg-gradient-to-r from-[#D9C611] via-[#F0DC05]  to-[#D9C611] 
-       p-2 lg:flex lg:pb-4"
-        >
-          <ProstockIcon />
-        </div>
-        <div
-          className={`flex h-full w-full flex-col items-center justify-start`}
-        >
-          {renderAside}
-        </div>
-        <LogoutButton />
+    <div className="flex h-full text-sm">
+      {/* navebar */}
+      <div
+        className={`${
+          DashBoard?.isActive ? "w-[15em]" : "w-0"
+        }  flex h-full  flex-col border bg-white shadow-inner transition-all duration-300 ease-in-out`}
+      >
+        {Array.isArray(mapRoutes) &&
+          mapRoutes.map(({ Icon, label, path, subMenu }, index) => {
+            return (
+              <div
+                key={index}
+                className={`w-full flex-col overflow-hidden transition-all duration-200 ease-in-out ${
+                  selected === label && selected !== "Picking And Packing"
+                    ? "max-h-96"
+                    : "max-h-14"
+                }`}
+              >
+                {/* Menu */}
+                <nav>
+                  <button
+                    onClick={() => {
+                      setIsSelected(label);
+                      if (selected === label) setIsSelected("");
+                      console.log(label);
+                      if (path === router.asPath) return;
+                      router.push(path);
+                    }}
+                    className={`flex h-14 w-full items-center justify-between p-1 ${
+                      label === "Picking And Packing"
+                        ? ColorButtonSelected
+                        : ColorButtonDeselected
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2 pl-4 font-semibold">
+                      <Icon className="text-sky-700" />
+                      <h1 className="whitespace-nowrap">{label}</h1>
+                    </div>
+
+                    <IoIosArrowBack
+                      className={`
+                        ${selected === label ? "-rotate-90" : "rotate-0"} 
+                        ${label === "Picking And Packing" && `hidden`} 
+                      
+                      
+                      transition-all`}
+                    />
+                  </button>
+                </nav>
+                {/* Sub Menu */}
+
+                {label === "Pallete Location" ? (
+                  <nav>
+                    {Array.isArray(subMenu) &&
+                      subMenu.map((menu) => {
+                        return (
+                          <button
+                            key={menu}
+                            onClick={() => {
+                              menu === "Bin"
+                                ? states?.setBinType("Bin")
+                                : states?.setBinType("Damage Bin");
+                            }}
+                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
+                              states?.binType === menu
+                                ? ColorButtonSelected
+                                : ColorButtonDeselected
+                            }`}
+                          >
+                            {menu}
+                          </button>
+                        );
+                      })}
+                  </nav>
+                ) : label === "Manage Inventory" ? (
+                  <nav>
+                    {Array.isArray(subMenu) &&
+                      subMenu.map((menu) => {
+                        return (
+                          <button
+                            key={menu}
+                            onClick={() => {
+                              states?.setInventoryAction(menu as ButtonState);
+                            }}
+                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
+                              states?.inventoryAction === menu
+                                ? ColorButtonSelected
+                                : ColorButtonDeselected
+                            }`}
+                          >
+                            {menu}
+                          </button>
+                        );
+                      })}
+                  </nav>
+                ) : label === "Manage Delivery" ? (
+                  <nav>
+                    {Array.isArray(subMenu) &&
+                      subMenu.map((menu) => {
+                        console.log(menu);
+                        return (
+                          <button
+                            key={menu}
+                            onClick={() => {
+                              states?.setDeliveryAction(menu as DeliveryState);
+                            }}
+                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
+                              states?.deliveryAction === menu
+                                ? ColorButtonSelected
+                                : ColorButtonDeselected
+                            }`}
+                          >
+                            {menu}
+                          </button>
+                        );
+                      })}
+                  </nav>
+                ) : (
+                  <>Lorem ipsum dolor sit</>
+                )}
+              </div>
+            );
+          })}
       </div>
 
       <div className="flex h-full w-full flex-col gap-1">
@@ -98,13 +223,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <AiOutlineLoading className="animate-spin" size={30} />
           </div>
         ) : (
-          /* [53.9em] */
           <main className="flex h-full w-full flex-col">{children}</main>
         )}
-        {/* <span
-          className="block h-full w-full rounded-b-md border 
-       border-black bg-gradient-to-r from-[#D9C611] via-[#F0DC05] to-[#D9C611]"
-        ></span> */}
       </div>
     </div>
   );
@@ -143,29 +263,12 @@ export function Aside({ mapRoutes, router }: AsideProps) {
   );
 }
 
-/*  <div
-                /* flex h-full w-full items-center justify-center hover:bg-[#FCD92C] 
-              
-              flex w-36 items-center justify-center p-2 text-[10px] font-black hover:border-cyan-400
-              */
-// className={`flex h-full items-center justify-center border text-center hover:bg-[#86B6F6] ${
-//   router.asPath === path ? linkStyle.select : linkStyle.unSelect
-// }`}
-
-//  className=" border hover:border-black"
-//  >
-//  {/* {label} */}
-// </div>
-
-function ProstockIcon() {
+export function ProstockIcon() {
   return (
     <>
-      <div className="relative w-[4em]">
-        <Image src={ProStockV2} alt={"rpg"} />
+      <div className="relative w-[2em]">
+        <Image src={ProStockV2} alt={"rpg"} priority />
       </div>
-      {/* <h1 className="flex h-fit w-fit items-center justify-center text-[11px] font-extrabold">
-        RPG-Prostock
-      </h1> */}
     </>
   );
 }
