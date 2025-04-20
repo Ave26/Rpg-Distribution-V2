@@ -47,19 +47,26 @@ export async function handler(
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const inventoryPage = req.query;
+  const inventoryPage = req.query as unknown as InventoryPage;
+
   console.log(inventoryPage);
+  const { row, shelfLevel, ...rest } = inventoryPage;
+  const transformPage = {
+    ...rest,
+    row: Number(row),
+    shelfLevel: Number(shelfLevel),
+  };
 
   let newCategoryPage: InventoryPage | {} = {};
 
-  if (isCategoryParams(inventoryPage)) {
+  if (isCategoryParams(transformPage)) {
     newCategoryPage = Object.fromEntries(
-      Object.entries(inventoryPage).filter(
+      Object.entries(transformPage).filter(
         ([_, value]) => value !== "default" && value !== 0
       ) // Keep only non-empty values
     );
   }
-
+  console.log(newCategoryPage);
   const bins = await prisma.bins
     .findMany({
       orderBy: [

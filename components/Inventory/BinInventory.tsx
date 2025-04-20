@@ -13,6 +13,7 @@ import Link from "next/link";
 import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
 import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
 import { HiDuplicate } from "react-icons/hi";
+import { CiCircleRemove } from "react-icons/ci";
 import { FaBorderAll } from "react-icons/fa";
 import Barcode from "../Parts/Barcode";
 
@@ -112,6 +113,7 @@ export default function BinInventory({}: BinInventoryProps) {
         const rack = secLevel.charAt(0);
         const shelfLevel = parseInt(secLevel.slice(1));
         const row = parseInt(r);
+        console.log(cat);
 
         setPage((prevState) => {
           return {
@@ -574,12 +576,6 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
               </option>
             ))}
         </select>
-        <button
-          onClick={() => setPage((prev) => ({ ...prev, category: "default" }))}
-          className="flex items-center justify-center transition-all hover:scale-125"
-        >
-          x
-        </button>
       </div>
       <div className="flex gap-2">
         <select
@@ -612,22 +608,29 @@ function OrganizeBinForm({ states }: OrganizeFormProps) {
                 );
               })}
         </select>
-        <button
-          onClick={() => setPage((prev) => ({ ...prev, rackName: "default" }))}
-          className="flex items-center justify-center transition-all hover:scale-125"
-        >
-          x
-        </button>
       </div>
+      <button
+        onClick={() =>
+          setPage({
+            category: "default",
+            rackName: "default",
+            row: 0,
+            shelfLevel: 0,
+          })
+        }
+        className="flex scale-125 items-center justify-center transition-all hover:scale-150"
+      >
+        <CiCircleRemove />
+      </button>
 
-      <div className="flex w-40 gap-1">
+      {/* <div className="flex w-40 gap-1">
         <h1 className="flex w-full items-center justify-center rounded-md border border-black">
           {page.row}
         </h1>
         <h1 className="flex w-full items-center justify-center rounded-md border border-black">
           {page.shelfLevel}
         </h1>
-      </div>
+      </div> */}
 
       {states.inventoryActionState.isOpen && (
         <div className="grid grid-cols-2 gap-2">
