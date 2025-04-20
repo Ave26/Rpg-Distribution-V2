@@ -146,7 +146,7 @@ function BarcodeScan({ states }: BarcodeScanProps) {
             // alert(error);
           })
           .finally(() => setLoading(false));
-      }, 500);
+      }, 10);
 
       return () => {
         clearTimeout(debounce);
