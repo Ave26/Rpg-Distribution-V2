@@ -42,7 +42,6 @@ function Barcode({ value }: BarcodeProps) {
   return value.trim() !== "" ? (
     <>
       <svg ref={barcodeRef} />
-      {/* <Image src={barcodeImage} alt={"asdasd"} width={100} height={100} /> */}
     </>
   ) : (
     <div>No Barcode Available</div>

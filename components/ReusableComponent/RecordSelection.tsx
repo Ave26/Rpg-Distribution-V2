@@ -8,6 +8,8 @@ import { TToast } from "../PickingAndPackingRole/Toast";
 import { ReportDamageProduct } from "../PickingAndPackingRole/StaffUI/RecordsView";
 import OrderedProduct from "../PickingAndPackingRole/StaffUI/OrderedProduct";
 import { useMyContext } from "@/contexts/AuthenticationContext";
+import { useEffect, useState } from "react";
+import Barcode from "../Parts/Barcode";
 // import {  } from "@prisma/client";
 type TRecordSelectionProps = {
   data: TData;
@@ -29,11 +31,13 @@ type States = {
 
 export default function RecordSelection({ data }: TRecordSelectionProps) {
   const { record } = data;
+
   return (
     <>
       <div className="flex items-center justify-between gap-[.5px] border border-dotted border-red-600 p-2 uppercase">
         <ul className="text-lg">
           Sales Order: {record.SO} (batch {record.batchNumber})
+          <Barcode value={`${record.SO}${record.batchNumber}`} />
         </ul>
         <div className="flex  items-center justify-center gap-2">
           <ul>Destination: {record.locationName}</ul>

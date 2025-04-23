@@ -5,28 +5,23 @@ import prisma from "@/lib/prisma";
 
 import { authMiddleware } from "../../authMiddleware";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
-import {
-  InventoryBins,
-  InventoryPage,
-  isCategoryParams,
-} from "../../inventory/bins/find";
+import { InventoryBins, InventoryPage } from "../../inventory/bins/find";
 import { Prisma } from "@prisma/client";
 
 export default authMiddleware(
   async (req: NextApiRequest, res: NextApiResponse) => {
-    const inventoryPage = req.query;
+    const inventoryPage = req.query as unknown as InventoryPage;
     let newCategoryPage:
       | InventoryPage
       | Partial<Prisma.binLogReportCreateInput> = {};
 
-    if (isCategoryParams(inventoryPage)) {
-      // Use Object.entries to filter out empty values
-      newCategoryPage = Object.fromEntries(
-        Object.entries(inventoryPage).filter(
-          ([_, value]) => value !== "default"
-        ) // Keep only non-empty values
-      );
-    }
+    console.log(inventoryPage);
+
+    newCategoryPage = Object.fromEntries(
+      Object.entries(inventoryPage).filter(([_, value]) => value !== "default") // Keep only non-empty values
+    );
+
+    console.log(newCategoryPage);
 
     try {
       const bins = await prisma.bins
@@ -37,7 +32,16 @@ export default authMiddleware(
             { row: "asc" },
             { shelfLevel: "asc" },
           ],
-          where: { ...newCategoryPage, assignedProducts: { some: {} } },
+          where: {
+            ...newCategoryPage,
+            assignedProducts: {
+              some: {
+                status: { in: ["Default", "Queuing"] },
+                damageBinsId: { isSet: false },
+                quality: "Good",
+              },
+            },
+          },
 
           select: {
             _count: {
@@ -131,6 +135,7 @@ export default authMiddleware(
             };
           });
         });
+
       const pdfStream = await renderToStream(<BinDocument inventory={bins} />);
 
       await prisma.binLogReport

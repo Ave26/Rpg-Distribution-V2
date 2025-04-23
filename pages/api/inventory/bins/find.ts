@@ -59,13 +59,12 @@ export async function handler(
 
   let newCategoryPage: InventoryPage | {} = {};
 
-  if (isCategoryParams(transformPage)) {
-    newCategoryPage = Object.fromEntries(
-      Object.entries(transformPage).filter(
-        ([_, value]) => value !== "default" && value !== 0
-      ) // Keep only non-empty values
-    );
-  }
+  newCategoryPage = Object.fromEntries(
+    Object.entries(transformPage).filter(
+      ([_, value]) => value !== "default" && value !== 0
+    )
+  ); // Keep only non-empty values
+
   console.log(newCategoryPage);
   const bins = await prisma.bins
     .findMany({

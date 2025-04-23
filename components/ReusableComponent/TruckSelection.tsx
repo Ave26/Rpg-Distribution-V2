@@ -34,10 +34,10 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
 
   return (
     <>
-      {Array.isArray(trucks) &&
-        trucks?.map((truck, key) => {
+      {Array.isArray(trucks) ? (
+        trucks.map((truck, key) => {
           return (
-            <>
+            <div key={key}>
               <SelectTruckId
                 states={{ selectedId, setSelectedId, truck, setToast, toast }}
               />
@@ -47,9 +47,12 @@ export default function TruckSelection({ states }: TTruckSelectionProps) {
                   states={{ selectedId, setToast, toast }}
                 />
               </div>
-            </>
+            </div>
           );
-        })}
+        })
+      ) : (
+        <Loading />
+      )}
       <Toast
         states={{
           setToast,

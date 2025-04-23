@@ -14,8 +14,13 @@ import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBorderAll } from "react-icons/fa";
 import Barcode from "../Parts/Barcode";
+import Link from "next/link";
 
-type Button = "Move Damage Product" | "Print Inventory" | "Organize Bin";
+type Button =
+  | "Move Damage Product"
+  | "Print Inventory"
+  | "Organize Bin"
+  | "Generate Barcode";
 interface BinInventoryProps {}
 
 export type MoveDamageForm = {
@@ -182,11 +187,37 @@ export default function BinInventory({}: BinInventoryProps) {
                     </ul>
 
                     <div className="z-0 row-span-3">
-                      {/* <div className="">
-                        <Barcode
-                          value={`${v.bin.category}-${v.bin.rackName}${v.bin.row}${v.bin.shelfLevel}`}
-                        />
-                      </div> */}
+                      {/* <button
+                        onClick={() => {
+                          const barcode = `${v.bin.category}${v.bin.rackName}-${v.bin.row}/${v.bin.shelfLevel}`;
+
+                          console.log(v.bin.category);
+
+                          fetch("/api/PDF/barcode", {
+                            method: "POST",
+                            headers: { "Content-Type": "Application/json" },
+                            body: JSON.stringify(barcode),
+                          })
+                            .then(async (res) => {
+                              const blob = await res.blob();
+                              const url = URL.createObjectURL(blob);
+                              const link = document.createElement("a");
+                              link.href = url;
+                              link.download = `Order_Report_bins_download_${Math.random()}.pdf`;
+                              link.click();
+                              URL.revokeObjectURL(url);
+                            })
+                            .catch((e) => {
+                              console.error(e);
+                            })
+                            .finally(() => {
+                              // setLoadingButton(null);
+                            });
+                        }}
+                      >
+                        download barcode
+                      </button> */}
+
                       <p className="break-all text-end text-xs">
                         Date: {String(v.product?.dateInfo.date).slice(0, 10)}
                       </p>
@@ -283,11 +314,7 @@ export default function BinInventory({}: BinInventoryProps) {
                     ${v.bin.category}-${v.bin.rackName}${v.bin.row}${v.bin.shelfLevel}
                     */}
                     <Barcode
-                      value={
-                        binButton.id === v.bin.binId
-                          ? `${v.bin.category}-${v.bin.rackName}${v.bin.row}-${v.bin.shelfLevel}`
-                          : ""
-                      }
+                      value={`${v.bin.category}${v.bin.rackName}-${v.bin.row}/${v.bin.shelfLevel}`}
                     />
                     {/* <li> 
                       Date: {String(v.product?.dateInfo.date).slice(0, 10)}
@@ -424,6 +451,7 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
     "Move Damage Product",
     "Print Inventory",
     "Organize Bin",
+    "Generate Barcode",
   ];
 
   const renderIcon = (buttonName: string) => {
@@ -486,6 +514,32 @@ function BinActionButtons({ states }: BinActionButtonsProp) {
                       ...state,
                       isOpen: !inventoryActionState.isOpen,
                     }));
+                  },
+                  "Generate Barcode": () => {
+                    setLoadingButton(buttonName);
+                    console.log("click", {
+                      method: "POST",
+                      headers: { "Content-Type": "Application/json" },
+                      body: JSON.stringify(21313123),
+                    });
+                    fetch(
+                      `/api/PDF/barcode?category=${page.category}&rackName=${page.rackName}`
+                    )
+                      .then(async (res) => {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `Order_Report_bins_download_${Math.random()}.pdf`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                      })
+                      .catch((e) => {
+                        console.error(e);
+                      })
+                      .finally(() => {
+                        setLoadingButton(null);
+                      });
                   },
                 };
 

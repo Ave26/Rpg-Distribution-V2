@@ -177,6 +177,8 @@ function Records({ truck, states }: RecordsProps) {
                 states={{ reportDamageForm, setReportDamageForm }}
               />
 
+              {/* BUTTONS */}
+
               {role === "DRIVER" && (
                 <div className="sticky bottom-0 flex gap-2">
                   {openRecordId === r.id ? (
