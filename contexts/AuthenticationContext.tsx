@@ -3,6 +3,7 @@ import {
   DeliveryState,
 } from "@/pages/dashboard/inventory-management";
 import { AuthProps } from "@/types/authTypes";
+import { TRole } from "@/types/roleTypes";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface MyContextType {
@@ -11,12 +12,20 @@ interface MyContextType {
   states?: {
     isActive: boolean;
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
-    binType: "Bin" | "Damage Bin";
-    setBinType: React.Dispatch<React.SetStateAction<"Bin" | "Damage Bin">>;
+    binAction: "Bin" | "Damage Bin";
+    setBinAction: React.Dispatch<React.SetStateAction<"Bin" | "Damage Bin">>;
     inventoryAction: ButtonState;
     setInventoryAction: React.Dispatch<React.SetStateAction<ButtonState>>;
     deliveryAction: DeliveryState;
     setDeliveryAction: React.Dispatch<React.SetStateAction<DeliveryState>>;
+    menuAction: {
+      label: string;
+    };
+    setMenuAction: React.Dispatch<
+      React.SetStateAction<{
+        label: string;
+      }>
+    >;
   };
 }
 
@@ -30,11 +39,20 @@ export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setGlobalState(newValue);
   };
 
-  const [isActive, setIsActive] = useState(true);
-  const [binType, setBinType] = useState<"Bin" | "Damage Bin">("Bin");
+  const [isActive, setIsActive] = useState(false);
+  const [binAction, setBinAction] = useState<"Bin" | "Damage Bin">("Bin");
   const [inventoryAction, setInventoryAction] = useState<ButtonState>("Bin");
   const [deliveryAction, setDeliveryAction] =
     useState<DeliveryState>("Truck Management");
+
+  const [subMenuAction, setSubmenuAction] = useState<{
+    label: string;
+    menu: string;
+  }>({ label: "", menu: "" });
+
+  const [menuAction, setMenuAction] = useState({
+    label: "",
+  });
 
   return (
     <MyContext.Provider
@@ -42,10 +60,12 @@ export const MyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         globalState,
         updateGlobalState,
         states: {
+          menuAction,
+          setMenuAction,
           isActive,
           setIsActive,
-          binType,
-          setBinType,
+          binAction,
+          setBinAction,
           inventoryAction,
           setInventoryAction,
           deliveryAction,

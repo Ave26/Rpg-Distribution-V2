@@ -1,23 +1,18 @@
-import { NextRouter, useRouter } from "next/router";
-import { SetStateAction, useEffect, useReducer, useRef, useState } from "react";
-import ProStockV2 from "@/public/assets/Finally.png";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import Link from "next/link";
-import { TEndPoints, TRole, TRoleToRoutes } from "@/types/roleTypes";
-import { linkStyle } from "@/styles/style";
+import { TRole } from "@/types/roleTypes";
 import { roleToRoutes } from "../RoleBaseRoutes";
-import LogoutButton from "../Parts/LogoutButton";
 import { AiOutlineLoading } from "react-icons/ai";
 import Image from "next/image";
 
 import { Roboto } from "next/font/google";
-import { LogoutResponse } from "@/pages/api/user/logout";
 import { IoIosArrowBack } from "react-icons/io";
-import { RiHome2Line } from "react-icons/ri";
 import {
-  ButtonState,
-  DeliveryState,
-} from "@/pages/dashboard/inventory-management";
+  BsLayoutSidebarInset,
+  BsLayoutSidebarInsetReverse,
+} from "react-icons/bs";
 
 const roboto = Roboto({
   subsets: ["latin"], // Choose subsets you need
@@ -32,12 +27,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { globalState, states } = useMyContext();
   const DashBoard = states;
 
-  const isAuthenticated = globalState?.authenticated as Boolean;
-
   const router = useRouter();
   const role: string | undefined = globalState?.verifiedToken?.role;
+
   const mapRoutes = roleToRoutes[role as TRole]; // Role key to redirect on authorized page
-  const currentPath = router.asPath;
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -54,221 +47,236 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     };
   }, [router]);
 
-  useEffect(() => {
-    if (mapRoutes) {
-      const isAuthorized = mapRoutes.some(
-        (route) => route.path === currentPath
-      );
-      // if (!isAuthorized) {
-      //   router.push("/unauthorized");
-      // }
-    }
-  }, [currentPath, mapRoutes, router]);
-
-  const mappedAside: Record<string, JSX.Element> = {
-    true: <Aside mapRoutes={mapRoutes} router={router} />,
-    false: <AiOutlineLoading className="animate-spin" size={30} />,
-  };
-
-  const renderAside = mappedAside[String(isAuthenticated)];
-  const [open, setOpen] = useState(false);
-  const [selected, setIsSelected] = useState("");
-
-  // useEffect checker
-  useEffect(() => {
-    console.log(isAuthenticated);
-  }, [isAuthenticated]);
-  useEffect(() => {
-    console.log(role);
-  }, [role]);
-
-  useEffect(() => {
-    console.log(mapRoutes);
-  }, [mapRoutes]);
-
-  // flex h-full gap-2 transition-all sm:rounded-md sm:p-16
-
-  const ColorButtonSelected = "bg-blue-300";
-  const ColorButtonDeselected = "bg-[#edf0f7]";
-
   return (
-    <div className="flex h-full text-sm">
-      {/* navebar */}
+    <div className="flex h-full gap-1 p-1 transition-all">
       <div
-        className={`${
-          DashBoard?.isActive ? "w-[15em]" : "w-0"
-        }  flex h-full  flex-col border bg-white shadow-inner transition-all duration-300 ease-in-out`}
+        className={` 
+        ${DashBoard?.isActive ? "pb-[3.5px]" : ""} flex h-full
+        w-fit items-center justify-start rounded-lg bg-gradient-to-b from-yellow-400 via-orange-400 to-orange-600 pl-[3.5px] transition-all`}
       >
-        {Array.isArray(mapRoutes) &&
-          mapRoutes.map(({ Icon, label, path, subMenu }, index) => {
-            return (
-              <div
-                key={index}
-                className={`w-full flex-col overflow-hidden transition-all duration-200 ease-in-out ${
-                  selected === label && selected !== "Picking And Packing"
-                    ? "max-h-96"
-                    : "max-h-14"
-                }`}
-              >
-                {/* Menu */}
-                <nav>
-                  <button
-                    onClick={() => {
-                      setIsSelected(label);
-                      if (selected === label) setIsSelected("");
-                      console.log(label);
-                      if (path === router.asPath) return;
-                      router.push(path);
+        <div
+          className={`
+          ${DashBoard?.isActive ? "w-[14em]" : "w-fit"}
+          flex h-full flex-col items-start justify-start gap-1 rounded-lg bg-white p-1 transition-all`}
+        >
+          {Array.isArray(mapRoutes) &&
+            mapRoutes.map(({ Icon, label, path, subMenu, basePath }, index) => {
+              if (!basePath) {
+                basePath = "";
+              }
+              console.log(label);
+
+              return (
+                <nav
+                  key={index}
+                  className={`
+                  ${DashBoard?.isActive ? "w-full" : "w-[3em]"}
+                  flex h-fit flex-col rounded-lg
+                  border transition-all`}
+                >
+                  <Link
+                    href={basePath}
+                    passHref
+                    onClick={(e) => {
+                      if (
+                        label === "MANAGE PRODUCT" ||
+                        label === "MANAGE RACK" ||
+                        label === "MANAGE INVENTORY"
+                      ) {
+                        e.preventDefault();
+                      } else if (router.asPath === basePath) {
+                        e.preventDefault();
+                      }
+
+                      states?.setMenuAction({
+                        label: states.menuAction.label === label ? "" : label,
+                      });
                     }}
-                    className={`flex h-14 w-full items-center justify-between p-1 ${
-                      label === "Picking And Packing"
-                        ? ColorButtonSelected
-                        : ColorButtonDeselected
-                    }`}
+                    className={`
+                      ${
+                        states?.menuAction.label === label ||
+                        basePath === router.asPath
+                          ? "rounded-b-none bg-[#FEECCF]"
+                          : "bg-white"
+                      }
+                      flex
+                      h-fit w-full
+                      items-center
+                      justify-start overflow-hidden
+                      rounded-lg
+                      transition-all`}
                   >
-                    <div className="flex items-center justify-center gap-2 pl-4 font-semibold">
-                      <Icon className="text-sky-700" />
-                      <h1 className="whitespace-nowrap">{label}</h1>
-                    </div>
+                    <Icon className="h-full w-[3em] flex-shrink-0 scale-[50%] font-bold" />
+
+                    <h1 className="flex h-full w-[60%] items-center justify-start whitespace-nowrap rounded-lg p-1 text-xs font-bold uppercase">
+                      {label}
+                    </h1>
 
                     <IoIosArrowBack
                       className={`
-                        ${selected === label ? "-rotate-90" : "rotate-0"} 
-                        ${label === "Picking And Packing" && `hidden`} 
-                      
-                      
-                      transition-all`}
+                        ${
+                          states?.menuAction.label === label
+                            ? "-rotate-90"
+                            : "rotate-0"
+                        } 
+                        ${
+                          label === "PICKING AND PACKING" && `hidden`
+                        } h-full w-[3em] scale-[50%] font-bold transition-all`}
                     />
-                  </button>
-                </nav>
-                {/* Sub Menu */}
+                  </Link>
 
-                {label === "Pallete Location" ? (
-                  <nav>
-                    {Array.isArray(subMenu) &&
-                      subMenu.map((menu) => {
-                        return (
-                          <button
-                            key={menu}
-                            onClick={() => {
-                              menu === "Bin"
-                                ? states?.setBinType("Bin")
-                                : states?.setBinType("Damage Bin");
-                            }}
-                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
-                              states?.binType === menu
-                                ? ColorButtonSelected
-                                : ColorButtonDeselected
-                            }`}
+                  {Array.isArray(subMenu) &&
+                    subMenu.map((menu, index) => {
+                      console.log(!!subMenu[subMenu.length - 1]);
+                      return (
+                        <Link
+                          passHref
+                          key={index}
+                          href={`${basePath}/${menu.path}`}
+                          onClick={(e) => {
+                            if (router.asPath === `${basePath}/${menu.path}`) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
+                          className={`
+                              ${
+                                states?.menuAction.label === label ||
+                                `${basePath}/${menu.path}` === router.asPath
+                                  ? "h-10"
+                                  : "h-0"
+                              }
+
+                              ${
+                                `${basePath}/${menu.path}` === router.asPath
+                                  ? "bg-slate-500 text-white"
+                                  : "bg-[#ffe2b3a7]"
+                              }
+                              ${
+                                index === subMenu.length - 1
+                                  ? "rounded-b-lg"
+                                  : ""
+                              }
+                              flex
+                              gap-1
+                              overflow-hidden
+                              transition-all
+                              `}
+                        >
+                          <div
+                            className={`${
+                              DashBoard?.isActive && "hidden"
+                            } flex h-[3em] w-[3em] flex-shrink-0 items-center justify-center rounded-lg`}
                           >
-                            {menu}
-                          </button>
-                        );
-                      })}
-                  </nav>
-                ) : label === "Manage Inventory" ? (
-                  <nav>
-                    {Array.isArray(subMenu) &&
-                      subMenu.map((menu) => {
-                        return (
-                          <button
-                            key={menu}
-                            onClick={() => {
-                              states?.setInventoryAction(menu as ButtonState);
-                            }}
-                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
-                              states?.inventoryAction === menu
-                                ? ColorButtonSelected
-                                : ColorButtonDeselected
-                            }`}
+                            <menu.Icon className="h-5 w-5" />
+                          </div>
+                          <h1
+                            className={`${
+                              DashBoard?.isActive && "justify-end"
+                            } flex h-full w-full items-center  whitespace-nowrap rounded-lg p-2 text-xs font-bold uppercase`}
                           >
-                            {menu}
-                          </button>
-                        );
-                      })}
-                  </nav>
-                ) : label === "Manage Delivery" ? (
-                  <nav>
-                    {Array.isArray(subMenu) &&
-                      subMenu.map((menu) => {
-                        console.log(menu);
-                        return (
-                          <button
-                            key={menu}
-                            onClick={() => {
-                              states?.setDeliveryAction(menu as DeliveryState);
-                            }}
-                            className={`flex h-9 w-full items-center justify-start  rounded-br-md border-b-2  px-2 pl-14 ${
-                              states?.deliveryAction === menu
-                                ? ColorButtonSelected
-                                : ColorButtonDeselected
-                            }`}
-                          >
-                            {menu}
-                          </button>
-                        );
-                      })}
-                  </nav>
-                ) : (
-                  <>Lorem ipsum dolor sit</>
-                )}
-              </div>
-            );
-          })}
+                            {menu.label}
+                          </h1>
+                        </Link>
+                      );
+                    })}
+                </nav>
+              );
+            })}
+          {/* flex h-10 w-[13.] items-center justify-center rounded-lg border bg-[#FEECCF] */}
+          <div
+            className={`flex h-full w-full items-end justify-end rounded-lg transition-all`}
+          >
+            {states?.isActive ? (
+              <BsLayoutSidebarInset
+                className="h-fit w-[3em] flex-shrink-0 scale-[50%] font-bold"
+                onClick={() => {
+                  states?.setIsActive(false);
+                }}
+              />
+            ) : (
+              <BsLayoutSidebarInsetReverse
+                className="h-fit w-[3em] flex-shrink-0 scale-[50%] font-bold"
+                onClick={() => {
+                  states?.setIsActive(true);
+                }}
+              />
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* body */}
       <div className="flex h-full w-full flex-col gap-1">
         {isLoading ? (
-          <div className="relative flex h-full w-full animate-pulse items-center justify-center bg-slate-400">
+          <div className="relative flex h-full w-full animate-pulse items-center justify-center rounded-lg bg-slate-400">
             <AiOutlineLoading className="animate-spin" size={30} />
           </div>
         ) : (
-          <main className="flex h-full w-full flex-col">{children}</main>
+          <main className="flex h-full w-full flex-col  text-fluid-xs">
+            {children}
+          </main>
         )}
       </div>
     </div>
   );
 }
 
-interface AsideProps {
-  mapRoutes: TEndPoints[];
-  router: NextRouter;
-}
+// interface AsideProps {
+//   mapRoutes: TEndPoints[];
+//   router: NextRouter;
+// }
 
-export function Aside({ mapRoutes, router }: AsideProps) {
-  const iconsFieled: Record<string, string> = {};
+// function Aside({ mapRoutes, router }: AsideProps) {
+//   const iconsFieled: Record<string, string> = {};
 
-  const [hidden, setHidden] = useState("hidden");
-  return (
-    <>
-      {mapRoutes &&
-        mapRoutes.length > 0 &&
-        mapRoutes.map(({ label, path, Icon }, index) => {
-          return (
-            <Link
-              key={index}
-              href={path}
-              passHref
-              className={`${
-                router.asPath === path &&
-                "bg-gradient-to-r from-[#D9C611] via-[#F0DC05] to-[#D9C611]"
-              } flex h-full w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] lg:h-[12.5%]`}
-            >
-              <Icon size={25} />
-              {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}
-            </Link>
-          );
-        })}
-    </>
-  );
-}
+//   const [hidden, setHidden] = useState("hidden");
+//   return (
+//     <>
+//       {mapRoutes &&
+//         mapRoutes.length > 0 &&
+//         mapRoutes.map(({ label, path, Icon }, index) => {
+//           return (
+//             <Link
+//               key={index}
+//               href={path}
+//               passHref
+//               className={`${
+//                 router.asPath === path &&
+//                 "bg-gradient-to-r from-[#D9C611] via-[#F0DC05] to-[#D9C611]"
+//               } flex h-full w-full items-center justify-center hover:bg-gradient-to-r hover:from-[#D9C611] hover:via-[#F0DC05] hover:to-[#D9C611] lg:h-[12.5%]`}
+//             >
+//               <Icon size={25} />
+//               {/* <h1 className="opacity-0 hover:opacity-100">{label}</h1> */}
+//             </Link>
+//           );
+//         })}
+//     </>
+//   );
+// }
 
-export function ProstockIcon() {
-  return (
-    <>
-      <div className="relative w-[2em]">
-        <Image src={ProStockV2} alt={"rpg"} priority />
-      </div>
-    </>
-  );
-}
+// useEffect(() => {
+//   if (mapRoutes) {
+//     const isAuthorized = mapRoutes.some(
+//       (route) => route.path === currentPath
+//     );
+//     // if (!isAuthorized) {
+//     //   router.push("/unauthorized");
+//     // }
+//   }
+// }, [currentPath, mapRoutes, router]);
+
+// const mappedAside: Record<string, JSX.Element> = {
+//   true: <Aside mapRoutes={mapRoutes} router={router} />,
+//   false: <AiOutlineLoading className="animate-spin" size={30} />,
+// };
+
+// const [selectedLabels, setSelectedLabels] = useState<
+//   Record<string, string | undefined>
+// >({});
+
+// const [slideDown, setSlideDown] = useState<string>("");
+
+// useEffect(() => {
+//   console.log(states?.menuAction.label);
+// }, [states?.menuAction.label]);

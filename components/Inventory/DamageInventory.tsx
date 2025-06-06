@@ -27,10 +27,10 @@ export default function DamageInventory() {
   return (
     <div className="flex flex-col gap-1 p-1">
       <div className="flex h-[40%] justify-between rounded-t-md bg-white p-2 shadow-md">
-        <GiGroundbreaker
+        {/* <GiGroundbreaker
           size={30}
           className="flex h-full animate-emerge  items-center justify-center text-red-600"
-        />
+        /> */}
         <div className="flex h-full gap-2">
           <div className="flex flex-none items-center justify-center">
             <a
@@ -63,9 +63,9 @@ export default function DamageInventory() {
         </div>
       </div>
       {Array.isArray(assignedProducts) &&
-        assignedProducts?.map((product) => {
+        assignedProducts?.map((product, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               <button
                 className="flex h-[3em] w-full flex-none select-none  flex-col items-center justify-center rounded-md bg-white p-2 shadow-md hover:bg-sky-300"
                 onClick={() => {
@@ -92,7 +92,7 @@ export default function DamageInventory() {
                   skuCode={product.skuCode}
                 />
               </div>
-            </>
+            </React.Fragment>
           );
         })}
     </div>

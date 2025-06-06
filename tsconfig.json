@@ -25,7 +25,8 @@
     "**/*.tsx",
     "pages/dashboard",
     "src",
-    "pages/api/inventory/bins"
+    "pages/api/inventory/bins",
+    "features/manage-inventory/components/bin/pdf"
   ],
   "exclude": ["node_modules"]
 }

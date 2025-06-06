@@ -7,7 +7,7 @@ import { TUserWithConfirmPW } from "@/types/userTypes";
 import { authMiddleware } from "../authMiddleware";
 import prisma from "@/lib/prisma";
 import { users } from "@prisma/client";
-export type User = Omit<users, "password">;
+export type User = Omit<users, "password" | "orderId">;
 
 export async function handler(
   req: NextApiRequest,

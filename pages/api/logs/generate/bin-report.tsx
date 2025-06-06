@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 import { authMiddleware } from "../../authMiddleware";
 import BinDocument from "@/components/Report/Inventory/BinDocument";
-import { InventoryBins, InventoryPage } from "../../inventory/bins/find";
+import { InventoryBins, InventoryPage } from "../../inventory/bins";
 import { Prisma } from "@prisma/client";
 
 export default authMiddleware(

@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Font,
-  PDFViewer,
-  StyleSheet,
-} from "@react-pdf/renderer";
-// import styles from "@/styles/ReportSheet";
-import { InventoryBins } from "@/pages/api/inventory/bins/find";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { InventoryBins } from "@/pages/api/inventory/bins";
 import { Table, TR, TH, TD } from "@ag-media/react-pdf-table";
 
 interface BinDocumentProps {
@@ -24,7 +15,6 @@ const BinDocument: React.FC<BinDocumentProps> = ({ inventory }) => {
     "SKU",
     "Date Info",
     "Quantity",
-    // "Total Quantity",
   ];
 
   return (
@@ -125,99 +115,3 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
 });
-
-// function BinDocument({ inventory }: BinDocumentProps) {
-//   const Titles = [
-//     "Bin Location",
-//     "Sku",
-//     "DateInfo",
-//     "Quantity",
-//     "Total Quantity",
-//   ];
-//   console.log(inventory);
-
-//   return (
-//     <Document>
-//       <Page size="A4" style={styles.page}>
-//         <View style={styles.titleSection}>
-//           <Text style={styles.title}>Inventory Report: Bin Products</Text>
-//           <Text style={styles.date}>
-//             Downloaded At {new Date().toLocaleString()}
-//           </Text>
-//         </View>
-
-//         <Table>
-//           <TH style={styles.title}>
-//             {Titles.map((title, i) => {
-//               return (
-//                 <TD key={i}>
-//                   <Text
-//                     style={{
-//                       textAlign: "center",
-//                     }}
-//                   >
-//                     {title}
-//                   </Text>
-//                 </TD>
-//               );
-//             })}
-//           </TH>
-//           {inventory.map((v, i) => {
-//             const { row, shelfLevel, rackName } = v.bin;
-//             return (
-//               <TR key={i} style={styles.tableCell}>
-//                 <TD>
-//                   {rackName}
-//                   {row}-{shelfLevel}
-//                 </TD>
-//                 <TD>{v.product?.skuCode}</TD>
-//                 <TD>
-//                   {v.product?.dateInfo.date.toISOString().slice(0, 10)}:{" "}
-//                   {v.product?.dateInfo.type}
-//                 </TD>
-//                 <TD>{v.bin.count}</TD>
-//                 <TD>{v.bin.count}</TD>
-//               </TR>
-//             );
-//           })}
-//         </Table>
-
-//         {/* <View style={styles.table}>
-//           <View style={styles.sectionHeader}>
-//             {Titles.map((title, i) => {
-//               return (
-//                 <Text key={i} style={styles.tableColHeader}>
-//                   {title}
-//                 </Text>
-//               );
-//             })}
-//           </View>
-//           {inventory.map((v, i) => {
-//             const { row, shelfLevel, rackName } = v.bin;
-//             return (
-//               <View key={i}>
-//                 <Text style={styles.tableColHeader}>
-//                   {rackName}
-//                   {row}-{shelfLevel}
-//                 </Text>
-//               </View>
-//             );
-//           })}
-//           {inventory.map((v, i) => {
-//             const { row, shelfLevel, rackName } = v.bin;
-//             return (
-//               <View key={i}>
-//                 <Text style={styles.tableColHeader}>
-//                   {rackName}
-//                   {row}-{shelfLevel}
-//                 </Text>
-//               </View>
-//             );
-//           })}
-//         </View> */}
-//       </Page>
-//     </Document>
-//   );
-// }
-
-// export default BinDocument;

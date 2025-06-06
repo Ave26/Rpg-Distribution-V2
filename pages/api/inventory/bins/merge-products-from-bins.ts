@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import { authMiddleware, UserToken } from "../../authMiddleware";
 import prisma from "@/lib/prisma";
-import { InventoryPage, isCategoryParams } from "./find";
+import { InventoryPage, isCategoryParams } from ".";
 import { assignedProducts as ap, bins, Prisma } from "@prisma/client"; // Ensure correct import
 
 type OmitAssignedProducts = Pick<

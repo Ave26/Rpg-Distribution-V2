@@ -1,0 +1,74 @@
+import DashboardLayout from "@/components/Admin/dashboardLayout";
+import Layout from "@/components/layout";
+
+import SubLayout from "@/Layouts/SubLayout";
+import prisma from "@/lib/prisma";
+import { SWRConfig } from "swr";
+import { Bin, DamageBin } from "@/components/manage-rack";
+import { SlugType } from "@/features/manage-rack";
+
+const componentMap: Record<
+  SlugType,
+  (props: { slug: SlugType }) => JSX.Element
+> = {
+  bin: (props) => <Bin />,
+  "damage-bin": (props) => <DamageBin />,
+};
+
+export function DynamicProductPage({ slug }: { slug: SlugType }) {
+  const Component = componentMap[slug];
+
+  return (
+    <Layout>
+      <DashboardLayout>
+        <SubLayout>{<Component slug={slug} />}</SubLayout>
+      </DashboardLayout>
+    </Layout>
+  );
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+type Page = {
+  slug: SlugType;
+  fallback: any;
+};
+
+export default function Page({ slug, fallback }: Page) {
+  return (
+    <SWRConfig value={{ fallback, fetcher }}>
+      <DynamicProductPage slug={slug} />
+    </SWRConfig>
+  );
+}
+
+export async function getServerSideProps(context: {
+  params: { slug: string[] };
+}) {
+  const slugArray = context.params.slug;
+  const lastSegment = slugArray[slugArray.length - 1];
+
+  const validSlugs: SlugType[] = ["bin", "damage-bin"];
+
+  if (!validSlugs.includes(lastSegment as SlugType)) {
+    return { notFound: true };
+  }
+
+  // (Optional) you could fetch API data here based on lastSegment
+  const slug = lastSegment as SlugType;
+  let data;
+  if (slug === "bin") {
+    // data = await prisma.bins.findMany({});
+    !data && "no response";
+  }
+  // console.log(data);
+
+  return {
+    props: {
+      slug: lastSegment,
+      fallback: {
+        [`/api/logs/${slug}`]: data ?? [],
+      },
+    },
+  };
+}

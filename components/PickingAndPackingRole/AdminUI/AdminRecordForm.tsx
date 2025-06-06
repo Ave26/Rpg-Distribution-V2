@@ -26,7 +26,7 @@ type TStates = {
 
 export type TRecord = Omit<
   records,
-  "id" | "dateCreated" | "batchNumber" | "authorName"
+  "id" | "dateCreated" | "batchNumber" | "authorName" | "status" | "totalW"
 >;
 
 export default function AdminRecordForm({ states }: TAdminRecordForm) {

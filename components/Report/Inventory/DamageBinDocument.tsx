@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 // import styles from "@/styles/ReportSheet";
-import { InventoryBins } from "@/pages/api/inventory/bins/find";
+import { InventoryBins } from "@/pages/api/inventory/bins";
 import { Table, TR, TH, TD } from "@ag-media/react-pdf-table";
 import { AssignedProducts } from "@/pages/api/inventory/assigned-products/find";
 

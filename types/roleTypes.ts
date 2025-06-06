@@ -4,8 +4,14 @@ export type TRole = "ADMIN" | "STAFF" | "DRIVER" | "SUPERADMIN";
 
 export type TEndPoints = {
   path: string;
+  basePath?: string;
   label: string;
-  subMenu?: string[];
+  subMenu?: {
+    label: string;
+    path: string;
+    Icon: IconType;
+  }[];
+
   Icon: IconType;
 };
 

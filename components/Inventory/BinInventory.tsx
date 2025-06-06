@@ -8,7 +8,7 @@ import { RxCross2 } from "react-icons/rx";
 import Input from "../Parts/Input";
 import { mutate } from "swr";
 import useCategories from "@/hooks/useCategories";
-import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";
+import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins";
 import { DuplicateForm } from "@/pages/api/inventory/duplicate-products/update";
 import { IoIosArrowDown, IoMdPrint } from "react-icons/io";
 import { CiCircleRemove } from "react-icons/ci";

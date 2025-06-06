@@ -39,20 +39,27 @@ function Custom404() {
 
   return (
     <Layout>
-      <div className="flex h-screen w-screen  flex-col items-center justify-center gap-4 text-center  font-extrabold">
-        <h1 className="text-9xl ">Error 404</h1>
-        <h1 className="text-5xl ">Page Not Found</h1>
-        {mapRoutes?.map((route, index) => {
-          return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 text-center font-extrabold">
+        <h1 className="text-9xl">Error 404</h1>
+        <h1 className="text-5xl">Page Not Found</h1>
+        {Array.isArray(mapRoutes) && mapRoutes?.length > 0 ? (
+          mapRoutes.map((route, index) => (
             <Link
               key={index}
-              href={route.path}
+              href={route.path} // Use dynamic path from mapRoutes
               className="text-4xl text-sky-900 underline transition-all hover:text-sky-900/30"
             >
-              Go Back
+              Go to {route.label}
             </Link>
-          );
-        })}
+          ))
+        ) : (
+          <Link
+            href="/"
+            className="text-4xl text-sky-900 underline transition-all hover:text-sky-900/30"
+          >
+            Go Back to Home
+          </Link>
+        )}
       </div>
     </Layout>
   );

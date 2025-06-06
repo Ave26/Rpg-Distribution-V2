@@ -7,6 +7,8 @@ import Image from "next/image";
 import React, { ReactElement, useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { CldUploadWidget } from "next-cloudinary";
+
 import { CreateProduct, InventoryMethod } from "../api/products/create";
 
 type States = {
@@ -15,17 +17,6 @@ type States = {
 };
 
 export default function AddProduct() {
-  /* Barcode: 10293847561234 - SKU: SKU-10293
-Barcode: 47382910564782 - SKU: SKU-47382
-Barcode: 92746102837456 - SKU: SKU-92746
-Barcode: 38475692018465 - SKU: SKU-38475
-Barcode: 67584930215672 - SKU: SKU-67584
-Barcode: 19482753674820 - SKU: SKU-19482
-Barcode: 50817263948576 - SKU: SKU-50817 --
-Barcode: 28754930182765 - SKU: SKU-28754
-Barcode: 10394758620183 - SKU: SKU-10394
-Barcode: 56781930467251 - SKU: SKU-56781 */
-
   return (
     <div className="flex h-full w-full flex-wrap gap-2 bg-white p-2">
       <div className="w-full lg:w-1/2">
@@ -58,33 +49,7 @@ function Form() {
   const methods: InventoryMethod[] = ["FEFO", "FIFO", "LIFO"];
 
   return (
-    <form
-      className="grid h-fit grid-flow-row grid-cols-2 gap-2 p-2"
-      // onSubmit={(e) => {
-      //   console.log("triggered");
-      //   e.preventDefault();
-      //   setLoading(true);
-      //   fetch("/api/products/create", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(product),
-      //   }).finally(() => {
-      //     setProduct({
-      //       category: "default",
-      //       barcodeId: "",
-      //       code: "",
-      //       image: "",
-      //       productName: "",
-      //       supplierName: "",
-      //       price: 0,
-      //       threshold: 0,
-      //       weight: 0,
-      //       method: "default",
-      //     });
-      //     setLoading(false);
-      //   });
-      // }}
-    >
+    <form className="grid h-fit grid-flow-row grid-cols-2 gap-2 p-2">
       <div className="col-span-2 flex gap-2">
         <select
           name={category}
@@ -256,8 +221,6 @@ function ImageView({ image }: { image: string | null }) {
     </>
   );
 }
-
-import { CldUploadWidget } from "next-cloudinary";
 
 function FileUpload({ states }: { states: States }) {
   const { product, setProduct } = states;

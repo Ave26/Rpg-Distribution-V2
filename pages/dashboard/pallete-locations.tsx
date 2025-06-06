@@ -12,7 +12,7 @@ import { useMyContext } from "@/contexts/AuthenticationContext";
 
 type BinType = "Bin" | "Damage Bin";
 
-export default function PalleteLocation() {
+export default function PalleteLocations() {
   const { states } = useMyContext();
   // const [binType, setBinType] = useState<BinType>("Bin");
 
@@ -22,7 +22,7 @@ export default function PalleteLocation() {
       {/* <div className="grid h-fit w-full grid-flow-col gap-2">
         <SelectionView />
       </div> */}
-      <PalleteView binType={states?.binType} />
+      <PalleteView binType={states?.binAction} />
     </section>
   );
 }
@@ -62,10 +62,10 @@ function SelectionView() {
           <button
             key={name}
             onClick={() => {
-              states?.setBinType(name);
+              states?.setBinAction(name);
             }}
             className={`${buttonStyleEdge} ${
-              name === states?.binType && "bg-slate-600 text-white"
+              name === states?.binAction && "bg-slate-600 text-white"
             } `}
           >
             {name}
@@ -76,7 +76,7 @@ function SelectionView() {
   );
 }
 
-PalleteLocation.getLayout = (page: ReactElement) => {
+PalleteLocations.getLayout = (page: ReactElement) => {
   return (
     <Layout>
       <DashboardLayout>{page}</DashboardLayout>

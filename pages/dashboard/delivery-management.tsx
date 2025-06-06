@@ -21,7 +21,7 @@ export default function DeliveryManagement() {
         role === "DRIVER" ? "View Truck Loads" : "Truck Management"
       );
     }
-  }, [role]);
+  }, [role, states]);
 
   const componentMapping: Record<TSelectedBTN, JSX.Element> = {
     "Truck Management": <TruckManagement />,

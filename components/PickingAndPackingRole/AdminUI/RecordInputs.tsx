@@ -61,7 +61,7 @@ function RecordInputs({ states }: TRecordInputs) {
   return (
     <>
       {Object.keys(record).map((key) => {
-        const ignoreKey = "locationName" || "truckName";
+        const ignoreKey = "truckName";
 
         return (
           <div key={key}>

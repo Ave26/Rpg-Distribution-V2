@@ -2,10 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { authMiddleware, UserToken } from "../../authMiddleware";
-import {
-  TBinLocations,
-  TOrderedProductTest,
-} from "@/components/PickingAndPackingRole/AdminUI/Admin";
+import { TBinLocations } from "@/components/PickingAndPackingRole/AdminUI/Admin";
 import { TRecord } from "@/components/PickingAndPackingRole/AdminUI/AdminRecordForm";
 
 type TCreateOrderedProduct = {

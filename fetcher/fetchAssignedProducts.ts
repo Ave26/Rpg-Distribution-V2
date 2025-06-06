@@ -1,5 +1,4 @@
 import { AssignedProducts } from "@/pages/api/inventory/assigned-products/find";
-import { assignedProducts, damageBins } from "@prisma/client";
 
 export async function fetchAssignedProducts(
   url: string

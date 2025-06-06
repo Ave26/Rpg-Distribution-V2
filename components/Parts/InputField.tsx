@@ -16,7 +16,8 @@ function InputField({
     <div className="flex items-center justify-center">
       <label
         htmlFor="default-input"
-        className="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+        className="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+      >
         Default input
       </label>
       <input

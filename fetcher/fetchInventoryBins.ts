@@ -1,4 +1,4 @@
-import { InventoryBins } from "@/pages/api/inventory/bins/find";
+import { InventoryBins } from "@/pages/api/inventory/bins";
 import { bins, ProductStatus } from "@prisma/client";
 
 export type Bins = {

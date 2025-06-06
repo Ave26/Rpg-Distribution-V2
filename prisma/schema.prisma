@@ -34,6 +34,9 @@ model users {
 
   trucks trucks[]
   record records[]
+
+  order   order?  @relation(fields: [orderId], references: [id])
+  orderId String? @unique @db.ObjectId
 }
 
 model userRoles {
@@ -64,7 +67,7 @@ model stockKeepingUnit {
   supplierName       String?
   products           products?           @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId          String              @unique
-  assignedProducts   assignedProducts?
+  assignedProducts   assignedProducts[]
   binLocations       binLocations?
   product_status_log product_status_log?
 }
@@ -201,7 +204,7 @@ model assignedProducts {
   status        ProductStatus    @default(Default)
   version       Int              @default(0)
   sku           stockKeepingUnit @relation(fields: [skuCode], references: [code])
-  skuCode       String           @unique
+  skuCode       String
   products      products         @relation(fields: [barcodeId], references: [barcodeId])
   barcodeId     String           @unique
   bin           bins             @relation(fields: [binId], references: [id])
@@ -221,6 +224,10 @@ model assignedProducts {
   usersId                   String?         @db.ObjectId
   qualityAssuranceManager   users?          @relation("QualityAssuranceManager", fields: [qualityAssuranceManagerId], references: [id])
   qualityAssuranceManagerId String?         @db.ObjectId
+  order                     order?          @relation(fields: [orderId], references: [id])
+  orderId                   String?         @db.ObjectId
+
+  @@index([skuCode])
 }
 
 model purchaseOrderOutBound {
@@ -228,20 +235,45 @@ model purchaseOrderOutBound {
   poId String @unique
 }
 
-model records {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  clientName   String
-  dateCreated  DateTime?
-  batchNumber  Int?       @default(1)
-  SO           String     @unique
-  locationName String     @unique
-  authorName   String?    @unique
-  truckName    String     @unique
-  locations    locations? @relation(fields: [locationName], references: [name])
-  author       users?     @relation(fields: [authorName], references: [username])
-  trucks       trucks?    @relation(fields: [truckName], references: [truckName])
+enum recordStatus {
+  Delivered
+  Queueing
+}
 
+model records {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  clientName      String
+  dateCreated     DateTime
+  batchNumber     Int?              @default(1)
+  SO              String            @unique
+  locationName    String            @unique
+  authorName      String?           @unique
+  truckName       String            @unique
+  locations       locations?        @relation(fields: [locationName], references: [name])
+  author          users?            @relation(fields: [authorName], references: [username])
+  trucks          trucks?           @relation(fields: [truckName], references: [truckName])
+  status          recordStatus?
+  totalW          Int?
   orderedProducts orderedProducts[]
+}
+
+enum order_status {
+  PENDING
+  SHIPPED
+  DELIVERED
+}
+
+model order {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  status           order_status
+  batch            Int
+  sales_order      String             @unique
+  initiator        users?
+  usersId          String             @db.ObjectId
+  clientName       String
+  // totalWeight      Float?
+  createdAt        DateTime           @default(now())
+  assignedProducts assignedProducts[]
 }
 
 model orderedProducts {
@@ -274,11 +306,6 @@ model binLocations {
   skuCode           String             @unique
   orderedProducts   orderedProducts?   @relation(fields: [orderedProductsId], references: [id])
   orderedProductsId String?            @db.ObjectId
-}
-
-enum DeliveryStatus {
-  Emergency_Stop
-  Gas_Stop
 }
 
 type coordinates {
@@ -321,12 +348,31 @@ enum TruckAvailability {
   GasStop
 }
 
+enum CargoStatus {
+  Empty
+  PartialLoad
+  HalfFull
+  FullLoad
+}
+
+enum DeliveryStatus {
+  ScheduledForPickup
+  InTransit
+  Delivered
+  Returning
+  OnHold
+  EmergencyStop
+  GasStop
+}
+
 model trucks {
   id               String             @id @default(auto()) @map("_id") @db.ObjectId
   truckName        String             @unique
   plate            String             @unique
   version          Int                @default(0)
   status           TruckAvailability  @default(Empty)
+  deliveryStatus   DeliveryStatus?
+  cargo            CargoStatus?
   payloadCapacity  Int
   threshold        Int
   deliveryLogs     deliveryLogs[]

@@ -35,7 +35,7 @@ export async function handler(
       return res.json(e);
     });
 
-  // console.log(categories);
+  console.log(categories);
   return res.json(categories);
 }
 

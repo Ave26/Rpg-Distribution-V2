@@ -10,13 +10,13 @@ const InitialPage: FC<HomeProps> = ({}) => {
   // flex h-full w-full flex-col flex-wrap items-center justify-center gap-3 break-all bg-gradient-to-b from-cyan-300 to-blue-500 py-28 font-sans text-white
   return (
     <>
-      <section className="flex h-full flex-col flex-wrap items-center justify-center text-white">
+      <section className="flex h-full flex-col flex-wrap items-center justify-center bg-gradient-to-l from-cyan-300 to-blue-500">
         {/* logo */}
 
         <div className="flex flex-col gap-2 p-2">
           <div className="relative  flex items-center justify-center ">
             <div className="relative w-[10em]">
-              <Image src={ProStockV2} alt={"rpg"} />
+              <Image src={ProStockV2} alt={"rpg"} priority />
             </div>
           </div>
           <div className="text-words flex flex-col items-center justify-center break-normal text-center text-slate-700">

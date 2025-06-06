@@ -1,22 +1,14 @@
 import Layout from "@/components/layout";
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-
-// import OperationalToggle from "@/components/Parts/OperationalToggle";
 import DashboardLayout from "@/components/Admin/dashboardLayout";
-
 import { BoxSize, assignedProducts, ProductQuality } from "@prisma/client";
 import Image from "next/image";
 import noImage from "@/public/assets/products/noProductDisplay.png";
 import Input from "@/components/Parts/Input";
 import { buttonStyleDark, InputStyle } from "@/styles/style";
 import { InventoryMethod } from "../api/products/create";
-import { ProductInfo, ProductScan, SKUType } from "../api/inbound/product-info";
-import { RiUser4Fill } from "react-icons/ri";
+import { ProductInfo } from "../api/inbound/product-info";
 import { AiOutlineLoading } from "react-icons/ai";
-
-type InputTypeMapping<T> = {
-  [K in keyof T]: React.InputHTMLAttributes<HTMLInputElement>["type"];
-};
 
 export type TAssignedProducts = Pick<
   assignedProducts,

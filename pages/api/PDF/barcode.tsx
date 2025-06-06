@@ -4,7 +4,7 @@ import { renderToStream } from "@react-pdf/renderer";
 import { generateBarcodePNG } from "@/helper/generateBarcodePNG";
 import { BarcodePDF } from "@/components/PDF/BarcodePDF";
 import prisma from "@/lib/prisma";
-import { InventoryBins, InventoryPage } from "../inventory/bins/find";
+import { InventoryBins, InventoryPage } from "../inventory/bins";
 import { Prisma } from "@prisma/client";
 
 export default async function handler(

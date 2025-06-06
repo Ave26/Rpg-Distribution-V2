@@ -8,36 +8,35 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-* {
+/* * {
   -webkit-tap-highlight-color: transparent;
-}
+} */
 
 /* width */
-::-webkit-scrollbar {
-  width: 9px; /* For vertical scrollbar */
-  height: 9px; /* For horizontal scrollbar */
-}
+/* ::-webkit-scrollbar {
+  width: 9px; 
+  height: 9px; 
+} */
 
 /* ::-webkit-slider-thumb {
   width: 100px;
 } */
 
 /* Track */
-::-webkit-scrollbar-track {
-  /* background: #f1f1f1; */
+/* ::-webkit-scrollbar-track {
   background: transparent;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 5px;
-}
+} */
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+/* ::-webkit-scrollbar-thumb:hover {
   background: #555;
-}
+} */
 
 @keyframes fade {
   0% {
