@@ -18,6 +18,9 @@ export const binTitles = [
   "Item Name",
   "Date",
   "Quantity",
+  "Action",
+  // "Move Damaged",
+  // "Duplicate Product",
 ] as const;
 
 export type BinResult = Prisma.binsGetPayload<{

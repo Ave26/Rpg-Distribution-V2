@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Input from "../Parts/Input";
-import useBins from "@/features/picking-and-packing/useBins";
+import useBins, { TBins } from "@/features/picking-and-packing/useBins";
 import Loading from "../Parts/Loading";
 import { InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
@@ -27,18 +27,17 @@ function TakeOrder() {
   const [coloredBinsBySku, setColoredBinsBySku] = useState<ColoredBinsBySKU>(
     {}
   );
-
   const [quantities, setQuantities] = useState<{ [sku: string]: number }>({});
-  const [quantity, setQuantity] = useState(0);
+
   const [clientName, setClientName] = useState("");
   const [salesOrder, setSalesOrder] = useState("");
   const [assignTruck, setAssignTruck] = useState<"default" | string>("");
-  const [location, setLocation] = useState("");
   const [submit, setSubmit] = useState(false);
 
   const [items, setItems] = useState<Items[]>([]);
+  const [itemsTest, setItemsTest] = useState<ColoredBinsBySKU>({});
 
-  // track the max calue of bins
+  // track the max value of bins
   const maxAvailable = useMemo(() => {
     return Array.isArray(bins)
       ? bins.reduce((sum, bin) => sum + bin._count.assignedProducts, 0)
@@ -52,29 +51,6 @@ function TakeOrder() {
   }, [items, searchSKU]);
 
   const remainingAvailable = maxAvailable - ItemsTotalQuantity; //  it retains the quantity because of  items total quantity useState
-
-  const highlightedBins = useMemo(() => {
-    if (!Array.isArray(bins)) return [];
-
-    const cappedQuantity = Math.min(quantities[searchSKU] || 0, maxAvailable);
-    let runningTotal = 0;
-
-    return bins.map((bin) => {
-      const binQty = bin._count.assignedProducts;
-      const isHighlighted =
-        runningTotal < cappedQuantity &&
-        runningTotal + binQty <= cappedQuantity;
-
-      if (isHighlighted) {
-        runningTotal += binQty;
-      }
-
-      return {
-        ...bin,
-        isHighlighted,
-      };
-    });
-  }, [bins, maxAvailable, quantities, searchSKU]);
 
   useEffect(() => {
     const cappedQuantity = Math.min(quantities[searchSKU] || 0, maxAvailable);
@@ -101,6 +77,40 @@ function TakeOrder() {
   }, [bins, maxAvailable, quantities, searchSKU]);
 
   useEffect(() => {
+    // Skip if we already have colored bins for this SKU
+    if (coloredBinsBySku[searchSKU]) return;
+
+    const cappedQuantity = Math.min(quantities[searchSKU] || 0, maxAvailable);
+    let runningTotal = 0;
+
+    const updated: QuantityWithBin[] = [];
+
+    for (const bin of bins ?? []) {
+      const binQty = bin._count.assignedProducts;
+
+      if (runningTotal >= cappedQuantity) break;
+
+      const remaining = cappedQuantity - runningTotal;
+      const taken = Math.min(binQty, remaining);
+
+      updated.push({ binId: bin.id, quantity: taken });
+      runningTotal += taken;
+    }
+
+    if (!Object.entries(coloredBinsBySku).every(Boolean)) {
+      console.log("this triggered1");
+      setColoredBinsBySku({ [searchSKU]: updated });
+    } else {
+      console.log("this triggered1");
+      setColoredBinsBySku((prev) => ({
+        ...prev,
+        [searchSKU]: updated,
+      }));
+    }
+  }, [bins, maxAvailable, quantities, searchSKU, coloredBinsBySku]);
+
+  /* submit item mock */
+  useEffect(() => {
     if (submit) {
       setTimeout(() => {
         setSubmit(false);
@@ -108,14 +118,26 @@ function TakeOrder() {
     }
   }, [submit]);
 
+  /* console log */
   useEffect(() => {
-    console.log(coloredBinsBySku);
+    console.log("coloredBinsBySKU", coloredBinsBySku);
   }, [coloredBinsBySku]);
+  useEffect(() => {
+    console.log(quantities);
+  }, [quantities]);
 
   const trucks = ["truck1", "truck2", "truck3", "truck4"];
+  const binTitles = ["Bin", "Category", "Barcode", "SKU", "Item Name", "Count"];
+
+  /* 
+    color bin doesnt get the data of the binId source of where the product is taken
+
+  
+  */
 
   return (
     <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
+      {/* Inputs */}
       <div className="sborder grid grid-cols-2 grid-rows-4 gap-1 rounded-lg bg-white p-2 md:grid-rows-5">
         <div className="col-span-1 rounded-lg border md:col-span-2">
           <Input
@@ -255,10 +277,12 @@ function TakeOrder() {
                 ];
               }
             });
-            setQuantities((prev) => ({ ...prev, [searchSKU]: 0 }));
 
+            // the only thing I reset
+
+            setQuantities((prev) => ({ ...prev, [searchSKU]: 0 }));
             setSearchSKU("");
-            setQuantity(0);
+            setColoredBinsBySku({});
             // setClientName("");
             // setSalesOrder("");
             // setAssignTruck("default");
@@ -269,6 +293,7 @@ function TakeOrder() {
         </button>
       </div>
 
+      {/* Ordered Items */}
       <div className="flex grid-cols-1 flex-col rounded-lg bg-white p-2">
         <div className="flex h-full flex-col items-start justify-start gap-1 overflow-x-hidden overflow-y-scroll rounded-lg p-1">
           {submit ? (
@@ -327,33 +352,29 @@ function TakeOrder() {
           </button>
         </div>
       </div>
+
+      {/* table */}
       <div className="flex h-full w-full flex-col items-start justify-start overflow-auto rounded-lg scrollbar-track-rounded-lg md:col-span-2 md:row-span-4 md:w-full md:overflow-x-hidden md:overflow-y-scroll">
         <div className="sticky top-0 flex w-full gap-1 rounded-lg rounded-b-none bg-slate-400 p-1 font-semibold uppercase">
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            Bin
-          </h1>
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            Category
-          </h1>
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            Barcode
-          </h1>
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            SKU
-          </h1>
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            Item Name
-          </h1>
-          <h1 className="flex w-full items-center justify-center rounded-lg border text-center">
-            Count
-          </h1>
+          {binTitles.map((title) => {
+            return (
+              <h1
+                key={title}
+                className="flex w-full items-center justify-center rounded-lg border text-center"
+              >
+                {title}
+              </h1>
+            );
+          })}
         </div>
-        {Array.isArray(highlightedBins) ? (
-          highlightedBins.map((bin, index) => {
+        {Array.isArray(bins) ? (
+          bins.map((bin, index) => {
+            // console.log("this will rerender everytime the bin changes");
+
             const allColoredBins = Object.entries(coloredBinsBySku).flatMap(
               ([_, bins]) => bins
             );
-            console.log(allColoredBins);
+            // console.log(allColoredBins);
             const match = allColoredBins.find((v) => v.binId === bin.id);
 
             const bgColor = match
@@ -400,3 +421,58 @@ function TakeOrder() {
 }
 
 export default TakeOrder;
+
+type Bins = TBins & {
+  isHighlighted: boolean;
+};
+
+interface BinTableProps {
+  bins: Bins[];
+}
+// function BinTable({ bins }: BinTableProps) {
+//   console.log(bins);
+//   return (
+//     <>
+//       {bins.map((bin, index) => {
+//         const allColoredBins = Object.entries(coloredBinsBySku).flatMap(
+//           ([_, bins]) => bins
+//         );
+//         console.log(allColoredBins);
+//         const match = allColoredBins.find((v) => v.binId === bin.id);
+
+//         const bgColor = match
+//           ? match.quantity < bin._count.assignedProducts
+//             ? "bg-orange-400/50" // Not enough, partial fill
+//             : "bg-blue-400/50" // Fully filled
+//           : "bg-white"; // Not selected
+
+//         return (
+//           <ul
+//             key={index}
+//             className={`  ${bgColor}
+//               flex h-fit w-full items-center justify-center  gap-1 break-all p-1 uppercase hover:bg-amber-300/70`}
+//           >
+//             <li className="flex h-full w-full items-center justify-center border">
+//               Bin{bin.row}-{bin.shelfLevel}
+//             </li>
+//             <li className="flex h-full w-full items-center justify-center border">
+//               {bin.category}
+//             </li>
+//             <li className="flex h-full w-full items-center justify-center border">
+//               {bin.assignedProducts[0].barcodeId}
+//             </li>
+//             <li className="flex h-full w-full items-center justify-center border">
+//               {bin.assignedProducts[0].skuCode}
+//             </li>
+//             <li className="flex h-full w-full items-center justify-center border">
+//               {bin.assignedProducts[0].products.productName}
+//             </li>
+//             <li className="flex h-full w-full items-center justify-center border">
+//               {bin._count.assignedProducts}
+//             </li>
+//           </ul>
+//         );
+//       })}
+//     </>
+//   );
+// }

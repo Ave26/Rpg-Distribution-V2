@@ -9,7 +9,6 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import useSWR from "swr";
 import { AuthProps } from "@/types/authTypes";
-import HamburgerMenuHeader from "./Parts/HamburgerMenuHeader";
 
 import { FaCircleUser } from "react-icons/fa6";
 import LogoutButton from "./Parts/LogoutButton";
@@ -27,25 +26,25 @@ export default function Layout({ children }: { children: ReactNode }) {
     const data: AuthProps = await response.json();
     if (data?.authenticated === false || !data?.authenticated) router.push("/");
     updateGlobalState(data);
-    console.log(data);
+    // console.log(data);
     return data;
   };
   useSWR("/api/authentication", fetcher);
 
-  console.log(globalState?.verifiedToken?.role);
+  // console.log(globalState?.verifiedToken?.role);
   const [logoutResponse, setLogoutResponse] = useState<LogoutResponse>({
     isLogout: false,
     message: "",
   });
 
   // useEffect checker
-  useEffect(() => {
-    console.log(logoutResponse);
-    console.log(isAuthenticated);
-  }, [logoutResponse, isAuthenticated]);
-  useEffect(() => {
-    console.log(states?.isActive);
-  }, [states?.isActive]);
+  // useEffect(() => {
+  //   console.log(logoutResponse);
+  //   console.log(isAuthenticated);
+  // }, [logoutResponse, isAuthenticated]);
+  // useEffect(() => {
+  //   console.log(states?.isActive);
+  // }, [states?.isActive]);
 
   return (
     <div className="h-screen">

@@ -51,7 +51,7 @@ function BinPage({ states }: BinPageProps) {
       <select
         name="category"
         id="category"
-        className={buttonStyleDark}
+        className="font-bolder appearance-none rounded-lg border-none bg-slate-700 p-1 text-fluid-xs text-white"
         value={binPage.category}
         onFocus={() => !shouldFetch && setShouldFetch(true)}
         onChange={(e) => {
@@ -60,12 +60,21 @@ function BinPage({ states }: BinPageProps) {
           });
         }}
       >
-        <option value="default" hidden disabled className={buttonStyleDark}>
+        <option
+          value="default"
+          hidden
+          disabled
+          className="w-full appearance-none text-center"
+        >
           {isLoading ? "Loading..." : "Select a category"}
         </option>
         {Array.isArray(categories) &&
           categories.map((page, i) => (
-            <option key={i} value={page.category} className={buttonStyleDark}>
+            <option
+              key={i}
+              value={page.category}
+              className="w-full appearance-none text-center"
+            >
               {page.category}
             </option>
           ))}
@@ -73,7 +82,7 @@ function BinPage({ states }: BinPageProps) {
       <select
         name="rackName"
         id="rackName"
-        className={buttonStyleDark}
+        className="font-bolder appearance-none rounded-lg border-none bg-slate-700 p-1 text-fluid-xs text-white"
         value={binPage.rackName}
         onFocus={(e) => {
           console.log("rackName");
@@ -84,20 +93,29 @@ function BinPage({ states }: BinPageProps) {
           });
         }}
       >
-        <option value="default" hidden disabled className={buttonStyleDark}>
+        <option
+          value="default"
+          hidden
+          disabled
+          className="w-full appearance-none text-center"
+        >
           Select a RackName
         </option>
 
         {rackNames.map((rack) => {
           return (
-            <option key={rack} value={rack} className={buttonStyleDark}>
+            <option
+              key={rack}
+              value={rack}
+              className="w-full appearance-none text-center"
+            >
               {rack}
             </option>
           );
         })}
       </select>
       <button
-        className="flex h-10  items-center justify-center transition-all hover:scale-150 active:scale-125"
+        className="flex h-10 w-full items-center justify-center transition-all hover:scale-150 active:scale-125"
         onClick={() => {
           setBinPage({ category: "default", rackName: "default" });
         }}

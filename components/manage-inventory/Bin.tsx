@@ -18,20 +18,30 @@ Date
 Quantity */
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
-function Bin() {
-  const buttons = ["Generate", "Move", "Organize", "Print"] as const;
+export default function Bin() {
+  const buttons = [
+    "Generate",
+    "Move Damaged Product",
+    "Remove Duplicate Product",
+    "Organize",
+    "Print",
+  ] as const;
+
   const [loading, setLoading] = useState<
     Record<(typeof buttons)[number], boolean>
   >({
     Generate: false,
-    Move: false,
+    "Move Damaged Product": false,
+    "Remove Duplicate Product": false,
     Organize: false,
     Print: false,
   });
+
   const [binPage, setBinPage] = useState<TBinPage>({
     category: "default",
     rackName: "default",
   });
+
   const api = `/api/manage-inventory/bin?category=${binPage.category}&rackName=${binPage.rackName}`;
   const { data: bins } = useSWR<BinResult[]>(api, fetcher, {
     refreshInterval: 1200,
@@ -43,7 +53,6 @@ function Bin() {
       fetch(
         `/api/manage-inventory/bin/generate-barcode?category=${binPage.category}&rackName=${binPage.rackName}`
       )
-        // `/api/PDF/barcode?category=${page.category}&rackName=${page.rackName}`
         .then(async (res) => {
           const blob = await res.blob();
           const url = URL.createObjectURL(blob);
@@ -60,8 +69,11 @@ function Bin() {
           setLoading((prev) => ({ ...prev, Generate: false }));
         });
     },
-    Move: async () => {
+    "Move Damaged Product": async () => {
       console.log("Move");
+    },
+    "Remove Duplicate Product": async () => {
+      console.log("remove");
     },
     Organize: async () => {
       console.log("Organize");
@@ -88,19 +100,22 @@ function Bin() {
         .finally(() => setLoading((prev) => ({ ...prev, Print: false })));
     },
   };
-
+  /* text-fluid-xxxs
+ sm:text-fluid-xxs md:text-fluid-xs
+*/
   return (
-    <section className="flex h-full w-full flex-col gap-1 rounded-lg text-fluid-xxxs transition-all sm:text-fluid-xxs md:text-fluid-xs">
-      <div className="flex h-fit flex-wrap justify-between gap-1 rounded-lg bg-white p-2">
-        <div className="rounded-lg  bg-slate-400 p-1 sm:w-[40%] md:w-fit">
-          <BinPage states={{ binPage, setBinPage }} />
-        </div>
+    <section className="flex h-full w-full flex-col gap-1 rounded-lg  text-fluid-xs transition-all">
+      <div className="flex h-[10%] w-full  justify-between rounded-lg border border-red-500  text-white">
+        {/* Page Input */}
+        <BinPage states={{ binPage, setBinPage }} />
+        {/* flex w-full items-center justify-start gap-1 rounded-lg bg-slate-400  p-1 sm:w-fit */}
 
-        <div className="flex w-full items-center justify-start gap-1 rounded-lg bg-slate-400  p-1 sm:w-fit">
+        {/* Buttons */}
+        <div className="flex gap-1 border border-sky-500">
           {buttons.map((button) => {
             return (
               <button
-                className={buttonStyleDark}
+                className="h-fit appearance-none rounded-lg bg-slate-700 p-2 hover:border-white"
                 key={button}
                 onClick={() => {
                   buttonActions[button]();
@@ -117,7 +132,16 @@ function Bin() {
   );
 }
 
-export default Bin;
+/* move damage product
+
+        api[dynamic]
+    - remove duplicate product -  
+    - send to damage bin - move
+        query
+    - purchase order and quanity
+    - bin id
+
+*/
 
 // import useInventoryBins from "@/hooks/useInventoryBins";
 // import { InventoryBins, InventoryPage } from "@/pages/api/inventory/bins/find";

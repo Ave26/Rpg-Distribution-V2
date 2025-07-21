@@ -48,7 +48,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [router]);
 
   return (
-    <div className="flex h-full gap-1 p-1 transition-all">
+    <div
+      className={`flex h-full gap-1 p-1 ${
+        DashBoard?.isActive && "overflow-x-hidden"
+      }`}
+    >
       <div
         className={` 
         ${DashBoard?.isActive ? "pb-[3.5px]" : ""} flex h-full
@@ -56,7 +60,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         <div
           className={`
-          ${DashBoard?.isActive ? "w-[14em]" : "w-fit"}
+          ${DashBoard?.isActive ? "w-[14em]" : "w-[3.5em]"}
           flex h-full flex-col items-start justify-start gap-1 rounded-lg bg-white p-1 transition-all`}
         >
           {Array.isArray(mapRoutes) &&
@@ -64,15 +68,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               if (!basePath) {
                 basePath = "";
               }
-              console.log(label);
-
+              // console.log(basePath, router.asPath);
               return (
                 <nav
                   key={index}
                   className={`
                   ${DashBoard?.isActive ? "w-full" : "w-[3em]"}
-                  flex h-fit flex-col rounded-lg
-                  border transition-all`}
+                  flex h-fit flex-col rounded-lg 
+                  transition-all`}
                 >
                   <Link
                     href={basePath}
@@ -96,7 +99,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       ${
                         states?.menuAction.label === label ||
                         basePath === router.asPath
-                          ? "rounded-b-none bg-[#FEECCF]"
+                          ? "rounded-b-none bg-[#FEECCF] "
                           : "bg-white"
                       }
                       flex
@@ -104,7 +107,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       items-center
                       justify-start overflow-hidden
                       rounded-lg
-                      transition-all`}
+                      transition-all
+                      `}
                   >
                     <Icon className="h-full w-[3em] flex-shrink-0 scale-[50%] font-bold" />
 
@@ -124,66 +128,75 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         } h-full w-[3em] scale-[50%] font-bold transition-all`}
                     />
                   </Link>
-
-                  {Array.isArray(subMenu) &&
-                    subMenu.map((menu, index) => {
-                      console.log(!!subMenu[subMenu.length - 1]);
-                      return (
-                        <Link
-                          passHref
-                          key={index}
-                          href={`${basePath}/${menu.path}`}
-                          onClick={(e) => {
-                            if (router.asPath === `${basePath}/${menu.path}`) {
-                              e.preventDefault();
-                              e.stopPropagation();
-                            }
-                          }}
-                          className={`
+                  <div
+                    className={`${
+                      Array.isArray(subMenu) &&
+                      subMenu.length >= 5 &&
+                      "overflow-x-none max-h-40 overflow-y-scroll scroll-smooth scrollbar-thin scrollbar-track-[#ffe2b3a7] scrollbar-thumb-slate-500 scrollbar-corner-[#ffe2b3a7]"
+                    } `}
+                  >
+                    {Array.isArray(subMenu) &&
+                      subMenu.map((menu, index) => {
+                        // console.log(!!subMenu[subMenu.length - 1]);
+                        return (
+                          <Link
+                            passHref
+                            key={index}
+                            href={`${basePath}/${menu.path}`}
+                            onClick={(e) => {
+                              if (
+                                router.asPath === `${basePath}/${menu.path}`
+                              ) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }
+                            }}
+                            className={`
                               ${
                                 states?.menuAction.label === label ||
                                 `${basePath}/${menu.path}` === router.asPath
                                   ? "h-10"
                                   : "h-0"
                               }
-
-                              ${
-                                `${basePath}/${menu.path}` === router.asPath
-                                  ? "bg-slate-500 text-white"
-                                  : "bg-[#ffe2b3a7]"
-                              }
                               ${
                                 index === subMenu.length - 1
-                                  ? "rounded-b-lg"
+                                  ? "rounded-bl-lg"
                                   : ""
                               }
                               flex
                               gap-1
                               overflow-hidden
+                              bg-[#ffe2b3a7]
                               transition-all
                               `}
-                        >
-                          <div
-                            className={`${
-                              DashBoard?.isActive && "hidden"
-                            } flex h-[3em] w-[3em] flex-shrink-0 items-center justify-center rounded-lg`}
                           >
-                            <menu.Icon className="h-5 w-5" />
-                          </div>
-                          <h1
-                            className={`${
-                              DashBoard?.isActive && "justify-end"
-                            } flex h-full w-full items-center  whitespace-nowrap rounded-lg p-2 text-xs font-bold uppercase`}
-                          >
-                            {menu.label}
-                          </h1>
-                        </Link>
-                      );
-                    })}
+                            <div
+                              className={`${
+                                DashBoard?.isActive && "hidden"
+                              } flex h-[3em] w-full flex-shrink-0 items-center justify-center rounded-lg`}
+                            >
+                              <menu.Icon
+                                className={`${
+                                  `${basePath}/${menu.path}` === router.asPath
+                                    ? "text-slate-800"
+                                    : "text-slate-500"
+                                } h-5 w-5`}
+                              />
+                            </div>
+                            <h1
+                              className={`${
+                                DashBoard?.isActive && "justify-end"
+                              } flex h-full w-full items-center  whitespace-nowrap rounded-lg p-2 text-xs font-bold uppercase`}
+                            >
+                              {menu.label}
+                            </h1>
+                          </Link>
+                        );
+                      })}
+                  </div>
                 </nav>
               );
             })}
-          {/* flex h-10 w-[13.] items-center justify-center rounded-lg border bg-[#FEECCF] */}
           <div
             className={`flex h-full w-full items-end justify-end rounded-lg transition-all`}
           >
@@ -213,7 +226,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <AiOutlineLoading className="animate-spin" size={30} />
           </div>
         ) : (
-          <main className="flex h-full w-full flex-col  text-fluid-xs">
+          <main className={`flex h-full w-full flex-col text-fluid-xs`}>
             {children}
           </main>
         )}
