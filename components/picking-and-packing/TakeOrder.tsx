@@ -5,140 +5,102 @@ import Loading from "../Parts/Loading";
 import { InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
 
-type Items = {
-  quantity: number;
-  binId: string;
-  skuCode: string;
+type QuantityWBinID = {
+  [skuCode: string]: {
+    [binId: string]: number;
+  };
 };
 
-type SKUCOde = string;
-
-type QuantityWithBin = {
-  binId: string;
-  quantity: number;
+type TItems = {
+  sku: string;
+  count: number;
 };
-
-type ColoredBinsBySKU = Record<SKUCOde, QuantityWithBin[]>;
 
 function TakeOrder() {
-  const [searchSKU, setSearchSKU] = useState(""); // search barcode
+  const [searchSKU, setSearchSKU] = useState("");
   const { bins, error, isLoading } = useBins(searchSKU);
-
-  const [coloredBinsBySku, setColoredBinsBySku] = useState<ColoredBinsBySKU>(
-    {}
-  );
-  const [quantities, setQuantities] = useState<{ [sku: string]: number }>({});
+  const [quantities, setQuantities] = useState<{ [sku: string]: number }>({}); // total value of specific product in bins
+  const [orders, setOrders] = useState<QuantityWBinID>({});
 
   const [clientName, setClientName] = useState("");
   const [salesOrder, setSalesOrder] = useState("");
-  const [assignTruck, setAssignTruck] = useState<"default" | string>("");
+  const [assignTruck, setAssignTruck] = useState("");
+  const [items, setItems] = useState<TItems[]>([]);
+
   const [submit, setSubmit] = useState(false);
 
-  const [items, setItems] = useState<Items[]>([]);
-  const [itemsTest, setItemsTest] = useState<ColoredBinsBySKU>({});
+  const totalNumberOfSpecificProduct = useMemo(() => {
+    if (!searchSKU) return 0;
 
-  // track the max value of bins
-  const maxAvailable = useMemo(() => {
     return Array.isArray(bins)
-      ? bins.reduce((sum, bin) => sum + bin._count.assignedProducts, 0)
+      ? bins.reduce((acc, initial) => {
+          return initial._count.assignedProducts + acc;
+        }, 0)
       : 0;
   }, [bins]);
 
-  const ItemsTotalQuantity = useMemo(() => {
-    return items
-      .filter((item) => item.skuCode === searchSKU)
-      .reduce((sum, item) => sum + item.quantity, 0);
-  }, [items, searchSKU]);
+  // useEffect(() => {
+  //   Object.entries(orders).map(([sku, binNum]) => {
+  //     return console.log(sku, binNum);
+  //   });
+  //   if (quantities[searchSKU] >= totalNumberOfSpecificProduct) {
+  //     console.log("totalNumberOfSpecificProduct", totalNumberOfSpecificProduct);
+  //   }
 
-  const remainingAvailable = maxAvailable - ItemsTotalQuantity; //  it retains the quantity because of  items total quantity useState
-
-  useEffect(() => {
-    const cappedQuantity = Math.min(quantities[searchSKU] || 0, maxAvailable);
-    let runningTotal = 0;
-
-    const updated: QuantityWithBin[] = [];
-
-    for (const bin of bins ?? []) {
-      const binQty = bin._count.assignedProducts;
-
-      if (runningTotal >= cappedQuantity) break;
-
-      const remaining = cappedQuantity - runningTotal;
-      const taken = Math.min(binQty, remaining);
-
-      updated.push({ binId: bin.id, quantity: taken });
-      runningTotal += taken;
-    }
-
-    setColoredBinsBySku((prev) => ({
-      ...prev,
-      [searchSKU]: updated,
-    }));
-  }, [bins, maxAvailable, quantities, searchSKU]);
+  //   console.log(orders);
+  // }, [bins, quantities[searchSKU], orders[searchSKU]]);
 
   useEffect(() => {
-    // Skip if we already have colored bins for this SKU
-    if (coloredBinsBySku[searchSKU]) return;
+    Object.entries(orders).map(([sku, binNum]) => {
+      return console.log(sku, binNum);
+    });
 
-    const cappedQuantity = Math.min(quantities[searchSKU] || 0, maxAvailable);
-    let runningTotal = 0;
+    console.log(totalNumberOfSpecificProduct);
+    // const v = Object.entries(orders).map(([_, v]) => v).find((v)=> v[""])
+    // console.log(v);
+  }, [items, quantities]);
 
-    const updated: QuantityWithBin[] = [];
+  useEffect(() => {
+    console.log("execute");
+    if (!bins) return;
 
-    for (const bin of bins ?? []) {
-      const binQty = bin._count.assignedProducts;
+    let val = quantities[searchSKU];
+    let newAllocations: Record<string, number> = {};
 
-      if (runningTotal >= cappedQuantity) break;
+    for (const bin of bins) {
+      if (val <= 0) break; // <-- only this can stop looping
 
-      const remaining = cappedQuantity - runningTotal;
-      const taken = Math.min(binQty, remaining);
+      const binQTY = bin._count.assignedProducts;
+      const allocate = Math.min(binQTY, val);
 
-      updated.push({ binId: bin.id, quantity: taken });
-      runningTotal += taken;
+      if (allocate > 0) {
+        newAllocations[bin.id] = allocate;
+        val -= allocate;
+      }
     }
+    setOrders((prev) => {
+      if (Object.keys(newAllocations).length === 0) {
+        const { [searchSKU]: _, ...rest } = prev;
+        return rest;
+      }
 
-    if (!Object.entries(coloredBinsBySku).every(Boolean)) {
-      console.log("this triggered1");
-      setColoredBinsBySku({ [searchSKU]: updated });
-    } else {
-      console.log("this triggered1");
-      setColoredBinsBySku((prev) => ({
+      return {
         ...prev,
-        [searchSKU]: updated,
-      }));
-    }
-  }, [bins, maxAvailable, quantities, searchSKU, coloredBinsBySku]);
-
-  /* submit item mock */
-  useEffect(() => {
-    if (submit) {
-      setTimeout(() => {
-        setSubmit(false);
-      }, 1200);
-    }
-  }, [submit]);
-
-  /* console log */
-  useEffect(() => {
-    console.log("coloredBinsBySKU", coloredBinsBySku);
-  }, [coloredBinsBySku]);
-  useEffect(() => {
-    console.log(quantities);
+        [searchSKU]: newAllocations,
+      };
+    });
   }, [quantities]);
 
-  const trucks = ["truck1", "truck2", "truck3", "truck4"];
-  const binTitles = ["Bin", "Category", "Barcode", "SKU", "Item Name", "Count"];
+  // useEffect(() => {
+  //   console.log(orders);
+  // }, [searchSKU, quantities]);
 
-  /* 
-    color bin doesnt get the data of the binId source of where the product is taken
-
-  
-  */
-
+  const binTitles = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
+  const trucks = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
   return (
     <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
       {/* Inputs */}
-      <div className="sborder grid grid-cols-2 grid-rows-4 gap-1 rounded-lg bg-white p-2 md:grid-rows-5">
+      <div className="grid grid-cols-2 grid-rows-4 gap-1 rounded-lg border bg-white p-2 md:grid-rows-5">
         <div className="col-span-1 rounded-lg border md:col-span-2">
           <Input
             attributes={{
@@ -146,35 +108,42 @@ function TakeOrder() {
                 id: "sku",
                 value: searchSKU,
                 type: "text",
-                onChange: (e) => setSearchSKU(e.target.value.toUpperCase()),
+                onChange: (e) => {
+                  setSearchSKU(e.target.value.toUpperCase().trim());
+                },
               },
               label: { children: "Search SKU", htmlFor: "sku" },
             }}
           />
         </div>
+
         <div className="col-span-1 rounded-lg border md:col-span-2">
           <Input
             attributes={{
               input: {
                 id: "quantity",
-                // value: quantity,
                 value: quantities[searchSKU] || 0,
                 type: "number",
                 min: 0,
-                max: remainingAvailable || 0,
+                max: totalNumberOfSpecificProduct ?? 0,
                 disabled: !searchSKU ? true : bins?.length === 0 ? true : false,
                 onChange: (e) => {
-                  // const value = parseInt(e.target.value, 10) || 0;
-                  // if (!isNaN(value)) {
-                  //   setQuantity(Math.min(value, remainingAvailable));
-                  // }
-                  const value = parseInt(e.target.value, 10) || 0;
-                  if (!isNaN(value)) {
-                    setQuantities((prev) => ({
-                      ...prev,
-                      [searchSKU]: Math.min(value, remainingAvailable),
-                    }));
-                  }
+                  // fix: prevent the input to be lower if the sku is existed in the items
+                  // can only be lower to last the current value of the quantity
+
+                  // another way: reset the value of the input whenever it puts the data into the items
+
+                  //fix: the bin getting addded instead of nagating if the bin is 0
+                  // fix: when I lower the input
+                  const value = parseInt(e.target.value, 10); // we have the fresh value
+
+                  setQuantities((prev) => ({
+                    ...prev,
+                    [searchSKU]: Math.min(
+                      isNaN(value) ? 0 : parseInt(e.target.value, 10),
+                      totalNumberOfSpecificProduct
+                    ),
+                  }));
                 },
               },
               label: { children: "Quantity", htmlFor: "quantity" },
@@ -255,37 +224,30 @@ function TakeOrder() {
         </div>
 
         <button
-          disabled={quantities[searchSKU] === 0 || remainingAvailable === 0}
+          disabled={totalNumberOfSpecificProduct === 0}
           onClick={() => {
+            // bug: when clicking it if the quantity is 0, the max value will became 0
             const currentQuantity = quantities[searchSKU] || 0;
 
-            setItems((prev) => {
-              const existingItem = prev.find(
-                (item) => item.skuCode === searchSKU
-              );
-
-              if (existingItem) {
-                return prev.map((item) =>
-                  item.skuCode === searchSKU
-                    ? { ...item, quantity: item.quantity + currentQuantity }
-                    : item
+            // transform the orders into items that can be display
+            const newOrders = Object.entries(orders).map(
+              ([sku, binIdWCount]) => {
+                const count = Object.values(binIdWCount).reduce(
+                  (acc, initial) => {
+                    console.log(initial);
+                    return acc + initial;
+                  },
+                  0
                 );
-              } else {
-                return [
-                  ...prev,
-                  { binId: "", quantity: currentQuantity, skuCode: searchSKU },
-                ];
+
+                return { sku, count };
               }
-            });
+            );
 
-            // the only thing I reset
-
-            setQuantities((prev) => ({ ...prev, [searchSKU]: 0 }));
+            console.log(newOrders);
+            setItems(newOrders);
             setSearchSKU("");
-            setColoredBinsBySku({});
-            // setClientName("");
-            // setSalesOrder("");
-            // setAssignTruck("default");
+            // setQuantities((v) => ({ ...v, [searchSKU]: 0 }));
           }}
           className="col-span-2 row-span-1 rounded-lg border bg-slate-400 font-bold uppercase text-slate-100 hover:bg-amber-400 md:row-start-5"
         >
@@ -301,24 +263,25 @@ function TakeOrder() {
               <Loading />
             </div>
           ) : (
-            items.map(({ binId, quantity, skuCode }, index) => {
+            items.map(({ count, sku }, index) => {
               return (
                 <div
                   key={index}
-                  className="flex h-fit w-full items-center justify-between gap-1 rounded-lg border p-1"
+                  className={`${
+                    sku === searchSKU && "border-orange-400"
+                  } flex h-fit w-full items-center justify-between gap-1 rounded-lg border p-1`}
                 >
                   <ul className="flex items-center justify-center gap-1 rounded-lg font-semibold uppercase">
                     <li className="h-full rounded-lg  p-1">
-                      Quantity: {quantity}
+                      Quantity: {count}
                     </li>
-                    <li className="h-full rounded-lg  p-1">SKU: {skuCode}</li>
+                    <li className="h-full rounded-lg  p-1">SKU: {sku}</li>
                   </ul>
 
                   <button
-                    disabled={remainingAvailable <= 0}
+                    // disabled={totalNumberOfSpecificProduct <= 0}
                     onClick={() => {
                       setItems((prev) => {
-                        console.log(prev);
                         return prev.filter((_, i) => i !== index);
                       });
                     }}
@@ -343,8 +306,10 @@ function TakeOrder() {
           </button>
           <button
             onClick={() => {
+              setSearchSKU("");
+              setOrders({});
+              setQuantities({});
               setItems([]);
-              setColoredBinsBySku({});
             }}
             className="h-8  w-1/4 rounded-lg border bg-red-400 font-bold uppercase text-slate-100 hover:bg-amber-400 md:h-11"
           >
@@ -368,25 +333,25 @@ function TakeOrder() {
           })}
         </div>
         {Array.isArray(bins) ? (
-          bins.map((bin, index) => {
-            // console.log("this will rerender everytime the bin changes");
-
-            const allColoredBins = Object.entries(coloredBinsBySku).flatMap(
-              ([_, bins]) => bins
+          bins.map((bin) => {
+            const qty = Object.values(orders).reduce((sum, bins) => {
+              return sum + (bins[bin.id] ?? 0);
+            }, 0);
+            const newQuantity = Math.min(
+              bin._count.assignedProducts,
+              bin._count.assignedProducts - qty
             );
-            // console.log(allColoredBins);
-            const match = allColoredBins.find((v) => v.binId === bin.id);
 
-            const bgColor = match
-              ? match.quantity < bin._count.assignedProducts
+            const bgColor = newQuantity
+              ? newQuantity < bin._count.assignedProducts
                 ? "bg-orange-400/50" // Not enough, partial fill
-                : "bg-blue-400/50" // Fully filled
-              : "bg-white"; // Not selected
+                : "bg-white" // Fully filled
+              : "bg-blue-400/50"; // Not selected  ${bgColor}
 
             return (
               <ul
-                key={index}
-                className={`  ${bgColor}
+                key={bin.id}
+                className={` ${bgColor}
               flex h-fit w-full items-center justify-center  gap-1 break-all p-1 uppercase hover:bg-amber-300/70`}
               >
                 <li className="flex h-full w-full items-center justify-center border">
@@ -405,7 +370,9 @@ function TakeOrder() {
                   {bin.assignedProducts[0].products.productName}
                 </li>
                 <li className="flex h-full w-full items-center justify-center border">
-                  {bin._count.assignedProducts}
+                  {/* {bin._count.assignedProducts} */}
+
+                  {newQuantity}
                 </li>
               </ul>
             );
@@ -476,3 +443,31 @@ interface BinTableProps {
 //     </>
 //   );
 // }
+
+// type Items = {
+//   quantity: number;
+//   binId: string;
+//   skuCode: string;
+// };
+
+// type SKUCOde = string;
+
+// type QuantityWithBin = {
+//   binId: string;
+//   quantity: number;
+// };
+
+// // type ColoredBinsBySKU = Record<SKUCOde, QuantityWithBin[]>;
+// type ColoredBinsBySKU = { [skuCode: string]: QuantityWithBin[] };
+
+// type TOrders = {
+//   [skuCode: string]: {
+//     binId: string;
+//     quantity: number;
+//   }[];
+// };
+
+// // new
+// type BinQuantityMap = {
+//   [skuCode: string]: { [binId: string]: number };
+// };
