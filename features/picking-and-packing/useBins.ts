@@ -18,7 +18,7 @@ async function fetchBins(url: string): Promise<TBins[]> {
 }
 
 export default function useBins(sku?: string) {
-  const query = sku ? `/api/order/bin?sku=${sku}` : `/api/order/bin`;
+  const query = sku ? `/api/order/bins?sku=${sku}` : `/api/order/bins`;
 
   const { data, error, isLoading } = useSWR(query, fetchBins, {
     refreshInterval: 1200,

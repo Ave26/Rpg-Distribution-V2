@@ -4,8 +4,10 @@ import useBins, { TBins } from "@/features/picking-and-packing/useBins";
 import Loading from "../Parts/Loading";
 import { InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
+import useTrucks from "@/hooks/useTrucks";
+import { mutate } from "swr";
 
-type QuantityWBinID = {
+export type QuantityWBinID = {
   [skuCode: string]: {
     [binId: string]: number;
   };
@@ -37,70 +39,18 @@ function TakeOrder() {
           return initial._count.assignedProducts + acc;
         }, 0)
       : 0;
-  }, [bins]);
-
-  // useEffect(() => {
-  //   Object.entries(orders).map(([sku, binNum]) => {
-  //     return console.log(sku, binNum);
-  //   });
-  //   if (quantities[searchSKU] >= totalNumberOfSpecificProduct) {
-  //     console.log("totalNumberOfSpecificProduct", totalNumberOfSpecificProduct);
-  //   }
-
-  //   console.log(orders);
-  // }, [bins, quantities[searchSKU], orders[searchSKU]]);
-
-  useEffect(() => {
-    Object.entries(orders).map(([sku, binNum]) => {
-      return console.log(sku, binNum);
-    });
-
-    console.log(totalNumberOfSpecificProduct);
-    // const v = Object.entries(orders).map(([_, v]) => v).find((v)=> v[""])
-    // console.log(v);
-  }, [items, quantities]);
-
-  useEffect(() => {
-    console.log("execute");
-    if (!bins) return;
-
-    let val = quantities[searchSKU];
-    let newAllocations: Record<string, number> = {};
-
-    for (const bin of bins) {
-      if (val <= 0) break; // <-- only this can stop looping
-
-      const binQTY = bin._count.assignedProducts;
-      const allocate = Math.min(binQTY, val);
-
-      if (allocate > 0) {
-        newAllocations[bin.id] = allocate;
-        val -= allocate;
-      }
-    }
-    setOrders((prev) => {
-      if (Object.keys(newAllocations).length === 0) {
-        const { [searchSKU]: _, ...rest } = prev;
-        return rest;
-      }
-
-      return {
-        ...prev,
-        [searchSKU]: newAllocations,
-      };
-    });
-  }, [quantities]);
-
-  // useEffect(() => {
-  //   console.log(orders);
-  // }, [searchSKU, quantities]);
+  }, [bins, searchSKU]);
 
   const binTitles = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
-  const trucks = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
+  // const trucks = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
+
+  const { trucks } = useTrucks();
+
   return (
     <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
       {/* Inputs */}
       <div className="grid grid-cols-2 grid-rows-4 gap-1 rounded-lg border bg-white p-2 md:grid-rows-5">
+        {/* search sku */}
         <div className="col-span-1 rounded-lg border md:col-span-2">
           <Input
             attributes={{
@@ -116,7 +66,7 @@ function TakeOrder() {
             }}
           />
         </div>
-
+        {/* quantity */}
         <div className="col-span-1 rounded-lg border md:col-span-2">
           <Input
             attributes={{
@@ -128,14 +78,35 @@ function TakeOrder() {
                 max: totalNumberOfSpecificProduct ?? 0,
                 disabled: !searchSKU ? true : bins?.length === 0 ? true : false,
                 onChange: (e) => {
-                  // fix: prevent the input to be lower if the sku is existed in the items
-                  // can only be lower to last the current value of the quantity
-
-                  // another way: reset the value of the input whenever it puts the data into the items
-
-                  //fix: the bin getting addded instead of nagating if the bin is 0
-                  // fix: when I lower the input
                   const value = parseInt(e.target.value, 10); // we have the fresh value
+
+                  if (!bins) return;
+
+                  let val = value;
+                  let newAllocations: Record<string, number> = {};
+
+                  for (const bin of Array.isArray(bins) ? bins : []) {
+                    if (val <= 0) break; // <-- only this can stop looping
+
+                    const binQTY = bin._count.assignedProducts;
+                    const allocate = Math.min(binQTY, val);
+
+                    if (allocate > 0) {
+                      newAllocations[bin.id] = allocate;
+                      val -= allocate;
+                    }
+                  }
+                  setOrders((prev) => {
+                    if (Object.keys(newAllocations).length === 0) {
+                      const { [searchSKU]: _, ...rest } = prev;
+                      return rest;
+                    }
+
+                    return {
+                      ...prev,
+                      [searchSKU]: newAllocations,
+                    };
+                  });
 
                   setQuantities((prev) => ({
                     ...prev,
@@ -150,7 +121,7 @@ function TakeOrder() {
             }}
           />
         </div>
-
+        {/* client name */}
         <div className="col-span-1 rounded-lg border">
           <Input
             attributes={{
@@ -159,7 +130,12 @@ function TakeOrder() {
                 value: clientName,
                 type: "text",
 
-                disabled: !searchSKU ? true : bins?.length === 0 ? true : false,
+                disabled:
+                  !searchSKU || items.length != 0
+                    ? true
+                    : bins?.length === 0
+                    ? true
+                    : false,
                 onChange: (e) =>
                   setClientName(e.target.value.toUpperCase().trimEnd()),
               },
@@ -167,6 +143,7 @@ function TakeOrder() {
             }}
           />
         </div>
+        {/* sales order */}
         <div className="col-span-1 rounded-lg border">
           <Input
             attributes={{
@@ -174,7 +151,12 @@ function TakeOrder() {
                 id: "salesOrder",
                 value: salesOrder,
                 type: "text",
-                disabled: !searchSKU ? true : bins?.length === 0 ? true : false,
+                disabled:
+                  !searchSKU || items.length != 0
+                    ? true
+                    : bins?.length === 0
+                    ? true
+                    : false,
                 onChange: (e) =>
                   setSalesOrder(e.target.value.toUpperCase().trimEnd()),
               },
@@ -187,7 +169,13 @@ function TakeOrder() {
             id="assignTruck"
             className={InputStyle}
             value={assignTruck}
-            disabled={!searchSKU ? true : bins?.length === 0 ? true : false}
+            disabled={
+              !searchSKU || items.length != 0
+                ? true
+                : bins?.length === 0
+                ? true
+                : false
+            }
             onChange={(e) =>
               setAssignTruck(e.target.value.toUpperCase().trimEnd())
             }
@@ -195,11 +183,12 @@ function TakeOrder() {
             <option value="default" disabled hidden>
               Assign Truck
             </option>
-            {trucks.map((truck, i) => (
-              <option key={i} value={truck}>
-                {truck}
-              </option>
-            ))}
+            {Array.isArray(trucks) &&
+              trucks?.map((truck, i) => (
+                <option key={i} value={truck.truckName}>
+                  {truck.truckName}
+                </option>
+              ))}
           </select>
         </div>
         <div className="col-span-1 row-span-1 rounded-lg border">
@@ -207,7 +196,13 @@ function TakeOrder() {
             id="assignTruck"
             className={InputStyle}
             value={assignTruck}
-            disabled={!searchSKU ? true : bins?.length === 0 ? true : false}
+            disabled={
+              !searchSKU || items.length != 0
+                ? true
+                : bins?.length === 0
+                ? true
+                : false
+            }
             onChange={(e) =>
               setAssignTruck(e.target.value.toUpperCase().trimEnd())
             }
@@ -215,11 +210,12 @@ function TakeOrder() {
             <option value="default" disabled hidden>
               Assign Truck
             </option>
-            {trucks.map((truck, i) => (
-              <option key={i} value={truck}>
-                {truck}
-              </option>
-            ))}
+            {Array.isArray(trucks) &&
+              trucks?.map((truck, i) => (
+                <option key={i} value={truck.truckName}>
+                  {truck.truckName}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -299,6 +295,26 @@ function TakeOrder() {
           <button
             onClick={() => {
               setSubmit(true);
+              fetch("/api/picking-and-packing/take-orders", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orders),
+              })
+                .then(async (res) => {
+                  const data = await res.json();
+                  console.log(data);
+                })
+                .catch((e) => console.log(e))
+                .finally(() => {
+                  mutate("/api/order/bins");
+                  setSearchSKU("");
+                  setOrders({});
+                  setQuantities({});
+                  setItems([]);
+                  setSubmit(false);
+                });
             }}
             className="h-8 w-full rounded-lg border bg-slate-500 font-bold uppercase text-slate-100 hover:bg-amber-500 md:h-11"
           >
@@ -396,6 +412,7 @@ type Bins = TBins & {
 interface BinTableProps {
   bins: Bins[];
 }
+
 // function BinTable({ bins }: BinTableProps) {
 //   console.log(bins);
 //   return (

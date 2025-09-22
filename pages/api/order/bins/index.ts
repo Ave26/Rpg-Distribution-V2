@@ -22,6 +22,7 @@ async function handler(
             quality: "Good",
             damageBinsId: { isSet: false },
             skuCode: sku,
+            orderId: { isSet: false },
           },
         },
       },
@@ -39,6 +40,7 @@ async function handler(
                 status: "Default",
                 quality: "Good",
                 damageBinsId: { isSet: false },
+                orderId: { isSet: false },
               },
             },
           },
@@ -67,7 +69,7 @@ async function handler(
       return res.json(e);
     });
 
-  console.log(bins);
+  // console.log(bins);
   return res.status(200).json(bins);
 }
 

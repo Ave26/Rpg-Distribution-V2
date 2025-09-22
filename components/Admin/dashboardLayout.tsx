@@ -108,6 +108,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       justify-start overflow-hidden
                       rounded-lg
                       transition-all
+                      hover:bg-[#FEECCF]
                       `}
                   >
                     <Icon className="h-full w-[3em] flex-shrink-0 scale-[50%] font-bold" />
@@ -180,7 +181,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                   `${basePath}/${menu.path}` === router.asPath
                                     ? "text-slate-800"
                                     : "text-slate-500"
-                                } h-5 w-5`}
+                                } h-5 w-5 `}
                               />
                             </div>
                             <h1

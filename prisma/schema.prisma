@@ -227,6 +227,7 @@ model assignedProducts {
   orderId                   String?         @db.ObjectId
 
   @@index([skuCode])
+  @@index([binId])
 }
 
 model purchaseOrderOutBound {
@@ -268,7 +269,7 @@ model order {
   batch            Int
   sales_order      String             @unique
   initiator        users?
-  usersId          String             @db.ObjectId
+  usersId          String?            @db.ObjectId
   clientName       String
   // totalWeight      Float?
   createdAt        DateTime           @default(now())
