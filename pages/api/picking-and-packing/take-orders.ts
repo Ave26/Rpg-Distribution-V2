@@ -14,11 +14,12 @@ async function handler(
   const limitsByBin = Object.values(orderMap).flatMap((v) =>
     Object.entries(v).map(([key, count]) => ({ binID: key, quantity: count }))
   );
-  try {
-    await prisma.$transaction(async (tx) => {
+
+  await prisma
+    .$transaction(async (tx) => {
       let sales_order = "test";
 
-      const takeLast = await prisma.order.findFirst({
+      const takeLast = await tx.order.findFirst({
         where: { sales_order },
         select: { batch: true },
         orderBy: { batch: "desc" },
@@ -58,18 +59,13 @@ async function handler(
           data: { orderId: order.id },
         });
       }
+    })
+    .then((tx) => {
+      return res.json({ message: "Success", tx });
+    })
+    .catch((e) => {
+      return res.json({ message: "Failed", e });
     });
-
-    const s = await prisma.order.findMany({
-      where: { sales_order: "test" },
-      include: { assignedProducts: { select: { id: true } } },
-    });
-    console.log(s);
-    return res.json(s);
-  } catch (error) {
-    console.log(error);
-    return res.json(error);
-  }
 }
 
 export default authMiddleware(handler);
