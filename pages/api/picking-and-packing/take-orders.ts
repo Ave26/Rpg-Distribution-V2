@@ -17,7 +17,7 @@ async function handler(
 
   await prisma
     .$transaction(async (tx) => {
-      let sales_order = "test";
+      let sales_order = "test2";
 
       const takeLast = await tx.order.findFirst({
         where: { sales_order },
@@ -69,6 +69,7 @@ async function handler(
 }
 
 export default authMiddleware(handler);
+// Welcome to Node.js v22.16.0.
 // for (const { binID, quantity } of limitsByBin) {
 //   const v = await prisma.assignedProducts.findMany({
 //     where: {
