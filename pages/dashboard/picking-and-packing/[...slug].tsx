@@ -6,6 +6,7 @@ import { SWRConfig } from "swr";
 import { SortOrder, TakeOrder } from "@/components/picking-and-packing";
 import { SlugType } from "@/features/picking-and-packing/types";
 import AdminUI from "@/components/PickingAndPackingRole/AdminUI/Admin";
+import { JSX } from "react";
 
 const componentMap: Record<
   SlugType,

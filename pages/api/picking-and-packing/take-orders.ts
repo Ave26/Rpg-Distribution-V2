@@ -32,7 +32,7 @@ async function handler(
           clientName: "",
           sales_order,
           status: "PENDING",
-          initiator: { connect: { id: verifiedToken.id } },
+          user: { connect: { id: verifiedToken.id } },
         },
         select: { id: true },
       });

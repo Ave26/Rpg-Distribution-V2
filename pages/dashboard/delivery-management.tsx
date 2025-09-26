@@ -5,7 +5,7 @@ import ViewTruckLoads from "@/components/DeliveryMangement/ViewTruckLoads";
 import { TSelectedBTN } from "@/components/DeliveryMangement/deliveryManagementTypes";
 import Layout from "@/components/layout";
 import { useMyContext } from "@/contexts/AuthenticationContext";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { JSX, ReactElement, useEffect, useState } from "react";
 import Location from "@/components/DeliveryMangement/Location/Location";
 import { AiOutlineLoading } from "react-icons/ai";
 

@@ -6,6 +6,7 @@ import { InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
 import useTrucks from "@/hooks/useTrucks";
 import { mutate } from "swr";
+import { Prisma } from "@prisma/client";
 
 export type QuantityWBinID = {
   [skuCode: string]: {
@@ -42,9 +43,8 @@ function TakeOrder() {
   }, [bins, searchSKU]);
 
   const binTitles = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
-  // const trucks = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
 
-  const { trucks } = useTrucks();
+  // const { trucks } = useTrucks();
 
   return (
     <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
@@ -164,60 +164,8 @@ function TakeOrder() {
             }}
           />
         </div>
-        <div className="col-span-1 rounded-lg border">
-          <select
-            id="assignTruck"
-            className={InputStyle}
-            value={assignTruck}
-            disabled={
-              !searchSKU || items.length != 0
-                ? true
-                : bins?.length === 0
-                ? true
-                : false
-            }
-            onChange={(e) =>
-              setAssignTruck(e.target.value.toUpperCase().trimEnd())
-            }
-          >
-            <option value="default" disabled hidden>
-              Assign Truck
-            </option>
-            {Array.isArray(trucks) &&
-              trucks?.map((truck, i) => (
-                <option key={i} value={truck.truckName}>
-                  {truck.truckName}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div className="col-span-1 row-span-1 rounded-lg border">
-          <select
-            id="assignTruck"
-            className={InputStyle}
-            value={assignTruck}
-            disabled={
-              !searchSKU || items.length != 0
-                ? true
-                : bins?.length === 0
-                ? true
-                : false
-            }
-            onChange={(e) =>
-              setAssignTruck(e.target.value.toUpperCase().trimEnd())
-            }
-          >
-            <option value="default" disabled hidden>
-              Assign Truck
-            </option>
-            {Array.isArray(trucks) &&
-              trucks?.map((truck, i) => (
-                <option key={i} value={truck.truckName}>
-                  {truck.truckName}
-                </option>
-              ))}
-          </select>
-        </div>
+        <AssignTruck states={{ bins, items, searchSKU }} />
+        <AssignLocation states={{ bins, items, searchSKU }} />
 
         <button
           disabled={totalNumberOfSpecificProduct === 0}
@@ -326,6 +274,8 @@ function TakeOrder() {
               setOrders({});
               setQuantities({});
               setItems([]);
+              setClientName("");
+              setSalesOrder("");
             }}
             className="h-8  w-1/4 rounded-lg border bg-red-400 font-bold uppercase text-slate-100 hover:bg-amber-400 md:h-11"
           >
@@ -413,6 +363,183 @@ interface BinTableProps {
   bins: Bins[];
 }
 
+interface AssignTruckProps {
+  states: {
+    searchSKU: string;
+    items: TItems[];
+    bins: TBins[] | undefined;
+  };
+}
+
+function AssignTruck({ states }: AssignTruckProps) {
+  const { bins, items, searchSKU } = states;
+  type trucks = Prisma.trucksGetPayload<{ select: { truckName: true } }>;
+
+  const [isFetch, setIsFetch] = useState(false);
+  const [trucks, setTrucks] = useState<trucks[]>([]);
+  const [assignTruck, setAssignTruck] = useState("");
+
+  useEffect(() => {
+    if (!isFetch) return;
+    fetch("/api/trucks/find", {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(async (res) => {
+        const data: trucks[] = await res.json();
+        setTrucks(data);
+      })
+      .catch((er) => er)
+      .finally(() => setIsFetch(false));
+
+    return setIsFetch(false);
+  }, [isFetch]);
+
+  return (
+    <select
+      id="assignTruck"
+      className={InputStyle}
+      value={assignTruck}
+      disabled={
+        !searchSKU || items.length != 0
+          ? true
+          : bins?.length === 0
+          ? true
+          : false
+      }
+      onFocus={() => {
+        const test = 12;
+        console.log(test);
+        setIsFetch(true);
+      }}
+      onChange={(e) => setAssignTruck(e.target.value.toUpperCase().trimEnd())}
+    >
+      <option value="default" disabled hidden>
+        Assign Truck
+      </option>
+
+      {trucks.length > 0 &&
+        trucks.map(({ truckName }, i) => (
+          <option key={i} value={truckName}>
+            {truckName}
+          </option>
+        ))}
+    </select>
+  );
+}
+
+function AssignLocation({ states }: AssignTruckProps) {
+  const { bins, items, searchSKU } = states;
+  type locaitons = Prisma.locationsGetPayload<{ select: { name: true } }>;
+
+  const [isFetch, setIsFetch] = useState(false);
+  const [locations, setLocations] = useState<locaitons[]>([]);
+  const [assignLocation, setAssignLocation] = useState("");
+
+  useEffect(() => {
+    if (!isFetch) return;
+    fetch("/api/location/find", {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(async (res) => {
+        const data: locaitons[] = await res.json();
+        console.log(data);
+        setLocations(data);
+      })
+      .catch((er) => er)
+      .finally(() => setIsFetch(false));
+
+    return setIsFetch(false);
+  }, [isFetch]);
+
+  return (
+    <select
+      id="assignLocation"
+      className={InputStyle}
+      value={assignLocation}
+      disabled={
+        !searchSKU || items.length != 0
+          ? true
+          : bins?.length === 0
+          ? true
+          : false
+      }
+      onFocus={() => setIsFetch(true)}
+      onChange={(e) => setAssignLocation(e.target.value)}
+    >
+      <option value="default" disabled hidden>
+        Assign Location
+      </option>
+
+      {locations.length > 0 &&
+        locations.map(({ name }, i) => (
+          <option key={i} value={name}>
+            {name}
+          </option>
+        ))}
+    </select>
+  );
+}
+
+//  <div className="col-span-1 rounded-lg border">
+//           <select
+//             id="assignTruck"
+//             className={InputStyle}
+//             value={assignTruck}
+//             disabled={
+//               !searchSKU || items.length != 0
+//                 ? true
+//                 : bins?.length === 0
+//                 ? true
+//                 : false
+//             }
+//             onFocus={() => {
+//               const test = 12;
+//               console.log(() => {});
+//             }}
+//             onChange={(e) =>
+//               setAssignTruck(e.target.value.toUpperCase().trimEnd())
+//             }
+//           >
+//             <option value="default" disabled hidden>
+//               Assign Truck
+//             </option>
+
+//             {/* {Array.isArray(trucks) &&
+//               trucks?.map((truck, i) => (
+//                 <option key={i} value={truck.truckName}>
+//                   {truck.truckName}
+//                 </option>
+//               ))} */}
+//           </select>
+//         </div>
+
+//  <div className="col-span-1 row-span-1 rounded-lg border">
+//       <select
+//         id="assignTruck"
+//         className={InputStyle}
+//         value={assignTruck}
+//         disabled={
+//           !searchSKU || items.length != 0
+//             ? true
+//             : bins?.length === 0
+//             ? true
+//             : false
+//         }
+//         onChange={(e) =>
+//           setAssignTruck(e.target.value.toUpperCase().trimEnd())
+//         }
+//       >
+//         <option value="default" disabled hidden>
+//           Assign Truck
+//         </option>
+//         {/* {Array.isArray(trucks) &&
+//           trucks?.map((truck, i) => (
+//             <option key={i} value={truck.truckName}>
+//               {truck.truckName}
+//             </option>
+//           ))} */}
+//       </select>
+//     </div>
 // function BinTable({ bins }: BinTableProps) {
 //   console.log(bins);
 //   return (

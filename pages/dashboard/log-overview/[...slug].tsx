@@ -12,6 +12,7 @@ import { SlugType } from "@/features/log-overview";
 import SubLayout from "@/Layouts/SubLayout";
 import prisma from "@/lib/prisma";
 import { ObjectId } from "mongodb";
+import { JSX } from "react";
 import { SWRConfig } from "swr";
 
 const componentMap: Record<

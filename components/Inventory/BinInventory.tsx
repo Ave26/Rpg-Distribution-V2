@@ -1,6 +1,6 @@
 import useInventoryBins from "@/hooks/useInventoryBins";
 import { buttonStyleDark, buttonStyleSubmit, InputStyle } from "@/styles/style";
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { AiOutlineLoading, AiOutlineMobile } from "react-icons/ai";
 import { MdDriveFileMove } from "react-icons/md";
 import { MdMoveDown } from "react-icons/md";

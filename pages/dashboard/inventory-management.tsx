@@ -5,7 +5,7 @@ import ProductInventory from "@/components/Inventory/ProductInventory";
 import Layout from "@/components/layout";
 import { useMyContext } from "@/contexts/AuthenticationContext";
 import { buttonStyle, buttonStyleEdge } from "@/styles/style";
-import { ReactElement, useState } from "react";
+import { JSX, ReactElement, useState } from "react";
 
 export type ButtonState = "Bin" | "Product" | "Damage Bin";
 export type DeliveryState =

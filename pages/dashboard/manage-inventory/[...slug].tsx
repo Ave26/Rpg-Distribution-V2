@@ -9,6 +9,7 @@ import { TSlug } from "@/features/manage-inventory";
 import ProductInventory from "@/components/Inventory/ProductInventory";
 import DamageInventory from "@/components/Inventory/DamageInventory";
 import BinInventory from "@/components/Inventory/BinInventory";
+import { JSX } from "react";
 
 const componentMap: Record<TSlug, (props: { slug: TSlug }) => JSX.Element> = {
   bin: (props) => <Bin />,

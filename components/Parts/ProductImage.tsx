@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { JSX, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Toast from "./Toast";

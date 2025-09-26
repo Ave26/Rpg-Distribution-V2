@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React, { JSX, SetStateAction } from "react";
 import { InputProps, PersonalEffects, TFormData } from "@/types/inputTypes";
 
 interface InputFieldProps {

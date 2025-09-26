@@ -268,10 +268,11 @@ model order {
   status           order_status
   batch            Int
   sales_order      String             @unique
-  initiator        users?
-  usersId          String?            @db.ObjectId
+  user             users?
+  locationName     String
+  TruckName        String
+  // usersId          String?            @db.ObjectId
   clientName       String
-  // totalWeight      Float?
   createdAt        DateTime           @default(now())
   assignedProducts assignedProducts[]
 }

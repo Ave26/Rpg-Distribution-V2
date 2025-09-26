@@ -1,5 +1,5 @@
 // this is intended to keep track where the product will be placed in automatic Mode
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 
 interface ViewRacksProps {
   isOpenRack: boolean;
@@ -34,7 +34,8 @@ function ViewRacks({ isOpenRack, racks }: ViewRacksProps): JSX.Element {
           return (
             <div
               key={value?.id}
-              className="grid h-full w-full grid-flow-col gap-2 border">
+              className="grid h-full w-full grid-flow-col gap-2 border"
+            >
               {value.bin.map((v, i) => {
                 return (
                   <div key={value?.id} className="h-full w-full border">
@@ -46,7 +47,8 @@ function ViewRacks({ isOpenRack, racks }: ViewRacksProps): JSX.Element {
                         console.log(v?.id);
                       }}
                       key={v.id}
-                      className="h-full w-full cursor-pointer rounded-md border border-black text-center hover:bg-cyan-500/30">
+                      className="h-full w-full cursor-pointer rounded-md border border-black text-center hover:bg-cyan-500/30"
+                    >
                       {`A${i + 1}-${index + 1}`}
                     </button>
                   </div>

@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { SWRConfig } from "swr";
 import { Bin, DamageBin } from "@/components/manage-rack";
 import { SlugType } from "@/features/manage-rack";
+import { JSX } from "react";
 
 const componentMap: Record<
   SlugType,
