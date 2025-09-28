@@ -34,8 +34,7 @@ model users {
   trucks trucks[]
   record records[]
 
-  order   order?  @relation(fields: [orderId], references: [id])
-  orderId String? @unique @db.ObjectId
+  order order[]
 }
 
 model userRoles {
@@ -268,13 +267,14 @@ model order {
   status           order_status
   batch            Int
   sales_order      String             @unique
-  user             users?
-  locationName     String
   TruckName        String
-  // usersId          String?            @db.ObjectId
   clientName       String
+  usersId          String?            @db.ObjectId
   createdAt        DateTime           @default(now())
+  user             users?             @relation(fields: [usersId], references: [id])
   assignedProducts assignedProducts[]
+  locations        locations?         @relation(fields: [locationsId], references: [id])
+  locationsId      String?            @db.ObjectId
 }
 
 model orderedProducts {
@@ -410,6 +410,7 @@ model locations {
   records        records?
   deliveryLogs   deliveryLogs? @relation(fields: [deliveryLogsId], references: [id])
   deliveryLogsId String?       @unique @db.ObjectId
+  order          order[]
 }
 
 // for reporting

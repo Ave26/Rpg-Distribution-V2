@@ -22,6 +22,7 @@ export async function handler(
         .json({ error: `Method ${req.method} Not Allowed` });
     }
     const locations = await prisma.locations.findMany({});
+    console.log(locations);
     return res.status(200).json(locations);
   } catch (error) {
     console.error("Locations Handler Error:", error);

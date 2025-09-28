@@ -3,24 +3,37 @@ import { JwtPayload } from "jsonwebtoken";
 import { authMiddleware, UserToken } from "../authMiddleware";
 import prisma from "@/lib/prisma";
 import { QuantityWBinID } from "@/components/picking-and-packing/TakeOrder";
-import { concat } from "lodash";
+
+type RequestPayloadType = {
+  orders: QuantityWBinID;
+  clientName: string;
+  salesOrder: string;
+  truckName: string;
+  location: string;
+};
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const orderMap: QuantityWBinID = req.body;
+  const requestPayload: RequestPayloadType = req.body;
+  const {
+    orders: orderMap,
+    clientName,
+    location,
+    salesOrder,
+    truckName,
+  } = requestPayload;
+  console.log({ clientName, location, salesOrder, truckName });
   const limitsByBin = Object.values(orderMap).flatMap((v) =>
     Object.entries(v).map(([key, count]) => ({ binID: key, quantity: count }))
   );
 
   await prisma
     .$transaction(async (tx) => {
-      let sales_order = "test2";
-
       const takeLast = await tx.order.findFirst({
-        where: { sales_order },
+        where: { sales_order: salesOrder },
         select: { batch: true },
         orderBy: { batch: "desc" },
         take: 1,
@@ -29,10 +42,13 @@ async function handler(
       const order = await tx.order.create({
         data: {
           batch: takeLast?.batch ? takeLast?.batch + 1 : 1,
-          clientName: "",
-          sales_order,
+          clientName,
+          sales_order: salesOrder,
+          // locations: { connect: { id } }
+
+          TruckName: "",
+          usersId: verifiedToken.id,
           status: "PENDING",
-          user: { connect: { id: verifiedToken.id } },
         },
         select: { id: true },
       });

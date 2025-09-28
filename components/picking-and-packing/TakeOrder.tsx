@@ -27,7 +27,8 @@ function TakeOrder() {
 
   const [clientName, setClientName] = useState("");
   const [salesOrder, setSalesOrder] = useState("");
-  const [assignTruck, setAssignTruck] = useState("");
+  const [truckName, setTruckName] = useState("default");
+  const [location, setLocation] = useState("default");
   const [items, setItems] = useState<TItems[]>([]);
 
   const [submit, setSubmit] = useState(false);
@@ -44,7 +45,9 @@ function TakeOrder() {
 
   const binTitles = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
 
-  // const { trucks } = useTrucks();
+  useEffect(() => {
+    console.log({ orders, clientName, location, salesOrder, truckName });
+  }, [orders, clientName, location, salesOrder, truckName]);
 
   return (
     <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
@@ -164,8 +167,12 @@ function TakeOrder() {
             }}
           />
         </div>
-        <AssignTruck states={{ bins, items, searchSKU }} />
-        <AssignLocation states={{ bins, items, searchSKU }} />
+        <AssignTruck
+          states={{ bins, items, searchSKU, setTruckName, truckName }}
+        />
+        <AssignLocation
+          states={{ bins, items, searchSKU, location, setLocation }}
+        />
 
         <button
           disabled={totalNumberOfSpecificProduct === 0}
@@ -248,7 +255,13 @@ function TakeOrder() {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(orders),
+                body: JSON.stringify({
+                  orders,
+                  clientName,
+                  salesOrder,
+                  truckName,
+                  location,
+                }),
               })
                 .then(async (res) => {
                   const data = await res.json();
@@ -363,21 +376,26 @@ interface BinTableProps {
   bins: Bins[];
 }
 
+interface CommonStates {
+  searchSKU: string;
+  items: TItems[];
+  bins: TBins[] | undefined;
+}
+
 interface AssignTruckProps {
-  states: {
-    searchSKU: string;
-    items: TItems[];
-    bins: TBins[] | undefined;
+  states: CommonStates & {
+    truckName: string;
+    setTruckName: React.Dispatch<React.SetStateAction<string>>;
   };
 }
 
 function AssignTruck({ states }: AssignTruckProps) {
-  const { bins, items, searchSKU } = states;
+  const { bins, items, searchSKU, truckName, setTruckName } = states;
   type trucks = Prisma.trucksGetPayload<{ select: { truckName: true } }>;
 
   const [isFetch, setIsFetch] = useState(false);
   const [trucks, setTrucks] = useState<trucks[]>([]);
-  const [assignTruck, setAssignTruck] = useState("");
+  // const [assignTruck, setAssignTruck] = useState("");
 
   useEffect(() => {
     if (!isFetch) return;
@@ -398,7 +416,7 @@ function AssignTruck({ states }: AssignTruckProps) {
     <select
       id="assignTruck"
       className={InputStyle}
-      value={assignTruck}
+      value={truckName}
       disabled={
         !searchSKU || items.length != 0
           ? true
@@ -406,12 +424,8 @@ function AssignTruck({ states }: AssignTruckProps) {
           ? true
           : false
       }
-      onFocus={() => {
-        const test = 12;
-        console.log(test);
-        setIsFetch(true);
-      }}
-      onChange={(e) => setAssignTruck(e.target.value.toUpperCase().trimEnd())}
+      onFocus={() => setIsFetch(true)}
+      onChange={(e) => setTruckName(e.target.value.toUpperCase().trimEnd())}
     >
       <option value="default" disabled hidden>
         Assign Truck
@@ -427,13 +441,23 @@ function AssignTruck({ states }: AssignTruckProps) {
   );
 }
 
-function AssignLocation({ states }: AssignTruckProps) {
-  const { bins, items, searchSKU } = states;
-  type locaitons = Prisma.locationsGetPayload<{ select: { name: true } }>;
+interface AssignLocationProps {
+  states: CommonStates & {
+    location: string;
+    setLocation: React.Dispatch<React.SetStateAction<string>>;
+  };
+}
+
+function AssignLocation({ states }: AssignLocationProps) {
+  const { bins, items, searchSKU, location, setLocation } = states;
+  type locations = Prisma.locationsGetPayload<{
+    select: { name: true; id: true };
+  }>;
 
   const [isFetch, setIsFetch] = useState(false);
-  const [locations, setLocations] = useState<locaitons[]>([]);
-  const [assignLocation, setAssignLocation] = useState("");
+  const [locations, setLocations] = useState<locations[]>([]);
+  const [locationId, setLocationId] = useState("");
+  // const [assignLocation, setAssignLocation] = useState("");
 
   useEffect(() => {
     if (!isFetch) return;
@@ -441,7 +465,7 @@ function AssignLocation({ states }: AssignTruckProps) {
       headers: { "Content-Type": "application/json" },
     })
       .then(async (res) => {
-        const data: locaitons[] = await res.json();
+        const data: locations[] = await res.json();
         console.log(data);
         setLocations(data);
       })
@@ -455,7 +479,7 @@ function AssignLocation({ states }: AssignTruckProps) {
     <select
       id="assignLocation"
       className={InputStyle}
-      value={assignLocation}
+      value={locationId}
       disabled={
         !searchSKU || items.length != 0
           ? true
@@ -464,15 +488,15 @@ function AssignLocation({ states }: AssignTruckProps) {
           : false
       }
       onFocus={() => setIsFetch(true)}
-      onChange={(e) => setAssignLocation(e.target.value)}
+      onChange={(e) => setLocationId(e.target.value)}
     >
       <option value="default" disabled hidden>
         Assign Location
       </option>
 
       {locations.length > 0 &&
-        locations.map(({ name }, i) => (
-          <option key={i} value={name}>
+        locations.map(({ name, id }, i) => (
+          <option key={i} value={id}>
             {name}
           </option>
         ))}
