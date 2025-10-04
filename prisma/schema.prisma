@@ -263,18 +263,21 @@ enum order_status {
 }
 
 model order {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  status           order_status
-  batch            Int
-  sales_order      String             @unique
-  TruckName        String
-  clientName       String
-  usersId          String?            @db.ObjectId
-  createdAt        DateTime           @default(now())
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  status      order_status
+  batch       Int
+  sales_order String       @unique
+  clientName  String
+  usersId     String?      @db.ObjectId
+  grossWeight Int
+  createdAt   DateTime     @default(now())
+
+  trucks           trucks?            @relation(fields: [truckId], references: [id])
+  truckId          String?            @db.ObjectId
   user             users?             @relation(fields: [usersId], references: [id])
   assignedProducts assignedProducts[]
-  locations        locations?         @relation(fields: [locationsId], references: [id])
-  locationsId      String?            @db.ObjectId
+  locations        locations?         @relation(fields: [locationId], references: [id])
+  locationId       String?            @db.ObjectId
 }
 
 model orderedProducts {
@@ -383,6 +386,7 @@ model trucks {
   records          records[]
   routeCluster     routeCluster?      @relation(fields: [routeClusterId], references: [id])
   routeClusterId   String?            @db.ObjectId
+  order            order[]
 }
 
 enum cluster {

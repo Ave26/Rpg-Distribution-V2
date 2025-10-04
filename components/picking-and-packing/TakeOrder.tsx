@@ -4,7 +4,6 @@ import useBins, { TBins } from "@/features/picking-and-packing/useBins";
 import Loading from "../Parts/Loading";
 import { InputStyle } from "@/styles/style";
 import { RxCross2 } from "react-icons/rx";
-import useTrucks from "@/hooks/useTrucks";
 import { mutate } from "swr";
 import { Prisma } from "@prisma/client";
 
@@ -19,9 +18,35 @@ type TItems = {
   count: number;
 };
 
+interface CommonStates {
+  searchSKU: string;
+  items: TItems[];
+  bins: TBins[] | undefined;
+}
+
+interface AssignTruckProps {
+  states: CommonStates & {
+    truckName: string;
+    setTruckName: React.Dispatch<React.SetStateAction<string>>;
+
+    truckId: string;
+    setTruckId: React.Dispatch<React.SetStateAction<string>>;
+  };
+}
+
+interface AssignLocationProps {
+  states: CommonStates & {
+    location: string;
+    setLocation: React.Dispatch<React.SetStateAction<string>>;
+
+    locationId: string;
+    setLocationId: React.Dispatch<React.SetStateAction<string>>;
+  };
+}
+
 function TakeOrder() {
   const [searchSKU, setSearchSKU] = useState("");
-  const { bins, error, isLoading } = useBins(searchSKU);
+  const { bins } = useBins(searchSKU);
   const [quantities, setQuantities] = useState<{ [sku: string]: number }>({}); // total value of specific product in bins
   const [orders, setOrders] = useState<QuantityWBinID>({});
 
@@ -30,6 +55,9 @@ function TakeOrder() {
   const [truckName, setTruckName] = useState("default");
   const [location, setLocation] = useState("default");
   const [items, setItems] = useState<TItems[]>([]);
+
+  const [truckId, setTruckId] = useState("default");
+  const [locationId, setLocationId] = useState("default");
 
   const [submit, setSubmit] = useState(false);
 
@@ -49,8 +77,12 @@ function TakeOrder() {
     console.log({ orders, clientName, location, salesOrder, truckName });
   }, [orders, clientName, location, salesOrder, truckName]);
 
+  useEffect(() => {
+    console.log("items", items);
+  }, [items]);
+
   return (
-    <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-3 md:grid-rows-2">
+    <section className="grid h-full w-full grid-cols-1 grid-rows-3 gap-1 rounded-lg text-fluid-xxs transition-all md:grid-flow-col md:grid-cols-4 md:grid-rows-2">
       {/* Inputs */}
       <div className="grid grid-cols-2 grid-rows-4 gap-1 rounded-lg border bg-white p-2 md:grid-rows-5">
         {/* search sku */}
@@ -168,10 +200,26 @@ function TakeOrder() {
           />
         </div>
         <AssignTruck
-          states={{ bins, items, searchSKU, setTruckName, truckName }}
+          states={{
+            bins,
+            items,
+            searchSKU,
+            setTruckName,
+            truckName,
+            setTruckId,
+            truckId,
+          }}
         />
         <AssignLocation
-          states={{ bins, items, searchSKU, location, setLocation }}
+          states={{
+            bins,
+            items,
+            searchSKU,
+            location,
+            setLocation,
+            locationId,
+            setLocationId,
+          }}
         />
 
         <button
@@ -259,8 +307,8 @@ function TakeOrder() {
                   orders,
                   clientName,
                   salesOrder,
-                  truckName,
-                  location,
+                  locationId,
+                  truckId,
                 }),
               })
                 .then(async (res) => {
@@ -298,7 +346,7 @@ function TakeOrder() {
       </div>
 
       {/* table */}
-      <div className="flex h-full w-full flex-col items-start justify-start overflow-auto rounded-lg scrollbar-track-rounded-lg md:col-span-2 md:row-span-4 md:w-full md:overflow-x-hidden md:overflow-y-scroll">
+      <div className="flex h-full w-full grid-cols-1 flex-col items-start justify-start overflow-auto rounded-lg bg-white scrollbar-track-rounded-lg md:col-span-4 md:row-span-2 md:w-full md:overflow-x-hidden md:overflow-y-scroll">
         <div className="sticky top-0 flex w-full gap-1 rounded-lg rounded-b-none bg-slate-400 p-1 font-semibold uppercase">
           {binTitles.map((title) => {
             return (
@@ -368,30 +416,19 @@ function TakeOrder() {
 
 export default TakeOrder;
 
-type Bins = TBins & {
-  isHighlighted: boolean;
-};
-
-interface BinTableProps {
-  bins: Bins[];
-}
-
-interface CommonStates {
-  searchSKU: string;
-  items: TItems[];
-  bins: TBins[] | undefined;
-}
-
-interface AssignTruckProps {
-  states: CommonStates & {
-    truckName: string;
-    setTruckName: React.Dispatch<React.SetStateAction<string>>;
-  };
-}
-
 function AssignTruck({ states }: AssignTruckProps) {
-  const { bins, items, searchSKU, truckName, setTruckName } = states;
-  type trucks = Prisma.trucksGetPayload<{ select: { truckName: true } }>;
+  const {
+    bins,
+    items,
+    searchSKU,
+    truckName,
+    setTruckName,
+    truckId,
+    setTruckId,
+  } = states;
+  type trucks = Prisma.trucksGetPayload<{
+    select: { truckName: true; id: true };
+  }>;
 
   const [isFetch, setIsFetch] = useState(false);
   const [trucks, setTrucks] = useState<trucks[]>([]);
@@ -416,7 +453,7 @@ function AssignTruck({ states }: AssignTruckProps) {
     <select
       id="assignTruck"
       className={InputStyle}
-      value={truckName}
+      value={truckId}
       disabled={
         !searchSKU || items.length != 0
           ? true
@@ -425,15 +462,15 @@ function AssignTruck({ states }: AssignTruckProps) {
           : false
       }
       onFocus={() => setIsFetch(true)}
-      onChange={(e) => setTruckName(e.target.value.toUpperCase().trimEnd())}
+      onChange={(e) => setTruckId(e.target.value.toUpperCase().trimEnd())}
     >
       <option value="default" disabled hidden>
-        Assign Truck
+        ASSIGN TRUCK
       </option>
 
       {trucks.length > 0 &&
-        trucks.map(({ truckName }, i) => (
-          <option key={i} value={truckName}>
+        trucks.map(({ truckName, id }) => (
+          <option key={id} value={id}>
             {truckName}
           </option>
         ))}
@@ -441,22 +478,23 @@ function AssignTruck({ states }: AssignTruckProps) {
   );
 }
 
-interface AssignLocationProps {
-  states: CommonStates & {
-    location: string;
-    setLocation: React.Dispatch<React.SetStateAction<string>>;
-  };
-}
-
 function AssignLocation({ states }: AssignLocationProps) {
-  const { bins, items, searchSKU, location, setLocation } = states;
+  const {
+    bins,
+    items,
+    searchSKU,
+    location,
+    setLocation,
+    locationId,
+    setLocationId,
+  } = states;
   type locations = Prisma.locationsGetPayload<{
     select: { name: true; id: true };
   }>;
 
   const [isFetch, setIsFetch] = useState(false);
   const [locations, setLocations] = useState<locations[]>([]);
-  const [locationId, setLocationId] = useState("");
+  // const [locationId, setLocationId] = useState("");
   // const [assignLocation, setAssignLocation] = useState("");
 
   useEffect(() => {
@@ -491,7 +529,7 @@ function AssignLocation({ states }: AssignLocationProps) {
       onChange={(e) => setLocationId(e.target.value)}
     >
       <option value="default" disabled hidden>
-        Assign Location
+        ASSIGN LOCATION
       </option>
 
       {locations.length > 0 &&

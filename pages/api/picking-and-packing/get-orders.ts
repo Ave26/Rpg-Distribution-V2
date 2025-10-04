@@ -4,106 +4,31 @@ import { authMiddleware, UserToken } from "../authMiddleware";
 import prisma from "@/lib/prisma";
 import { QuantityWBinID } from "@/components/picking-and-packing/TakeOrder";
 
-type RequestPayloadType = {
-  orders: QuantityWBinID;
-  clientName: string;
-  salesOrder: string;
-  truckId: string;
-  locationId: string;
-};
-
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
   verifiedToken: JwtPayload & UserToken
 ) {
-  const requestPayload: RequestPayloadType = req.body;
-  const {
-    orders: orderMap,
-    clientName,
-    salesOrder,
-    locationId,
-    truckId,
-  } = requestPayload;
-  // console.log({ clientName, location, salesOrder, truckId, locationId });
-  const limitsByBin = Object.values(orderMap).flatMap((v) =>
-    Object.entries(v).map(([key, count]) => ({ binID: key, quantity: count }))
-  );
-
-  await prisma
-    .$transaction(async (tx) => {
-      const takeLast = await tx.order.findFirst({
-        where: { sales_order: salesOrder },
-        select: { batch: true },
-        orderBy: { batch: "desc" },
-        take: 1,
-      });
-
-      const order = await tx.order.create({
-        data: {
-          batch: takeLast?.batch ? takeLast?.batch + 1 : 1,
-          clientName,
-          sales_order: salesOrder,
-          truckId,
-          locationId,
-          loadCapacity: 0,
-          usersId: verifiedToken.id,
-          status: "PENDING",
+  try {
+    const orders = await prisma.order
+      .findMany({
+        omit: { loadCapacity: true },
+        include: {
+          _count: { select: { assignedProducts: true } },
+          locations: { select: { name: true } },
+          trucks: { select: { truckName: true } },
         },
-        select: { id: true },
-      });
-
-      let ids: string[] = [];
-
-      for (const { binID, quantity } of limitsByBin) {
-        const val = await tx.assignedProducts.findMany({
-          where: {
-            binId: binID,
-            orderId: { isSet: false },
-            status: "Default",
-            quality: "Good",
-          },
-          take: quantity,
-          select: { id: true },
-        });
-
-        ids.push(...val.map((v) => v.id));
-      }
-      if (ids.length > 0) {
-        await tx.assignedProducts.updateMany({
-          where: { id: { in: ids } },
-          data: { orderId: order.id },
-        });
-      }
-    })
-    .then((tx) => {
-      return res.json({ message: "Success", tx });
-    })
-    .catch((e) => {
-      console.log(e);
-      return res.json({ message: "Failed", e });
-    });
+      })
+      .catch((e) => console.log(e));
+    console.log(orders);
+    return res.json(orders);
+  } catch (error) {
+    return res.json(error);
+  }
 }
 
-/* 
-Example hierarchy
-
-Product → has a unitWeight.
-
-Box → contains many products.
-
-Its gross weight = SUM(product.unitWeight × quantity) for all products inside.
-
-Order → might be made up of multiple boxes.
-
-Its gross weight = SUM(box.grossWeight).
-
-Truck → carries many orders.
-
-Its gross weight of cargo = SUM(order.grossWeight). 
-*/
-
 export default authMiddleware(handler);
+
 // Welcome to Node.js v22.16.0.
 // for (const { binID, quantity } of limitsByBin) {
 //   const v = await prisma.assignedProducts.findMany({

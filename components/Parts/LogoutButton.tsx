@@ -32,7 +32,7 @@ export default function LogoutButton({ states }: LogoutButton) {
         updateGlobalState({
           authenticated: false,
         });
-        router.push("/");
+        router.replace("/login");
       })
       .catch((error) => error);
   }

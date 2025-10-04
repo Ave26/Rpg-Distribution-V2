@@ -1,9 +1,8 @@
-import useOrders from "@/features/picking-and-packing/useOrders";
-import React, { useState } from "react";
+import React from "react";
+import useOrders from "../useOrders";
 
-function SortOrder() {
+function OrderTable() {
   const { orderData, error, isLoading } = useOrders();
-  const [loading, setLoading] = useState(false);
 
   const orderTitles = [
     "Truck Name",
@@ -12,9 +11,8 @@ function SortOrder() {
     "Sales Order",
     "Status",
     "Count",
-    "Location",
-    "Button",
   ];
+
   return (
     <div className="flex h-full w-full grid-cols-1 flex-col items-start justify-start overflow-auto rounded-lg bg-white scrollbar-track-rounded-lg md:col-span-2 md:row-span-2 md:w-full md:overflow-x-hidden md:overflow-y-scroll">
       <div className="sticky top-0 flex w-full gap-1 rounded-lg rounded-b-none bg-slate-400 p-1 font-semibold uppercase">
@@ -34,10 +32,7 @@ function SortOrder() {
         Array.isArray(orderData) &&
         orderData.map((order) => {
           return (
-            <ul
-              key={order.id}
-              className="flex h-fit w-full items-center justify-center  gap-1 break-all p-1 uppercase hover:bg-amber-300/70"
-            >
+            <ul className="flex h-fit w-full items-center justify-center  gap-1 break-all p-1 uppercase hover:bg-amber-300/70">
               <li className="flex h-full w-full items-center justify-center border">
                 {order.trucks?.truckName}
               </li>
@@ -56,23 +51,6 @@ function SortOrder() {
               <li className="flex h-full w-full items-center justify-center border">
                 {order._count.assignedProducts}
               </li>
-              <li className="flex h-full w-full items-center justify-center border">
-                {order.locations?.name}
-              </li>
-
-              <li className="flex h-full w-full items-center justify-center border bg-red-400 text-white">
-                {order.status === "SHIPPED" ? (
-                  "asd"
-                ) : (
-                  <button
-                    onClick={() => {
-                      console.log("shipped to the truck");
-                    }}
-                  >
-                    SHIP IT
-                  </button>
-                )}
-              </li>
             </ul>
           );
         })}
@@ -80,4 +58,4 @@ function SortOrder() {
   );
 }
 
-export default SortOrder;
+export default OrderTable;
