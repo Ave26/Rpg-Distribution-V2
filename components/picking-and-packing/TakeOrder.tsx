@@ -56,6 +56,8 @@ function TakeOrder() {
   const [location, setLocation] = useState("default");
   const [items, setItems] = useState<TItems[]>([]);
 
+  const [openAlert, setOpenAlert] = useState(false);
+
   const [truckId, setTruckId] = useState("default");
   const [locationId, setLocationId] = useState("default");
 
@@ -72,6 +74,16 @@ function TakeOrder() {
   }, [bins, searchSKU]);
 
   const binTitles = ["BIN", "CATEGORY", "BARCODE", "SKU", "ITEM NAME", "COUNT"];
+
+  useEffect(() => {
+    if (!openAlert) return;
+
+    const timer = setTimeout(() => {
+      setOpenAlert(false);
+    }, 1000);
+
+    return () => clearTimeout(timer); // ✅ cleanup
+  }, [openAlert]);
 
   useEffect(() => {
     console.log({ orders, clientName, location, salesOrder, truckName });
@@ -225,10 +237,11 @@ function TakeOrder() {
         <button
           disabled={totalNumberOfSpecificProduct === 0}
           onClick={() => {
-            // bug: when clicking it if the quantity is 0, the max value will became 0
             const currentQuantity = quantities[searchSKU] || 0;
 
+            if (!clientName || !salesOrder) return setOpenAlert(true);
             // transform the orders into items that can be display
+
             const newOrders = Object.entries(orders).map(
               ([sku, binIdWCount]) => {
                 const count = Object.values(binIdWCount).reduce(
@@ -278,10 +291,19 @@ function TakeOrder() {
                   </ul>
 
                   <button
-                    // disabled={totalNumberOfSpecificProduct <= 0}
                     onClick={() => {
                       setItems((prev) => {
                         return prev.filter((_, i) => i !== index);
+                      });
+
+                      setOrders((prev) => {
+                        const { [sku]: _, ...rest } = prev;
+                        return rest;
+                      });
+
+                      setQuantities((prev) => {
+                        const { [sku]: _, ...rest } = prev;
+                        return rest;
                       });
                     }}
                     className="rounded-lg border p-2"
@@ -396,7 +418,7 @@ function TakeOrder() {
                 <li className="flex h-full w-full items-center justify-center border">
                   {bin.assignedProducts[0].products.productName}
                 </li>
-                <li className="flex h-full w-full items-center justify-center border">
+                <li className="flex h-full w-full items-center justify-center border font-extrabold">
                   {/* {bin._count.assignedProducts} */}
 
                   {newQuantity}
@@ -410,11 +432,63 @@ function TakeOrder() {
           </div>
         )}
       </div>
+      <div className="absolute bottom-5 right-5">
+        {openAlert && <AlertButton />}
+      </div>
     </section>
   );
 }
 
 export default TakeOrder;
+
+function AlertButton() {
+  return (
+    <div
+      id="toast-danger"
+      className="mb-4 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow-sm dark:bg-gray-800 dark:text-gray-400"
+      role="alert"
+    >
+      <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+        <svg
+          className="h-5 w-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+        </svg>
+        <span className="sr-only">Error icon</span>
+      </div>
+      <div className="ms-3 text-sm font-normal">
+        Please Complete Empty Fields.
+      </div>
+      <button
+        type="button"
+        className="-mx-1.5 -my-1.5 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
+        data-dismiss-target="#toast-danger"
+        aria-label="Close"
+      >
+        <span className="sr-only">Close</span>
+        <svg
+          className="h-3 w-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 function AssignTruck({ states }: AssignTruckProps) {
   const {
@@ -427,7 +501,7 @@ function AssignTruck({ states }: AssignTruckProps) {
     setTruckId,
   } = states;
   type trucks = Prisma.trucksGetPayload<{
-    select: { truckName: true; id: true };
+    select: { truckName: true; id: true; payloadCapacity: true };
   }>;
 
   const [isFetch, setIsFetch] = useState(false);
@@ -469,9 +543,9 @@ function AssignTruck({ states }: AssignTruckProps) {
       </option>
 
       {trucks.length > 0 &&
-        trucks.map(({ truckName, id }) => (
+        trucks.map(({ truckName, id, payloadCapacity }) => (
           <option key={id} value={id}>
-            {truckName}
+            {`${truckName}, ${payloadCapacity}`}
           </option>
         ))}
     </select>
