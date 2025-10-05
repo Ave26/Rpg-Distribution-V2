@@ -46,7 +46,7 @@ async function handler(
           sales_order: salesOrder,
           truckId,
           locationId,
-          loadCapacity: 0,
+          grossWeight: 0,
           usersId: verifiedToken.id,
           status: "PENDING",
         },

@@ -12,7 +12,7 @@ async function handler(
   try {
     const orders = await prisma.order
       .findMany({
-        omit: { loadCapacity: true },
+        omit: { grossWeight: true },
         include: {
           _count: { select: { assignedProducts: true } },
           locations: { select: { name: true } },
