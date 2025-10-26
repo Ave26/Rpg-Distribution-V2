@@ -3,9 +3,8 @@ import Head from "next/head";
 import React from "react";
 import Image from "next/image";
 import aboutus from "../public/assets/Finally.png";
-import { verifyJwt } from "@/lib/helper/jwt";
-import { NextApiRequest } from "next";
-export default function About({ data }: any) {
+
+export default function About() {
   return (
     <>
       <Head>
@@ -17,7 +16,8 @@ export default function About({ data }: any) {
             <Image src={aboutus} alt="About Us" className="h-full w-full" />
           </div>
           <section
-            className={`item-center flex w-[80%] flex-col justify-center gap-5`}>
+            className={`item-center flex w-[80%] flex-col justify-center gap-5`}
+          >
             <h1 className={"text-3xl "}>Who We Are</h1>
             <p className={" font-roboto leading-relaxed  text-black"}>
               <strong className="text-3xl text-yellow-400">W</strong>elcome to{" "}
@@ -57,22 +57,22 @@ export default function About({ data }: any) {
   );
 }
 
-export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const { verifiedToken }: any = await verifyJwt(req);
-  let data = {};
-  if (verifiedToken) {
-    data = {
-      isLogin: true,
-      verifiedToken,
-    };
-  } else {
-    data = {
-      isLogin: false,
-    };
-  }
-  return {
-    props: {
-      data,
-    },
-  };
-};
+// export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
+//   const { verifiedToken }: any = await verifyJwt(req);
+//   let data = {};
+//   if (verifiedToken) {
+//     data = {
+//       isLogin: true,
+//       verifiedToken,
+//     };
+//   } else {
+//     data = {
+//       isLogin: false,
+//     };
+//   }
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// };

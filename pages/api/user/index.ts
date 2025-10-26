@@ -3,7 +3,8 @@ import { findUserBasedOnId } from "@/lib/prisma/user";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { verifiedToken, error } = await verifyJwt(req);
+  const token = req.cookies.token;
+  const { verifiedToken, error } = await verifyJwt(token);
 
   if (error) {
     return res.status(401).json({

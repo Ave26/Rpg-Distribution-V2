@@ -19,7 +19,8 @@ export const authMiddleware =
   ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      const { verifiedToken, error } = await verifyJwt(req);
+      const token = req.cookies.token;
+      const { verifiedToken, error } = await verifyJwt(token);
 
       if (error) {
         return res.status(403).json({

@@ -19,34 +19,63 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { updateGlobalState, globalState, states } = useMyContext();
   const isAuthenticated = globalState?.authenticated as Boolean;
 
-  const fetcher = async (url: string) => {
-    const response = await fetch(url, {
-      method: "GET",
-    });
-    const data: AuthProps = await response.json();
-    if (data?.authenticated === false || !data?.authenticated) router.push("/");
-    updateGlobalState(data);
-    // console.log(data);
-    return data;
-  };
-  useSWR("/api/authentication", fetcher);
+  console.log("isAuthenticated", isAuthenticated);
 
-  // console.log(globalState?.verifiedToken?.role);
+  // const fetcher = async (url: string) => {
+  //   const response = await fetch(url, {
+  //     method: "GET",
+  //   });
+  //   const data: AuthProps = await response.json();
+  //   if (data?.authenticated === false || !data?.authenticated) router.push("/");
+
+  //   updateGlobalState(data);
+  //   console.log("data", data);
+  //   return data;
+  // };
+  // useSWR("/api/authentication", fetcher);
+
   const [logoutResponse, setLogoutResponse] = useState<LogoutResponse>({
     isLogout: false,
     message: "",
   });
 
-  // useEffect checker
-  // useEffect(() => {
-  //   console.log(logoutResponse);
-  //   console.log(isAuthenticated);
-  // }, [logoutResponse, isAuthenticated]);
-  // useEffect(() => {
-  //   console.log(states?.isActive);
-  // }, [states?.isActive]);
-
   return (
+    <div className="h-screen">
+      {
+        <header
+          className={`flex h-[10%] w-full justify-between text-fluid-xs shadow-2xl`}
+        >
+          <div className="flex w-fit items-center justify-center p-2">
+            <ProstockIcon />
+          </div>
+          <div className="flex h-full w-full items-center justify-center gap-2 overflow-hidden sm:w-[40%]">
+            <FaCircleUser className="h-10 w-10" />
+            <h1 className="font-semibold uppercase">
+              Hello {globalState?.verifiedToken?.role ?? "User"}!
+            </h1>
+
+            <LogoutButton
+              states={{
+                logoutResponse,
+                setLogoutResponse,
+              }}
+            />
+          </div>
+        </header>
+      }
+      {/* bg-[#edf0f7] */}
+      <main
+        className={`h-[90%] w-full bg-slate-500/50  ${
+          isAuthenticated ? "h-[90%]" : "h-full"
+        }`}
+      >
+        {children}
+      </main>
+    </div>
+  );
+}
+
+/*    return (
     <div className="h-screen">
       {isAuthenticated && (
         <header
@@ -72,7 +101,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
       )}
-      {/* bg-[#edf0f7] */}
+      }
       <main
         className={`h-[90%] w-full bg-slate-500/50  ${
           isAuthenticated ? "h-[90%]" : "h-full"
@@ -82,7 +111,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       </main>
     </div>
   );
-}
+  
+  */
 
 function ProstockIcon() {
   return (

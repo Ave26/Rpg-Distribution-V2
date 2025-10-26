@@ -5,7 +5,6 @@ import Link from "next/link";
 import { TRole } from "@/types/roleTypes";
 import { roleToRoutes } from "../RoleBaseRoutes";
 import { AiOutlineLoading } from "react-icons/ai";
-import Image from "next/image";
 
 import { Roboto } from "next/font/google";
 import { IoIosArrowBack } from "react-icons/io";

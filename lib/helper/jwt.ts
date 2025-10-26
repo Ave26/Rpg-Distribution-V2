@@ -38,16 +38,15 @@ export const createJwt = (user: TUser) => {
   }
 };
 
-export const verifyJwt = async (req: NextApiRequest) => {
-  const token: string | undefined = req?.cookies?.token;
+export const verifyJwt = async (
+  token: string | undefined
+  // JWT_SECRET: string | undefined,
+  // req: NextApiRequest
+) => {
+  // const token: string | undefined = req?.cookies?.token;
   // console.log(`Token: ${token}`);
 
   try {
-    // const verifiedToken = verify(
-    //   token as string,
-    //   process.env.JWT_SECRET as string
-    // );
-
     const verifiedToken = verify(
       token as string,
       process.env.JWT_SECRET as string

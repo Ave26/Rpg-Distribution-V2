@@ -70,6 +70,12 @@ model stockKeepingUnit {
   product_status_log product_status_log?
 }
 
+type BoxSizes {
+  small  Int
+  medium Int
+  large  Int
+}
+
 model products {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   barcodeId         String             @unique
@@ -83,6 +89,9 @@ model products {
   supplyLevelStatus SupplyLevelStatus?
   method            String
   assignedProducts  assignedProducts[]
+
+  // product quantity per box 
+  boxSize BoxSizes?
 }
 
 model racks {

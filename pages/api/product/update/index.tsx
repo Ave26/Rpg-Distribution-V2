@@ -7,7 +7,9 @@ const middleware =
   async (req: NextApiRequest, res: NextApiResponse) => {
     console.log("middleware working properly");
     try {
-      const { verifiedToken, error }: any = await verifyJwt(req);
+      const token = req.cookies.token;
+
+      const { verifiedToken, error }: any = await verifyJwt(token);
 
       if (error) {
         return res.status(403).json({

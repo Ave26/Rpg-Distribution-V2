@@ -4,6 +4,18 @@ import { authMiddleware, UserToken } from "../authMiddleware";
 import prisma from "@/lib/prisma";
 import { QuantityWBinID } from "@/components/picking-and-packing/TakeOrder";
 
+// {
+//   "_id": "68de98a065595ca9ff511c52",
+//   "clientName": "YMCA",
+//   "sales_order": "YMCA_FU",
+//   "products": [
+//     {
+//       "skuCode": "SW-25S",
+//       "count": 3
+//     }
+//   ]
+// }
+
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -17,11 +29,87 @@ async function handler(
           _count: { select: { assignedProducts: true } },
           locations: { select: { name: true } },
           trucks: { select: { truckName: true } },
+          assignedProducts: { distinct: "skuCode" },
         },
       })
       .catch((e) => console.log(e));
-    console.log(orders);
-    return res.json(orders);
+
+    const result = await prisma.order.aggregateRaw({
+      pipeline: [
+        {
+          $lookup: {
+            from: "trucks",
+            localField: "truckId", // get the truck connection
+            foreignField: "_id",
+            as: "truck",
+          },
+        },
+        { $unwind: { path: "$truck", preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: "assignedProducts", // get the product connection
+            localField: "_id",
+            foreignField: "orderId",
+            as: "assignedProducts",
+          },
+        },
+
+        { $unwind: "$assignedProducts" }, // become individual collection
+        { $sort: { sales_order: 1 } },
+
+        {
+          $group: {
+            _id: {
+              orderId: "$_id",
+              skuCode: "$assignedProducts.skuCode", // group the individual collection based on the orderId and skuCode
+            },
+            clientName: { $first: "$clientName" },
+            salesOrder: { $first: "$sales_order" },
+            truckName: { $first: "$truck.truckName" },
+            count: { $sum: 1 },
+          },
+        },
+
+        { $sort: { salesOrder: 1 } },
+        {
+          $group: {
+            _id: "$_id.orderId",
+            clientName: { $first: "$clientName" },
+            salesOrder: { $first: "$sales_order" },
+            truckName: { $first: "$truckName" },
+            products: {
+              $push: {
+                skuCode: "$_id.skuCode",
+                count: "$count",
+              },
+            },
+          },
+        },
+        { $sort: { salesOrder: 1 } },
+        // ✅ Sort the whole output here — this affects final documents
+
+        // ✅ Sort inner array deterministically
+        {
+          $addFields: {
+            products: {
+              $sortArray: { input: "$products", sortBy: { skuCode: 1 } },
+            },
+          },
+        },
+        {
+          $project: {
+            orderId: { $toString: "$_id" },
+            clientName: 1,
+            salesOrder: 1,
+            truckName: 1,
+            products: 1,
+            _id: 0,
+          },
+        },
+      ],
+    });
+    console.log(JSON.stringify(result, null, 2));
+    return res.json(result);
   } catch (error) {
     return res.json(error);
   }

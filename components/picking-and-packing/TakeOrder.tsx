@@ -211,7 +211,7 @@ function TakeOrder() {
             }}
           />
         </div>
-        <AssignTruck
+        {/* <AssignTruck
           states={{
             bins,
             items,
@@ -221,19 +221,23 @@ function TakeOrder() {
             setTruckId,
             truckId,
           }}
-        />
-        <AssignLocation
-          states={{
-            bins,
-            items,
-            searchSKU,
-            location,
-            setLocation,
-            locationId,
-            setLocationId,
-          }}
-        />
 
+          
+        /> */}
+
+        <div className="col-span-2 rounded-lg border">
+          <AssignLocation
+            states={{
+              bins,
+              items,
+              searchSKU,
+              location,
+              setLocation,
+              locationId,
+              setLocationId,
+            }}
+          />
+        </div>
         <button
           disabled={totalNumberOfSpecificProduct === 0}
           onClick={() => {
@@ -359,6 +363,8 @@ function TakeOrder() {
               setItems([]);
               setClientName("");
               setSalesOrder("");
+              setTruckId("default");
+              setLocationId("default");
             }}
             className="h-8  w-1/4 rounded-lg border bg-red-400 font-bold uppercase text-slate-100 hover:bg-amber-400 md:h-11"
           >
@@ -432,6 +438,7 @@ function TakeOrder() {
           </div>
         )}
       </div>
+
       <div className="absolute bottom-5 right-5">
         {openAlert && <AlertButton />}
       </div>

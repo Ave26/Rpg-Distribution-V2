@@ -7,13 +7,15 @@ import { SWRConfig } from "swr";
 import { Bin, DamageBin } from "@/components/manage-rack";
 import { SlugType } from "@/features/manage-product/types";
 import { JSX } from "react";
+import AddProduct from "@/features/manage-product/components/AddProduct";
+import ScanProduct from "@/features/manage-product/components/ScanProduct";
 
 const componentMap: Record<
   SlugType,
   (props: { slug: SlugType }) => JSX.Element
 > = {
-  "add-product": (props) => <DamageBin />,
-  "scan-product": (props) => <Bin />,
+  "add-product": (props) => <AddProduct />,
+  "scan-product": (props) => <ScanProduct />,
 };
 
 export function DynamicProductPage({ slug }: { slug: SlugType }) {

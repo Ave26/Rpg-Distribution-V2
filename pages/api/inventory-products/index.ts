@@ -7,8 +7,10 @@ import { verifyJwt } from "@/lib/helper/jwt";
 const middleware =
   (handler: NextApiHandler) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
+    const token = req.cookies.token;
+
     try {
-      const { verifiedToken, error }: any = await verifyJwt(req);
+      const { verifiedToken, error }: any = await verifyJwt(token);
 
       if (error) {
         return res.status(403).json({
